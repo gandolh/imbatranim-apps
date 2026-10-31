@@ -274,3 +274,15 @@ and a server that cannot start crashes every Office window. Keep `service`
 or ship `static` is the owner's call ([open-questions.md](wiki/open-questions.md));
 the OS fixes are in two todos. The machine restarted mid-walk, and the walk
 was redone. After it, the owner ruled out heavy tests for the rest of the run.
+
+## [2026-10-31] maintenance | README rewritten with screenshots of all five apps, and a docs/ folder
+
+The README still said nothing was built. It now follows the readme-docs standard: the five apps as
+outcomes, a hero of Docs and four screenshots taken in a local imbatranimOS with the suite installed
+from a `file://` checkout at `440c510`, how a window gets from the catalog to an app, the checks to
+run, and the layout. `docs/` is new: `getting-started.md`, and `images/` with `shots.md` and
+`demo-docs.py`, which writes the made-up documents the images show. Checked: `npm ci`, `npm test`
+(52 files, 537 passed, 3 skipped), `npm run typecheck`, `npm run lint` (no errors) and
+`npm run build:os` pass; every relative link resolves. Found on the way: the OS's Marketplace build
+passes only `PATH`, `LANG`, `LC_ALL` and `TZ` to npm, so behind a TLS-inspecting proxy the install
+needs `cafile=` in the Node prefix's global npmrc; that is in the getting-started page.
