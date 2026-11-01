@@ -1,6 +1,6 @@
 # imbatranim-office
 
-The office apps of [imbatranimOS](https://github.com/gandolh/ImbatranimOS): Docs, Sheets, Slides, PDF and CAD. They install together from the OS's Marketplace and open in OS windows with the desktop's own buttons, dialogs and theme.
+The office apps of imbatranimOS: Docs, Sheets, Slides, PDF and CAD. They install together from the OS's Marketplace and open in OS windows with the desktop's own buttons, dialogs and theme.
 
 <p align="center">
   <img src="docs/images/docs.webp" width="100%" alt="Docs in an imbatranimOS window: a Word document titled Community garden plan, with a table of beds, crops and sowing weeks and a list of tasks, under a toolbar with font, size, bold, italic, lists and tables">
