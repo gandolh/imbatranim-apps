@@ -8,7 +8,7 @@ const MARKER = "PDFCORE_ROUNDTRIP_42";
 
 /**
  * Build a 2-page fixture with extractable text using pdf-lib directly (the
- * engine's Generate capability is a brief-09 stub). Page 1 carries MARKER at a
+ * engine's Generate capability is a stub). Page 1 carries MARKER at a
  * known baseline; the document has a title in its Info dictionary.
  */
 async function makeFixture(): Promise<Uint8Array> {

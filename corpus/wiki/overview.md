@@ -1,6 +1,6 @@
 ---
 summary: What imbatranim-office is: the office apps of imbatranimOS (Docs, Sheets, Slides, PDF, CAD) in their own repo, installed from the OS's Marketplace as one entry and rendered with the desktop's own React and kit, and where it came from.
-updated: 2026-10-21
+updated: 2026-11-02
 ---
 
 # Overview
@@ -29,8 +29,7 @@ don't want.
 
 On 2026-10-19 the owner asked to bring ArtCraft's "Crafting Apps"
 (WordCraft, GridCraft, CADCraft, PdfCraft, DeckCraft) into the OS. They are
-Rust apps drawn on a canvas, so a first plan put them in sandboxed frames (OS
-brief 161). On 2026-10-21 the owner turned that down: the OS should behave like
+Rust apps drawn on a canvas, so a first plan put them in sandboxed frames. On 2026-10-21 the owner turned that down: the OS should behave like
 an OS whose apps are all web UI. The office apps leave the OS for this repo, in
 TypeScript, and the crafts stay as the reference for how each feature behaves.
 The reasoning is in [decisions.md](decisions.md).
@@ -38,5 +37,5 @@ The reasoning is in [decisions.md](decisions.md).
 ## Where things live
 
 - `corpus/`: this wiki and the briefs. Start at [index.md](../index.md).
-- The code layout is planned in [architecture.md](architecture.md) and built by
-  brief 01.
+- The code layout is in [architecture.md](architecture.md), built
+  2026-10-21.

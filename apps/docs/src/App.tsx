@@ -2,7 +2,7 @@ import type { KitAppProps } from '@imbatranim-office/shared'
 import { Docs } from './Docs'
 
 /**
- * The module the desktop renders (OS brief 163): the built-in's manifest
+ * The module the desktop renders: the built-in's manifest
  * (`index.ts`, id `docs`) becomes this component plus the suite descriptor's
  * `office-docs` entry, which carries the name, icon, sizes, `opens` and
  * capabilities the manifest used to.

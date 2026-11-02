@@ -1,5 +1,5 @@
 /**
- * The externals (OS brief 163, decision 1): the five modules the desktop lends
+ * The externals (the OS's office-suite decision 1): the five modules the desktop lends
  * never enter a bundle. Every import of them, named, default, namespace,
  * re-export or dynamic, and the `react/jsx-runtime` imports the JSX transform
  * writes, resolves to a small generated module that reads the export from

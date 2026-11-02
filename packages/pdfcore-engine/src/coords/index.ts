@@ -1,8 +1,8 @@
 /**
  * Coordinates — THE single shared, unit-tested transform (architecture.md
  * "Coordinates — one shared transform"; the most bug-prone area, carried over
- * from the Studio era). Render, the selection text layer (brief 16), Annotate
- * hit-testing (brief 14) and Forms widget geometry (brief 13) all convert
+ * from the Studio era). Render, the selection text layer, Annotate
+ * hit-testing and Forms widget geometry all convert
  * through THIS module and no other. If two consumers disagree, marks mis-land
  * silently — so there is exactly one implementation here.
  *
@@ -17,7 +17,7 @@
  *
  * Page rotation is threaded through {@link ViewTransform.rotation}; at rotation
  * 0 the transforms reduce to a pure y-flip + scale. Rotation-aware mapping is
- * kept minimal in v1 (0 is the common case) and extended by later briefs.
+ * kept minimal in v1 (0 is the common case) and extended when needed.
  */
 
 import type { Box, Point, Rect } from "../api/types.js";

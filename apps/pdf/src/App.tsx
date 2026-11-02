@@ -2,7 +2,7 @@ import type { KitAppProps } from '@imbatranim-office/shared'
 import { Pdf } from './Pdf'
 
 /**
- * The module the desktop renders (OS brief 163): the built-ins' manifests
+ * The module the desktop renders: the built-ins' manifests
  * (`apps/add-ons/norpdf/src/index.ts`, id `norpdf`, and PDF Viewer's, id
  * `pdf-viewer`) become this component plus the suite descriptor's `office-pdf`
  * entry, which carries the name, icon, sizes, `opens` and capabilities the

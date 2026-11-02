@@ -4,7 +4,7 @@ import { withPdfjsDoc } from "./document.js";
 
 /**
  * Read existing PDF annotations back into engine specs so a loaded document's
- * annotations are re-editable (DEC-39, brief 14).
+ * annotations are re-editable (DEC-39).
  *
  * Two things live here:
  *

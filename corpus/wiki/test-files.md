@@ -1,6 +1,6 @@
 ---
 summary: Where the walks' test files come from (sourced 2026-10-21 and lost with /tmp in a restart): CAD drawings (and LibreDWG's three DWG samples), PDFs, decks, workbooks and documents, each with its source, licence and what it exercises, and which may be committed as fixtures. Re-fetch them into a scratch directory; never execute them.
-updated: 2026-10-28
+updated: 2026-11-02
 ---
 
 # Test files
@@ -20,7 +20,7 @@ stay outside the repo.
 | `3_us_main.dxf` | ezdxf repo, `examples/edgeminer/` | MIT repo; map data origin unstated | 10,053 LINEs: the frame-time file | no |
 | `0040000C01.DXF` | French cadastre, cadastre.data.gouv.fr, 2026-09-01 release, `dxf-010040000C01.tar.bz2` | Licence Ouverte (check the version) | 1,232 entities (POLYLINE, TEXT, INSERT), 110 layers | not unless the licence is checked |
 
-| `example_2000.dwg`, `example_2007.dwg`, `example_2018.dwg` | LibreDWG's repo, `test/test-data/` on `master`, fetched 2026-10-28 from `raw.githubusercontent.com/LibreDWG/libredwg/master/test/test-data/example_<year>.dwg`; sha256 `34574244…99be9`, `fe2d2722…5bc12`, `7bc77212…5a65a` | GPL-3.0-or-later repo; the drawing's own origin unstated | DWG through the suite server (brief 14): AC1015, AC1021 and AC1032, the same drawing (69 entities, 5 layers, 13 blocks). Set `DWG_FIXTURES` to their folder for `server/src/convert.test.ts` | no |
+| `example_2000.dwg`, `example_2007.dwg`, `example_2018.dwg` | LibreDWG's repo, `test/test-data/` on `master`, fetched 2026-10-28 from `raw.githubusercontent.com/LibreDWG/libredwg/master/test/test-data/example_<year>.dwg`; sha256 `34574244…99be9`, `fe2d2722…5bc12`, `7bc77212…5a65a` | GPL-3.0-or-later repo; the drawing's own origin unstated | DWG through the suite server: AC1015, AC1021 and AC1032, the same drawing (69 entities, 5 layers, 13 blocks). Set `DWG_FIXTURES` to their folder for `server/src/convert.test.ts` | no |
 
 No real drawing with 10,000+ mixed entities was found; the mixed stress file
 was the cadastre sheet tiled 3×3 (11,088 entities).
@@ -53,9 +53,9 @@ was the cadastre sheet tiled 3×3 (11,088 entities).
 | `47813-real-chart.xlsx` | POI `test-data/spreadsheet/` | as above | a real chart | no |
 | a chart-and-merge workbook | generate with openpyxl (2 charts, 4 merged ranges) | CC0 | the lossy-save warning | yes |
 | a 10 MB workbook | generate with openpyxl (5 sheets × 20,000 rows × 9 columns, formulas, a frozen pane) | CC0 | the worker keeps the window responsive | no (size) |
-| `big-formulas.xlsx`, `big-values.xlsx` | generate with openpyxl 3.1.5 in a throwaway container (2026-10-28): 5 sheets, a frozen pane, an item text of about 35 characters, an integer, an unrounded float and four 2-decimal floats per row; then either `=B{r}*C{r}` and `=SUM(D{r}:G{r})` (22,000 rows, 220,000 formulas, no cached values, 10.3 MB) or the two results as values (20,000 rows, 9.6 MB) | CC0 | brief 13's timing | no (size) |
-| `calc-small.xlsx` | generate with openpyxl 3.1.5: A1=2, B1=3, C1 `=A1*B1`, D1 `=C1+1`, then 1,999 rows of `A{r}`, `=A{r}*2`, `=SUM(A$1:A{r})` | CC0 | formulas recompute after an edit; the save waits; the row-1000 bug (fixed by brief 15) | yes |
-| `far-ref.xlsx` | generate with openpyxl 3.1.5: 50 rows of `A{r}`, `=A{r}*2`, and C1 `=A1048576` | CC0 | what one reference at Excel's last row costs the grid (brief 15) | yes |
+| `big-formulas.xlsx`, `big-values.xlsx` | generate with openpyxl 3.1.5 in a throwaway container (2026-10-28): 5 sheets, a frozen pane, an item text of about 35 characters, an integer, an unrounded float and four 2-decimal floats per row; then either `=B{r}*C{r}` and `=SUM(D{r}:G{r})` (22,000 rows, 220,000 formulas, no cached values, 10.3 MB) or the two results as values (20,000 rows, 9.6 MB) | CC0 | the formula worker's timing | no (size) |
+| `calc-small.xlsx` | generate with openpyxl 3.1.5: A1=2, B1=3, C1 `=A1*B1`, D1 `=C1+1`, then 1,999 rows of `A{r}`, `=A{r}*2`, `=SUM(A$1:A{r})` | CC0 | formulas recompute after an edit; the save waits; the row-1000 bug (fixed 2026-10-28) | yes |
+| `far-ref.xlsx` | generate with openpyxl 3.1.5: 50 rows of `A{r}`, `=A{r}*2`, and C1 `=A1048576` | CC0 | what one reference at Excel's last row costs the grid | yes |
 | `edge.csv` | generate: BOM, CRLF, quoted commas and newlines, doubled quotes, `007`, 20-digit numbers, text dates, `=1+1` | CC0 | CSV fidelity | yes |
 | `fidelity.xlsx`, `styles.xlsx` | the built-in's, in `apps/sheets/src/engine/__fixtures__/` | ours | the fidelity bar | yes (already) |
 

@@ -193,7 +193,7 @@ describe("Forms capability (pdf-lib adapter + pdf.js geometry)", () => {
   });
 
   it("reports a text field's MaxLen and refuses a longer value at set(), not at save()", async () => {
-    // Brief 09's walk: the IRS W-9's one-letter field took "Walk LLC" and the
+    // A walk in the OS: the IRS W-9's one-letter field took "Walk LLC" and the
     // save failed. The limit is now known before the value is staged.
     const src = await PDFDocument.create();
     const page = src.addPage([600, 800]);

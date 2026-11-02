@@ -24,7 +24,7 @@ export interface PlaceSignatureOptions {
  * signing (parked, post-v1). Built on Annotate (stamp) + Forms (signature
  * field).
  *
- * Platform: **common**. Implemented by **brief 15** (depends on 13 + 14).
+ * Platform: **common**.
  */
 export interface Sign {
   /** Place a signature mark as a stamp annotation at a rect on a page. */

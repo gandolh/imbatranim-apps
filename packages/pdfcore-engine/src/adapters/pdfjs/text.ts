@@ -17,7 +17,7 @@ import { searchDocument } from "./search.js";
  * `(e,f)` is the position in PDF user space (origin bottom-left), so extracted
  * coordinates already agree with pdf-lib's draw origin.
  *
- * `search` (brief 16) delegates to `./search.js` — see that module for the
+ * `search` delegates to `./search.js` — see that module for the
  * matching/rect algorithm; here we just own the document handle.
  */
 export class PdfjsText implements Text {

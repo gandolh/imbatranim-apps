@@ -6,10 +6,10 @@ import {
 } from "../coords/index.js";
 
 /**
- * Browser selection layer (brief 16) — the one genuinely browser-only surface
+ * Browser selection layer — the one genuinely browser-only surface
  * over Text (DEC-34): a positioned, selectable/copyable set of `<span>`s laid
  * over a rendered canvas, plus a "highlight these rects" helper the reader
- * shell (brief 17) drives with `Text.search` hits.
+ * shell drives with `Text.search` hits.
  *
  * ── Own layer vs pdf.js `TextLayerBuilder` (decision, recorded for the wiki) ─
  * We build our OWN lean layer rather than reusing pdf.js's `TextLayerBuilder`.
@@ -116,7 +116,7 @@ export function layoutHighlightRects(
   return rects.map((r) => pdfRectToScreenBox(r, t));
 }
 
-/** A built text layer instance — what brief 17's reader shell drives. */
+/** A built text layer instance — what the reader shell drives. */
 export interface TextLayerHandle {
   /** The layer's root element (already appended into `container`). */
   readonly root: DomElementLike;

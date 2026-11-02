@@ -50,7 +50,7 @@ export function Docs({ windowId }: { windowId: string }) {
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [dirty, setDirty] = useState(false)
-  // The version of the file this document was read from (brief 155): a save
+  // The version of the file this document was read from: a save
   // sends it, so a file changed on disk since asks instead of being overwritten.
   const diskVersionRef = useRef<string | null>(null)
   // Bumped by "Reload from disk" to run the load again on the same file.

@@ -7,7 +7,7 @@ tags: [os, marketplace, server, cad, dwg, owner]
 
 # Every Office window waits on, and fails with, the suite server
 
-Found in [brief 14](../briefs/done/14-cad-opens-dwg-through-a-suite-server.md).
+Found while building DWG opening (2026-10-28, [wiki/decisions.md](../wiki/decisions.md)).
 In imbatranimOS `31a248c`, `type` and `server` belong to the descriptor
 (`apps/backend/src/modules/marketplace/catalog.ts`, schema 2), the lease is
 keyed by the descriptor's id (`useServerLease`), and `KitAppHost` throws when
@@ -17,8 +17,8 @@ from the double-click to its "Open a spreadsheet" button, load 27–32):
 
 | Install | No server running yet | Server already up |
 |---|---|---|
-| `static` (before brief 14) | 1,023–1,152 ms | — |
-| `service` (brief 14) | 2,745–5,027 ms, "Starting its server…" shown | 1,083–1,516 ms |
+| `static` (before the server) | 1,023–1,152 ms | — |
+| `service` (with the server) | 2,745–5,027 ms, "Starting its server…" shown | 1,083–1,516 ms |
 
 - The first Office window of a session waits 1.7–3.9 s longer (Node,
   Fastify and the health check; LibreDWG itself loads only per conversion).

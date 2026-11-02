@@ -72,7 +72,7 @@ const DATA_ATTRIBUTE = /^data-[a-z0-9-]+$/
  * into `--tw-*` and `--text-*`.
  */
 const CUSTOM_PROPERTY_NAMESPACE = /^--[a-z0-9]+(?:-[a-z0-9]+)*-$/
-/** The OS allows 8 styles per app (OS brief 163); `app.css` is one of them. */
+/** The OS allows 8 styles per app; `app.css` is one of them. */
 export const MAX_VENDOR_STYLES = 7
 
 const isObject = (v: unknown): v is Record<string, unknown> =>

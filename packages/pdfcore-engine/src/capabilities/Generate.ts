@@ -9,7 +9,7 @@ import type {
  * primitive kept from the old design (NOT a template pipeline — that Studio
  * layer is dropped). Backed by `pdf-lib`.
  *
- * Platform: **common**. Stubbed in brief 09; fleshed out when a consumer needs
+ * Platform: **common**. A stub, fleshed out when a consumer needs
  * document creation.
  */
 export interface Generate {

@@ -3,7 +3,7 @@
  * shell and Part B drive. One instance lives at the Pdf root and is shared via
  * {@link ReaderContext}.
  *
- * Opening a document is two steps (brief 06, the fast first page):
+ * Opening a document is two steps (the fast first page):
  *  1. pdf.js alone parses the bytes and measures page 1 (`openFirstPage`):
  *     that is enough for `render`, the page count and the layout, so the
  *     reader draws the first page with nothing else loaded.
@@ -37,7 +37,7 @@ import type {
 
 /** Points → CSS px factor at 100% ("actual size", 72pt/in vs 96px/in). */
 export const ACTUAL = 96 / 72
-/** Zoom steps of 25 points of percentage, as PDF Viewer's (brief 06 folds its zoom in). */
+/** Zoom steps of 25 points of percentage, as PDF Viewer's (the merge folded its zoom in). */
 const ZOOM_STEP = 0.25
 export const MIN_SCALE = 0.25 * ACTUAL
 export const MAX_SCALE = 8 * ACTUAL
@@ -88,7 +88,7 @@ type PendingOpen = { openId: number; bytes: Uint8Array; first: PageRender }
 
 /**
  * pdf.js and its worker start loading while the file's bytes are read, not
- * after (brief 09's walk: the library and worker waited for the download, and
+ * after (the 2026-10-27 walk in the OS: the library and worker waited for the download, and
  * the first page came 50 ms after PDF Viewer's). A failed start is retried by
  * the parse that needs it.
  */

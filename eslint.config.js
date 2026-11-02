@@ -54,7 +54,7 @@ export default defineConfig([
     languageOptions: { globals: globals.node },
   },
   {
-    // The PDF engine, moved from the OS (brief 06) with the lint settings it
+    // The PDF engine, moved from the OS with the lint settings it
     // had there: it spans the browser (render, text layer) and Node (its
     // tests), and its one `@ts-ignore` (pdf.js's untyped legacy build) says why.
     files: ['packages/pdfcore-engine/**'],
@@ -83,7 +83,7 @@ export default defineConfig([
     },
   },
   {
-    // PDF's first page (brief 06): every module on the way to it imports only
+    // PDF's first page: every module on the way to it imports only
     // types from the engine and pdf.js, and none of the chunks that load after
     // it. lazy.ts and app/engine.ts reach those with dynamic imports.
     files: ['apps/pdf/src/**/*.{ts,tsx}'],

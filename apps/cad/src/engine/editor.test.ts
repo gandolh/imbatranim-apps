@@ -400,7 +400,7 @@ describe('commands', () => {
   })
 })
 
-describe('TRIM and EXTEND pick the short stub at a corner (brief 11)', () => {
+describe('TRIM and EXTEND pick the short stub at a corner', () => {
   /** The 10×8 room and its walls offset 0.2 inward, at the given scale (px per unit). */
   function offsetRoom(scale: number) {
     const ed = editor()

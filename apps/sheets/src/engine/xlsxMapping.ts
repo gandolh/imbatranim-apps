@@ -41,7 +41,7 @@ function hexToArgb(hex?: string | null): string | undefined {
 }
 
 // ── Style vocabularies ─────────────────────────────────────────────────────
-// Brief 90's real Sheets gap was not missing UI — Univer ships a full ribbon —
+// The real Sheets gap was not missing UI — Univer ships a full ribbon —
 // but that the ribbon let a user set underline, font size, font family,
 // alignment, wrap and borders, and this bridge carried NONE of them. Set a
 // border, save, reopen: gone, silently. So the mapping below covers everything
@@ -390,7 +390,7 @@ export async function serialize(snapshot: IWorkbookData): Promise<ArrayBuffer> {
   // ExcelJS hands back a Buffer (a Uint8Array, and in Node often a view into a
   // larger pool), not an ArrayBuffer. The worker transfers the result, and only
   // an ArrayBuffer can be transferred: posting the view failed every save in the
-  // OS (brief 08's walk). Copy it into an ArrayBuffer of its own length.
+  // OS (the 2026-10-27 walk). Copy it into an ArrayBuffer of its own length.
   const written: ArrayBuffer | Uint8Array = await wb.xlsx.writeBuffer()
   return written instanceof ArrayBuffer ? written : new Uint8Array(written).buffer
 }

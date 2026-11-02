@@ -5,7 +5,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { useReplaceGate, type ReplaceLoad } from './useReplaceGate'
 
 /**
- * Brief 143 — the gate every replace path (Open PDF, an intent from Files, a
+ * The gate every replace path (Open PDF, an intent from Files, a
  * drop) goes through. `react-dom/client` plus `act`, as in apps/core.
  */
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true

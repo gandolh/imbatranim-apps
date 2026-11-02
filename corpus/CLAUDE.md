@@ -23,8 +23,8 @@ corpus/
 1. Read `index.md` first and triage on the `summary:` lines.
 2. Open **at most 2–3 wiki pages**. Needing more means a page must split or a
    summary is not sharp. Fix the cause.
-3. Never read `briefs/` or `todos/` wholesale. `wiki/status.md` has one line per
-   brief.
+3. Never read `briefs/` or `todos/` wholesale. `wiki/status.md` has a dated
+   line per app.
 
 ## Two repos, one product
 
@@ -66,6 +66,13 @@ the apps are built.
 - Every wiki page opens with `summary:` and `updated:` frontmatter. `index.md` is
   generated from them; never hand-maintain it.
 - Brief numbers are stable for the life of the file. Never renumber on a move.
+  Briefs run in number order; `status.md` doesn't list them.
+- Numbering restarted at 01 on 2026-11-02. The fifteen briefs before that
+  were folded into the wiki and deleted; the last commit holding them is
+  `3c6f2dd` ([log.md](log.md), "Briefs reset").
+- Code comments don't cite brief numbers ("brief 13", "(brief 15)"), this
+  repo's or imbatranimOS's. Say what the code does and why; the history
+  belongs in `log.md`.
 - Briefs in `done/` and `superseded/` are immutable (an outcome note is added at
   move time only). New work is a new brief.
 - Standard relative markdown links, absolute dates only.

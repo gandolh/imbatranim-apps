@@ -2,7 +2,7 @@
  * The one rule that decides whether a document stops being dirty.
  *
  * It is extracted from the save handler on purpose. "Never clear the dirty flag
- * unless the write actually succeeded" (brief 62) is the difference between the
+ * unless the write actually succeeded" is the difference between the
  * user being told they lost work and the user losing it silently, and an
  * invariant that important should be a function with tests rather than the shape
  * of a try/catch — which is easy to refactor into a `finally` by accident, and

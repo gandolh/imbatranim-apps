@@ -46,7 +46,7 @@ import {
  * identical to pdf.js (both read the widget `/Rect` in PDF user space). A
  * browser consumer that positions overlays against the pdf.js Render viewport
  * can call {@link primeGeometry} first (async); after that, `list()`/`get()`
- * merge in the pdf.js-sourced rects. See the handoff note in brief 13.
+ * merge in the pdf.js-sourced rects.
  *
  * Multi-widget fields (a radio group has one widget per option): `FieldInfo`
  * reports the FIRST widget's page + rect. Consumers needing every option box
@@ -221,7 +221,7 @@ export class PdfLibForms implements Forms {
           );
         }
         // pdf-lib checks /MaxLen only when the value is written, so a long
-        // value used to fail the whole save (brief 09's walk, the IRS W-9).
+        // value used to fail the whole save (a walk in the OS, the IRS W-9).
         const maxLength = maxLengthOf(field);
         if (maxLength !== undefined && value.length > maxLength) {
           throw new PdfEngineError(

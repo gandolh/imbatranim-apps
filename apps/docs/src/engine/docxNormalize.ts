@@ -17,7 +17,7 @@
  * its **synchronous** API is used — see the note at the top of `normalizeDocx`
  * for why the async one cannot work here.
  *
- * ## Coverage audit (brief 62)
+ * ## Coverage audit
  *
  * What this module repairs — and therefore what cannot fall through to the
  * silent-original-bytes failure — is exactly the three parts SuperDoc's exporter

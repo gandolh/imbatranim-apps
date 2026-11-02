@@ -12,7 +12,7 @@ import { loadPdf } from "../index.node.js";
  *    the font change forces pdf.js to keep them as two adjacent text items
  *    (touching runs of the SAME font get coalesced into one item, which
  *    defeats the point of this fixture); this is the "match spans multiple
- *    items" case brief 16 calls out.
+ *    items" case search has to handle.
  */
 async function makeFixture(): Promise<Uint8Array> {
   const doc = await PDFDocument.create();

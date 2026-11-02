@@ -1,6 +1,6 @@
 ---
-summary: How CAD (brief 03) is built: the spike's picks and numbers (dxf-viewer's parser to read, @tarikjabiri/dxf to write, our own Canvas 2D renderer at 60 fps on 10k lines), the drawing model and its undo, the commands and their aliases, the snap and selection rules, files and exports, DWG through the suite server (brief 14: Converting…, Save writes a .dxf beside the untouched .dwg, failures in a sentence), the harness, and the known gaps.
-updated: 2026-10-28
+summary: How CAD is built: the spike's picks and numbers (dxf-viewer's parser to read, @tarikjabiri/dxf to write, our own Canvas 2D renderer at 60 fps on 10k lines), the drawing model and its undo, the commands and their aliases, the snap and selection rules, files and exports, DWG through the suite server (Converting…, Save writes a .dxf beside the untouched .dwg, failures in a sentence), the harness, and the known gaps.
+updated: 2026-11-02
 ---
 
 # CAD
@@ -136,7 +136,7 @@ STRETCH and MOVE.
   refuses, so a pick beside a point takes the curve. TRIM and EXTEND break
   near-ties (within 1.5 px of the nearest) in favour of the object whose
   nearer end is closer, so a pick at a corner takes the short stub, not the
-  wall beside it (brief 11).
+  wall beside it (2026-10-28).
 
 ## Files and exports
 

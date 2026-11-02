@@ -24,7 +24,7 @@ export function loadPdf(bytes: PdfBytes): Promise<PdfDoc> {
   return PdfDoc.load(bytes, platform);
 }
 
-// The selectable text layer (brief 16) — the one genuinely browser-only
+// The selectable text layer — the one genuinely browser-only
 // surface over Text/Render. See browser/text-layer.ts for the
 // own-layer-vs-pdf.js-TextLayerBuilder decision.
 export {

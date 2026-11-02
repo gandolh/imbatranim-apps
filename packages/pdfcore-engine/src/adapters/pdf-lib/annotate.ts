@@ -19,7 +19,7 @@ import { NativeAnnotationWriter } from "../native/annotate.js";
 import type { PdfLibDocument } from "./document.js";
 
 /**
- * `pdf-lib`-backed Annotate adapter (brief 14). CRUD operates on the in-memory
+ * `pdf-lib`-backed Annotate adapter. CRUD operates on the in-memory
  * {@link AnnotationModel}; `save()` (via the facade) calls {@link commit}, which
  * writes the model to real PDF annotation objects.
  *

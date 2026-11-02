@@ -8,7 +8,7 @@ import { installMapGetOrInsert } from "./mapGetOrInsert.js";
  * imbatranim-office PDF app — never re-wire it and never fetch worker assets
  * from a CDN.
  *
- * ── Vendoring approach (changed 2026-10-21, imbatranim-office brief 06) ─────
+ * ── Vendoring approach (changed 2026-10-21) ─────
  * One worker per page, started from the engine's own entry file
  * (`browser/pdf.worker.ts`), and one `PDFWorker` over it that every document
  * is opened on (`getDocument({ worker })`, see `document.ts` and

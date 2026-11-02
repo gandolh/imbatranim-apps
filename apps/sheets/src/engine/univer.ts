@@ -55,7 +55,7 @@ export type SheetEngine = {
  *
  * Formulas calculate in a worker of this window's own (./formulaWorker.ts):
  * a workbook with 220,000 formulas blocked the main thread for 5.6 s when the
- * engine ran here (brief 08). The worker is a file of the app, started as a
+ * engine ran here. The worker is a file of the app, started as a
  * module, because the desktop's CSP refuses `blob:` workers, and Univer's RPC
  * plugin would start a URL as a classic worker; it takes a `Worker` instead
  * and then leaves its lifetime to us.

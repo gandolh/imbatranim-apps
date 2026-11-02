@@ -2,9 +2,9 @@ import { PDFDocument } from "pdf-lib";
 import type { PdfBytes } from "../../api/types.js";
 
 /**
- * Shared pdf-lib helpers used by more than one write adapter. Briefs 11
- * (Pages.extract) and 12 (Assemble.merge/split) share the copy-pages helper
- * here rather than duplicating it (see brief 11/12 "Files you must NOT touch").
+ * Shared pdf-lib helpers used by more than one write adapter. Pages.extract
+ * and Assemble.merge/split share the copy-pages helper here rather than
+ * duplicating it.
  */
 
 /**

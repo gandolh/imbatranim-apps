@@ -4,7 +4,7 @@
  * ExcelJS reads the zip-based workbook and nothing else. Handed an Excel
  * 97-2003 `.xls` (an OLE2 file), it does not fail: it loads a workbook with no
  * sheets, the window showed an empty grid, and a save wrote an `.xlsx` over
- * the old file. Found in brief 08's walk, in the built-in as well. So the
+ * the old file. Found in the 2026-10-27 walk in the OS, in the built-in as well. So the
  * refusal comes first, from the name before a byte is read, then from the
  * first bytes for a file that is not a zip under an `.xlsx` name.
  */

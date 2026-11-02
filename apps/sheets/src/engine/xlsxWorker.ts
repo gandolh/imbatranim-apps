@@ -8,7 +8,7 @@
  *
  * A real same-origin module worker, NOT a `blob:` one: this OS's CSP has
  * `script-src 'self'` and no `worker-src`, so a blob-URL worker is refused
- * outright (brief 62 found fflate doing exactly that and hanging Docs forever).
+ * outright (fflate was once found doing exactly that and hanging Docs forever).
  *
  * It handles two request kinds — `parse` (xlsx bytes → Univer snapshot + the
  * lossy-feature scan) and `serialize` (Univer snapshot → xlsx bytes) — echoing

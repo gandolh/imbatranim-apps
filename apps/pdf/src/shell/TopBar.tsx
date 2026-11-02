@@ -3,7 +3,7 @@
  * paging, search, zoom/fit and the panel toggle. Rebuilt in the OS design
  * language (Tailwind tokens + `@imbatranim/ui` components); the AtelierPDF
  * chrome is gone. Previous/next page and the 25% zoom steps come from PDF
- * Viewer (brief 06).
+ * Viewer.
  *
  * Paging and zoom work from the first page on; search and Save wait for the
  * engine, which loads right after it.

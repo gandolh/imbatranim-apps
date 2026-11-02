@@ -7,7 +7,7 @@ describe('shouldClearDirty', () => {
   })
 
   it('keeps the document dirty when the upload failed', () => {
-    // The whole point of brief 62: a rejected write leaves the document
+    // The whole point: a rejected write leaves the document
     // differing from disk, so the marker stays and the close guard stays armed.
     expect(shouldClearDirty({ uploaded: false, editCountBefore: 4, editCountAfter: 4 })).toBe(false)
   })

@@ -1,6 +1,6 @@
 ---
-summary: The locked calls behind imbatranim-office: its own repo installed as one suite descriptor, TypeScript with editing in the browser, kit apps on the desktop's shared kit, the crafts as reference only, PDF Viewer and norPDF merged, and office-* app ids, with what each rejected and why. Read before proposing an alternative; CAD's engine (dxf-viewer's parser, @tarikjabiri/dxf, Canvas 2D) and Slides saving by patching the package in place; and DWG through the suite server, LibreDWG as WebAssembly in Node, one child process per file (brief 14).
-updated: 2026-10-28
+summary: The locked calls behind imbatranim-office: its own repo installed as one suite descriptor, TypeScript with editing in the browser, kit apps on the desktop's shared kit, the crafts as reference only, PDF Viewer and norPDF merged, and office-* app ids, with what each rejected and why. Read before proposing an alternative; CAD's engine (dxf-viewer's parser, @tarikjabiri/dxf, Canvas 2D) and Slides saving by patching the package in place; and DWG through the suite server, LibreDWG as WebAssembly in Node, one child process per file.
+updated: 2026-11-02
 ---
 
 # Decisions
@@ -15,7 +15,7 @@ _2026-10-21_ — Docs, Sheets, Slides, PDF and CAD live here, not in the OS's
 `apps/add-ons`. The OS installs them from one catalog descriptor
 (`schemaVersion: 2`, an `apps` array) that lives in the **OS** repo and pins a
 commit of this one: one clone, one build, five apps, each switchable on its own.
-Rejected: the ArtCraft crafts in sandboxed frames (OS brief 161); keeping the
+Rejected: the ArtCraft crafts in sandboxed frames; keeping the
 apps built in; five descriptors, each cloning and building this repo again.
 **Why**: the owner wants an OS whose apps are all web UI, with the office suite
 as its own product, the way game-engine's games are. The descriptor stays in the
@@ -41,8 +41,8 @@ rewrite would build every app twice.
 
 ## Kit apps, on the desktop's shared kit
 _2026-10-21_ — Each app exports a React component. The desktop renders it in
-its own tree and lends it React, React DOM and `@imbatranim/ui` at runtime (OS
-brief 163). This repo builds against a snapshot of the kit taken at a named OS
+its own tree and lends it React, React DOM and `@imbatranim/ui` at runtime (imbatranimOS,
+2026-10-21). This repo builds against a snapshot of the kit taken at a named OS
 commit and keeps those modules external.
 Rejected: bundling a copy of the kit (a React per app, restyles arrive only on
 a pin bump); a kit of our own styled with the OS's theme variables (most
@@ -70,7 +70,7 @@ Viewer stays as the light option).
 **Why**: two apps for one file type was a workaround for norPDF's slower first
 page, not a product choice. The merged app has to keep what justified the light
 one: a first page as fast as PDF Viewer's, with the editing tools loaded only
-when used. Brief 06 holds the measurement.
+when used. [pdf.md](pdf.md) has the measurement.
 
 ## App ids are `office-*`, not the built-ins' ids
 _2026-10-21_ — The descriptor is `imbatranim-office`, shown as "Office". The
@@ -79,7 +79,7 @@ apps are `office-docs`, `office-sheets`, `office-slides`, `office-pdf` and
 Rejected: reusing the built-ins' ids (`docs`, `sheets`, `slides`, `norpdf`).
 **Why**: a built-in id always wins in the OS's registry, so a suite app with the
 same id would be invisible until its built-in was deleted, and parity could not
-be checked side by side. OS brief 164 moves the owner's choices (associations,
+be checked side by side. Retiring a built-in in imbatranimOS moves the owner's choices (associations,
 desktop icons, the disabled set) from the old id to the new one when a built-in
 retires.
 
@@ -96,7 +96,7 @@ Rejected: dxf-parser 1.1.2 (unmaintained, reads no HATCH); dxf-writer 1.18.4
 (no MTEXT, INSERT or entity colour); a writer of our own; WebGL (Canvas 2D held
 60 fps on 10,053 lines and on 11,088 mixed entities).
 **Why**: the fewest losses on the test files, an active parser, a typed writer,
-and frame time to spare (brief 03's spike).
+and frame time to spare (the 2026-10-22 spike, [cad.md](cad.md)).
 - *Consequence*: `npm ci` installs three.js and opentype.js as dxf-viewer's
   dependencies; nothing of them is bundled.
 - *Consequence*: entity handles change on every save.
@@ -111,7 +111,7 @@ Rejected: regenerating the file from a model (pptxtojson in, PptxGenJS out),
 which loses masters, themes, animations and embedded objects on the first
 save; DOMParser and XMLSerializer (jsdom's serializer is not Chrome's, and a
 worker has no DOM); keeping pptx-preview as the viewer.
-**Why**: brief 04's spike: on three real decks, untouched parts came back byte
+**Why**: the 2026-10-22 spike: on three real decks, untouched parts came back byte
 identical and LibreOffice opened every save.
 - *Consequence*: what the editor does not model (charts, OLE, custom XML)
   survives untouched but cannot be edited.
@@ -119,7 +119,7 @@ identical and LibreOffice opened every save.
   removes the parts only it used.
 
 ## DWG opens through the suite server: LibreDWG as WebAssembly, in Node
-_2026-10-28_ (brief 14) — CAD opens a `.dwg` by sending it to the suite's
+_2026-10-28_ — CAD opens a `.dwg` by sending it to the suite's
 server, which converts it to DXF with LibreDWG and answers the DXF; CAD reads
 it with its own DXF reader. LibreDWG comes from npm as WebAssembly
 (`@mlightcad/libredwg-web` 0.8.2, GPL-3.0), runs in Node, and gets a fresh
@@ -137,6 +137,10 @@ each, and CAD's reader opened all three with every entity, layer and block.
 - *Consequence*: the suite is a `service` descriptor. A server belongs to the
   descriptor, so every Office window (Docs, Sheets, Slides, PDF as well as
   CAD) leases it and waits for its health check, and the OS shows an error in
-  any Office window whose lease fails. See brief 14's outcome for the cost.
+  any Office window whose lease fails. Measured 2026-10-28 in the production
+  image: the first Office window of a session took 2.7–5.0 s with no server
+  running, against 1.0–1.15 s static and 1.1–1.5 s with the server up; the
+  server idles at about 100 MB and holds one of the OS's four server slots
+  while any Office window is open.
 - *Consequence*: one conversion takes 260–320 MB while it runs (the build
   reserves 1 GB of wasm memory); the process ends with the file.

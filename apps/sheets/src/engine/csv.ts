@@ -94,7 +94,7 @@ const NUMERIC = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/
  * - **A leading zero stays text.** `01234` is a postcode, an account number or a
  *   part code. Coercing it means the save writes `1234`, and the user's file is
  *   now wrong in a way they will not notice until something downstream breaks.
- *   Excel does convert these and is widely cursed for it; brief 63's own rule is
+ *   Excel does convert these and is widely cursed for it; the suite's own rule is
  *   that a feature which does not round-trip is worse than an absent one.
  * - **More than 15 significant digits stays text.** A double cannot hold them,
  *   so `1234567890123456789` would come back as `1234567890123456800`. Silent
@@ -157,7 +157,7 @@ function quote(value: string): string {
  *
  * One sheet, because that is what the format holds. Silently exporting only the
  * active sheet while implying the whole workbook was written is the kind of
- * quiet loss brief 63 exists to stop, so the caller warns when there is more
+ * quiet loss the import warnings exist to stop, so the caller warns when there is more
  * than one — see `Sheets.tsx`.
  */
 export function univerToCsv(snapshot: IWorkbookData): string {

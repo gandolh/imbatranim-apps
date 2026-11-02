@@ -3,7 +3,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { loadPdf } from "../index.node.js";
 
 /**
- * Brief 66's highest-value ask: prove that a write does not damage what it was
+ * The highest-value check: prove that a write does not damage what it was
  * not asked to touch.
  *
  * The existing `roundtrip.node.test.ts` proves the intended change lands. This
@@ -13,9 +13,9 @@ import { loadPdf } from "../index.node.js";
  * annotations, the other pages' text, the page count.
  *
  * That failure mode is not hypothetical in this repo. SuperDoc silently exported
- * the original bytes for a docx missing an optional part (brief 20), the ExcelJS
+ * the original bytes for a docx missing an optional part, the ExcelJS
  * bridge corrupted shared formulas (2026-07-17 review), and it wrote a merged
- * range back as N copies of its value (brief 63). norPDF writes over the user's
+ * range back as N copies of its value. norPDF writes over the user's
  * original PDF, so it gets the same scrutiny before anyone trusts it.
  *
  * The fixture is deliberately rich: three pages with distinct text, full Info

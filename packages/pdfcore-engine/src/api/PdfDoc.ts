@@ -34,12 +34,12 @@ import { FormModel } from "../model/forms.js";
  * ── Wiring for downstream briefs ────────────────────────────────────────────
  * Each capability accessor constructs its adapter once and caches it. To plug
  * an implementation in, a brief fills the bodies of the adapter it owns (e.g.
- * `PdfLibPages` for brief 11) — the accessor here does not change. Write
+ * `PdfLibPages` for) — the accessor here does not change. Write
  * adapters share:
  *   • {@link PdfLibDocument} (`this.#document`) — the one pdf-lib doc every
  *     mutating capability operates on, serialised by {@link save};
  *   • the in-memory {@link AnnotationModel} / {@link FormModel} stores, which
- *     `save()` commits to real PDF objects (DEC-39; briefs 13/14 wire commit).
+ *     `save()` commits to real PDF objects (DEC-39; Forms and Annotate wire the commit).
  *
  * Read capabilities (`render`/`text`/`outline`) read the CURRENT bytes and are
  * invalidated on {@link save} so they re-parse the updated document.
@@ -143,12 +143,12 @@ export class PdfDoc {
 
   /**
    * Serialise the working document to bytes and adopt them as current state.
-   * Commits the in-memory edit models to real PDF objects (briefs 13/14 wire
-   * the commit) and drops read caches so `render`/`text`/`outline` re-parse.
+   * Commits the in-memory edit models to real PDF objects (the Forms and
+   * Annotate adapters wire the commit) and drops read caches so `render`/`text`/`outline` re-parse.
    */
   async save(): Promise<PdfBytes> {
     // Commit the in-memory edit models to real PDF objects before serialising
-    // (DEC-39). Each adapter owns its own commit (brief 13 Forms / brief 14
+    // (DEC-39). Each adapter owns its own commit (Forms,
     // Annotate); only an adapter that was accessed can hold pending edits, so
     // an untouched capability is skipped entirely.
     if (this.#annotate) await this.#annotate.commit();
@@ -191,7 +191,7 @@ export class PdfDoc {
     return (this.#render = platform.createRender(this.#bytes));
   }
 
-  /** Text capability (pdf.js, isomorphic). Extract now; search in brief 16. */
+  /** Text capability (pdf.js, isomorphic). Extract and search. */
   get text(): Text {
     return (this.#text ??= new PdfjsText(this.#bytes));
   }
@@ -201,24 +201,24 @@ export class PdfDoc {
     return (this.#outline ??= new PdfjsOutline(this.#bytes));
   }
 
-  /* ───────────────────────────── Edit (stubs → later briefs) ───────────── */
+  /* ───────────────────────────── Edit ───────────────────────────── */
 
-  /** Pages capability (pdf-lib). Stub → brief 11. */
+  /** Pages capability (pdf-lib). */
   get pages(): Pages {
     return (this.#pages ??= new PdfLibPages(this.#document));
   }
 
-  /** Assemble capability (pdf-lib). Stub → brief 12. */
+  /** Assemble capability (pdf-lib). */
   get assemble(): Assemble {
     return (this.#assemble ??= new PdfLibAssemble(this.#document));
   }
 
-  /** Forms capability (pdf-lib + pdf.js geometry). Stub → brief 13. */
+  /** Forms capability (pdf-lib + pdf.js geometry). */
   get forms(): Forms {
     return (this.#forms ??= new PdfLibForms(this.#document, this.#formModel));
   }
 
-  /** Annotate capability (pdf-lib + native). Stub → brief 14. */
+  /** Annotate capability (pdf-lib + native). */
   get annotate(): Annotate {
     return (this.#annotate ??= new PdfLibAnnotate(
       this.#document,
@@ -226,7 +226,7 @@ export class PdfDoc {
     ));
   }
 
-  /** Sign capability (built on Annotate + Forms). Stub → brief 15. */
+  /** Sign capability (built on Annotate + Forms). */
   get sign(): Sign {
     return (this.#sign ??= new SignAdapter(this.annotate, this.forms));
   }

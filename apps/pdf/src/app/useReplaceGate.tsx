@@ -6,7 +6,7 @@ import { UnsavedChangesDialog } from '@imbatranim/ui'
 export type ReplaceLoad = () => Promise<void>
 
 /**
- * The one gate in front of every path that replaces the open document (brief 143):
+ * The one gate in front of every path that replaces the open document:
  * the Open PDF picker, an open intent from Files, and a drop.
  *
  * All three ended in `adopt()`, which disposes the previous document and clears

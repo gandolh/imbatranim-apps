@@ -4,7 +4,7 @@
   "private": true,
   "license": "AGPL-3.0-only",
   "type": "module",
-  "description": "The suite's server (brief 14): converts DWG to DXF for CAD with LibreDWG's WebAssembly build. The desktop starts it; it runs from source with Node's type stripping.",
+  "description": "The suite's server: converts DWG to DXF for CAD with LibreDWG's WebAssembly build. The desktop starts it; it runs from source with Node's type stripping.",
   "main": "src/index.ts",
   "dependencies": {
     "@fastify/websocket": "11.3.4",

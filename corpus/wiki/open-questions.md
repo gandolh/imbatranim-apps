@@ -1,6 +1,6 @@
 ---
-summary: What is genuinely unresolved for imbatranim-office. One question as of 2026-10-28, from brief 14: keep the suite a service descriptor (DWG opens, but every Office window waits for the suite server's cold start and fails with it) or ship it static until the OS can lease a server per app. CAD's engine, Slides' save strategy and how LibreDWG runs are settled; see decisions.md.
-updated: 2026-10-28
+summary: What is genuinely unresolved for imbatranim-office. One question as of 2026-10-28: keep the suite a service descriptor (DWG opens, but every Office window waits for the suite server's cold start and fails with it) or ship it static until the OS can lease a server per app. CAD's engine, Slides' save strategy and how LibreDWG runs are settled; see decisions.md.
+updated: 2026-11-02
 ---
 
 # Open questions
@@ -10,7 +10,7 @@ Delete a question here the moment it is answered; its history goes to
 
 ## Keep the suite a `service` descriptor?
 
-[Brief 14](../briefs/done/14-cad-opens-dwg-through-a-suite-server.md) made
+The 2026-10-28 work made
 DWG work through the suite's first server, and the OS ties a server to the
 whole descriptor: every Office window leases it. In the production image the
 first Office window of a session took 2.7–5.0 s instead of 1.0–1.15 s, and

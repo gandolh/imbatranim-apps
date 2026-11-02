@@ -130,7 +130,7 @@ export function OrganizeView(): JSX.Element {
 
   // Merge another PDF's pages. Reads through the OS filesystem (the OS pick
   // portal + fs.read), NOT a native `<input type=file>` — that browses the
-  // HOST machine, the exact pattern brief 65 removed from Open. The raw
+  // HOST machine, the exact pattern removed from Open. The raw
   // `pickOpen` on purpose (not the SDK `useFileDialog`): this picks a SECOND
   // PDF to merge into the open one, and `useFileDialog` latches every choice
   // into the open-intent store, which would REPLACE the current document

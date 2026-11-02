@@ -11,7 +11,7 @@ import type {
  *
  * Platform: **common** (isomorphic — pdf.js text extraction runs on both node
  * and browser; DEC-40). The DOM-hosted *selectable text layer* built on top of
- * this is the one browser-only piece (brief 16, `browser/` layer).
+ * this is the one browser-only piece (`browser/` layer).
  */
 export interface Text {
   /**
@@ -27,7 +27,7 @@ export interface Text {
    * Find occurrences of `query`, returning ordered hits with per-hit highlight
    * rects (PDF user space). Handles matches spanning multiple text items.
    *
-   * Implemented by **brief 16** — the brief-09 adapter throws `NotImplemented`.
+   * Implemented in `adapters/pdfjs/search.ts`.
    */
   search(query: string, opts?: TextSearchOptions): Promise<TextHit[]>;
 

@@ -10,7 +10,7 @@ export type PageInsert =
  * assemble). Mutates the working document so subsequent Render/Text see the new
  * order. Backed by `pdf-lib`.
  *
- * Platform: **common**. Implemented by **brief 11**.
+ * Platform: **common**.
  */
 export interface Pages {
   /** Rotate a page by a multiple of 90°, composing with existing rotation. */

@@ -91,7 +91,7 @@ beforeAll(() => {
   git(os, 'add', '-A')
   git(os, 'commit', '-q', '-m', 'one')
   first = git(os, 'rev-parse', 'HEAD')
-  // Commit two: OS brief 163 landed. theme.css moves in, the version arrives, a file goes.
+  // Commit two: the shared kit landed. theme.css moves in, the version arrives, a file goes.
   write(os, 'packages/ui/src/theme.css', '@theme {\n  --color-primary: var(--accent);\n}\n')
   write(
     os,

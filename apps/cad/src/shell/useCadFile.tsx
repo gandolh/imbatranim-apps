@@ -12,7 +12,7 @@
  *   dirty mark and closing asks Save / Don't Save / Cancel (`useUnsavedGuard`)
  * - a `.dwg` is converted to DXF by the suite's server (./dwg.ts) and is
  *   never written: Save puts a `.dxf` beside it, and the window then edits
- *   that file (brief 14)
+ *   that file
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import {

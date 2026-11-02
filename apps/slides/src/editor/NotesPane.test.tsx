@@ -7,7 +7,7 @@ import { normalizeNotes } from './notesText'
 
 /**
  * The notes box keeps what is typed while its own commits come back from the
- * deck. Found in brief 07's walk: after a pause wrote the notes, the next key
+ * deck. Found in the 2026-10-27 walk in the OS: after a pause wrote the notes, the next key
  * was thrown away, so "ab", a pause, then " cd" left "abcd".
  */
 

@@ -3,7 +3,7 @@ import type { FieldValue } from "../capabilities/Forms.js";
 /**
  * In-memory form edit model. Holds pending field-value changes and the set of
  * fields to flatten; `PdfDoc.save()` commits them into AcroForm field values
- * (DEC-39). Brief 09 provides the store; **brief 13** wires read/commit.
+ * (DEC-39). This is the store; the Forms adapter wires read/commit.
  */
 export class FormModel {
   /** Pending value changes, keyed by fully-qualified field name. */

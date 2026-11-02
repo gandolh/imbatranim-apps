@@ -26,7 +26,7 @@ import type { WorkerReply, WorkerRequest } from './xlsxWorker'
  * A request that never gets an answer must still end.
  *
  * `onerror`/`onmessageerror` cover a worker that fails loudly, but not one that
- * is alive and silent — and brief 62 is the standing lesson here: fflate's
+ * is alive and silent — and the standing lesson here: fflate's
  * blocked worker produced a promise that never settled, so Docs showed a
  * spinner forever with no error to report. A ceiling turns that class of bug
  * into a message. Generous, because a genuinely large workbook takes time and a

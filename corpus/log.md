@@ -6,11 +6,11 @@ The owner created the repo after a grilling held in the imbatranimOS corpus (its
 
 ## [2026-10-21] todo | Corpus bootstrapped; briefs 01–06 filed
 
-The corpus follows the imbatranimOS one (same lint, same rules) with this repo's invariants in [CLAUDE.md](CLAUDE.md): AGPL-3.0, TypeScript only, no WebAssembly in the apps, the shared kit, the crafts as reference, no hosted CI. [craft-reference.md](wiki/craft-reference.md) maps each app to its craft and names the parity documents to read. Six briefs: [01](briefs/done/01-scaffold-and-a-smoke-app.md) the scaffold, the kit snapshot, the externals and a smoke app; [02](briefs/done/02-docs-moves-in.md) Docs moved with a parity checklist; [03](briefs/done/03-cad-a-2d-drafting-app.md) CAD, spike-gated, with a library shortlist (DXF read via dxf-parser or dxf-viewer's parser, write via @tarikjabiri/dxf, geometry via @flatten-js/core and clipper2-ts, rbush, our own Canvas 2D renderer) and DWG out of scope because every browser reader needs wasm; [04](briefs/done/04-slides-that-edit.md) Slides editing, spike-gated on saving by patching the package in place (pptxtojson as a reading aid, PptxGenJS for new decks, PPTist as a UX reference); [05](briefs/done/05-sheets-moves-in.md) Sheets moved; [06](briefs/done/06-one-pdf-app.md) one PDF app whose first page must be as fast as PDF Viewer's. The OS side is imbatranimOS briefs 162, 163 and 164.
+The corpus follows the imbatranimOS one (same lint, same rules) with this repo's invariants in [CLAUDE.md](CLAUDE.md): AGPL-3.0, TypeScript only, no WebAssembly in the apps, the shared kit, the crafts as reference, no hosted CI. [craft-reference.md](wiki/craft-reference.md) maps each app to its craft and names the parity documents to read. Six briefs: 01 the scaffold, the kit snapshot, the externals and a smoke app; 02 Docs moved with a parity checklist; 03 CAD, spike-gated, with a library shortlist (DXF read via dxf-parser or dxf-viewer's parser, write via @tarikjabiri/dxf, geometry via @flatten-js/core and clipper2-ts, rbush, our own Canvas 2D renderer) and DWG out of scope because every browser reader needs wasm; 04 Slides editing, spike-gated on saving by patching the package in place (pptxtojson as a reading aid, PptxGenJS for new decks, PPTist as a UX reference); 05 Sheets moved; 06 one PDF app whose first page must be as fast as PDF Viewer's. The OS side is imbatranimOS briefs 162, 163 and 164.
 
 ## [2026-10-21] build | Brief 01 done: the scaffold, the OS build and a smoke app
 
-npm workspaces, exact pins, and `npm run build:os`: one Vite library build with an entry per app, shared chunks and workers as files, run as is in the OS's install container (`2c57c37`). React, React DOM and `@imbatranim/ui` become reads from the global the desktop lends; app CSS is Tailwind utilities only against the kit snapshot's tokens. The snapshot was provisional until imbatranimOS brief 163 landed, then pinned to OS `4e233b9` with `kit:sync` (`92fb703`), which also added the descriptor template and its in-step test. The smoke app opened in three windows in the OS dev container, followed the accent and read its file in a worker; in the production image, under the real CSP, the Marketplace pane installed the suite in 28 s with no violation. The stylesheet rules moved to their own page, [stylesheets.md](wiki/stylesheets.md), when architecture.md passed its line cap. [Brief 01](briefs/done/01-scaffold-and-a-smoke-app.md) carries the outcome.
+npm workspaces, exact pins, and `npm run build:os`: one Vite library build with an entry per app, shared chunks and workers as files, run as is in the OS's install container (`2c57c37`). React, React DOM and `@imbatranim/ui` become reads from the global the desktop lends; app CSS is Tailwind utilities only against the kit snapshot's tokens. The snapshot was provisional until imbatranimOS brief 163 landed, then pinned to OS `4e233b9` with `kit:sync` (`92fb703`), which also added the descriptor template and its in-step test. The smoke app opened in three windows in the OS dev container, followed the accent and read its file in a worker; in the production image, under the real CSP, the Marketplace pane installed the suite in 28 s with no violation. The stylesheet rules moved to their own page, [stylesheets.md](wiki/stylesheets.md), when architecture.md passed its line cap. Brief 01 carries the outcome.
 
 ## [2026-10-22] pause | Resume point for the office-suite run
 
@@ -26,21 +26,21 @@ Paused by the owner mid-run. The owner's calls for the run (2026-10-21): retire 
 
 All five apps are on `main` and in the descriptor template. **Docs** (02) walked its parity checklist in the OS; "three windows" failed in the built-in too, because SuperDoc's window-level input bridge takes keystrokes from every other instance, and `1ca83c0` fixes it in the suite by marking each instance's active editor surface. **CAD** (03) passed its spike (Canvas 2D at 60 fps on 10,053 lines, so no WebGL) and its in-OS walk: a 10×8 room drawn with typed coordinates, saved and read back by ezdxf and LibreCAD. **Slides** (04) passed its spike: a save patches the package in place, and on three real decks every untouched part came back byte identical. **Sheets** (05) needed two declared allowances for Univer's stylesheet. **PDF** (06) draws its first page in a median 237 ms against PDF Viewer's 492 ms, outside the OS. The calls for CAD's engine and Slides' save strategy are in [decisions.md](wiki/decisions.md).
 
-The in-OS walks of Slides, Sheets and PDF were cut off by a session limit, and a restart wiped the session scratch (test files, walk notes). The owner paused the run to continue brief by brief. Those walks are now [07](briefs/done/07-slides-walk-in-the-os.md), [08](briefs/done/08-sheets-walk-in-the-os.md) and [09](briefs/done/09-pdf-walk-in-the-os.md); [10](briefs/done/10-docs-find-as-you-type.md) is a bug the Docs walk found in the built-in too. [test-files.md](wiki/test-files.md) records where every test file came from, so they can be fetched again. The resume point above is superseded by this entry.
+The in-OS walks of Slides, Sheets and PDF were cut off by a session limit, and a restart wiped the session scratch (test files, walk notes). The owner paused the run to continue brief by brief. Those walks are now 07, 08 and 09; 10 is a bug the Docs walk found in the built-in too. [test-files.md](wiki/test-files.md) records where every test file came from, so they can be fetched again. The resume point above is superseded by this entry.
 
 ## [2026-10-23] todo | Briefs 11 and 12 from the two walk todos
 
-[11](briefs/done/11-cad-trim-picks-the-short-stub.md): TRIM and EXTEND rank every
+11: TRIM and EXTEND rank every
 candidate in the pick box and prefer the one whose nearer end is closer to the pick,
 so a 0.2-unit stub at a corner wins over the wall; today `pick` keeps only the nearest
-and the filter runs after. [12](briefs/done/12-docs-one-caret-with-several-windows.md):
+and the filter runs after. 12:
 one blinking caret with several Docs windows; reading SuperDoc 1.46.3 for an option is
 step one, and if there is none it stops and reports. It runs after 10, which owns
 `apps/docs/**`.
 
 ## [2026-10-27] build | Brief 07 done: Slides walked in the OS
 
-[Brief 07](briefs/done/07-slides-walk-in-the-os.md) walked Slides in imbatranimOS
+Brief 07 walked Slides in imbatranimOS
 `74dfe27`'s production image, with the built-in beside it. Every line passes:
 viewer parity, opening from Files, Open With, the Open button and Recent, the
 `.ppt` refusal, the full edit round on the three test decks, LibreOffice
@@ -53,7 +53,7 @@ throwaway volume), not the dev profile. The OS can run its brief 165.
 
 ## [2026-10-27] build | Brief 08 walked: seven lines pass, a formula-heavy workbook freezes the window; stays in todo
 
-[Brief 08](briefs/done/08-sheets-walk-in-the-os.md) walked Sheets in imbatranimOS
+Brief 08 walked Sheets in imbatranimOS
 `74dfe27`'s production image, with the built-in beside it. It found two
 defects, both in the built-in too, and fixed them in the suite. `e57a4ea`: an
 `.xls` opened as an empty grid that a save would write over (ExcelJS loads it
@@ -96,7 +96,7 @@ which POI does not have; the walk used `47813.xlsx` and `WithChart.xlsx`.
 
 ## [2026-10-28] build | Brief 09 walked: nine lines pass, the timing gate fails; stays in todo
 
-[Brief 09](briefs/done/09-pdf-walk-in-the-os.md) walked PDF in imbatranimOS
+Brief 09 walked PDF in imbatranimOS
 `74dfe27`'s production image beside PDF Viewer and norPDF. **The timing gate
 fails.** From the Open With click to ink on the 36-page NIST file, a fresh
 browser per run, 7 runs each, alternating: PDF Viewer 513, 518, 521, 534, 534,
@@ -149,7 +149,7 @@ under the TypeScript-only, no-compiler invariants; to be written.
 
 ## [2026-10-28] todo | Brief 14: CAD opens DWG through the suite's first server
 
-[Brief 14](briefs/done/14-cad-opens-dwg-through-a-suite-server.md) starts with
+Brief 14 starts with
 a spike: LibreDWG compiled to WebAssembly from npm, run in Node on a new
 `server/` workspace, which needs no compiler and keeps wasm out of the browser.
 If that fails it stops for the owner rather than change the OS image. CAD then
@@ -157,17 +157,17 @@ opens a `.dwg` as DXF and never saves over it: Save becomes Save as `.dxf`.
 
 ## [2026-10-28] build | Briefs 08 and 09 closed: moved to done, the owner's answers recorded
 
-[Brief 08](briefs/done/08-sheets-walk-in-the-os.md) and
-[brief 09](briefs/done/09-pdf-walk-in-the-os.md) move to `done/` with an
+Brief 08 and
+brief 09 move to `done/` with an
 outcome note each. Their walks stand as logged on 2026-10-27 and 2026-10-28.
 The owner cleared both: Sheets' formula freeze became
-[brief 13](briefs/done/13-sheets-formulas-in-a-worker.md), and PDF's 40 ms
+brief 13, and PDF's 40 ms
 first-page gap became imbatranimOS brief 182. The OS can run briefs 166 and
 167. A brief run starts on 10, 11, 12, 13 and 14, one at a time.
 
 ## [2026-10-28] build | Brief 10 done: a word typed into Docs' find box stays there
 
-[Brief 10](briefs/done/10-docs-find-as-you-type.md): SuperDoc's
+Brief 10: SuperDoc's
 `goToSearchResult` focuses the editor before selecting a match, so every key
 after the first went into the document. `d5f0631` hands focus back in the
 same task and marks the find bar `data-editor-ui-surface`, without which
@@ -180,7 +180,7 @@ and not dirty, no CSP violation or console error. The marker extends brief
 
 ## [2026-10-28] build | Brief 11 done: TRIM picks the short stub at a corner
 
-[Brief 11](briefs/done/11-cad-trim-picks-the-short-stub.md): `2c1d254`. The
+Brief 11: `2c1d254`. The
 `entity` prompt now weighs every object in the pick box. It passes over what
 its filter refuses, so a pick beside a point takes the curve, and an optional
 `prefer` breaks near-ties (1.5 px). TRIM and EXTEND prefer the nearer end, so
@@ -192,7 +192,7 @@ timed out at 5 s twice in full runs on a loaded machine and passed alone.
 
 ## [2026-10-28] build | Brief 12 done by its step 3: SuperDoc has no caret option
 
-[Brief 12](briefs/done/12-docs-one-caret-with-several-windows.md): in
+Brief 12: in
 SuperDoc 1.46.3, `PresentationEditor#updateSelection` keeps the body caret
 whenever the page's focused element is inside any `[data-editor-ui-surface]`.
 `#updateHeaderFooterSelection` paints the header and footer caret with no
@@ -207,7 +207,7 @@ its caret.
 
 ## [2026-10-28] build | Brief 13 built: Sheets' formulas in a worker; one line fails narrowly, stays in todo
 
-[Brief 13](briefs/done/13-sheets-formulas-in-a-worker.md): `f4b26e3`
+Brief 13: `f4b26e3`
 starts `formulaWorker.ts` as a module worker and hands it to
 `UniverSheetsCorePreset({ workerURL })`. The worker runs
 `UniverSheetsCoreWorkerPreset`, and a save waits for
@@ -220,19 +220,19 @@ does not dirty, and no CSP violation or console error came up. A scratch
 build with `CalculationMode.FORCED` had no task over 63 ms, at the price of
 the file's cached values; the owner decides. Found on the way: formulas past
 row 1000 compute `#NAME?` (no `rowCount` in the xlsx mapping), before this
-brief too ([todo](todos/2026-10-28-sheets-formulas-past-row-1000.md)).
+brief too (todo).
 The owner paused the run here; brief 14 was not started.
 
 ## [2026-10-28] decision | Brief 13 accepted and closed, Docs' caret lived with, the row-1000 bug becomes brief 15
 
 The owner answered the two questions left by briefs 12 and 13. The 210–285 ms
 main-thread task after the grid that Univer's formula scan leaves in
-[brief 13](briefs/done/13-sheets-formulas-in-a-worker.md) is accepted; the
+brief 13 is accepted; the
 brief moves to done, with no switch to `CalculationMode.FORCED` and no upstream
 report. Docs' caret in several windows (brief 12: SuperDoc has no option) is
-lived with; the [todo](todos/2026-10-22-docs-caret-in-every-window.md) closes
+lived with; the todo closes
 as a known gap for header and footer editing. The row-1000 bug becomes
-[brief 15](briefs/done/15-sheets-formulas-past-row-1000.md): the xlsx and CSV
+brief 15: the xlsx and CSV
 mappings set `rowCount` from the data, and brief 13's 220,000-formula workbook
 is re-measured in the OS once its formulas compute. Brief 13's numbers were
 taken while about 95% of them errored; a freeze over 1 s at low load becomes a
@@ -240,7 +240,7 @@ todo for the owner, and brief 13 stays closed. The run goes on with 15, then 14.
 
 ## [2026-10-28] build | Brief 15 done: formulas past row 1000 compute; the big workbook's first real calculation is a todo
 
-[Brief 15](briefs/done/15-sheets-formulas-past-row-1000.md): `028f5ca` sizes
+Brief 15: `028f5ca` sizes
 each sheet to its data and to every cell a formula points at (Univer's 1,000
 × 20 as the floor, Excel's grid as the ceiling), so `=A1001*2` computes
 instead of `#NAME?`. A headless Univer in the tests shows it, with a control
@@ -258,7 +258,7 @@ Brief 13 stays closed.
 
 ## [2026-10-28] build | Brief 14 done: CAD opens DWG through the suite's first server; service or static is the owner's
 
-[Brief 14](briefs/done/14-cad-opens-dwg-through-a-suite-server.md): the spike
+Brief 14: the spike
 passed. `@mlightcad/libredwg-web` 0.8.2, LibreDWG as WebAssembly, runs in Node
 with no compiler and writes DXF from R2000, R2007 and R2018 samples in
 0.4–0.85 s, which CAD's reader opens whole. The new `server/` (Fastify, run
@@ -286,3 +286,24 @@ run, and the layout. `docs/` is new: `getting-started.md`, and `images/` with `s
 `npm run build:os` pass; every relative link resolves. Found on the way: the OS's Marketplace build
 passes only `PATH`, `LANG`, `LC_ALL` and `TZ` to npm, so behind a TLS-inspecting proxy the install
 needs `cafile=` in the Node prefix's global npmrc; that is in the getting-started page.
+
+## [2026-11-02] maintenance | Briefs reset
+
+Part of an estate-wide reset. The fifteen briefs in `briefs/done/` are folded
+into the wiki and deleted, with the three todos whose work is done or settled
+(the CAD trim pick, formulas past row 1000, Docs' caret); brief numbering
+restarts at 01. The old briefs read like the grilling that fed the first
+corpus. The last commit that held them is `3c6f2dd`: read one with
+`git show 3c6f2dd:corpus/briefs/done/14-cad-opens-dwg-through-a-suite-server.md`.
+Brief numbers in the entries above refer to that set, and "OS brief NN" to
+imbatranimOS's own, which that repo is resetting too.
+
+New pages: [docs-app.md](wiki/docs-app.md) (several windows, find as you type,
+the caret SuperDoc paints) and [sheets-app.md](wiki/sheets-app.md) (the xlsx
+worker, formulas in a worker, sheet sizing, the big first calculation). The
+other pages cite dates instead of brief numbers, OS ones included;
+[decisions.md](wiki/decisions.md) now holds the service descriptor's measured
+cost. [status.md](wiki/status.md) is a per-app snapshot and records that
+imbatranimOS retired its built-ins on 2026-10-28 and pins this repo at
+`909c321`, before the row-1000 fix and DWG.
+

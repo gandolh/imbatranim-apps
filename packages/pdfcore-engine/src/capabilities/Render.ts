@@ -32,7 +32,7 @@ export interface Render {
 
   /**
    * Page viewport geometry at a given scale/rotation — the shared bridge the
-   * selection layer (brief 16) and annotation hit-testing (brief 14) align to.
+   * selection layer and annotation hit-testing align to.
    * @param page 1-based page index.
    */
   viewport(page: number, opts?: RenderOptions): Promise<PageViewport>;

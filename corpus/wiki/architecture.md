@@ -1,12 +1,12 @@
 ---
-summary: How imbatranim-office is laid out and built (brief 01): npm workspaces with one package per app, packages/shared (externals plugin, CSS rule, vendor stylesheets, OS build, fake system for tests), the kit snapshot and kit:sync, what `npm run build:os` writes to dist/os, the suite's server (brief 14: server/, Fastify, run from source, the /dwg-to-dxf WebSocket), the OS descriptor template and the test that keeps it in step with the build, and how a window gets from the OS's catalog to an app component.
-updated: 2026-10-28
+summary: How imbatranim-office is laid out and built: npm workspaces with one package per app, packages/shared (externals plugin, CSS rule, vendor stylesheets, OS build, fake system for tests), the kit snapshot and kit:sync, what `npm run build:os` writes to dist/os, the suite's server (server/, Fastify, run from source, the /dwg-to-dxf WebSocket), the OS descriptor template and the test that keeps it in step with the build, and how a window gets from the OS's catalog to an app component.
+updated: 2026-11-02
 ---
 
 # Architecture
 
-Built by brief 01; the `process.env` replacement and the
-smoke app's removal by brief 02. The code wins over this page:
+Built 2026-10-21; the `process.env` replacement and the
+smoke app's removal 2026-10-22. The code wins over this page:
 `packages/shared/src/build/osBuild.ts` is the build.
 
 ## Layout
@@ -28,7 +28,7 @@ vendor/imbatranim-ui/
 os/
   descriptor.template.json    the OS's catalog entry for the suite, without its pin
   README.md                   how the pinned copy is made; installing from a local checkout
-server/                       @imbatranim-office/server: the suite's one server (brief 14)
+server/                       @imbatranim-office/server: the suite's one server (2026-10-28)
   src/index.ts                what the desktop runs: `node server/src/index.ts`, types stripped
   src/app.ts, convert.ts      Fastify: /health and the /dwg-to-dxf WebSocket; one child per DWG
   src/converter.ts            the child: LibreDWG (wasm) writes the DXF, gzipped back
@@ -38,13 +38,13 @@ vitest.config.ts              tests; maps @imbatranim/ui to the snapshot
 dist/os/                      what build:os writes and the OS serves (not committed)
 ```
 
-`apps/smoke`, brief 01's throwaway app, proved a kit app opens in a window and
-was deleted by brief 02; the build fixtures under `packages/shared/test/fixtures/os`
+`apps/smoke`, a throwaway app, proved a kit app opens in a window and
+was deleted on 2026-10-22; the build fixtures under `packages/shared/test/fixtures/os`
 still prove workers and shared chunks.
 
 ## The server
 
-`server/` arrived with brief 14, for CAD's DWG files, and is the descriptor's
+`server/` arrived on 2026-10-28, for CAD's DWG files, and is the descriptor's
 `server` (`node server/src/index.ts`, `PORT`, `/health`), so the suite is a
 `service` descriptor. It runs from source: Node 24 strips the types, the
 build emits nothing for it, and its dependencies are the root `node_modules`
@@ -64,7 +64,7 @@ No install script downloads anything: the only ones are vue-demi's (under
 SuperDoc, via pinia; a local file switch) and fsevents' (macOS only). Tailwind's
 oxide and Rolldown come from npm as optional platform packages. Checked in
 `node:24.14.1-alpine`, no compiler: `npm ci`, then the build with
-`--network none` (brief 02, with SuperDoc).
+`--network none` (since 2026-10-22, with SuperDoc).
 
 - **Entries.** Every `apps/<name>` with `src/App.tsx` is an app
   (`discoverApps`). Adding a workspace with that file adds it to the build. The
@@ -73,7 +73,7 @@ oxide and Rolldown come from npm as optional platform packages. Checked in
   `dist/os/<app>/app.mjs`, `dist/os/<app>/app.css`, the app's vendor
   stylesheets beside them (`dist/os/docs/superdoc.css`), code two apps share in
   `dist/os/chunks/`, workers in `dist/os/workers/`. Entries reach them through
-  `../`. The OS serves `dist/os` (the v2 descriptor's `build.output`, OS brief 162).
+  `../`. The OS serves `dist/os` (the v2 descriptor's `build.output`, imbatranimOS 2026-10-21).
 - **Workers.** `new Worker(new URL('./x.ts', import.meta.url), { type: 'module' })`
   is emitted as a file and loaded by a relative URL. The desktop's CSP has no
   `worker-src`, so `script-src 'self'` applies: file workers only, never blob or
@@ -81,7 +81,7 @@ oxide and Rolldown come from npm as optional platform packages. Checked in
   see the page's global). Three today: PDF's `pdf.worker`, Sheets'
   `xlsxWorker` (parse and save) and Sheets' `formulaWorker` (Univer's formula
   engine, one per window, started by `univer.ts` and handed to the preset as a
-  `Worker`; brief 13).
+  `Worker`; since 2026-10-28, [sheets-app.md](sheets-app.md)).
 - **Checks** (`osOutputChecks`, after Vite's own plugins): each entry exports
   `App`; no emitted module imports a shared specifier by name or reads
   `process.env`. `define` replaces `process.env.NODE_ENV` (library mode leaves
@@ -117,7 +117,7 @@ per-library allowances are in [stylesheets.md](stylesheets.md).
 
 ## The kit snapshot
 
-`vendor/imbatranim-ui` is imbatranimOS `4e233b9` (briefs 162 and 163 built):
+`vendor/imbatranim-ui` is imbatranimOS `4e233b9` (the shared kit and several apps per catalog entry built):
 `SHARED_KIT_VERSION=1`, tokens from the kit's own `src/theme.css` (one
 `@theme static` block). The shared types (`KitAppProps`, `NativeHostContext`)
 come from the kit too; `packages/shared` re-exports them and mirrors nothing.
@@ -170,9 +170,9 @@ and import the output with a fake global set.
    (`<link data-kit-build="imbatranim-office@<buildId>">`), sets
    `globalThis.__imbatranimShared` (frozen, version 1), imports `app.mjs`, and
    renders `App` with `{ windowId, host }` inside the window's
-   `SystemProvider` with a scoped handle (OS brief 163).
+   `SystemProvider` with a scoped handle (imbatranimOS's shared kit).
 
-Walked end to end on 2026-10-21 (brief 01 step 7, brief 02 step 6), at OS
+Walked end to end on 2026-10-21 (the smoke app, then Docs), at OS
 `4e233b9`. In the dev container: one install of `npm ci` + `build:os` in about
 20 seconds, the smoke app in three windows with one stylesheet link, the kit's
 button and dialog following the accent and theme, Open With handing it a file,

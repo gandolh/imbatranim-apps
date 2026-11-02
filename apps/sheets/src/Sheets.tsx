@@ -45,7 +45,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
   // standing property of this workbook, and the moment it matters is the moment
   // the user reaches for Save — which may be an hour after a toast has gone.
   const [lossy, setLossy] = useState<LossyFeature[]>([])
-  // The version of the file this workbook was read from (brief 155): a save
+  // The version of the file this workbook was read from: a save
   // sends it, so a file changed on disk since asks instead of being overwritten.
   const diskVersionRef = useRef<string | null>(null)
   // Bumped by "Reload from disk" to run the load again on the same file.

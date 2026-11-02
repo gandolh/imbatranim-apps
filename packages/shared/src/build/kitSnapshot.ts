@@ -1,6 +1,6 @@
 /**
  * The kit snapshot: `vendor/imbatranim-ui/src` is the OS's `packages/ui/src`
- * at one commit, byte for byte (OS brief 163, decision 7). This module reads
+ * at one commit, byte for byte (the OS's office-suite decision 7). This module reads
  * that commit straight from a checkout's git objects (never its working tree),
  * writes the copy, and records what it copied in `vendor/imbatranim-ui/COMMIT`.
  *
@@ -23,7 +23,7 @@ import { dirname, join, relative, sep } from 'node:path'
 
 /** Where the kit lives in the OS repo. */
 export const KIT_SRC_IN_OS = 'packages/ui/src'
-/** Where the token block lived before OS brief 163 moved it into the kit. */
+/** Where the token block lived before the OS moved it into the kit. */
 export const THEME_FALLBACK_IN_OS = 'apps/core/src/index.css'
 /** The kit's own token file, once the OS has one (relative to the snapshot's `src`). */
 export const KIT_THEME_FILE = 'theme.css'
@@ -55,7 +55,7 @@ export const TRACKED_PINS: readonly { name: string; via: readonly string[] }[] =
 export type KitCommit = {
   /** The full OS commit id the snapshot was copied from. */
   commit: string
-  /** The kit's `SHARED_KIT_VERSION` at that commit; null while the kit has none (before OS 163). */
+  /** The kit's `SHARED_KIT_VERSION` at that commit; null while the kit has none (before the OS added one). */
   sharedKitVersion: number | null
   /** The token file the CSS build reads, relative to `vendor/imbatranim-ui`. */
   theme: string

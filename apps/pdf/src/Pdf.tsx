@@ -1,5 +1,5 @@
 /**
- * PDF — the merged reader and editor (brief 06: the OS's PDF Viewer and norPDF
+ * PDF — the merged reader and editor (the OS's PDF Viewer and norPDF
  * as one app). Top-level composition of the shell: owns the shared
  * {@link ReaderController} (via context) and lays out the console, side panel
  * and main area. File I/O (OS open-intent + the OS picker + drag-drop) lives
@@ -82,7 +82,7 @@ const FORMS_TAB: SidePanelTab = {
 /**
  * The shell, INSIDE both providers: every path that replaces the open document
  * goes through `requestReplace`, whose Save button needs the editor's
- * `saveToDisk` (brief 143) — the same reason `UnsavedCloseGuard` lives here.
+ * `saveToDisk` — the same reason `UnsavedCloseGuard` lives here.
  */
 function PdfShell(): JSX.Element {
   const ctrl = useReader()
@@ -120,7 +120,7 @@ function PdfShell(): JSX.Element {
   /* ── Manual open (OS picker + drag-drop) ───────────────────────────────── */
   // The OS's own Open dialog, browsing the CONTAINER's filesystem. It used to be
   // a native `<input type="file">`, which reads the *host* machine — the one
-  // thing brief 54 rules out by name, because "the computer is the container"
+  // thing the OS rules out by name, because "the computer is the container"
   // and a dialog that browses the user's laptop instead of their home directory
   // is actively wrong here. The pick latches into the same store `useOpenIntent`
   // reads, so it runs the identical load path a File Manager double-click does.

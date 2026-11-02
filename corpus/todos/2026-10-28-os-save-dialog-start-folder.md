@@ -7,7 +7,7 @@ tags: [os, kit, files, cad]
 
 # The OS save dialog cannot start in a given folder
 
-Found in brief 14. `system.fs.pickSave` takes `title`, `extensions` and
+Found while building DWG opening (2026-10-28). `system.fs.pickSave` takes `title`, `extensions` and
 `suggestedName` (`vendor/imbatranim-ui/src/system.ts`), and the OS's
 `FilePicker` always opens at the home root (`apps/core/src/shared/components/files/FilePicker.tsx`
 at imbatranimOS `31a248c`). So "Save a DWG drawing as a `.dxf` next to it"

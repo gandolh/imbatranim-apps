@@ -271,7 +271,7 @@ describe('PDF, as a kit app', () => {
       files: { [`home:${PATH}`]: await pdfBytes() },
       intent: opened,
     })
-    // Hold the read open: brief 09's walk found pdf.js waiting for the bytes.
+    // Hold the read open: a walk in the OS found pdf.js waiting for the bytes.
     let release: () => void = () => {}
     const held = new Promise<void>((resolve) => (release = resolve))
     const read = fake.system.fs.readWithVersion.bind(fake.system.fs)
@@ -311,7 +311,7 @@ describe('PDF, as a kit app', () => {
 
     const inputs = await openForms(2)
     expect(inputs).toHaveLength(2)
-    // The field's /MaxLen reaches the input, so it cannot be overfilled (brief 09).
+    // The field's /MaxLen reaches the input, so it cannot be overfilled.
     expect(inputs[1]!.maxLength).toBe(20)
     expect(inputs[0]!.maxLength).toBe(-1)
     type(inputs[0]!, 'Jane Q. Public')

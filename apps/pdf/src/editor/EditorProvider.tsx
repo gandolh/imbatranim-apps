@@ -120,7 +120,7 @@ export function EditorProvider({ children }: { children: ReactNode }): JSX.Eleme
    * cache contract: `save()` drops the engine's read caches), then WRITE IT
    * BACK to the OS file it came from (T1-1 + T1-2). A file that changed on disk
    * since it was read asks Overwrite / Reload from disk / Cancel first (the
-   * kit's `saveOverRead`, brief 155 in the OS). Falls back to a download for a
+   * kit's `saveOverRead`). Falls back to a download for a
    * document with no OS home.
    *
    * Nothing unsaved, nothing written: Ctrl+S on an untouched document leaves

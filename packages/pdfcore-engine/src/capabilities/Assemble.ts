@@ -12,8 +12,8 @@ export type SplitSpec =
  * Assemble — combine and divide documents (the "Assemble" half of Organize &
  * assemble). Backed by `pdf-lib`.
  *
- * Platform: **common**. Implemented by **brief 12** (shares a copy-pages helper
- * in `adapters/pdf-lib/util.ts` with Pages.extract, brief 11).
+ * Platform: **common**. Shares a copy-pages helper
+ * in `adapters/pdf-lib/util.ts` with Pages.extract).
  */
 export interface Assemble {
   /**

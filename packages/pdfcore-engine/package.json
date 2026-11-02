@@ -4,7 +4,7 @@
   "private": true,
   "license": "AGPL-3.0-only",
   "type": "module",
-  "description": "The PDF engine (pdf-lib for writes, pdf.js for reads), isomorphic. Moved from imbatranimOS packages/pdfcore-engine at 56e23b7 with PDF (brief 06).",
+  "description": "The PDF engine (pdf-lib for writes, pdf.js for reads), isomorphic. Moved from imbatranimOS packages/pdfcore-engine at 56e23b7 with PDF.",
   "exports": {
     ".": {
       "node": {

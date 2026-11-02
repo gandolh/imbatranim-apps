@@ -264,7 +264,7 @@ describe("this repo's own build", () => {
       server: { command: string[]; portEnv: string; health: string }
       apps: { id: string; opens: string[] }[]
     }
-    // Brief 14: LibreDWG's wasm runs on the server, which Node starts from
+    // LibreDWG's wasm runs on the server, which Node starts from
     // the build's root with its types stripped; nothing of it is in dist/os.
     expect(template.type).toBe('service')
     expect(template.server).toEqual({
@@ -314,7 +314,7 @@ describe("this repo's own build", () => {
     expect(workers).toHaveLength(1)
     expect(all).toContain(`new URL("../${workers[0]}", import.meta.url)`)
     expect(all).not.toContain('exceljs')
-    // Univer's formula engine runs in a second worker (brief 13), also a file.
+    // Univer's formula engine runs in a second worker, also a file.
     const formula = files(out).filter((f) => /^workers\/formulaWorker-[\w-]+\.mjs$/.test(f))
     expect(formula).toHaveLength(1)
     expect(all).toContain(`new URL("../${formula[0]}", import.meta.url)`)

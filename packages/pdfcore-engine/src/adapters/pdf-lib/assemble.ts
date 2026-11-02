@@ -6,12 +6,12 @@ import type { PdfLibDocument } from "./document.js";
 import { copyPagesInto, subsetToBytes } from "./util.js";
 
 /**
- * `pdf-lib`-backed Assemble adapter — merge/split (brief 12).
+ * `pdf-lib`-backed Assemble adapter — merge/split.
  *
  * v1 keeps merge simple: pages (content + resources, size, rotation) are
  * copied via the shared `copyPagesInto` helper. AcroForm field-name
  * collisions across merged sources are not de-duplicated in v1 — if it
- * surfaces as a problem, it's a follow-up for the Forms capability (brief 13)
+ * surfaces as a problem, it's a follow-up for the Forms capability
  * to reconcile.
  */
 export class PdfLibAssemble implements Assemble {

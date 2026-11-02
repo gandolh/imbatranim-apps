@@ -1,5 +1,5 @@
 /**
- * How CAD and the suite's server talk about DWG (brief 14). Shared so the two
+ * How CAD and the suite's server talk about DWG. Shared so the two
  * sides cannot drift: the server imports it from Node, CAD from the browser,
  * so it holds plain values only.
  *

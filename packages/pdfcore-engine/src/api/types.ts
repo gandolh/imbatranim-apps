@@ -112,7 +112,7 @@ export interface RenderResult {
 
 /**
  * The geometry of a page at a given scale/rotation — the bridge Render, the
- * selection text layer (brief 16) and annotation hit-testing (brief 14) all
+ * selection text layer and annotation hit-testing all
  * align against. `width`/`height` are device pixels; `pageWidth`/`pageHeight`
  * are the intrinsic size in PDF points.
  */
@@ -159,7 +159,7 @@ export interface TextExtractOptions {
   pages?: number[];
 }
 
-/** Options for {@link Text.search} (implemented by brief 16). */
+/** Options for {@link Text.search} (implemented by). */
 export interface TextSearchOptions {
   /** Match case exactly. Default false. */
   caseSensitive?: boolean;

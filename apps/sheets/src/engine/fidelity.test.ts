@@ -79,7 +79,7 @@ describe('scanXlsx — what the fixture actually contains', () => {
 
 describe('the round-trip — what survives', () => {
   it('hands back an ArrayBuffer the worker can transfer, holding just the file', async () => {
-    // Brief 08's walk: the worker posted ExcelJS's Buffer in its transfer list,
+    // The 2026-10-27 walk in the OS: the worker posted ExcelJS's Buffer in its transfer list,
     // which only takes ArrayBuffers, and every save in the OS failed.
     const first = await parse(fixtureBytes())
     const out = await serialize(first.workbook as IWorkbookData)
@@ -263,7 +263,7 @@ describe('inspectXlsx — the parts ExcelJS cannot be handed', () => {
 })
 
 /**
- * Brief 90's Sheets stage. Univer's ribbon lets a user set underline,
+ * The styles stage. Univer's ribbon lets a user set underline,
  * strikethrough, font family, font size, alignment, wrap and borders — and this
  * bridge carried none of them, so every one was silently dropped on save. These
  * assertions are the contract that says they survive now, and they are written
@@ -281,7 +281,7 @@ async function roundTrip(bytes: ArrayBuffer) {
   return (await parse(out)).workbook
 }
 
-describe('brief 90 — the styles Univer can set now survive a save', () => {
+describe('the styles Univer can set now survive a save', () => {
   it('preserves underline and strikethrough', async () => {
     const wb = await roundTrip(stylesBytes())
     expect(cell(wb, 0, 0, 0)?.s).toMatchObject({ ul: { s: 1 } })

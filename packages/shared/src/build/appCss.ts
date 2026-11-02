@@ -1,7 +1,7 @@
 /**
  * Each app's stylesheet: Tailwind utilities for the classes that app's own
  * source uses, compiled against the kit snapshot's token names, with no
- * preflight and no theme of its own (OS brief 163, decision 5).
+ * preflight and no theme of its own (the OS's office-suite decision 5).
  *
  * Both themes are imported with `theme(reference)`: Tailwind knows every token
  * name and default (so `bg-primary`, `px-3` and `text-sm` compile) but emits

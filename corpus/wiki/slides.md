@@ -1,6 +1,6 @@
 ---
-summary: How Slides (brief 04) is built — a .pptx opened as its OPC package with a lossless XML tree, edited in place and saved by copying every untouched part byte for byte — with the spike that proved it on three real decks, what a save keeps and changes, the renderer that both views and edits, undo, the file wiring, and the known gaps.
-updated: 2026-10-21
+summary: How Slides is built — a .pptx opened as its OPC package with a lossless XML tree, edited in place and saved by copying every untouched part byte for byte — with the spike that proved it on three real decks, what a save keeps and changes, the renderer that both views and edits, undo, the file wiring, and the known gaps.
+updated: 2026-11-02
 ---
 
 # Slides

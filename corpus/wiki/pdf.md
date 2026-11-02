@@ -1,11 +1,11 @@
 ---
 summary: PDF (apps/pdf), the OS's PDF Viewer and norPDF merged into one app, and @pdfcore/engine (packages/pdfcore-engine), moved from imbatranimOS 56e23b7 — what each module owns, the fast first page (pdf.js alone, the engine and editing tools after it), the shared pdf.js worker file, the save→reload cache contract, what the write path is proven to preserve, the timing (standalone, and in the OS where the suite is 40 ms behind PDF Viewer), and what is deliberately not supported.
-updated: 2026-10-27
+updated: 2026-11-02
 ---
 
 # PDF and `@pdfcore/engine`
 
-Brief 06 merged the OS's two PDF apps, PDF Viewer (light, one canvas) and
+On 2026-10-22 the suite merged the OS's two PDF apps, PDF Viewer (light, one canvas) and
 norPDF (outline, thumbnails, search, annotate, forms, organise, visual
 signature, save), into `apps/pdf`, and moved norPDF's engine into
 `packages/pdfcore-engine`. Source: imbatranimOS `56e23b7`
@@ -40,7 +40,7 @@ tsconfig (`noUncheckedIndexedAccess`), checked by `tsc -b` as its own project.
 The bare `@pdfcore/engine` resolves by condition (`node` → the Node entry,
 `browser`/default → the browser one); Vite's browser build never takes `node`.
 pdf.js itself is the engine's `#pdfjs` subpath import: its legacy build under
-`node`, the modern build otherwise. Before brief 06 both builds were literal
+`node`, the modern build otherwise. Before the merge both builds were literal
 dynamic imports chosen at runtime, and the browser build emitted pdf.js's
 600 KB legacy build as a chunk nothing loads. An ESLint rule keeps
 `@pdfcore/engine/node` out of `apps/`.
@@ -66,7 +66,7 @@ destroyed". `configureWorker(src)` remains the engine's escape hatch.
 ## The fast first page
 
 The merged app must paint the first page as fast as PDF Viewer did (the
-decision's condition; norPDF was 1.1 s slower in OS brief 65 because it parsed
+decision's condition; norPDF was 1.1 s slower in imbatranimOS's 2026-08-03 measurement because it parsed
 the file with pdf-lib and painted its thumbnail rail first). Opening is two
 steps (`app/useReaderController.ts`):
 
@@ -151,19 +151,19 @@ drawn by the overlay so they show after a reopen.
 
 ## What the write path is proven to preserve
 
-`preservation.node.test.ts` (OS brief 66, unchanged) runs a fixture with three
+`preservation.node.test.ts` (from imbatranimOS, 2026-08-03, unchanged) runs a fixture with three
 pages, full Info metadata and two filled form fields through annotate, forms,
 sign and page reorder/delete/rotate/extract, and asserts the change landed and
 everything else survived: page count and order, other pages' text, metadata,
 untouched field values, annotations on their own page, no duplicates on a
-second save, an untouched save that damages nothing. The harness walk of
-brief 06 repeated it end to end on real files (below).
+second save, an untouched save that damages nothing. The 2026-10-22 harness walk
+repeated it end to end on real files (below).
 
-## Timing (brief 06, 2026-10-21, standalone)
+## Timing (2026-10-21, standalone)
 
 Method: each app built for production in a harness page with the desktop's
 CSP, a fresh headless Chrome per run, runs interleaved; first inked page by
-sampling canvas pixels each frame (OS brief 65), from the window mounting to
+sampling canvas pixels each frame (imbatranimOS's method), from the window mounting to
 ink. PDF Viewer at 720×640, PDF at 1040×560 with the rail open.
 
 | File | PDF Viewer (56e23b7) | PDF (suite) |
@@ -171,7 +171,7 @@ ink. PDF Viewer at 720×640, PDF at 1040×560 with the rail open.
 | NIST SP 800-218, 36 pages, 7 runs each | median **492 ms** | median **237 ms** |
 | NIST AI 100-1, 48 pages, 5 runs each | median **508 ms** | median **248 ms** |
 
-**In the OS (brief 09, 2026-10-27):** OS `74dfe27`'s production image, the
+**In the OS (2026-10-27):** OS `74dfe27`'s production image, the
 same sampling from the Open With click, 36-page file, 7 runs each. Before `8880663`: PDF Viewer median
 518 ms, the suite 571. After it (pdf.js and its worker load beside the
 download): PDF Viewer 534, the suite 574 (550–608). The gap is before the
@@ -189,7 +189,7 @@ the musl build, the tests passed offline, and `build:os` passed without it.
 
 - **Cryptographic signing.** `sign` places a visual mark (a stamp, or ink in a
   signature field's rect). No PKI.
-- **OCR.** Rejected in OS brief 66.
+- **OCR.** Rejected in imbatranimOS on 2026-08-03.
 - **A second renderer.** pdf.js is the only one.
 - **JPEG2000 / JBIG2 images.** pdf.js decodes them with WebAssembly, which the
   desktop's CSP refuses; no `wasmUrl` is set and no wasm is shipped.
@@ -198,7 +198,7 @@ the musl build, the tests passed offline, and `build:os` passed without it.
 
 - **XFA.** pdf-lib drops a form's XFA when the form is first read (IRS W-9
   carries both); the AcroForm fields save. No open-time warning for what the
-  engine cannot round-trip (encrypted files, XFA, attachments): OS brief 66
-  listed it, not built.
+  engine cannot round-trip (encrypted files, XFA, attachments): listed in
+  imbatranimOS on 2026-08-03, not built.
 - **A note at the page's right edge** opens its entry box clipped by the
   page; Ctrl+Enter still adds it (as in norPDF).

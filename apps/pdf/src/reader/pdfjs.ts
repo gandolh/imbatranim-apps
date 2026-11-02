@@ -1,7 +1,7 @@
 /**
  * The fast path to the first page: pdf.js and its worker, and nothing of the
  * engine (pdf-lib), the rail or the editing tools. This is what made PDF Viewer
- * the light app (brief 06; OS brief 65 measured norPDF 1.1 s slower because it
+ * the light app (imbatranimOS measured norPDF 1.1 s slower because it
  * parsed the file with pdf-lib and painted its thumbnail rail first).
  *
  * Two things here are faster than PDF Viewer was:
@@ -50,7 +50,7 @@ export function warmUpPdfjs(): Promise<Pdfjs> {
     // before its module has run wait in the worker's queue.
     startPdfjsWorker()
     // pdf.js 6.1 calls Map.prototype.getOrInsertComputed on every render; on
-    // Chrome 141 and earlier every page is blank without it (OS brief 91).
+    // Chrome 141 and earlier every page is blank without it.
     installMapGetOrInsert()
     const loading = import('pdfjs-dist')
     pdfjsPromise = loading

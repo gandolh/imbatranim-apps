@@ -10,7 +10,7 @@ import type {
  * objects. On load, existing annotations are read back in here (via
  * {@link seed}) so they are re-editable.
  *
- * Brief 09 provided the store shape + id management; **brief 14** adds the
+ * The store shape and id management came first; the Annotate adapter adds the
  * bookkeeping the committer needs to avoid re-emitting objects that already
  * live in the PDF:
  *

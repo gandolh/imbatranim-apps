@@ -1,7 +1,7 @@
 /**
  * Public error types for `@pdfcore/engine`.
  *
- * Errors are part of the public surface so callers (and later briefs) can
+ * Errors are part of the public surface so callers can
  * branch on them. No backend-library error type is ever re-thrown directly.
  */
 
@@ -20,7 +20,7 @@ export class PdfEngineError extends Error {
  * rather than a silent no-op.
  *
  * @example
- *   throw new NotImplemented("Pages.rotate", "added by brief 11");
+ *   throw new NotImplemented("Pages.rotate", "not supported yet");
  */
 export class NotImplemented extends PdfEngineError {
   constructor(what: string, detail?: string) {

@@ -45,7 +45,7 @@ export class PdfLibDocument implements Document {
     return this.#warnings;
   }
 
-  /** The underlying pdf-lib document — used by sibling adapters (briefs 11-15). */
+  /** The underlying pdf-lib document — used by sibling adapters. */
   get pdfLibDocument(): PDFDocument {
     return this.#doc;
   }

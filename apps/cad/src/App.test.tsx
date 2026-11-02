@@ -361,7 +361,7 @@ describe('CAD App', () => {
 })
 
 /**
- * The suite server's WebSocket as CAD sees it (brief 14): `reply` decides
+ * The suite server's WebSocket as CAD sees it: `reply` decides
  * what comes back for the DWG that was sent.
  */
 type Reply = { binary?: Uint8Array; text?: string; code: number }

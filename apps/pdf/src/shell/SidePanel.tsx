@@ -9,7 +9,7 @@
  * first frame, so the page's fitted width does not change when the panel
  * fills in. The panels are lazy chunks, mounted once the first page is drawn
  * (`painted`): the thumbnail rail painting its canvases before the page is what
- * made norPDF's first page slower than PDF Viewer's (OS brief 65).
+ * made norPDF's first page slower than PDF Viewer's.
  *
  * ── PART B SEAM ────────────────────────────────────────────────────────────
  * `extraTabs` appends tabs to the rail — Part B passes its **Forms** panel here

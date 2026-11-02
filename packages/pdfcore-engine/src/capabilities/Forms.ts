@@ -16,7 +16,7 @@ export type FieldValue = string | boolean | string[];
 /**
  * Everything a consumer UI needs to render and edit one AcroForm field.
  * `rect` is the widget geometry in PDF user space (merged in from pdf.js widget
- * annotations by the Forms adapter, brief 13).
+ * annotations by the Forms adapter).
  */
 export interface FieldInfo {
   /** Fully-qualified field name. */
@@ -46,7 +46,7 @@ export interface FieldInfo {
  * Forms — enumerate AcroForm fields, read/set values, and flatten. Backed by
  * `pdf-lib` (read/write) with `pdfjs-dist` supplying widget geometry.
  *
- * Platform: **common**. Implemented by **brief 13**.
+ * Platform: **common**.
  */
 export interface Forms {
   /** All fields with type, page, geometry, value, options and flags. */

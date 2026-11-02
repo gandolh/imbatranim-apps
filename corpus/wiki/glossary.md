@@ -1,6 +1,6 @@
 ---
 summary: The suite's vocabulary: suite, suite descriptor, kit app, shared kit, kit snapshot, built-in, parity, retire, craft, and the five app names (Docs, Sheets, Slides, PDF, CAD), with the synonyms each displaces.
-updated: 2026-10-21
+updated: 2026-11-02
 ---
 
 # Glossary
@@ -40,7 +40,7 @@ _Avoid_: feature-complete, done.
 
 **Retire**:
 Remove a built-in from the OS once its suite app reaches parity, moving the
-owner's choices to the new id (OS brief 164).
+owner's choices to the new id (imbatranimOS, 2026-10-28).
 _Avoid_: delete, deprecate, sunset.
 
 ## How it plugs into the OS

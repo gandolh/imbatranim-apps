@@ -9,13 +9,13 @@ import type { Forms } from "../../capabilities/Forms.js";
 import type { Point, Rect } from "../../api/types.js";
 
 /**
- * Sign adapter (brief 15). Places a **visual** signature/initials mark and fills
+ * Sign adapter. Places a **visual** signature/initials mark and fills
  * AcroForm signature fields. This is NOT cryptographic PKI signing (parked,
  * post-v1) — it stamps a picture (raster) or draws strokes (vector) at a rect.
  *
  * It is deliberately thin: it composes the {@link Annotate} and {@link Forms}
  * capabilities rather than touching pdf-lib. Image embedding and annotation
- * dictionary/appearance authoring belong to brief 14's native writer, reached
+ * dictionary/appearance authoring belong to the native annotation writer, reached
  * through `annotate.add`. Persistence is free: `annotate.add` stages into the
  * shared annotation model and `PdfDoc.save()` commits it, so a placed mark
  * survives save → reload as a real annotation object.

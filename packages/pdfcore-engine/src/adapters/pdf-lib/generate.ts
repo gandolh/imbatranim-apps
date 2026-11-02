@@ -8,7 +8,7 @@ import type {
 import type { PdfLibDocument } from "./document.js";
 
 /**
- * `pdf-lib`-backed Generate adapter. STUB in brief 09 — the Studio-era working
+ * `pdf-lib`-backed Generate adapter. A STUB — the Studio-era working
  * implementation was intentionally dropped in the re-scaffold; document
  * creation is fleshed out when a consumer needs it. Throws {@link NotImplemented}.
  */

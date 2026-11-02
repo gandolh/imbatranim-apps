@@ -7,7 +7,7 @@
  * validation, defined names, comments, merges, frozen panes — is not in the
  * model, so it is not in the file the bridge writes back. A user could open a
  * colleague's workbook, change one cell, save, and hand back a file that had
- * quietly lost a chart. Brief 63 exists because that is unacceptable *silently*;
+ * quietly lost a chart. These warnings exist because that is unacceptable *silently*;
  * a user who is warned can decide, a user who is not, loses work.
  *
  * ## Why this reads the zip rather than asking ExcelJS
@@ -21,7 +21,7 @@
  *
  * Runs inside the xlsx worker, so its cost is off the UI thread either way, and
  * uses fflate's **synchronous** API — the async one spawns a `blob:` worker that
- * this OS's CSP refuses (see `docs/engine/docxNormalize.ts`, brief 62).
+ * this OS's CSP refuses (see `docs/engine/docxNormalize.ts`).
  */
 
 /** A feature the bridge cannot round-trip. */

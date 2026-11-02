@@ -6,7 +6,7 @@
  * computes `#NAME?`, and a save writes that as the cell's cached value.
  * Ranges are not affected; Univer computes `SUM(A1:A5000)` past the edge.
  * Excel's grid is 1,048,576 × 16,384, so every reference in a file it wrote is
- * in range there (brief 15).
+ * in range there.
  *
  * So a sheet gets room for its own data and for every cell a formula anywhere
  * in the workbook points at, with Univer's default as the floor. Not Excel's

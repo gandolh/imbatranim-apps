@@ -1,5 +1,5 @@
 /**
- * The CSS rule (OS brief 163, decision 5): an app's stylesheet is Tailwind
+ * The CSS rule (the OS's office-suite decision 5): an app's stylesheet is Tailwind
  * utilities and nothing else. The desktop already ships preflight and owns the
  * tokens; a second preflight would reset the desktop's own elements, and a
  * token defined here would override the desktop's (and its accent) for every

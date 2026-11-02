@@ -1,5 +1,5 @@
 /**
- * Everything the first page does not need, as separate chunks (brief 06). Each
+ * Everything the first page does not need, as separate chunks. Each
  * is a dynamic import, so the build splits it out of app.mjs, and each mounts
  * only once a page is on screen or its control is first used:
  *

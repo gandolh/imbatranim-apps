@@ -3,7 +3,7 @@ import type { TextItem as PdfJsTextItem } from "pdfjs-dist/types/src/display/api
 import type { Rect, TextHit, TextSearchOptions } from "../../api/types.js";
 
 /**
- * In-document search over `pdfjs-dist` `getTextContent()` (brief 16).
+ * In-document search over `pdfjs-dist` `getTextContent()`.
  *
  * pdf.js hands back text as a flat, per-page array of items in reading order —
  * `.str` plus a transform matrix (`(e,f)` = PDF-space anchor) and measured

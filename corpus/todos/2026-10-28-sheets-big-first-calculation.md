@@ -7,8 +7,7 @@ tags: [sheets, univer, performance, owner]
 
 # Sheets freezes for 1–4 s while a big workbook's first calculation lands
 
-Found by [brief 15](../briefs/done/15-sheets-formulas-past-row-1000.md) on
-2026-10-28, once the row-1000 fix let all 220,000 formulas of
+Found on 2026-10-28 ([wiki/sheets-app.md](../wiki/sheets-app.md)), once the row-1000 fix let all 220,000 formulas of
 `big-formulas.xlsx` compute instead of erroring. In imbatranimOS `31a248c`'s
 production image (suite `028f5ca`), headless Chrome, a `longtask` observer
 from the open until Univer's progress bar went away:
@@ -19,9 +18,9 @@ from the open until Univer's progress bar went away:
 | 31.3 → 39.9 | 23–299 | 2 | 2.7 s |
 
 The machine was shared with other agents' builds; no low-load run was
-possible in this session, so the sizes at low load are not known. Brief 13's
-30 s window ended long before any of this; its 210–285 ms (accepted) and
-brief 15's re-measure in the same window still stand.
+possible in this session, so the sizes at low load are not known. The formula
+worker's 30 s measuring window ended long before any of this; its 210–285 ms
+(accepted) and the row-1000 fix's re-measure in the same window still stand.
 
 **Culprit** (CPU profile of the second run): the formula worker's results
 arriving on the main thread. The long stretches are the RPC channel's message
@@ -36,7 +35,7 @@ self time), Univer writing the values into the model (`forValue`,
   (all 220,000 empty in openpyxl): an edit at 40 s and Ctrl+S saved in 18 s,
   so `onCalculationResultApplied` resolved for the edit's own small
   calculation, not the first one. A save after the calculation wrote all
-  220,000 values, every one right. Brief 13's "a save waits" holds only once
+  220,000 values, every one right. The formula worker's "a save waits" holds only once
   the first calculation is done.
 - While it runs, the formula bar shows the raw locale key
   `sheets-formula.progress.calculating`.

@@ -5,7 +5,7 @@ import { parse } from './xlsxMapping'
 import { csvToUniver } from './csv'
 
 /**
- * Brief 15: Univer gives a sheet 1,000 rows unless told otherwise, and a
+ * Univer gives a sheet 1,000 rows unless told otherwise, and a
  * single-cell reference past the sheet's edge computes #NAME?, which a save
  * then writes as the cached value. These tests pin the sizes the mappings
  * give, and then run the formulas in a headless Univer to show they compute.

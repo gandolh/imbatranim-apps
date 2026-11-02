@@ -79,7 +79,7 @@ export type {
 // environments.
 export type { Platform } from "./platform/types.js";
 
-// The shared coordinate transform (briefs 14/16 reuse; the one transform).
+// The shared coordinate transform (Annotate and search reuse it; the one transform).
 export {
   rectToBox,
   boxToRect,

@@ -1,13 +1,13 @@
 ---
 summary: How an app's CSS reaches the desktop: app.css as Tailwind utilities only against the kit snapshot's tokens (no preflight, no --color-* values), and vendor stylesheets declared in package.json (imbatranimOffice.vendorStyles), copied byte for byte after a check that refuses rules not tied to the library, html/body/:root rules beyond custom properties, the desktop's tokens, @import, @font-face and remote url(); ownAttributes, ownCustomProperties (Univer's --univer-) and dropRules (Univer's scrollbar reset) as the declared exceptions.
-updated: 2026-10-21
+updated: 2026-11-02
 ---
 
 # Stylesheets
 
-Split out of [architecture.md](architecture.md). Brief 01 built the CSS rule,
-brief 02 the vendor stylesheets for SuperDoc, brief 05 the allowances Univer
-needed. The code wins: `packages/shared/src/build/cssRule.ts`, `appCss.ts`,
+Split out of [architecture.md](architecture.md). The CSS rule was built
+2026-10-21, the vendor stylesheets for SuperDoc and the allowances Univer
+needed 2026-10-22. The code wins: `packages/shared/src/build/cssRule.ts`, `appCss.ts`,
 `vendorCss.ts`.
 
 ## The CSS rule

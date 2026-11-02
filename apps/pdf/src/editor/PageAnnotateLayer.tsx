@@ -19,7 +19,7 @@
  * `--accent`-derived `--norpdf-accent-strong`, set on the overlay as a Tailwind
  * arbitrary property; DOM affordances (delete button, text entry popover) use
  * OS Tailwind token utilities. (norPDF kept these in norpdf.css; the suite's
- * build takes Tailwind utilities only, brief 06.)
+ * build takes Tailwind utilities only.)
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { JSX } from 'react'
@@ -94,7 +94,7 @@ export function PageAnnotateLayer({ page, vp }: PageAnnotateLayerProps): JSX.Ele
   // every sticky note: a Text annotation has no appearance of its own (the
   // viewer draws its icon), so the raster never shows one. Drawing them here
   // makes a saved note visible after a reopen, and a note another app left
-  // visible at all (brief 06; norPDF showed neither).
+  // visible at all (norPDF showed neither).
   const marks: Annotation[] = doc
     ? doc.annotate.list(page).filter((a) => addedIds.has(a.id) || a.type === 'note')
     : []

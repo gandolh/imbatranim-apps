@@ -1,5 +1,5 @@
 /**
- * Opening a DWG (brief 14): CAD cannot read DWG itself (no reader exists
+ * Opening a DWG: CAD cannot read DWG itself (no reader exists
  * without WebAssembly, which the desktop's CSP forbids in the apps), so the
  * suite's server converts it to DXF with LibreDWG and CAD reads the DXF.
  * The exchange is in `@imbatranim-office/shared/dwg`.

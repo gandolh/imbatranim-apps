@@ -1,7 +1,7 @@
 /**
  * What Docs can open, and how it says no.
  *
- * The engine is SuperDoc, which reads `.docx` and nothing else. Before brief 62
+ * The engine is SuperDoc, which reads `.docx` and nothing else. Before this check
  * an `.odt` reached the engine and failed there, so an unsupported file looked
  * like a broken app. Refusing up front, by name, is the whole point: the user
  * learns what the app reads instead of what it crashed on.

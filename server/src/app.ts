@@ -1,5 +1,5 @@
 /**
- * The suite's server (brief 14). One job: DWG in, DXF out, for CAD.
+ * The suite's server. One job: DWG in, DXF out, for CAD.
  *
  * - `GET /health` answers at once. The desktop waits on it before any Office
  *   window opens (the server is the suite descriptor's, so every app's window

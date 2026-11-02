@@ -130,7 +130,7 @@ export type AnnotationPatch = AnnotationSpec extends infer S
  * back as editable. Backed by `pdf-lib` where it can write the subtype, and by
  * the `native/` adapter (own annotation dictionaries) where it cannot.
  *
- * Platform: **common**. Implemented by **brief 14**.
+ * Platform: **common**.
  */
 export interface Annotate {
   /** Add an annotation to the in-memory model; returns its new id. */
