@@ -48,8 +48,8 @@ the apps are built.
 - **The UI comes from the desktop's shared kit.** React, React DOM and
   `@imbatranim/ui` are the desktop's instances, lent at runtime and external at
   bundle time. The OS's house rules apply unchanged (its
-  `corpus/wiki/ui-conventions.md` and the locked identity: Win7-classic, black
-  and white plus one accent, no border radius).
+  `corpus/wiki/ui-conventions.md` and the locked identity: Win7-classic in two
+  themes, Apricot by default and Classic, light or dark, since 2026-11-03).
 - **No WebAssembly in the apps.** The desktop's CSP is `script-src 'self'` with
   no `'wasm-unsafe-eval'`. A library that needs wasm runs on the server, or not
   at all.

@@ -1,6 +1,6 @@
 ---
-summary: Current snapshot (2026-11-02), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo at 909c321, before the row-1000 fix and DWG. The owner decides whether the suite stays a service descriptor and what to do about Sheets' big first calculation. Open todos and owner steps.
-updated: 2026-11-02
+summary: Current snapshot (2026-11-02), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28; on 2026-11-03 its catalog moved its pin to this repo's head (the kit synced to the OS's two themes, the row-1000 fix) and the suite ships static, so CAD opens DXF only. The owner decides what to do about Sheets' big first calculation. Open todos and owner steps.
+updated: 2026-11-03
 ---
 
 # Status — 2026-11-02
@@ -41,12 +41,6 @@ measurements are in its own corpus.
 
 ## Owed by the owner
 
-- **Keep the suite a `service` descriptor?** ([open-questions.md](open-questions.md)).
-  DWG works through the suite's server, but the OS leases it for every Office
-  window: the first Office window of a session took 2.7–5.0 s instead of
-  1.0–1.15 s, and a server that cannot start crashes every Office window. Keep
-  it, ship `static` without DWG, or ask the OS for a per-app or on-demand lease
-  ([todo](../todos/2026-10-28-os-suite-server-for-every-window.md)).
 - **Sheets' big first calculation**
   ([todo](../todos/2026-10-28-sheets-big-first-calculation.md)): the
   220,000-formula workbook computes for about five minutes in the worker, and

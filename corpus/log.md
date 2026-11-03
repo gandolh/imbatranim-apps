@@ -318,3 +318,14 @@ resolved `--font-ui` (`5b83c20`). The office's own hand-built controls were not 
 Apricot pass (rounding, soft selection); they keep their square shapes inside Apricot until an
 office brief does that. The OS's Marketplace pin moves to this repo's head; it installs only after
 the owner pushes.
+
+## [2026-11-03] decision | The suite ships static; the OS pin moves to this head
+
+The owner chose static over `service` (the open question since 2026-10-28): the OS starts a
+descriptor's server for every window, which slowed the first Office window to 2.7-5.0 s and could
+break all of them. The descriptor template is static again with CAD on DXF only, and CAD's Open
+dialog offers `.dwg` only with a server (`aad4025`); recorded in
+[decisions.md](wiki/decisions.md). imbatranimOS's catalog moves its pin to this repo's head, which
+also brings it the row-1000 fix and the kit synced to the OS's themes. The invariant in CLAUDE.md
+now names the two themes instead of "black and white, no border radius".
+

@@ -1,6 +1,6 @@
 ---
 summary: The locked calls behind imbatranim-office: its own repo installed as one suite descriptor, TypeScript with editing in the browser, kit apps on the desktop's shared kit, the crafts as reference only, PDF Viewer and norPDF merged, and office-* app ids, with what each rejected and why. Read before proposing an alternative; CAD's engine (dxf-viewer's parser, @tarikjabiri/dxf, Canvas 2D) and Slides saving by patching the package in place; and DWG through the suite server, LibreDWG as WebAssembly in Node, one child process per file.
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # Decisions
@@ -144,3 +144,16 @@ each, and CAD's reader opened all three with every entity, layer and block.
   while any Office window is open.
 - *Consequence*: one conversion takes 260–320 MB while it runs (the build
   reserves 1 GB of wasm memory); the process ends with the file.
+
+## The suite ships static; DWG waits for an on-demand server
+_2026-11-03_ — The owner chose to keep the suite a `static` descriptor
+(`os/descriptor.template.json`, `aad4025`). CAD opens DXF only, and its Open
+dialog offers `.dwg` only when its window has a server. The server and the DWG
+path stay in the repo.
+Rejected: shipping `service` with DWG; staying pinned at `909c321`.
+**Why**: imbatranimOS starts a descriptor's server for every window of it. The
+first Office window of a session took 2.7-5.0 s instead of about 1 s, and a
+server that couldn't start broke every Office window, all for one file
+format. DWG returns when the OS can start a server for one app, on demand
+([todo](../todos/2026-10-28-os-suite-server-for-every-window.md)).
+
