@@ -97,3 +97,8 @@ the apps are built.
 Capture → `todos/`. Promote → `briefs/todo/NN-slug.md`. Build → move the brief
 to `briefs/done/` with an outcome note, append a `log.md` entry, fold durable
 findings into `wiki/` (always `status.md`).
+
+## brief-board
+
+Brief progress goes on brief-board. Run `brief-board guide` before you
+start or resume a brief, and follow it.
