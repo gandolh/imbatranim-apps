@@ -307,3 +307,14 @@ cost. [status.md](wiki/status.md) is a per-app snapshot and records that
 imbatranimOS retired its built-ins on 2026-10-28 and pins this repo at
 `909c321`, before the row-1000 fix and DWG.
 
+
+## [2026-11-03] kit | Synced to imbatranimOS 5a31e37, the two themes
+
+The vendored kit is now imbatranimOS's `packages/ui/src` at `5a31e37`, which carries the desktop's
+two themes (Apricot by default, Classic kept): the UI font follows the theme, `primary-container`
+is the soft accent, six radius tokens, shadow variables, a `selected` Button variant and the accent
+focus ring. `e608d49`. CAD's overlay tooltip read Space Grotesk literally and now draws with the
+resolved `--font-ui` (`5b83c20`). The office's own hand-built controls were not given the OS's
+Apricot pass (rounding, soft selection); they keep their square shapes inside Apricot until an
+office brief does that. The OS's Marketplace pin moves to this repo's head; it installs only after
+the owner pushes.
