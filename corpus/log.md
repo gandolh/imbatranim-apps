@@ -253,7 +253,7 @@ load under 6), the same scan over 22 times the rows. Watched to the end of
 the calculation, the main thread froze 1–4 s in bursts while the results
 landed (RPC deserialization, writing values, GC, a redraw), and a save during
 it wrote no cached values: a
-[todo](todos/2026-10-28-sheets-big-first-calculation.md) for the owner.
+todo for the owner (brief 03 since 2026-11-03).
 Brief 13 stays closed.
 
 ## [2026-10-28] build | Brief 14 done: CAD opens DWG through the suite's first server; service or static is the owner's
@@ -329,3 +329,14 @@ dialog offers `.dwg` only with a server (`aad4025`); recorded in
 also brings it the row-1000 fix and the kit synced to the OS's themes. The invariant in CLAUDE.md
 now names the two themes instead of "black and white, no border radius".
 
+
+## [2026-11-03] todo | Briefs 01-03 from the three open todos
+
+In an estate-wide grill with the owner. The two OS-side todos each became a pair: imbatranimOS's
+brief 28 adds `startIn` to the file dialogs and this repo's brief 01 makes every Save as open
+where its file is; imbatranimOS's brief 29 lets a kit app ask for its server on demand (recorded
+in that repo's `decisions-marketplace-suites.md`), and brief 02 has CAD ask on its first DWG and
+turns DWG opening back on. Brief 03 makes a save wait for Sheets' first calculation, fixes the
+formula bar's raw locale key, and takes a time-boxed look at Univer's settings for the freezes,
+with an upstream report only if there are none. The three todos are deleted;
+[status.md](wiki/status.md) lists the briefs.

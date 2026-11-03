@@ -155,5 +155,6 @@ Rejected: shipping `service` with DWG; staying pinned at `909c321`.
 first Office window of a session took 2.7-5.0 s instead of about 1 s, and a
 server that couldn't start broke every Office window, all for one file
 format. DWG returns when the OS can start a server for one app, on demand
-([todo](../todos/2026-10-28-os-suite-server-for-every-window.md)).
+(imbatranimOS's brief 29, then this repo's brief 02, settled with the owner on
+2026-11-03).
 

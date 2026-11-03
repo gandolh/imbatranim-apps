@@ -8,7 +8,7 @@ updated: 2026-11-03
 **Phase: built, walked, and replacing the built-ins.** `main` holds all five
 apps; `npm run build:os` builds them into `dist/os`, and
 `os/descriptor.template.json` lists them. Pushed through `08ae15a`
-(2026-11-01). No brief is open; brief numbering restarted at 01 on
+(2026-11-01). Briefs 01-03 are open (2026-11-03); brief numbering restarted at 01 on
 2026-11-02 (see [log.md](../log.md)).
 
 ## By app
@@ -41,21 +41,25 @@ measurements are in its own corpus.
 
 ## Owed by the owner
 
-- **Sheets' big first calculation**
-  ([todo](../todos/2026-10-28-sheets-big-first-calculation.md)): the
-  220,000-formula workbook computes for about five minutes in the worker, and
-  the main thread freezes 1–4 s in bursts while results land. A save during it
-  writes no cached values. Accept it, try Univer's knobs and make a save wait
-  for the first calculation, or report it upstream.
 - Push this repo's `main` before imbatranimOS's: the OS's Office catalog entry
   pins a commit of this repo and clones it from GitHub at install.
 - After the OS is deployed, install Office from Settings → Marketplace on the
   live machine; the built-ins are gone, so until then it has no office editor.
 
-## Open todos
+## Open briefs
 
-- [Sheets' big first calculation](../todos/2026-10-28-sheets-big-first-calculation.md) (the owner decides)
-- [Every Office window waits on the suite server](../todos/2026-10-28-os-suite-server-for-every-window.md) (an OS change, or the owner keeps the cost)
-- [The OS save dialog cannot start in a folder](../todos/2026-10-28-os-save-dialog-start-folder.md) (an OS change)
+Written 2026-11-03 from the open todos, in a grill with the owner; none is
+started, and the owner picks when:
+
+- [01, Save as opens where the file is](../briefs/todo/01-save-as-opens-where-the-file-is.md),
+  after imbatranimOS's brief 28 (`startIn` on the file dialogs);
+- [02, CAD asks for its server on its first DWG](../briefs/todo/02-cad-asks-for-its-server-on-its-first-dwg.md),
+  after imbatranimOS's brief 29 (a kit app asks for its server); DWG
+  opening comes back with it;
+- [03, a save during Sheets' first calculation writes whole values](../briefs/todo/03-sheets-first-calculation-saves-whole.md):
+  the save waits, the formula bar's label, and a time-boxed look at Univer's
+  settings for the 1–4 s freezes while results land.
+
+No todo is open.
 
 Test files for the walks: [test-files.md](test-files.md).

@@ -1,6 +1,6 @@
 ---
 summary: How the Sheets app is built, moved in from the OS on 2026-10-22. Univer 0.25.1 with the ExcelJS bridge, the shared refcounted xlsx worker, Univer's formula engine in a worker of each window's own (2026-10-28), why each sheet is sized to its data and its formulas' references (the row-1000 bug), the main-thread task the owner accepted, and the open big-first-calculation freeze.
-updated: 2026-11-02
+updated: 2026-11-03
 ---
 
 # Sheets
@@ -55,7 +55,7 @@ With every formula really computing, the 220,000-formula workbook's first
 calculation takes 4.6–5.3 minutes in the worker (load 20–40), and the main
 thread freezes 1–4 s in bursts while results land (RPC deserialization,
 writing values, GC, a redraw). A save during it writes formulas with no
-cached values. The owner decides
-([todo](../todos/2026-10-28-sheets-big-first-calculation.md)). A sheet with one
+cached values. Brief 03 (2026-11-03) makes a save wait for the first calculation, fixes the
+formula bar's label and takes a time-boxed look at Univer's settings. A sheet with one
 reference at Excel's last row draws its grid in 1.6–2.1 s; scrolling it wasn't
 tried.
