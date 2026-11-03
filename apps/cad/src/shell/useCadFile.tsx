@@ -330,8 +330,9 @@ export function useCadFile(server: NativeHostContext['server'] = null): CadFile 
 
   const open = useCallback(async () => {
     if (!(await discardOk())) return
-    await openFile({ title: 'Open drawing', extensions: ['dxf', 'dwg'] })
-  }, [discardOk, openFile])
+    // A static install has no server to convert DWG, so it only offers DXF.
+    await openFile({ title: 'Open drawing', extensions: serverWs ? ['dxf', 'dwg'] : ['dxf'] })
+  }, [discardOk, openFile, serverWs])
 
   const newDrawing = useCallback(async () => {
     if (!(await discardOk())) return

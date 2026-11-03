@@ -7,18 +7,13 @@
     "repo": "https://github.com/gandolh/imbatranim-office",
     "ref": "PIN-A-FULL-40-HEX-COMMIT-OF-THIS-REPO"
   },
-  "type": "service",
+  "type": "static",
   "runtime": "native",
   "sharedKit": 1,
   "build": {
     "install": ["npm", "ci"],
     "command": ["npm", "run", "build:os"],
     "output": "dist/os"
-  },
-  "server": {
-    "command": ["node", "server/src/index.ts"],
-    "portEnv": "PORT",
-    "health": "/health"
   },
   "apps": [
     {
@@ -46,8 +41,8 @@
     {
       "id": "office-cad",
       "name": "CAD",
-      "description": "2D drafting: DXF drawings, and DWG converted by the suite server, with a command line, object snaps and layers.",
-      "meta": ["office", "cad", "dxf", "dwg", "drafting"],
+      "description": "2D drafting: DXF drawings with a command line, object snaps and layers.",
+      "meta": ["office", "cad", "dxf", "drafting"],
       "entry": "cad/app.mjs",
       "window": {
         "defaultSize": {
@@ -60,7 +55,7 @@
         }
       },
       "icon": "drafting-compass",
-      "opens": ["dxf", "dwg"],
+      "opens": ["dxf"],
       "multiInstance": true,
       "capabilities": ["fs", "intents", "notify", "shortcuts"],
       "styles": ["cad/app.css"]

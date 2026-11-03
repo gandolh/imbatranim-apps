@@ -256,25 +256,17 @@ describe("this repo's own build", () => {
     expect(template.sharedKit).toBe(readKitSnapshot(vendorDir).sharedKitVersion)
   })
 
-  it("runs the suite's server from source, and serves no WebAssembly", () => {
+  it('ships static, with no server and no WebAssembly in the build', () => {
     const template = JSON.parse(
       readFileSync(join(repoRoot, 'os', 'descriptor.template.json'), 'utf8')
-    ) as {
-      type: string
-      server: { command: string[]; portEnv: string; health: string }
-      apps: { id: string; opens: string[] }[]
-    }
-    // LibreDWG's wasm runs on the server, which Node starts from
-    // the build's root with its types stripped; nothing of it is in dist/os.
-    expect(template.type).toBe('service')
-    expect(template.server).toEqual({
-      command: ['node', 'server/src/index.ts'],
-      portEnv: 'PORT',
-      health: '/health',
-    })
-    expect(existsSync(join(repoRoot, template.server.command[1]))).toBe(true)
+    ) as { type: string; server?: unknown; apps: { id: string; opens: string[] }[] }
+    // Static since 2026-11-03: the OS starts a descriptor's server for every
+    // window, which slowed and could break every Office window. DWG waits for
+    // an on-demand server; the server code stays, nothing of it is in dist/os.
+    expect(template.type).toBe('static')
+    expect(template.server).toBeUndefined()
     expect(files(out).filter((f) => f.endsWith('.wasm'))).toEqual([])
-    expect(template.apps.find((a) => a.id === 'office-cad')?.opens).toEqual(['dxf', 'dwg'])
+    expect(template.apps.find((a) => a.id === 'office-cad')?.opens).toEqual(['dxf'])
   })
 
   it("builds Docs with SuperDoc loaded on first open and SuperDoc's stylesheet beside it", () => {
