@@ -1,5 +1,5 @@
 /*
- * The desktop's design tokens (brief 163: moved here from apps/core/src/index.css,
+ * The desktop's design tokens (moved here from apps/core/src/index.css,
  * no value changed). They live in the kit because a marketplace kit app builds
  * its utilities against these names and resolves them to the desktop's CSS
  * variables at runtime: an outside repo snapshots this file with the rest of
@@ -10,7 +10,9 @@
  * the desktop never does, and that variable must still exist.
  *
  * The values point at runtime variables the desktop's index.css sets: --k-*
- * per theme ([data-theme] on <html>) and --accent / --accent-on.
+ * per theme and mode ([data-os-theme] and [data-theme] on <html>), the strong
+ * accent --accent / --accent-on and the soft one --accent-soft /
+ * --accent-soft-on. In Classic the strong and soft pairs are the same colour.
  */
 @theme static {
   /* Surfaces + text — resolved from the active theme block (index.css) */
@@ -36,8 +38,8 @@
   --color-surface-tint: var(--accent);
   --color-primary: var(--accent);
   --color-on-primary: var(--accent-on);
-  --color-primary-container: var(--accent);
-  --color-on-primary-container: var(--accent-on);
+  --color-primary-container: var(--accent-soft);
+  --color-on-primary-container: var(--accent-soft-on);
   --color-inverse-primary: var(--accent);
   --color-heritage: var(--accent);
 
@@ -57,9 +59,20 @@
   --color-error-container: var(--k-error-container);
   --color-on-error-container: var(--k-on-error-container);
 
-  /* Fonts — kept from the fork: Space Grotesk (UI) + Inter (content) */
-  --font-ui: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  /* Fonts — the UI font follows the theme (Figtree in Apricot, Space Grotesk
+     in Classic, set per token block in index.css); Inter is the content font */
+  --font-ui: var(--k-font-ui);
   --font-content: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Corners — per theme (index.css): Apricot's soft radii, 0 in Classic.
+     Only these six; numeric rounded-* classes are not used. `small` is for
+     boxes too small for the control radius (checkboxes, swatches, key caps). */
+  --radius-window: var(--k-radius-window);
+  --radius-menu: var(--k-radius-menu);
+  --radius-control: var(--k-radius-control);
+  --radius-item: var(--k-radius-item);
+  --radius-tile: var(--k-radius-tile);
+  --radius-small: var(--k-radius-small);
 
   /* Spacing */
   --spacing-half: 4px;

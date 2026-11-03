@@ -1,6 +1,6 @@
 # vendor/imbatranim-ui/src is packages/ui/src of imbatranimOS at this commit, byte for byte.
 # Written by `npm run kit:sync -- <os-checkout> <commit>`; do not edit by hand.
 # theme: the token file the CSS build reads, relative to this directory.
-commit=4e233b91abeed6719dbdd4b3cc092dbcf1451c32
+commit=5a31e377656661b662fa2cb8db4c06b8a9e7ec4b
 SHARED_KIT_VERSION=1
 theme=src/theme.css

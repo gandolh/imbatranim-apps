@@ -2,7 +2,11 @@ import { Button as BaseButton } from '@base-ui/react/button'
 import { type ComponentProps } from 'react'
 import { cn } from '../cn'
 
-type Variant = 'default' | 'primary' | 'ghost' | 'destructive'
+/**
+ * `primary` is an action (Install, Save, OK); `selected` is a toggle or tab that
+ * is on, drawn with the soft accent.
+ */
+type Variant = 'default' | 'primary' | 'selected' | 'ghost' | 'destructive'
 type Size = 'sm' | 'md'
 
 type ButtonProps = Omit<ComponentProps<typeof BaseButton>, 'variant' | 'size'> & {
@@ -17,6 +21,10 @@ const variantClasses: Record<Variant, string> = {
     'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset',
   primary:
     'bg-primary border-primary text-on-primary ' +
+    'hover:brightness-110 active:brightness-95 ' +
+    'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-surface',
+  selected:
+    'bg-primary-container border-primary text-on-primary-container ' +
     'hover:brightness-110 active:brightness-95 ' +
     'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-surface',
   ghost:
@@ -36,7 +44,7 @@ export function Button({ variant = 'default', size = 'md', className, ...props }
   return (
     <BaseButton
       className={cn(
-        'font-ui inline-flex cursor-pointer items-center gap-1.5 border font-medium',
+        'font-ui rounded-control inline-flex cursor-pointer items-center gap-1.5 border font-medium',
         'transition-none outline-none select-none',
         'disabled:cursor-not-allowed disabled:opacity-50',
         variantClasses[variant],

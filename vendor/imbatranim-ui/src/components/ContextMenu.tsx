@@ -29,7 +29,7 @@ type ContextMenuProps = {
 }
 
 /**
- * THE right-click menu (brief 105) — the third hand-rolled copy triggered the
+ * THE right-click menu — the third hand-rolled copy triggered the
  * promote-on-third-use rule, so this is now the only one. Wraps base-ui's Menu
  * primitives so every caller inherits the ARIA menu contract (focus moves in,
  * Arrow/Home/End, Enter activates, Escape closes and restores focus) and
@@ -76,8 +76,8 @@ export function ContextMenu({ x, y, items, onClose, label = 'Context menu' }: Co
               e.stopPropagation()
             }}
             className={cn(
-              'border-outline-variant bg-surface-container-lowest min-w-40 border py-1',
-              'shadow-[0_10px_28px_rgba(0,0,0,0.4)] outline-none'
+              'border-outline-variant bg-surface-container-lowest rounded-menu min-w-40 border px-(--k-list-inset) py-1',
+              'shadow-(--k-shadow-popup) outline-none'
             )}
           >
             {items.map((item, i) => {
@@ -91,12 +91,12 @@ export function ContextMenu({ x, y, items, onClose, label = 'Context menu' }: Co
               }
               const isCheckbox = item.checked !== undefined
               const itemClass = cn(
-                'font-ui flex w-full cursor-default items-center gap-2 px-3 py-1 text-left text-[12px] outline-none select-none',
+                'font-ui rounded-item flex w-full cursor-default items-center gap-2 px-3 py-1 text-left text-[12px] outline-none select-none',
                 item.disabled
                   ? 'text-on-surface-variant/50'
                   : item.danger
                     ? 'text-error data-[highlighted]:bg-error data-[highlighted]:text-on-error'
-                    : 'text-on-surface data-[highlighted]:bg-primary data-[highlighted]:text-on-primary'
+                    : 'text-on-surface data-[highlighted]:bg-primary-container data-[highlighted]:text-on-primary-container'
               )
               if (isCheckbox) {
                 return (

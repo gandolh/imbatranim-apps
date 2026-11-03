@@ -33,7 +33,7 @@ export function Select({
         )}
         <BaseSelect.Trigger
           className={cn(
-            'border-outline-variant bg-surface-container-low flex w-full items-center justify-between border px-2.5 py-1.5',
+            'border-outline-variant bg-surface-container-low rounded-control flex w-full items-center justify-between border px-2.5 py-1.5',
             'font-ui text-on-surface text-[12px]',
             'hover:bg-surface-container-high cursor-pointer transition-colors outline-none',
             'focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset',
@@ -46,7 +46,7 @@ export function Select({
             `<Select.Value>` with no children renders the raw value, because base-ui
             can only look a label up when `Select.Root` is given an `items` map. So
             every Select in the OS whose value differs from its label displayed the
-            value — found by measurement in brief 75, where a folder picker read "6"
+            value — found by measurement in the bookmarks work, where a folder picker read "6"
             instead of "Work / Specs". `git-gui`'s root picker and Calendar's reminder
             offsets had the same defect.
 
@@ -68,9 +68,9 @@ export function Select({
           <BaseSelect.Positioner sideOffset={1} className="z-[1000]">
             <BaseSelect.Popup
               className={cn(
-                'border-outline-variant bg-surface-container-lowest min-w-[8rem] border',
-                'shadow-[0_10px_28px_rgba(0,0,0,0.4)]',
-                'py-0.5 outline-none'
+                'border-outline-variant bg-surface-container-lowest rounded-menu min-w-[8rem] border',
+                'shadow-(--k-shadow-popup)',
+                'px-(--k-list-inset) py-0.5 outline-none'
               )}
             >
               <BaseSelect.List>
@@ -79,7 +79,7 @@ export function Select({
                     key={opt.value}
                     value={opt.value}
                     className={cn(
-                      'flex cursor-pointer items-center px-2 py-1',
+                      'rounded-item flex cursor-pointer items-center px-2 py-1',
                       'font-ui text-on-surface text-[12px]',
                       'outline-none',
                       'data-[highlighted]:bg-primary-container data-[highlighted]:text-on-primary-container',
