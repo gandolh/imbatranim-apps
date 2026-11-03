@@ -19,6 +19,8 @@ export type OverlayTheme = {
   /** Tooltip box and text. */
   tipBackground: string
   tipText: string
+  /** The desktop's UI font stack, which follows its theme. */
+  font: string
 }
 
 const MARKER = 6
@@ -214,7 +216,7 @@ export function drawOverlay(
       ctx.strokeRect(x - PICKBOX, y - PICKBOX, PICKBOX * 2, PICKBOX * 2)
     }
     if (model.tooltip) {
-      ctx.font = '11px "Space Grotesk", ui-sans-serif, system-ui, sans-serif'
+      ctx.font = `11px ${theme.font}`
       const w = ctx.measureText(model.tooltip).width + 10
       const tx = Math.min(view.width - w - 2, x + 14)
       const ty = Math.min(view.height - 20, y + 14)

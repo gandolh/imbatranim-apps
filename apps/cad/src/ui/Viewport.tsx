@@ -18,6 +18,7 @@ function readTheme(probe: HTMLElement | null): OverlayTheme & { drawingForegroun
     accent: '#c0263a',
     tipBackground: '#f2f2ef',
     tipText: '#17171a',
+    font: 'ui-sans-serif, system-ui, sans-serif',
   }
   if (!probe) return { ...fallback, drawingForeground: 0xffffff }
   const style = getComputedStyle(probe)
@@ -29,6 +30,11 @@ function readTheme(probe: HTMLElement | null): OverlayTheme & { drawingForegroun
     accent: style.borderTopColor || fallback.accent,
     tipBackground: tip?.backgroundColor || fallback.tipBackground,
     tipText: tip?.color || fallback.tipText,
+    // --font-ui (Figtree in Apricot, Space Grotesk in Classic): a canvas can't
+    // take a CSS variable, so the resolved stack is read here.
+    font:
+      getComputedStyle(document.documentElement).getPropertyValue('--font-ui').trim() ||
+      fallback.font,
   }
   // ACI 7: white on a dark model space, black on a light one.
   const dark = luminance(parseCssColor(background, 0x141416)) < 0.5
