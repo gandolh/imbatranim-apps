@@ -28,7 +28,7 @@ import {
   useSystem,
   useUnsavedGuard,
 } from '@imbatranim/ui'
-import { folderOf, type NativeHostContext } from '@imbatranim-office/shared'
+import { folderOf } from '@imbatranim-office/shared'
 import { dwgRelease, dwgVersion } from '@imbatranim-office/shared/dwg'
 import { readDxf, type ReadReport } from '../engine/dxf/read'
 import { refuseReason } from '../engine/dxf/tags'
@@ -45,6 +45,8 @@ export type CadFile = {
   name: string
   target: FileTarget | null
   loading: boolean
+  /** The suite's server is starting, for the window's first DWG. */
+  startingServer: boolean
   /** A DWG is being converted by the suite's server. */
   converting: boolean
   /** Why the file could not be opened (shown in the window), or null. */
@@ -109,11 +111,15 @@ function dwgNote(dwg: Uint8Array, name: string): string {
   return `Converted from DWG${from} by LibreDWG. CAD cannot write DWG: Save offers ${fileName(dxfBeside(name))} in the same folder and leaves ${name} unchanged.`
 }
 
-/** `server` is the window's `host.server`: the suite's server, which converts DWG. */
-export function useCadFile(server: NativeHostContext['server'] = null): CadFile {
+export function useCadFile(): CadFile {
   const system = useSystem()
-  // The address, not the object: a new object must not reload the file.
-  const serverWs = server?.ws ?? null
+  /**
+   * The suite's server converts DWG. The window asks the desktop for it the
+   * first time a DWG needs it, and only then, so a DXF never waits for it;
+   * the window holds it from then until it closes.
+   */
+  const serverRef = useRef<string | null>(null)
+  const [startingServer, setStartingServer] = useState(false)
   const launched = useOpenIntent()
   const { openFile, saveFile } = useFileDialog()
   const { ask: askConflict, dialog: conflictDialog } = useFileConflict()
@@ -165,11 +171,36 @@ export function useCadFile(server: NativeHostContext['server'] = null): CadFile 
     setLoading(true)
     setError(null)
     const read = system.fs.readWithVersion(source.root, source.path)
+    /** The server's address, asked for once per window; a refusal can be retried. */
+    const askServer = async (size: number): Promise<string> => {
+      if (serverRef.current) return serverRef.current
+      if (!system.server) throw new DwgOpenError('no-server', size)
+      setStartingServer(true)
+      try {
+        const { ws } = await system.server.request()
+        serverRef.current = ws
+        return ws
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : undefined
+        throw new DwgOpenError('not-started', size, undefined, reason)
+      } finally {
+        setStartingServer(false)
+      }
+    }
     const dxf: Promise<{ data: Uint8Array; version: string | null; note: string | null }> = dwg
       ? read.then(async ({ bytes }) => {
           if (cancelled) throw new DwgOpenError('failed', bytes.byteLength)
+          const ws = await askServer(bytes.byteLength)
+          if (cancelled) throw new DwgOpenError('failed', bytes.byteLength)
           setConverting(true)
-          const data = await convertDwg(serverWs, bytes)
+          let data: Uint8Array
+          try {
+            data = await convertDwg(ws, bytes)
+          } catch (err) {
+            // A server that stopped answering is asked for again next time.
+            if (err instanceof DwgOpenError && err.kind === 'unreachable') serverRef.current = null
+            throw err
+          }
           // A DWG is never saved over, so there is no version to save against.
           return { data, version: null, note: dwgNote(new Uint8Array(bytes), label) }
         })
@@ -220,7 +251,7 @@ export function useCadFile(server: NativeHostContext['server'] = null): CadFile 
     return () => {
       cancelled = true
     }
-  }, [system, launched, reloadKey, serverWs])
+  }, [system, launched, reloadKey])
 
   const writeTo = useCallback(
     async (to: FileTarget, expected: string | null | undefined): Promise<boolean> => {
@@ -307,9 +338,9 @@ export function useCadFile(server: NativeHostContext['server'] = null): CadFile 
 
   const open = useCallback(async () => {
     if (!(await discardOk())) return
-    // A static install has no server to convert DWG, so it only offers DXF.
-    await openFile({ title: 'Open drawing', extensions: serverWs ? ['dxf', 'dwg'] : ['dxf'] })
-  }, [discardOk, openFile, serverWs])
+    // A desktop from before on-demand servers can't start one to convert DWG.
+    await openFile({ title: 'Open drawing', extensions: system.server ? ['dxf', 'dwg'] : ['dxf'] })
+  }, [discardOk, openFile, system])
 
   const newDrawing = useCallback(async () => {
     if (!(await discardOk())) return
@@ -358,6 +389,7 @@ export function useCadFile(server: NativeHostContext['server'] = null): CadFile 
     name,
     target,
     loading,
+    startingServer,
     converting,
     error,
     dirty,

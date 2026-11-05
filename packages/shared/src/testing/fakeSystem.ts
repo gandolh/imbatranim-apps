@@ -6,6 +6,7 @@ import {
   type SystemEvent,
   type SystemEventMap,
   type SystemHandle,
+  type SystemServer,
 } from '@imbatranim/ui'
 import type { NativeHostContext } from '../kitApp'
 
@@ -25,6 +26,8 @@ export type FakeSystemOptions = {
   intent?: unknown
   theme?: 'dark' | 'light'
   accent?: string
+  /** `system.server`, for an app that asks for its suite's server. Absent by default, as on a desktop from before it. */
+  server?: SystemServer
 }
 
 export type FakeSystem = {
@@ -105,6 +108,7 @@ export function createFakeSystem(options: FakeSystemOptions = {}): FakeSystem {
     protocolVersion: 2,
     appId,
     windowId,
+    ...(options.server ? { server: options.server } : {}),
     fs: {
       async read(root, path) {
         fsCalls.push(`read ${fileKey(root, path)}`)

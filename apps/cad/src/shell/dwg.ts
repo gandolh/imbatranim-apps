@@ -16,8 +16,12 @@ import {
   type DwgFailureKind,
 } from '@imbatranim-office/shared/dwg'
 
-/** The server's kinds, plus the two only the window can see. */
-export type DwgOpenFailure = DwgFailureKind | 'no-server' | 'unreachable'
+/**
+ * The server's kinds, plus the ones only the window can see: the desktop has
+ * no way to start the server (`no-server`), it tried and couldn't
+ * (`not-started`, with the desktop's reason), or the server didn't answer.
+ */
+export type DwgOpenFailure = DwgFailureKind | 'no-server' | 'not-started' | 'unreachable'
 
 export class DwgOpenError extends Error {
   readonly kind: DwgOpenFailure
@@ -25,11 +29,14 @@ export class DwgOpenError extends Error {
   readonly size: number
   /** Its version code (`AC1032`), when the server read that far. */
   readonly version: string | undefined
-  constructor(kind: DwgOpenFailure, size: number, version?: string) {
+  /** The desktop's sentence for a server that didn't start. */
+  readonly reason: string | undefined
+  constructor(kind: DwgOpenFailure, size: number, version?: string, reason?: string) {
     super(`DWG conversion failed: ${kind}`)
     this.kind = kind
     this.size = size
     this.version = version
+    this.reason = reason
   }
 }
 
@@ -44,6 +51,12 @@ const mb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`
 export function dwgFailureSentence(err: DwgOpenError, name: string): string {
   switch (err.kind) {
     case 'no-server':
+      return `This desktop can't start the Office server, so ${name} could not be converted. DXF drawings still open.`
+    case 'not-started': {
+      const reason = err.reason?.trim()
+      const why = reason ? ` ${/[.!?]$/.test(reason) ? reason : `${reason}.`}` : ''
+      return `The DWG converter didn't start, so ${name} could not be opened.${why} DXF drawings still open.`
+    }
     case 'unreachable':
       return `The Office server is not answering, so ${name} could not be converted. DXF drawings still open.`
     case 'too-large':
@@ -70,11 +83,10 @@ async function gunzip(gz: ArrayBuffer): Promise<Uint8Array> {
 
 /**
  * Send a DWG to the suite's server and resolve its DXF. `serverWs` is the
- * window's `host.server.ws` (null for a static install: no server).
+ * server's WebSocket address, from `system.server.request()`.
  */
-export function convertDwg(serverWs: string | null, dwg: ArrayBuffer): Promise<Uint8Array> {
+export function convertDwg(serverWs: string, dwg: ArrayBuffer): Promise<Uint8Array> {
   const size = dwg.byteLength
-  if (!serverWs) return Promise.reject(new DwgOpenError('no-server', size))
   if (size > MAX_DWG_BYTES) return Promise.reject(new DwgOpenError('too-large', size))
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(serverWs.replace(/\/$/, '') + DWG_TO_DXF_PATH)

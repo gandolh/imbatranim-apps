@@ -429,6 +429,11 @@ const SERVER = {
 }
 const DWG = 'AC1032 a drawing the server converts'
 
+/** `system.server` as the desktop gives it, answering with SERVER unless told otherwise. */
+function askableServer(answer: () => Promise<typeof SERVER> = async () => SERVER) {
+  return { request: vi.fn(answer) }
+}
+
 describe('CAD App with DWG', () => {
   afterEach(() => vi.unstubAllGlobals())
 
@@ -439,11 +444,12 @@ describe('CAD App with DWG', () => {
       return { binary: gzipSync(SMALL_DXF), code: 1000 }
     })
     const fake = createFakeSystem({
+      server: askableServer(),
       files: { 'home:Drawings/plan.dwg': DWG },
       intent: { root: 'home', openPath: 'Drawings/plan.dwg' },
     })
     const view = renderWithSystem(
-      <App windowId="window-1" host={fakeHost({ server: SERVER })} />,
+      <App windowId="window-1" host={fakeHost()} />,
       fake.system
     )
     await until(() => promptText().includes('Converted from DWG'))
@@ -461,12 +467,13 @@ describe('CAD App with DWG', () => {
   it('saves a DWG drawing through the dialog, in the DWG’s folder with its .dxf suggested', async () => {
     stubServer(() => ({ binary: gzipSync(SMALL_DXF), code: 1000 }))
     const fake = createFakeSystem({
+      server: askableServer(),
       files: { 'home:Drawings/plan.dwg': DWG },
       intent: { root: 'home', openPath: 'Drawings/plan.dwg' },
     })
     fake.answerSave((options) => ({ root: 'home', path: `Drawings/${options.suggestedName}` }))
     const view = renderWithSystem(
-      <App windowId="window-1" host={fakeHost({ server: SERVER })} />,
+      <App windowId="window-1" host={fakeHost()} />,
       fake.system
     )
     await until(() => promptText().includes('Converted from DWG'))
@@ -500,10 +507,11 @@ describe('CAD App with DWG', () => {
   it('leaves the DWG drawing unsaved when its save dialog is cancelled', async () => {
     stubServer(() => ({ binary: gzipSync(SMALL_DXF), code: 1000 }))
     const fake = createFakeSystem({
+      server: askableServer(),
       files: { 'home:plan.dwg': DWG, 'home:plan.dxf': 'an older export' },
       intent: { root: 'home', openPath: 'plan.dwg' },
     })
-    renderWithSystem(<App windowId="window-1" host={fakeHost({ server: SERVER })} />, fake.system)
+    renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system)
     await until(() => promptText().includes('Converted from DWG'))
     typeLine('C')
     typeLine('5,5')
@@ -520,7 +528,7 @@ describe('CAD App with DWG', () => {
     expect(fake.titles.at(-1)).toBe('plan.dwg •')
   })
 
-  it('says so when there is no server, and a DXF still opens', async () => {
+  it('says so on a desktop that cannot start the server', async () => {
     const fake = createFakeSystem({
       files: { 'home:plan.dwg': DWG },
       intent: { root: 'home', openPath: 'plan.dwg' },
@@ -529,18 +537,108 @@ describe('CAD App with DWG', () => {
     await settle()
     await settle()
     expect(document.querySelector('[role="alert"]')?.textContent).toBe(
-      'The Office server is not answering, so plan.dwg could not be converted. DXF drawings still open.'
+      "This desktop can't start the Office server, so plan.dwg could not be converted. DXF drawings still open."
     )
     expect(fake.notifications.at(-1)?.level).toBe('error')
+  })
+
+  it('asks for no server to open a DXF', async () => {
+    const server = askableServer()
+    const fake = createFakeSystem({
+      server,
+      files: { 'home:plan.dxf': SMALL_DXF },
+      intent: { root: 'home', openPath: 'plan.dxf' },
+    })
+    renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system)
+    await settle()
+    await settle()
+    expect(document.querySelector('[data-testid="cad-file-name"]')?.textContent).toBe('plan.dxf')
+    expect(server.request).not.toHaveBeenCalled()
+  })
+
+  it('asks for the server on the first DWG, says so while it starts, and keeps it for the next', async () => {
+    const opened = stubServer(() => ({ binary: gzipSync(SMALL_DXF), code: 1000 }))
+    let start!: () => void
+    const server = askableServer(
+      () => new Promise<typeof SERVER>((resolve) => (start = () => resolve(SERVER)))
+    )
+    const fake = createFakeSystem({
+      server,
+      files: { 'home:plan.dwg': DWG, 'home:Drawings/room.dwg': DWG },
+      intent: { root: 'home', openPath: 'plan.dwg' },
+    })
+    const view = renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system)
+    await until(() => view.container.textContent!.includes('Starting the DWG converter…'))
+    expect(opened).toEqual([])
+    act(() => start())
+    await until(() => promptText().includes('Converted from DWG'))
+    expect(server.request).toHaveBeenCalledTimes(1)
+    act(() => fake.deliverIntent({ root: 'home', openPath: 'Drawings/room.dwg' }))
+    await until(
+      () => view.container.querySelector('[data-testid="cad-file-name"]')?.textContent === 'room.dwg'
+    )
+    expect(opened).toEqual([`${SERVER.ws}/dwg-to-dxf`, `${SERVER.ws}/dwg-to-dxf`])
+    expect(server.request).toHaveBeenCalledTimes(1)
+  })
+
+  it('says why when the server does not start, stays usable, and asks again for the next DWG', async () => {
+    stubServer(() => ({ binary: gzipSync(SMALL_DXF), code: 1000 }))
+    const server = askableServer(() =>
+      Promise.reject(
+        new Error(
+          "Office's server didn't start: 4 app servers are running already; close one of those apps first"
+        )
+      )
+    )
+    const fake = createFakeSystem({
+      server,
+      files: { 'home:plan.dwg': DWG, 'home:room.dwg': DWG },
+      intent: { root: 'home', openPath: 'plan.dwg' },
+    })
+    const view = renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system)
+    await until(() => !!document.querySelector('[role="alert"]'))
+    expect(document.querySelector('[role="alert"]')?.textContent).toBe(
+      "The DWG converter didn't start, so plan.dwg could not be opened. Office's server didn't start: 4 app servers are running already; close one of those apps first. DXF drawings still open."
+    )
+    // The drawing area still takes commands.
+    typeLine('C')
+    typeLine('5,5')
+    typeLine('2')
+    expect(fake.titles.at(-1)).toBe('Drawing1.dxf •')
+    // The next DWG asks again, and this time the server starts.
+    server.request.mockImplementation(async () => SERVER)
+    act(() => fake.deliverIntent({ root: 'home', openPath: 'room.dwg' }))
+    await until(
+      () => view.container.querySelector('[data-testid="cad-file-name"]')?.textContent === 'room.dwg'
+    )
+    expect(server.request).toHaveBeenCalledTimes(2)
+  })
+
+  it('offers .dwg in the Open dialog when the desktop can start the server', async () => {
+    const withServer = createFakeSystem({ server: askableServer() })
+    renderWithSystem(<App windowId="window-1" host={fakeHost()} />, withServer.system)
+    await settle()
+    clickButtonByLabel('Open… (DXF, DWG)')
+    await settle()
+    expect(withServer.dialogs.at(-1)?.options.extensions).toEqual(['dxf', 'dwg'])
+    cleanupRendered()
+
+    const without = createFakeSystem()
+    renderWithSystem(<App windowId="window-1" host={fakeHost()} />, without.system)
+    await settle()
+    clickButtonByLabel('Open… (DXF, DWG)')
+    await settle()
+    expect(without.dialogs.at(-1)?.options.extensions).toEqual(['dxf'])
   })
 
   it('says so when the server does not answer', async () => {
     stubServer(() => ({ code: 1006 }))
     const fake = createFakeSystem({
+      server: askableServer(),
       files: { 'home:plan.dwg': DWG },
       intent: { root: 'home', openPath: 'plan.dwg' },
     })
-    renderWithSystem(<App windowId="window-1" host={fakeHost({ server: SERVER })} />, fake.system)
+    renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system)
     await until(() => !!document.querySelector('[role="alert"]'))
     expect(document.querySelector('[role="alert"]')?.textContent).toMatch(
       /^The Office server is not answering/
@@ -560,10 +658,11 @@ describe('CAD App with DWG', () => {
     for (const [reply, sentence] of cases) {
       stubServer(() => reply)
       const fake = createFakeSystem({
+        server: askableServer(),
         files: { 'home:plan.dwg': DWG },
         intent: { root: 'home', openPath: 'plan.dwg' },
       })
-      renderWithSystem(<App windowId="window-1" host={fakeHost({ server: SERVER })} />, fake.system)
+      renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system)
       await until(() => !!document.querySelector('[role="alert"]'))
       expect(document.querySelector('[role="alert"]')?.textContent).toMatch(sentence)
       cleanupRendered()

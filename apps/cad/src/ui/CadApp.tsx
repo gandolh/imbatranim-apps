@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Loader2 } from 'lucide-react'
 import { useDocumentedShortcuts } from '@imbatranim/ui'
-import type { NativeHostContext } from '@imbatranim-office/shared'
 import { useCadFile } from '../shell/useCadFile'
 import { CommandLine, type CommandLineHandle } from './CommandLine'
 import { LayerDialog } from './LayerDialog'
@@ -51,8 +50,8 @@ const SHORTCUTS = [
 ]
 
 /** The CAD window: toolbar, drawing area, command line, status bar. */
-export function CadApp({ server = null }: { server?: NativeHostContext['server'] }) {
-  const file = useCadFile(server)
+export function CadApp() {
+  const file = useCadFile()
   const { editor } = file
   const state = useSyncExternalStore(
     (cb) => editor.subscribe((c) => c === 'state' && cb()),
@@ -121,7 +120,11 @@ export function CadApp({ server = null }: { server?: NativeHostContext['server']
         {file.loading && (
           <div className="bg-surface-container-lowest text-on-surface-variant absolute inset-0 flex items-center justify-center gap-2 text-[12px]">
             <Loader2 size={16} className="animate-spin" />
-            {file.converting ? 'Converting…' : 'Opening drawing…'}
+            {file.startingServer
+              ? 'Starting the DWG converter…'
+              : file.converting
+                ? 'Converting…'
+                : 'Opening drawing…'}
           </div>
         )}
       </div>

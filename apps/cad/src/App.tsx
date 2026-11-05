@@ -7,6 +7,8 @@ import { CadApp } from './ui/CadApp'
  * drawings are DXF files opened and saved through the desktop, and DWG
  * files open through the suite's server, which converts them to DXF.
  */
-export function App({ host }: KitAppProps) {
-  return <CadApp server={host.server} />
+export function App(_props: KitAppProps) {
+  // The suite's server, for DWG, is asked for through `system.server` when a
+  // DWG needs it; `host.server` is always null for a kit app.
+  return <CadApp />
 }

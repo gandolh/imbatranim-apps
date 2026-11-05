@@ -28,7 +28,7 @@ Editing runs in the browser, inside the OS window, so files never leave the mach
 
 ## How it works
 
-Each app is a workspace package that exports one React component. `npm run build:os` bundles them into `dist/os` with React, React DOM and `@imbatranim/ui` left external, so the desktop renders each app with its own instances. A small Fastify server, started by the OS beside the apps, does one-off jobs that cannot run in the browser, such as turning a DWG into DXF. More in the [wiki's architecture page](corpus/wiki/architecture.md).
+Each app is a workspace package that exports one React component. `npm run build:os` bundles them into `dist/os` with React, React DOM and `@imbatranim/ui` left external, so the desktop renders each app with its own instances. A small Fastify server, which the OS starts when an app first asks for it, does one-off jobs that cannot run in the browser, such as turning a DWG into DXF. More in the [wiki's architecture page](corpus/wiki/architecture.md).
 
 ```mermaid
 flowchart LR
