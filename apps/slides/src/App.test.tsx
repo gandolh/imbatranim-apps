@@ -141,6 +141,33 @@ describe('Slides', () => {
     expect(view.container.textContent).toContain('1 / 6')
   })
 
+  it('opens Save as in the folder of the open presentation, and saves where it is told', async () => {
+    const { fake } = await open()
+    fake.answerSave(() => ({ root: 'home', path: 'decks/copy.pptx' }))
+    clickButton('Save as…')
+    await settle()
+    expect(fake.dialogs.at(-1)).toEqual({
+      kind: 'save',
+      options: {
+        title: 'Save presentation as',
+        suggestedName: 'anim.pptx',
+        extensions: expect.any(Array),
+        startIn: { root: 'home', path: 'decks' },
+      },
+    })
+    expect(fake.fsCalls).toContain('upload home:decks/copy.pptx')
+  })
+
+  it('opens Save as for a new presentation without a start folder', async () => {
+    const { fake } = await open({}, null)
+    clickButton('New presentation')
+    await settle()
+    clickButton('Save as…')
+    await settle()
+    expect(fake.dialogs.at(-1)?.kind).toBe('save')
+    expect(fake.dialogs.at(-1)?.options.startIn).toBeUndefined()
+  })
+
   it('starts a new presentation from an empty window, untitled and unsaved', async () => {
     const { fake, view } = await open({}, null)
     expect(view.container.textContent).toContain('Nothing open')

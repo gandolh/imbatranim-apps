@@ -1,5 +1,8 @@
 import {
   FileConflictError,
+  type FileChoice,
+  type PickOpenOptions,
+  type PickSaveOptions,
   type SystemEvent,
   type SystemEventMap,
   type SystemHandle,
@@ -34,6 +37,20 @@ export type FakeSystem = {
   titles: string[]
   recents: string[]
   openedApps: { appId: string; payload: unknown }[]
+  /**
+   * The options of every Open and Save dialog asked for, in order, so a test
+   * can check where a dialog starts (`startIn`) and what it suggests. Recorded
+   * by the fake's own `pickOpen`/`pickSave`; a test that replaces those
+   * records nothing here, so answer through `answerOpen`/`answerSave` instead.
+   */
+  dialogs: (
+    | { kind: 'open'; options: PickOpenOptions }
+    | { kind: 'save'; options: PickSaveOptions }
+  )[]
+  /** What the next Open dialogs answer (null cancels, the default). */
+  answerOpen(answer: (options: PickOpenOptions) => FileChoice | null): void
+  /** What the next Save dialogs answer (null cancels, the default). */
+  answerSave(answer: (options: PickSaveOptions) => FileChoice | null): void
   /** Re-deliver an intent to the window, as File Manager does for an open window. */
   deliverIntent(payload: unknown): void
   /** Fire a compositor event. */
@@ -65,6 +82,9 @@ export function createFakeSystem(options: FakeSystemOptions = {}): FakeSystem {
   const titles: string[] = []
   const recents: string[] = []
   const openedApps: FakeSystem['openedApps'] = []
+  const dialogs: FakeSystem['dialogs'] = []
+  let openAnswer: (options: PickOpenOptions) => FileChoice | null = () => null
+  let saveAnswer: (options: PickSaveOptions) => FileChoice | null = () => null
   const intentListeners = new Set<(payload: unknown) => void>()
   const eventListeners = new Map<string, Set<(payload: unknown) => void>>()
   let pendingIntent = options.intent
@@ -106,8 +126,14 @@ export function createFakeSystem(options: FakeSystemOptions = {}): FakeSystem {
       },
       downloadUrl: (root, path) =>
         `/fake-download/${encodeURIComponent(root)}/${encodeURIComponent(path)}`,
-      pickOpen: async () => null,
-      pickSave: async () => null,
+      pickOpen: async (opts = {}) => {
+        dialogs.push({ kind: 'open', options: opts })
+        return openAnswer(opts)
+      },
+      pickSave: async (opts = {}) => {
+        dialogs.push({ kind: 'save', options: opts })
+        return saveAnswer(opts)
+      },
       pickDirectory: async () => null,
       recordRecent: (root, path) => void recents.push(fileKey(root, path)),
       removeRecent: (root, path) => {
@@ -195,6 +221,13 @@ export function createFakeSystem(options: FakeSystemOptions = {}): FakeSystem {
     titles,
     recents,
     openedApps,
+    dialogs,
+    answerOpen(answer) {
+      openAnswer = answer
+    },
+    answerSave(answer) {
+      saveAnswer = answer
+    },
     deliverIntent(payload) {
       if (intentListeners.size === 0) pendingIntent = payload
       else intentListeners.forEach((l) => l(payload))

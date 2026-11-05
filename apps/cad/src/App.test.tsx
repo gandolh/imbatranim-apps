@@ -282,6 +282,36 @@ describe('CAD App', () => {
     )
   })
 
+  it('opens Save as in the drawing’s folder', async () => {
+    const fake = createFakeSystem({
+      files: { 'home:Drawings/2026/plan.dxf': SMALL_DXF },
+      intent: { root: 'home', openPath: 'Drawings/2026/plan.dxf' },
+    })
+    renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system)
+    await settle()
+    clickButtonByLabel('Save as…')
+    await settle()
+    expect(fake.dialogs.at(-1)).toEqual({
+      kind: 'save',
+      options: {
+        title: 'Save drawing as',
+        extensions: ['dxf'],
+        suggestedName: 'plan.dxf',
+        startIn: { root: 'home', path: 'Drawings/2026' },
+      },
+    })
+  })
+
+  it('opens Save as for a new drawing without a start folder', async () => {
+    const fake = createFakeSystem()
+    renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system)
+    await settle()
+    clickButtonByLabel('Save as…')
+    await settle()
+    expect(fake.dialogs.at(-1)?.kind).toBe('save')
+    expect(fake.dialogs.at(-1)?.options.startIn).toBeUndefined()
+  })
+
   it('starts an untitled drawing without a file, and Save asks where (Save as)', async () => {
     const fake = createFakeSystem()
     fake.system.fs.pickSave = async () => ({ root: 'home', path: 'Drawings/room' })
@@ -428,12 +458,13 @@ describe('CAD App with DWG', () => {
     expect(fake.titles.at(-1)).toBe('plan.dwg')
   })
 
-  it('saves a DWG drawing as a .dxf beside it and leaves the .dwg as it was', async () => {
+  it('saves a DWG drawing through the dialog, in the DWG’s folder with its .dxf suggested', async () => {
     stubServer(() => ({ binary: gzipSync(SMALL_DXF), code: 1000 }))
     const fake = createFakeSystem({
       files: { 'home:Drawings/plan.dwg': DWG },
       intent: { root: 'home', openPath: 'Drawings/plan.dwg' },
     })
+    fake.answerSave((options) => ({ root: 'home', path: `Drawings/${options.suggestedName}` }))
     const view = renderWithSystem(
       <App windowId="window-1" host={fakeHost({ server: SERVER })} />,
       fake.system
@@ -446,11 +477,16 @@ describe('CAD App with DWG', () => {
     act(() => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true, bubbles: true }))
     })
+    await until(() => fake.files.has('home:Drawings/plan.dxf'))
     await settle()
-    expect(document.body.textContent).toContain('saved as plan.dxf beside it')
-    clickButton('Save')
-    await settle()
-    await settle()
+    expect(fake.dialogs.filter((d) => d.kind === 'save').map((d) => d.options)).toEqual([
+      {
+        title: 'Save drawing as DXF',
+        extensions: ['dxf'],
+        suggestedName: 'plan.dxf',
+        startIn: { root: 'home', path: 'Drawings' },
+      },
+    ])
     expect(new TextDecoder().decode(fake.files.get('home:Drawings/plan.dwg'))).toBe(DWG)
     const saved = readDxf(fake.files.get('home:Drawings/plan.dxf')!).doc
     expect(saved.all().some((e) => e.kind === 'circle')).toBe(true)
@@ -461,7 +497,7 @@ describe('CAD App with DWG', () => {
     expect(fake.titles.at(-1)).toBe('plan.dxf')
   })
 
-  it('asks before replacing a .dxf already beside the DWG', async () => {
+  it('leaves the DWG drawing unsaved when its save dialog is cancelled', async () => {
     stubServer(() => ({ binary: gzipSync(SMALL_DXF), code: 1000 }))
     const fake = createFakeSystem({
       files: { 'home:plan.dwg': DWG, 'home:plan.dxf': 'an older export' },
@@ -476,9 +512,10 @@ describe('CAD App with DWG', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true, bubbles: true }))
     })
     await settle()
-    expect(document.body.textContent).toContain('plan.dxf already exists beside it')
-    clickButton('Cancel')
-    await settle()
+    expect(fake.dialogs.at(-1)).toMatchObject({
+      kind: 'save',
+      options: { suggestedName: 'plan.dxf', startIn: { root: 'home', path: '' } },
+    })
     expect(new TextDecoder().decode(fake.files.get('home:plan.dxf'))).toBe('an older export')
     expect(fake.titles.at(-1)).toBe('plan.dwg •')
   })

@@ -27,6 +27,7 @@ import {
   useUnsavedGuard,
   type FileChoice,
 } from '@imbatranim/ui'
+import { folderOf } from '@imbatranim-office/shared'
 import { NotAPresentationError } from '../engine/deck'
 import { sniffReason, unsupportedReason } from '../engine/formats'
 import { NotAZipError, PackageTooLargeError } from '../engine/zip'
@@ -200,6 +201,8 @@ export function useDeckFile(): DeckFile {
       title: 'Save presentation as',
       suggestedName: name,
       extensions: EXTENSIONS,
+      // Beside the open file; a never-saved deck opens where the dialog always has.
+      startIn: file ? folderOf(file) : undefined,
     })
     if (!choice) return
     const path = withExtension(choice.path)
@@ -217,7 +220,7 @@ export function useDeckFile(): DeckFile {
     } finally {
       setSaving(false)
     }
-  }, [store, saving, saveFile, name, system, sourceKey])
+  }, [store, saving, saveFile, name, system, sourceKey, file])
 
   const save = useCallback(async () => {
     if (!store || saving) return

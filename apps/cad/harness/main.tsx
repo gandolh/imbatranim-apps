@@ -6,7 +6,7 @@
  */
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { SystemProvider } from '@imbatranim/ui'
+import { SystemProvider, type PickSaveOptions } from '@imbatranim/ui'
 import { createFakeSystem, fakeHost } from '../../../packages/shared/src/testing/fakeSystem'
 import { App } from '../src/App'
 
@@ -19,6 +19,8 @@ document.documentElement.dataset.theme = theme
 type Harness = {
   /** What the next Save as / Export dialog answers (a path in `home`); null cancels. */
   nextSave: string | null
+  /** The options of every Save dialog asked for, in order (`startIn`, `suggestedName`). */
+  saveDialogs: PickSaveOptions[]
   nextOpen: string | null
   files(): string[]
   /** A file's bytes as base64, for copying out of the page. */
@@ -45,6 +47,7 @@ async function main() {
   })
   const h: Harness = {
     nextSave: 'Drawings/room.dxf',
+    saveDialogs: [],
     nextOpen: null,
     files: () => [...fake.files.keys()],
     base64: (key) => {
@@ -68,6 +71,7 @@ async function main() {
     notifications: fake.notifications,
   }
   fake.system.fs.pickSave = async (opts) => {
+    h.saveDialogs.push(opts ?? {})
     const path = h.nextSave ?? null
     return path === null
       ? null

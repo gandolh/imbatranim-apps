@@ -6,13 +6,13 @@
  * - it is read with `readWithVersion`; the version goes back with a save
  *   (`saveOverRead`), so a file changed on disk since asks first
  *   (`useFileConflict`: Overwrite, Reload from disk, Cancel)
- * - Save as goes through the OS's save dialog, and the window then edits the
- *   new file
+ * - Save as goes through the OS's save dialog, opened in the drawing's folder,
+ *   and the window then edits the new file
  * - Ctrl+S saves the top window (`useSaveHotkey`); the title carries the
  *   dirty mark and closing asks Save / Don't Save / Cancel (`useUnsavedGuard`)
  * - a `.dwg` is converted to DXF by the suite's server (./dwg.ts) and is
- *   never written: Save puts a `.dxf` beside it, and the window then edits
- *   that file
+ *   never written: Save offers the `.dxf` of the same name in its folder,
+ *   through the save dialog, and the window then edits that file
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import {
@@ -28,7 +28,7 @@ import {
   useSystem,
   useUnsavedGuard,
 } from '@imbatranim/ui'
-import type { NativeHostContext } from '@imbatranim-office/shared'
+import { folderOf, type NativeHostContext } from '@imbatranim-office/shared'
 import { dwgRelease, dwgVersion } from '@imbatranim-office/shared/dwg'
 import { readDxf, type ReadReport } from '../engine/dxf/read'
 import { refuseReason } from '../engine/dxf/tags'
@@ -106,7 +106,7 @@ const stem = (name: string) => name.replace(/\.[^.]+$/, '')
 function dwgNote(dwg: Uint8Array, name: string): string {
   const version = dwgVersion(dwg)
   const from = version ? ` (${dwgRelease(version)})` : ''
-  return `Converted from DWG${from} by LibreDWG. CAD cannot write DWG: Save puts ${fileName(dxfBeside(name))} beside it and leaves ${name} unchanged.`
+  return `Converted from DWG${from} by LibreDWG. CAD cannot write DWG: Save offers ${fileName(dxfBeside(name))} in the same folder and leaves ${name} unchanged.`
 }
 
 /** `server` is the window's `host.server`: the suite's server, which converts DWG. */
@@ -250,73 +250,50 @@ export function useCadFile(server: NativeHostContext['server'] = null): CadFile 
     [system, editor, askConflict]
   )
 
+  /**
+   * Save as, through the OS's dialog, opened beside the drawing (a new drawing
+   * opens it where it always has). CAD writes DXF only, so a drawing opened
+   * from a DWG suggests the `.dxf` of the same name, in the DWG's folder, and
+   * the DWG stays as it is.
+   */
   const saveAs = useCallback(async () => {
+    const fromDwg = target !== null && isDwgPath(target.path)
     const choice = await saveFile({
-      title: 'Save drawing as',
+      title: fromDwg ? 'Save drawing as DXF' : 'Save drawing as',
       extensions: ['dxf'],
-      suggestedName: name,
+      suggestedName: fromDwg ? fileName(dxfBeside(target.path)) : name,
+      startIn: target ? folderOf(target) : undefined,
     })
     if (!choice) return
     const to = { root: choice.root, path: withDxf(choice.path) }
     setSaving(true)
     try {
       // A new file: nothing to compare against.
-      if (await writeTo(to, undefined)) setTarget(to)
+      if (await writeTo(to, undefined)) {
+        setTarget(to)
+        if (to.path !== choice.path) system.fs.recordRecent(to.root, to.path)
+      }
     } catch (err) {
       setError(reportFileFailure(system, 'save', err, { noun: 'drawing', name: fileName(to.path) }))
     } finally {
       setSaving(false)
     }
-  }, [saveFile, name, writeTo, system])
-
-  /**
-   * Save a drawing opened from a DWG: CAD cannot write DWG, so it goes to a
-   * `.dxf` of the same name beside it, after saying so, and the window then
-   * edits that file. The OS's save dialog cannot start in a given folder, so
-   * the name is offered here rather than through it; Save as still picks
-   * any place.
-   */
-  const saveBesideDwg = useCallback(
-    async (dwg: FileTarget): Promise<void> => {
-      const to = { root: dwg.root, path: dxfBeside(dwg.path) }
-      const dxfName = fileName(to.path)
-      // Is there a DXF there already? Its version makes the save ask if it changes meanwhile.
-      const existing = await system.fs.readWithVersion(to.root, to.path).then(
-        ({ version }) => ({ version }),
-        () => null
-      )
-      const message = existing
-        ? `CAD cannot write DWG, so ${name} stays as it is. ${dxfName} already exists beside it and will be replaced.`
-        : `CAD cannot write DWG, so ${name} stays as it is. The drawing is saved as ${dxfName} beside it.`
-      const ok = await confirm({
-        title: 'Save as DXF',
-        message,
-        confirmLabel: existing ? 'Replace' : 'Save',
-        destructive: !!existing,
-      })
-      if (!ok) return
-      if (await writeTo(to, existing ? (existing.version ?? undefined) : undefined)) {
-        setTarget(to)
-        system.fs.recordRecent(to.root, to.path)
-      }
-    },
-    [system, name, confirm, writeTo]
-  )
+  }, [saveFile, target, name, writeTo, system])
 
   const save = useCallback(async () => {
     if (saving) return
-    if (!target) return saveAs()
+    // CAD can't write DWG, so a drawing opened from one saves through Save as.
+    if (!target || isDwgPath(target.path)) return saveAs()
     setSaving(true)
     try {
-      if (isDwgPath(target.path)) await saveBesideDwg(target)
-      else await writeTo(target, diskVersionRef.current)
+      await writeTo(target, diskVersionRef.current)
     } catch (err) {
       // Dirty stays: the bytes did not land, so the close guard keeps the work.
       setError(reportFileFailure(system, 'save', err, { noun: 'drawing', name }))
     } finally {
       setSaving(false)
     }
-  }, [saving, target, saveAs, saveBesideDwg, writeTo, system, name])
+  }, [saving, target, saveAs, writeTo, system, name])
 
   const discardOk = useCallback(async () => {
     if (!dirty) return true
