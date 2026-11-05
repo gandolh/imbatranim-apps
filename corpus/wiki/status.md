@@ -1,6 +1,6 @@
 ---
 summary: Current snapshot (2026-11-02), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28; on 2026-11-03 its catalog moved its pin to this repo's head (the kit synced to the OS's two themes, the row-1000 fix) and the suite ships static, so CAD opens DXF only. The owner decides what to do about Sheets' big first calculation. Open todos and owner steps.
-updated: 2026-11-03
+updated: 2026-11-05
 ---
 
 # Status — 2026-11-02
@@ -21,7 +21,8 @@ apps; `npm run build:os` builds them into `dist/os`, and
   ([docs-app.md](docs-app.md)).
 - **CAD** (2026-10-22, DWG 2026-10-28). DXF read and write, our own Canvas 2D
   renderer; TRIM and EXTEND take the short stub at a corner; `.dwg` opens
-  through the suite's server and saves as `.dxf` beside it ([cad.md](cad.md)).
+  through the suite's server; Save on it offers the `.dxf` in its folder, and
+  Save as opens in the drawing's folder (2026-11-05) ([cad.md](cad.md)).
 - **Slides** (2026-10-22, walked 2026-10-27). Edits patch the package in
   place; untouched parts stay byte identical ([slides.md](slides.md)).
 - **Sheets** (2026-10-22, walked 2026-10-27). Formulas in a worker and sheets
@@ -48,11 +49,11 @@ measurements are in its own corpus.
 
 ## Open briefs
 
-Written 2026-11-03 from the open todos, in a grill with the owner; none is
-started, and the owner picks when:
+Written 2026-11-03 from the open todos, in a grill with the owner.
 
-- [01, Save as opens where the file is](../briefs/todo/01-save-as-opens-where-the-file-is.md),
-  after imbatranimOS's brief 28 (`startIn` on the file dialogs);
+- 01, Save as opens where the file is: **done 2026-11-05**. Slides' and
+  CAD's Save as open in the file's folder; Docs, Sheets and PDF have no Save
+  as ([outcome](../briefs/done/01-save-as-opens-where-the-file-is.md)).
 - [02, CAD asks for its server on its first DWG](../briefs/todo/02-cad-asks-for-its-server-on-its-first-dwg.md),
   after imbatranimOS's brief 29 (a kit app asks for its server); DWG
   opening comes back with it;

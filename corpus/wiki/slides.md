@@ -1,6 +1,6 @@
 ---
 summary: How Slides is built — a .pptx opened as its OPC package with a lossless XML tree, edited in place and saved by copying every untouched part byte for byte — with the spike that proved it on three real decks, what a save keeps and changes, the renderer that both views and edits, undo, the file wiring, and the known gaps.
-updated: 2026-11-02
+updated: 2026-11-05
 ---
 
 # Slides
@@ -111,7 +111,7 @@ strategy is in-place patching.
 version token, refusals by name (`.ppt`, `.pps`, `.pot`, `.odp`, `.key`) and by
 first bytes (an OLE2 file named `.pptx`), Save over the file with
 `saveOverRead` and the conflict dialog, Save as through the OS's dialog (adds
-`.pptx`), the dirty mark and close guard (`useUnsavedGuard`), Ctrl+S, Download
+`.pptx`; opens in the deck's folder since 2026-11-05), the dirty mark and close guard (`useUnsavedGuard`), Ctrl+S, Download
 original, and New presentation. Open while there are unsaved changes opens the
 other file in a new window. Every save first commits what is still being typed
 (slide text and notes), so Ctrl+S in the middle of a word saves the word.

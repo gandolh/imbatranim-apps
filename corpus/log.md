@@ -340,3 +340,12 @@ turns DWG opening back on. Brief 03 makes a save wait for Sheets' first calculat
 formula bar's raw locale key, and takes a time-boxed look at Univer's settings for the freezes,
 with an upstream report only if there are none. The three todos are deleted;
 [status.md](wiki/status.md) lists the briefs.
+
+## [2026-11-05] brief | 01 done: Save as opens where the file is
+
+The kit is synced to imbatranimOS `3dd0a8d` (`5a55a10`): `startIn` on the file dialogs and
+`system.server.request()`. Slides' and CAD's Save as pass the open file's folder as `startIn`
+(`folderOf` in the shared package); a new document keeps the dialog's old start. Docs, Sheets and
+PDF save in place and have no Save as. CAD's DWG save is now that dialog in the DWG's folder with
+`<name>.dxf` suggested, and its own replace confirmation is gone (`70d04f1`). Walked in the OS dev
+container: CAD's Save as in `Drawings/2026`, the DWG's save in `Drawings`, Slides' in `Decks`.

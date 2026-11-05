@@ -1,6 +1,6 @@
 ---
-summary: How CAD is built: the spike's picks and numbers (dxf-viewer's parser to read, @tarikjabiri/dxf to write, our own Canvas 2D renderer at 60 fps on 10k lines), the drawing model and its undo, the commands and their aliases, the snap and selection rules, files and exports, DWG through the suite server (Converting…, Save writes a .dxf beside the untouched .dwg, failures in a sentence), the harness, and the known gaps.
-updated: 2026-11-02
+summary: How CAD is built: the spike's picks and numbers (dxf-viewer's parser to read, @tarikjabiri/dxf to write, our own Canvas 2D renderer at 60 fps on 10k lines), the drawing model and its undo, the commands and their aliases, the snap and selection rules, files and exports, DWG through the suite server (Converting…, Save offers a .dxf in the untouched .dwg's folder, failures in a sentence), the harness, and the known gaps.
+updated: 2026-11-05
 ---
 
 # CAD
@@ -141,7 +141,8 @@ STRETCH and MOVE.
 ## Files and exports
 
 `useCadFile` reads through `readWithVersion` and saves through `saveOverRead`
-(Overwrite, Reload from disk, Cancel), Save as through the OS dialog, Ctrl+S,
+(Overwrite, Reload from disk, Cancel), Save as through the OS dialog (opened in
+the drawing's folder since 2026-11-05), Ctrl+S,
 the dirty mark and the close guard. A binary DXF is refused with a sentence.
 On open, the history says which objects are kept as drawn; on save, a
 warning names anything converted or dropped. SVG and PDF exports run in
@@ -156,10 +157,11 @@ the `/dwg-to-dxf` WebSocket (`src/shell/dwg.ts`, the exchange in
 `@imbatranim-office/shared/dwg`); the window shows "Converting…", then reads
 the DXF that comes back with the same reader as any DXF. The title keeps the
 DWG's name, and the command line says which release it was converted from
-and that Save writes a DXF. CAD never writes DWG: Save on a DWG drawing
-confirms, then writes `<name>.dxf` in the same folder ("Replace" when one is
-there, saved against its version, so a change meanwhile asks first), and the
-window edits that file from then on. Save as picks any place as usual. Every
+and that Save writes a DXF. CAD never writes DWG: Save on a DWG drawing opens
+the save dialog ("Save drawing as DXF") in the DWG's folder with `<name>.dxf`
+suggested, the dialog asks before replacing a file, and the window edits the
+DXF from then on (2026-11-05; until then Save confirmed a fixed name beside
+the DWG, because the dialog couldn't start in a folder). Every
 failure is one sentence in the window: no server or no answer, over 50 MB,
 not a DWG, a file LibreDWG cannot read (naming its release), over 60 s, or
 the server busy. See [decisions.md](decisions.md) for how LibreDWG runs and
