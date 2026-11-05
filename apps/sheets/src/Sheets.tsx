@@ -16,6 +16,7 @@ import {
   useUnsavedGuard,
 } from '@imbatranim/ui'
 import { createSheetEngine, type SheetEngine } from './engine/univer'
+import { FirstCalculationTimeoutError } from './engine/firstCalculation'
 import { retainXlsxWorker, univerToXlsx, xlsxToUniver } from './engine/xlsxBridge'
 import { csvToUniver, univerToCsv } from './engine/csv'
 import { lossyWarning, type LossyFeature } from './engine/xlsxScan'
@@ -40,6 +41,8 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  /** A save waiting for the workbook's first calculation, said in the toolbar. */
+  const [waitingForFormulas, setWaitingForFormulas] = useState(false)
   const [dirty, setDirty] = useState(false)
   // Kept in view for as long as the file is open, not just as a toast: it is a
   // standing property of this workbook, and the moment it matters is the moment
@@ -149,10 +152,20 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
     // Waits for a pending recalculation (formulas run in a worker), so the
     // spinner shows from here; a timeout is reported like any failed save.
     setSaving(true)
+    // A big workbook's first calculation can take minutes; a save started
+    // during it waits, and says so, rather than write formulas with no values.
+    setWaitingForFormulas(engine.firstCalculationPending())
     let snapshot: Awaited<ReturnType<SheetEngine['snapshot']>>
     try {
       snapshot = await engine.snapshot()
     } catch (err) {
+      if (err instanceof FirstCalculationTimeoutError) {
+        // Not a failure to reach the OS, which is what the generic text says.
+        system.notify({ level: 'error', title: 'Not saved', body: err.message })
+        setError(err.message)
+        setSaving(false)
+        return
+      }
       setError(
         reportFileFailure(system, 'save', err, {
           noun: 'spreadsheet',
@@ -161,6 +174,8 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
       )
       setSaving(false)
       return
+    } finally {
+      setWaitingForFormulas(false)
     }
     setSaving(false)
     if (!snapshot) return
@@ -276,6 +291,12 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
             Save
           </Button>
         </Tooltip>
+
+        {waitingForFormulas && (
+          <span className="font-ui text-on-surface-variant ml-1 text-[11px]" role="status">
+            Saving once the formulas finish calculating…
+          </span>
+        )}
 
         <div className="flex-1" />
 

@@ -26,6 +26,9 @@ const engine = vi.hoisted(() => ({
   lossy: [] as string[],
   retained: 0,
   released: 0,
+  /** What `snapshot()` answers, and whether the first calculation is running. */
+  snapshot: () => Promise.resolve(null as unknown),
+  firstCalculationPending: false,
 }))
 
 vi.mock('./engine/univer', () => ({
@@ -39,7 +42,8 @@ vi.mock('./engine/univer', () => ({
     engine.created.push(instance)
     return Promise.resolve({
       loadWorkbook: (data: unknown) => instance.loaded.push(data),
-      snapshot: () => null,
+      snapshot: () => engine.snapshot(),
+      firstCalculationPending: () => engine.firstCalculationPending,
       onEdit: (cb: () => void) => {
         instance.edit = cb
       },
@@ -68,6 +72,8 @@ beforeEach(() => {
   engine.lossy = []
   engine.retained = 0
   engine.released = 0
+  engine.snapshot = () => Promise.resolve(null)
+  engine.firstCalculationPending = false
 })
 
 afterEach(() => {
@@ -222,5 +228,38 @@ describe('Sheets, as a kit app', () => {
     const always = ['protocolVersion', 'appId', 'windowId', 'window', 'appearance', 'on']
     const capabilities = [...recorded.used].filter((p) => !always.includes(p)).sort()
     expect(capabilities).toEqual(['fs', 'intents', 'notify'])
+  })
+})
+
+describe('Sheets saving during the first calculation', () => {
+  it('says the save waits for the formulas, and writes once they are done', async () => {
+    const fake = createFakeSystem({
+      appId: 'office-sheets',
+      files: { 'home:Documents/book.xlsx': 'PK fake' },
+      intent: { root: 'home', openPath: 'Documents/book.xlsx' },
+    })
+    const view = renderWithSystem(
+      <App windowId="window-1" host={fakeHost({ appId: 'office-sheets' })} />,
+      fake.system
+    )
+    await openSheet()
+    let calculated = (_: unknown) => {}
+    engine.snapshot = () => new Promise((resolve) => (calculated = resolve))
+    engine.firstCalculationPending = true
+    act(() => engine.created[0].edit())
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true, bubbles: true }))
+    })
+    await settle()
+    expect(view.container.querySelector('[role="status"]')?.textContent).toBe(
+      'Saving once the formulas finish calculating…'
+    )
+    expect(fake.fsCalls).not.toContain('upload home:Documents/book.xlsx')
+
+    engine.firstCalculationPending = false
+    await act(async () => calculated({ id: 'wb', sheetOrder: [] }))
+    for (let i = 0; i < 4; i++) await settle()
+    expect(view.container.querySelector('[role="status"]')).toBeNull()
+    expect(fake.fsCalls).toContain('upload home:Documents/book.xlsx')
   })
 })

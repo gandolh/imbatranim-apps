@@ -6,6 +6,7 @@
  * top level, and those are erased at build time.
  */
 import type { IWorkbookData } from '@univerjs/presets'
+import { trackFirstCalculation, type CalculationEvents } from './firstCalculation'
 
 // Minimal shape of the Univer facade surface we actually call. Univer's full
 // FUniver/FWorkbook types come from several packages (core augmented by the
@@ -16,7 +17,9 @@ type UniverCommand = { type: number; id: string }
 type UniverApi = {
   createWorkbook: (data: Partial<IWorkbookData>) => UniverWorkbook
   onCommandExecuted: (cb: (command: UniverCommand) => void) => { dispose: () => void }
-  getFormula: () => { onCalculationResultApplied: (timeout?: number) => Promise<void> }
+  getFormula: () => CalculationEvents & {
+    onCalculationResultApplied: (timeout?: number) => Promise<void>
+  }
 }
 type UniverInstance = { dispose: () => void }
 
@@ -27,16 +30,45 @@ type UniverInstance = { dispose: () => void }
  */
 export const CALCULATION_WAIT_MS = 120_000
 
+/**
+ * How long a save waits for a workbook's first calculation. Much longer than
+ * {@link CALCULATION_WAIT_MS}: a 220,000-formula workbook's first calculation
+ * took 4.6-5.3 minutes in the worker on a loaded machine.
+ */
+export const FIRST_CALCULATION_WAIT_MS = 15 * 60_000
+
+/**
+ * The formula bar's progress labels. Univer's formula plugin asks for these
+ * keys, but no locale it ships in 0.25.1 has them, so the bar showed the raw
+ * key (`sheets-formula.progress.calculating`).
+ */
+export const PROGRESS_STRINGS = {
+  'sheets-formula': {
+    progress: {
+      analyzing: 'Analyzing formulas',
+      calculating: 'Calculating',
+      'array-analysis': 'Analyzing array formulas',
+      'array-calculation': 'Calculating array formulas',
+      done: 'Done',
+    },
+  },
+}
+
 export type SheetEngine = {
   /** Load a workbook snapshot into the mounted grid. */
   loadWorkbook: (data: Partial<IWorkbookData>) => void
   /**
    * The workbook as a snapshot, for serialization on save, once the formula
    * engine has applied its latest results: a save never writes a value a
-   * pending recalculation is about to change. Rejects when formulas are still
-   * calculating after {@link CALCULATION_WAIT_MS}.
+   * pending recalculation is about to change. While the workbook's first
+   * calculation runs it waits for that too, however many edits restart it.
+   * Rejects when formulas are still calculating after
+   * {@link FIRST_CALCULATION_WAIT_MS} (the first calculation) or
+   * {@link CALCULATION_WAIT_MS} (any later one).
    */
   snapshot: () => Promise<IWorkbookData | null>
+  /** True while the loaded workbook's first calculation runs: a save waits for it. */
+  firstCalculationPending: () => boolean
   /** Fire `cb` every time the user mutates the sheet (for dirty tracking). */
   onEdit: (cb: () => void) => void
   /**
@@ -73,7 +105,7 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
   const { univer, univerAPI } = createUniver({
     locale: LocaleType.EN_US,
     locales: {
-      [LocaleType.EN_US]: merge({}, enUS.default),
+      [LocaleType.EN_US]: merge({}, enUS.default, PROGRESS_STRINGS),
     },
     theme: defaultTheme,
     presets: [
@@ -84,6 +116,8 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
     ],
   }) as unknown as { univer: UniverInstance; univerAPI: UniverApi }
 
+  const formula = univerAPI.getFormula()
+  const firstCalculation = trackFirstCalculation(formula)
   let workbook: UniverWorkbook | null = null
   let editListeners: Array<() => void> = []
   // Counts EVERY user edit since the last load, so a save can tell whether
@@ -115,6 +149,7 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
       workbook?.dispose()
       editCount = 0
       suppressEdits = true
+      firstCalculation.reset()
       workbook = univerAPI.createWorkbook(data)
       // Release suppression once the load's synchronous + immediate-async
       // mutations have flushed; genuine user edits arrive after this.
@@ -124,11 +159,18 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
     },
     snapshot: async () => {
       if (!workbook) return null
+      await firstCalculation.whenDone(FIRST_CALCULATION_WAIT_MS)
       // Resolves once the latest calculation's results are in the model, or
       // after Univer's start window (500 ms) when none is running or starting.
-      await univerAPI.getFormula().onCalculationResultApplied(CALCULATION_WAIT_MS)
+      await formula.onCalculationResultApplied(CALCULATION_WAIT_MS)
+      // The first calculation may have started inside that window.
+      if (firstCalculation.pending()) {
+        await firstCalculation.whenDone(FIRST_CALCULATION_WAIT_MS)
+        await formula.onCalculationResultApplied(CALCULATION_WAIT_MS)
+      }
       return workbook?.save() ?? null
     },
+    firstCalculationPending: () => workbook !== null && firstCalculation.pending(),
     onEdit: (cb) => {
       editListeners.push(cb)
     },
@@ -136,6 +178,7 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
     destroy: () => {
       editListeners = []
       commandSub.dispose()
+      firstCalculation.dispose()
       workbook?.dispose()
       univer.dispose()
       formulaWorker.terminate()
