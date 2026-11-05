@@ -1,6 +1,6 @@
 ---
 summary: How imbatranim-office is laid out and built: npm workspaces with one package per app, packages/shared (externals plugin, CSS rule, vendor stylesheets, OS build, fake system for tests), the kit snapshot and kit:sync, what `npm run build:os` writes to dist/os, the suite's server (server/, Fastify, run from source, the /dwg-to-dxf WebSocket), the OS descriptor template and the test that keeps it in step with the build, and how a window gets from the OS's catalog to an app component.
-updated: 2026-11-02
+updated: 2026-11-05
 ---
 
 # Architecture
@@ -50,7 +50,9 @@ still prove workers and shared chunks.
 build emits nothing for it, and its dependencies are the root `node_modules`
 that `npm ci` installs (Fastify 5.12.7, @fastify/websocket 11.3.4,
 @mlightcad/libredwg-web 0.8.2). `/health` answers without loading LibreDWG,
-because every Office window waits on it. `/dwg-to-dxf` is a WebSocket: one
+because the window that asked for the server waits on it. Since 2026-11-05
+only CAD asks, on a window's first DWG (`system.server.request()`); the other
+apps never start it. `/dwg-to-dxf` is a WebSocket: one
 binary message in (the DWG, at most 50 MB), one out (the DXF, gzipped) or a
 JSON failure, then close; the desktop's proxy forwards a service app's HTTP
 for GET and HEAD only. Conversions run one at a time, three may queue, each in

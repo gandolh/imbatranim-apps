@@ -1,5 +1,5 @@
 ---
-summary: Current snapshot (2026-11-02), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28; on 2026-11-03 its catalog moved its pin to this repo's head (the kit synced to the OS's two themes, the row-1000 fix) and the suite ships static, so CAD opens DXF only. The owner decides what to do about Sheets' big first calculation. Open todos and owner steps.
+summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; the catalog entry still pins the static suite until it moves. Brief 03 (Sheets' first calculation) is open. Owner steps.
 updated: 2026-11-05
 ---
 
@@ -42,6 +42,11 @@ measurements are in its own corpus.
 
 ## Owed by the owner
 
+- imbatranimOS's `marketplace/imbatranim-office.json` must become this
+  repo's `os/descriptor.template.json` (a `service` since 2026-11-05) with
+  the pin moved to this repo's head, or the OS keeps installing the static
+  suite with DWG off.
+
 - Push this repo's `main` before imbatranimOS's: the OS's Office catalog entry
   pins a commit of this repo and clones it from GitHub at install.
 - After the OS is deployed, install Office from Settings → Marketplace on the
@@ -54,9 +59,10 @@ Written 2026-11-03 from the open todos, in a grill with the owner.
 - 01, Save as opens where the file is: **done 2026-11-05**. Slides' and
   CAD's Save as open in the file's folder; Docs, Sheets and PDF have no Save
   as ([outcome](../briefs/done/01-save-as-opens-where-the-file-is.md)).
-- [02, CAD asks for its server on its first DWG](../briefs/todo/02-cad-asks-for-its-server-on-its-first-dwg.md),
-  after imbatranimOS's brief 29 (a kit app asks for its server); DWG
-  opening comes back with it;
+- 02, CAD asks for its server on its first DWG: **done 2026-11-05**. The
+  suite is a `service` again; only CAD starts the server, on a window's first
+  DWG, and DWG opening is back
+  ([outcome](../briefs/done/02-cad-asks-for-its-server-on-its-first-dwg.md)).
 - [03, a save during Sheets' first calculation writes whole values](../briefs/todo/03-sheets-first-calculation-saves-whole.md):
   the save waits, the formula bar's label, and a time-boxed look at Univer's
   settings for the 1–4 s freezes while results land.

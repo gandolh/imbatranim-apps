@@ -349,3 +349,13 @@ The kit is synced to imbatranimOS `3dd0a8d` (`5a55a10`): `startIn` on the file d
 PDF save in place and have no Save as. CAD's DWG save is now that dialog in the DWG's folder with
 `<name>.dxf` suggested, and its own replace confirmation is gone (`70d04f1`). Walked in the OS dev
 container: CAD's Save as in `Drawings/2026`, the DWG's save in `Drawings`, Slides' in `Decks`.
+
+## [2026-11-05] brief | 02 done: CAD asks for its server on its first DWG
+
+The descriptor template is a `service` with the DWG server again, and CAD `opens` `.dwg`
+(`76181e2`). CAD asks through `system.server.request()` on a window's first DWG, shows "Starting the
+DWG converter…", keeps the address, and says in its own sentence why when the server doesn't start;
+a DXF never asks and `host.server` is no longer read. This replaces the 2026-11-03 "ships static"
+decision ([decisions.md](wiki/decisions.md)). Walked in the OS: Sheets opened in about 0.3 s with the
+server stopped, and the first DWG started it, converted and opened in 1.7 s. The OS's catalog entry
+has to move to the service template and this head before the OS gets any of it.

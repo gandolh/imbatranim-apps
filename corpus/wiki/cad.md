@@ -154,7 +154,10 @@ text (pdf-lib 1.17.1, the OS's pin). Both put ACI 7 in black on white.
 
 A `.dwg` (Open, Files' Open With, recents) goes to the suite's server over
 the `/dwg-to-dxf` WebSocket (`src/shell/dwg.ts`, the exchange in
-`@imbatranim-office/shared/dwg`); the window shows "Converting…", then reads
+`@imbatranim-office/shared/dwg`). The window asks the desktop for the server
+the first time it needs it (`system.server.request()`, since 2026-11-05),
+showing "Starting the DWG converter…", and keeps it; a DXF never asks. Then it
+shows "Converting…" and reads
 the DXF that comes back with the same reader as any DXF. The title keeps the
 DWG's name, and the command line says which release it was converted from
 and that Save writes a DXF. CAD never writes DWG: Save on a DWG drawing opens
@@ -162,7 +165,9 @@ the save dialog ("Save drawing as DXF") in the DWG's folder with `<name>.dxf`
 suggested, the dialog asks before replacing a file, and the window edits the
 DXF from then on (2026-11-05; until then Save confirmed a fixed name beside
 the DWG, because the dialog couldn't start in a folder). Every
-failure is one sentence in the window: no server or no answer, over 50 MB,
+failure is one sentence in the window: a server that didn't start (with the
+desktop's reason; the next DWG asks again), a desktop that can't start one, no
+answer, over 50 MB,
 not a DWG, a file LibreDWG cannot read (naming its release), over 60 s, or
 the server busy. See [decisions.md](decisions.md) for how LibreDWG runs and
 [architecture.md](architecture.md) for the server.

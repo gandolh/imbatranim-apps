@@ -1,6 +1,6 @@
 ---
 summary: The locked calls behind imbatranim-office: its own repo installed as one suite descriptor, TypeScript with editing in the browser, kit apps on the desktop's shared kit, the crafts as reference only, PDF Viewer and norPDF merged, and office-* app ids, with what each rejected and why. Read before proposing an alternative; CAD's engine (dxf-viewer's parser, @tarikjabiri/dxf, Canvas 2D) and Slides saving by patching the package in place; and DWG through the suite server, LibreDWG as WebAssembly in Node, one child process per file.
-updated: 2026-11-03
+updated: 2026-11-05
 ---
 
 # Decisions
@@ -146,7 +146,7 @@ each, and CAD's reader opened all three with every entity, layer and block.
   reserves 1 GB of wasm memory); the process ends with the file.
 
 ## The suite ships static; DWG waits for an on-demand server
-_2026-11-03_ — The owner chose to keep the suite a `static` descriptor
+_2026-11-03, replaced 2026-11-05 by the entry below_ — The owner chose to keep the suite a `static` descriptor
 (`os/descriptor.template.json`, `aad4025`). CAD opens DXF only, and its Open
 dialog offers `.dwg` only when its window has a server. The server and the DWG
 path stay in the repo.
@@ -158,3 +158,15 @@ format. DWG returns when the OS can start a server for one app, on demand
 (imbatranimOS's brief 29, then this repo's brief 02, settled with the owner on
 2026-11-03).
 
+## CAD asks for the suite's server on its first DWG
+_2026-11-05_ — The suite is a `service` descriptor again, and its server
+starts only when CAD asks (`system.server.request()`, kit 1.2.0), the first
+time one of its windows opens a `.dwg`. No other window asks, so Docs,
+Sheets, Slides and PDF open as fast as a static suite's and never fail on the
+server. Settled with the owner on 2026-11-03 (imbatranimOS's
+`decisions-marketplace-suites.md`, "A kit app asks for its server when it
+needs one"); built in this repo's brief 02.
+Rejected: staying static with DWG off; every window leasing the server, as
+on 2026-10-28.
+**Why**: it brings DWG back without the 2.7–5.0 s first window and the
+failure in every Office window that made the suite static.
