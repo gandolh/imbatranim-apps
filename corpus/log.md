@@ -359,3 +359,14 @@ a DXF never asks and `host.server` is no longer read. This replaces the 2026-11-
 decision ([decisions.md](wiki/decisions.md)). Walked in the OS: Sheets opened in about 0.3 s with the
 server stopped, and the first DWG started it, converted and opened in 1.7 s. The OS's catalog entry
 has to move to the service template and this head before the OS gets any of it.
+
+## [2026-11-05] brief | 03 done: a save during Sheets' first calculation writes whole values
+
+Univer's latest-result wait counts a stopped calculation as finished, and an edit during the first
+calculation stops it and restarts it with the edit added, so a save resolved in the gap.
+`engine/firstCalculation.ts` tracks the first calculation (first start after a load to the first end
+that isn't a stop); a save waits for it, up to 15 minutes, and the toolbar says so. The formula
+bar's progress keys had no strings in any 0.25.1 locale; en-US now has five (`7950024`). The look
+found no Univer setting that spaces out results (each run's results are one message), so the
+upstream report's text is in the outcome. Checked in the OS with a 30,000-formula workbook: an edit
+and Ctrl+S two seconds into a 19 s calculation waited and saved every cached value.

@@ -1,6 +1,6 @@
 ---
-summary: How the Sheets app is built, moved in from the OS on 2026-10-22. Univer 0.25.1 with the ExcelJS bridge, the shared refcounted xlsx worker, Univer's formula engine in a worker of each window's own (2026-10-28), why each sheet is sized to its data and its formulas' references (the row-1000 bug), the main-thread task the owner accepted, and the open big-first-calculation freeze.
-updated: 2026-11-03
+summary: How the Sheets app is built, moved in from the OS on 2026-10-22. Univer 0.25.1 with the ExcelJS bridge, the shared refcounted xlsx worker, Univer's formula engine in a worker of each window's own (2026-10-28), why each sheet is sized to its data and its formulas' references (the row-1000 bug), the main-thread task the owner accepted, the big first calculation (a save waits for it since 2026-11-05; the freezes stay, no Univer setting spaces the results), and the formula bar's progress words.
+updated: 2026-11-05
 ---
 
 # Sheets
@@ -49,13 +49,36 @@ never past Excel's 1,048,576 × 16,384. Not Excel's whole grid, because Univer
 lays out every row and column. `csvToUniver` gets a row per line. String
 literals are skipped, so `INDIRECT("A5000")` past the data still errs.
 
-## Open: the big first calculation
+## The big first calculation
 
 With every formula really computing, the 220,000-formula workbook's first
 calculation takes 4.6–5.3 minutes in the worker (load 20–40), and the main
 thread freezes 1–4 s in bursts while results land (RPC deserialization,
-writing values, GC, a redraw). A save during it writes formulas with no
-cached values. Brief 03 (2026-11-03) makes a save wait for the first calculation, fixes the
-formula bar's label and takes a time-boxed look at Univer's settings. A sheet with one
-reference at Excel's last row draws its grid in 1.6–2.1 s; scrolling it wasn't
-tried.
+writing values, GC, a redraw). The owner chose on 2026-11-03 to let the
+freezes stay; a sheet with one reference at Excel's last row draws its grid in
+1.6–2.1 s, scrolling it untried.
+
+**A save waits for the first calculation** (2026-11-05). Univer's
+`onCalculationResultApplied` waits for the *latest* calculation and counts a
+stopped one as finished. An edit during the first calculation stops it and
+starts it again with the edit added (the trigger controller keeps the first
+calculation's dirty data until a run ends without a stop), so a save resolved
+in that gap and wrote formulas with no cached values. `engine/firstCalculation.ts`
+tracks the first calculation itself, from the first `calculationStart` after a
+load to the first `calculationEnd` that isn't `STOP_EXECUTION`; `snapshot()`
+waits for it (15 minutes at most) and the toolbar says "Saving once the
+formulas finish calculating…". Left open: an edit landing after a run's
+SUCCESS but before its results are written can still let a save resolve early.
+
+**The formula bar's progress words.** Univer's formula plugin asks for
+`sheets-formula.progress.{analyzing,calculating,array-analysis,array-calculation,done}`
+and no 0.25.1 locale has them; the en-US locale merges ours in. They show only
+for a run over about a second (the controller's start timer). Univer's own bar
+reads "Done" at a stop, before the restart.
+
+**No setting spaces out the results** (a look on 2026-11-05). In 0.25.1 the
+engine's `intervalCount` (default 500) only sets how often the worker yields
+and posts a six-number progress message; each run's results go to the main
+thread as one `SetFormulaCalculationResultMutation` with the whole `unitData`,
+applied in one go, and `@univerjs/rpc` has no chunking. The upstream report's
+text is in brief 03's outcome.

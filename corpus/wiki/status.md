@@ -1,15 +1,16 @@
 ---
-summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; the catalog entry still pins the static suite until it moves. Brief 03 (Sheets' first calculation) is open. Owner steps.
+summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; the catalog entry still pins the static suite until it moves. Briefs 01-03 are done. Owner steps.
 updated: 2026-11-05
 ---
 
-# Status — 2026-11-02
+# Status — 2026-11-05
 
 **Phase: built, walked, and replacing the built-ins.** `main` holds all five
 apps; `npm run build:os` builds them into `dist/os`, and
 `os/descriptor.template.json` lists them. Pushed through `08ae15a`
-(2026-11-01). Briefs 01-03 are open (2026-11-03); brief numbering restarted at 01 on
-2026-11-02 (see [log.md](../log.md)).
+(2026-11-01). Briefs 01-03 (written 2026-11-03) were built on 2026-11-05 and
+are not pushed; brief numbering restarted at 01 on 2026-11-02 (see
+[log.md](../log.md)).
 
 ## By app
 
@@ -26,7 +27,8 @@ apps; `npm run build:os` builds them into `dist/os`, and
 - **Slides** (2026-10-22, walked 2026-10-27). Edits patch the package in
   place; untouched parts stay byte identical ([slides.md](slides.md)).
 - **Sheets** (2026-10-22, walked 2026-10-27). Formulas in a worker and sheets
-  sized past row 1000 (both 2026-10-28) ([sheets-app.md](sheets-app.md)).
+  sized past row 1000 (both 2026-10-28); a save waits for the first
+  calculation (2026-11-05) ([sheets-app.md](sheets-app.md)).
 - **PDF** (2026-10-22, walked 2026-10-28). PDF Viewer and norPDF in one app;
   first page 574 ms against PDF Viewer's 534 in the OS ([pdf.md](pdf.md)).
 
@@ -49,12 +51,14 @@ measurements are in its own corpus.
 
 - Push this repo's `main` before imbatranimOS's: the OS's Office catalog entry
   pins a commit of this repo and clones it from GitHub at install.
+- File the Univer report whose text is in brief 03's outcome, if wanted.
 - After the OS is deployed, install Office from Settings → Marketplace on the
   live machine; the built-ins are gone, so until then it has no office editor.
 
 ## Open briefs
 
-Written 2026-11-03 from the open todos, in a grill with the owner.
+Written 2026-11-03 from the open todos, in a grill with the owner; all three
+done 2026-11-05, and no brief is open.
 
 - 01, Save as opens where the file is: **done 2026-11-05**. Slides' and
   CAD's Save as open in the file's folder; Docs, Sheets and PDF have no Save
@@ -63,9 +67,12 @@ Written 2026-11-03 from the open todos, in a grill with the owner.
   suite is a `service` again; only CAD starts the server, on a window's first
   DWG, and DWG opening is back
   ([outcome](../briefs/done/02-cad-asks-for-its-server-on-its-first-dwg.md)).
-- [03, a save during Sheets' first calculation writes whole values](../briefs/todo/03-sheets-first-calculation-saves-whole.md):
-  the save waits, the formula bar's label, and a time-boxed look at Univer's
-  settings for the 1–4 s freezes while results land.
+- 03, a save during Sheets' first calculation writes whole values: **done
+  2026-11-05**. The save waits for the first calculation and says so, the
+  formula bar's progress has words, and no Univer setting spaces the
+  results; the upstream report's text is in the
+  [outcome](../briefs/done/03-sheets-first-calculation-saves-whole.md) for
+  the owner to file.
 
 No todo is open.
 
