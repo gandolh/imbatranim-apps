@@ -370,3 +370,8 @@ bar's progress keys had no strings in any 0.25.1 locale; en-US now has five (`79
 found no Univer setting that spaces out results (each run's results are one message), so the
 upstream report's text is in the outcome. Checked in the OS with a 30,000-formula workbook: an edit
 and Ctrl+S two seconds into a 19 s calculation waited and saved every cached value.
+
+## [2026-11-05] os | imbatranimOS pins `1b4394f`
+
+The OS's catalog entry is now this repo's descriptor template at `1b4394f` (OS commit `eb12677`), the
+service template with DWG back, after briefs 01-03. Push this repo before the OS.

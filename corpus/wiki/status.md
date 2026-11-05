@@ -1,5 +1,5 @@
 ---
-summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; the catalog entry still pins the static suite until it moves. Briefs 01-03 are done. Owner steps.
+summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Owner steps.
 updated: 2026-11-05
 ---
 
@@ -35,22 +35,20 @@ are not pushed; brief numbering restarted at 01 on 2026-11-02 (see
 ## In imbatranimOS
 
 On 2026-10-28 the OS retired its built-in Docs, Slides, Sheets and PDF
-Viewer/norPDF (versions 1.57.0 to 1.59.0, pushed) and pins this
-repo at `909c321`. That pin has the walk fixes, find-as-you-type, the trim fix
-and the formula worker, but **not** the row-1000 fix (`028f5ca`) or DWG
-(`4810095`); an OS todo moves the pin. The OS also starts a kit app's import
-when its window opens now, its answer to PDF's 40 ms first-page gap; the
-measurements are in its own corpus.
+Viewer/norPDF (versions 1.57.0 to 1.59.0, pushed) and pinned this repo at
+`909c321`. The pin moved to `aa626c2` on 2026-11-03 (the static suite, the
+row-1000 fix, the kit on the two themes) and to `1b4394f` on 2026-11-05 (OS
+commit `eb12677`: the service template, Save as in the file's folder, Sheets'
+save waiting for the first calculation); neither is pushed yet. The OS also
+starts a kit app's import when its window opens, its answer to PDF's 40 ms
+first-page gap; the measurements are in its own corpus.
 
 ## Owed by the owner
 
-- imbatranimOS's `marketplace/imbatranim-office.json` must become this
-  repo's `os/descriptor.template.json` (a `service` since 2026-11-05) with
-  the pin moved to this repo's head, or the OS keeps installing the static
-  suite with DWG off.
 
 - Push this repo's `main` before imbatranimOS's: the OS's Office catalog entry
-  pins a commit of this repo and clones it from GitHub at install.
+  pins `1b4394f` of this repo (moved 2026-11-05, the service template) and
+  clones it from GitHub at install.
 - File the Univer report whose text is in brief 03's outcome, if wanted.
 - After the OS is deployed, install Office from Settings → Marketplace on the
   live machine; the built-ins are gone, so until then it has no office editor.
