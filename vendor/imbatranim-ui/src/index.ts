@@ -40,6 +40,7 @@ export { useElementSize, type ElementSize, type ElementSizeRef } from './hooks/u
 // Pure utilities
 export { installMapGetOrInsert } from './lib/mapGetOrInsert'
 export { isTextEntry } from './lib/textEntry'
+export { desktopSessionId, renewDesktopSessionId } from './lib/desktopSession'
 export { fileName, FileConflictError, UploadTooLargeError } from './lib/files'
 export { saveOverRead, type SaveOverReadOutcome } from './lib/saveOverRead'
 export { describeFileFailure, type FileFailureOptions } from './lib/fileFailureText'
@@ -79,6 +80,8 @@ export type {
   SystemNotifyInput,
   SystemNotifyLevel,
   SystemSchedule,
+  SystemServer,
+  SystemServerAddress,
   SystemShortcuts,
   SystemWindow,
   UploadOptions,
