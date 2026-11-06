@@ -393,3 +393,12 @@ imbatranimOS brief 53. Two briefs follow from it here:
 - **05, PDF decodes JPEG2000 and JBIG2.** It ships pdf.js's `openjpeg`,
   `jbig2` and `qcms` wasm, never `quickjs-eval`.
 
+## [2026-11-06] backlog | 04 and 05 become todos
+
+The owner asked for the imbatranim-apps work to be grilled when it starts
+and kept in the backlog until then. Briefs 04 and 05 became the todos
+`cad-reads-dwg-in-the-tab` and `pdf-decodes-jpeg2000-and-jbig2-images`, with
+their open questions first and the draft brief after. The briefs moved to
+`briefs/superseded/` with a note, so the numbers 04 and 05 stay unused; the
+next brief is 06.
+

@@ -1,3 +1,5 @@
+> SUPERSEDED 2026-11-06, before any work: the owner keeps this in the backlog until its open questions are grilled, so it became the todo [pdf-decodes-jpeg2000-and-jbig2-images](../../todos/pdf-decodes-jpeg2000-and-jbig2-images.md), which holds the draft. Promoting that todo makes a new brief with a new number. Spec kept for the record.
+
 # Brief 05 — PDF decodes JPEG2000 and JBIG2 images
 
 ## Context

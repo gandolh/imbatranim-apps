@@ -58,34 +58,21 @@ first-page gap; the measurements are in its own corpus.
 Written 2026-11-03 from the open todos, in a grill with the owner; all three
 done 2026-11-05.
 
-Open since 2026-11-06, from imbatranimOS's research on imbatranim-apps (the
-owner approved it the same day). Both wait for imbatranimOS brief 53, which
-lets the desktop's page run WebAssembly:
-- 04, CAD reads DWG in the tab
-  ([brief](../briefs/todo/04-cad-reads-dwg-in-the-tab.md)): LibreDWG in a
-  worker per file, and the suite loses its server if the phone can carry
-  the conversion. It also changes the "No WebAssembly" invariant.
-- 05, PDF decodes JPEG2000 and JBIG2
-  ([brief](../briefs/todo/05-pdf-decodes-jpeg2000-and-jbig2-images.md)):
+In the backlog since 2026-11-06, from imbatranimOS's research on
+imbatranim-apps (approved by the owner the same day). Both were drafted as
+briefs 04 and 05 and kept as todos, so their open questions are grilled when
+work starts (the briefs are in `briefs/superseded/`). Both wait for
+imbatranimOS's todo `kit-apps-may-run-webassembly`, which lets the
+desktop's page run WebAssembly:
+- [cad-reads-dwg-in-the-tab](../todos/cad-reads-dwg-in-the-tab.md): LibreDWG
+  in a worker per file, and the suite loses its server if the phone can
+  carry the conversion. It also changes the "No WebAssembly" invariant.
+- [pdf-decodes-jpeg2000-and-jbig2-images](../todos/pdf-decodes-jpeg2000-and-jbig2-images.md):
   pdf.js's own decoders shipped, a PDF's scripts still off.
 
-This repo is also to be renamed imbatranim-apps (imbatranimOS brief 50),
-with Office as its first group.
+This repo is also to be renamed imbatranim-apps (imbatranimOS's todo
+`imbatranim-office-becomes-imbatranim-apps`), with Office as its first group.
 
-- 01, Save as opens where the file is: **done 2026-11-05**. Slides' and
-  CAD's Save as open in the file's folder; Docs, Sheets and PDF have no Save
-  as ([outcome](../briefs/done/01-save-as-opens-where-the-file-is.md)).
-- 02, CAD asks for its server on its first DWG: **done 2026-11-05**. The
-  suite is a `service` again; only CAD starts the server, on a window's first
-  DWG, and DWG opening is back
-  ([outcome](../briefs/done/02-cad-asks-for-its-server-on-its-first-dwg.md)).
-- 03, a save during Sheets' first calculation writes whole values: **done
-  2026-11-05**. The save waits for the first calculation and says so, the
-  formula bar's progress has words, and no Univer setting spaces the
-  results; the upstream report's text is in the
-  [outcome](../briefs/done/03-sheets-first-calculation-saves-whole.md) for
-  the owner to file.
-
-No todo is open.
+Those two are the open todos.
 
 Test files for the walks: [test-files.md](test-files.md).
