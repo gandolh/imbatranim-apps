@@ -26,8 +26,9 @@ approved by the owner the same day).
 
 ## Depends on
 
-imbatranimOS brief 53 ("Kit apps may run WebAssembly"), built and its kit
-synced here (`npm run kit:sync`).
+imbatranimOS brief 53 ("Kit apps may run WebAssembly"), built and running
+in the OS the walk uses. It changes a header, not the kit, so no kit sync is
+needed for it.
 
 ## Owner decisions
 

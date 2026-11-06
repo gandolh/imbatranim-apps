@@ -20,7 +20,8 @@ owner on 2026-11-06).
 
 ## Depends on
 
-imbatranimOS brief 53, built and its kit synced here. Brief 04 changes this
+imbatranimOS brief 53, built and running in the OS the walk uses (a header
+change, no kit sync needed). Brief 04 changes this
 repo's invariant on WebAssembly. If 04 hasn't run, make that change here
 instead.
 
