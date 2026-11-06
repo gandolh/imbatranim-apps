@@ -105,12 +105,21 @@ export function osOutputChecks(options: { apps: readonly OsApp[]; kitNotice?: st
 }
 
 export type OsBuildOptions = {
-  /** The repo root. */
+  /**
+   * The build's root: the repo root for Office, a group's folder for any other
+   * group (`games`). Its `apps/<name>` are the apps.
+   */
   root: string
   /** Defaults to `<root>/dist/os`. */
   outDir?: string
   /** The kit snapshot; defaults to `<root>/vendor/imbatranim-ui`. */
   vendorDir?: string
+  /**
+   * Source the apps share, scanned for every app's Tailwind classes, without
+   * its `build` and `testing` directories. Defaults to
+   * `<root>/packages/shared/src`; a directory that does not exist is skipped.
+   */
+  sharedDir?: string
 }
 
 /** The whole Vite config of `npm run build:os`. */
@@ -120,7 +129,7 @@ export function osBuildConfig(options: OsBuildOptions): UserConfig {
   if (apps.length === 0)
     throw new Error(`no apps: nothing under ${join(root, 'apps')} has src/App.tsx`)
   const kit = readKitSnapshot(options.vendorDir ?? join(root, 'vendor', 'imbatranim-ui'))
-  const shared = join(root, 'packages', 'shared', 'src')
+  const shared = options.sharedDir ?? join(root, 'packages', 'shared', 'src')
 
   return {
     root,

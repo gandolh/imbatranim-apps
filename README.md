@@ -1,6 +1,9 @@
 # imbatranim-apps
 
-The apps installed on imbatranimOS, grouped by kind. The first group is Office (renamed from imbatranim-office on 2026-11-06): Docs, Sheets, Slides, PDF and CAD. They install together from the OS's Marketplace and open in OS windows with the desktop's own buttons, dialogs and theme.
+The apps installed on imbatranimOS, grouped by kind. Each group installs together from the OS's Marketplace and its apps open in OS windows with the desktop's own buttons, dialogs and theme. Two groups so far:
+
+- **Office** (the repo was imbatranim-office until 2026-11-06): Docs, Sheets, Slides, PDF and CAD.
+- **Games** (2026-11-06): Minesweeper and Solitaire, which used to be built into the OS.
 
 <p align="center">
   <img src="docs/images/docs.webp" width="100%" alt="Docs in an imbatranimOS window: a Word document titled Community garden plan, with a table of beds, crops and sowing weeks and a list of tasks, under a toolbar with font, size, bold, italic, lists and tables">
@@ -15,6 +18,7 @@ The apps installed on imbatranimOS, grouped by kind. The first group is Office (
 - **Slides** opens, edits and presents PowerPoint decks (`.pptx`).
 - **PDF** reads, annotates, fills in, signs and reorganises PDF documents.
 - **CAD** draws 2D plans with a command line, object snaps and layers, reads and writes DXF, and opens DWG through the suite's server.
+- **Minesweeper** keeps best times per difficulty, with flags and chords. **Solitaire** is Klondike, draw 1 or 3, with unlimited undo.
 
 Editing runs in the browser, inside the OS window, so files never leave the machine the OS runs on. It is not a standalone web office: the apps need the desktop's React and UI kit, which the OS lends them at runtime.
 
@@ -28,7 +32,7 @@ Editing runs in the browser, inside the OS window, so files never leave the mach
 
 ## How it works
 
-Each app is a workspace package that exports one React component. `npm run build:os` bundles them into `dist/os` with React, React DOM and `@imbatranim/ui` left external, so the desktop renders each app with its own instances. A small Fastify server, which the OS starts when an app first asks for it, does one-off jobs that cannot run in the browser, such as turning a DWG into DXF. More in the [wiki's architecture page](corpus/wiki/architecture.md).
+Each app exports one React component. `npm run build:os` bundles a group's apps into its `dist/os` with React, React DOM and `@imbatranim/ui` left external, so the desktop renders each app with its own instances. Office's apps are workspace packages under `apps/`, built from the repo root. Every other group is one workspace folder (`games/`) that the OS installs and builds on its own, `npm ci --workspace=games` then `npm run build:os --workspace=games`, so installing Games doesn't pull Office's dependencies. A small Fastify server, which the OS starts when an app first asks for it, does one-off jobs that cannot run in the browser, such as turning a DWG into DXF. More in the [wiki's architecture page](corpus/wiki/architecture.md).
 
 ```mermaid
 flowchart LR
@@ -46,7 +50,8 @@ Requires Node 24.14.1 or later and npm 11.11 or later.
 npm ci
 npm test               # vitest across the apps, the shared package and the server
 npm run typecheck
-npm run build:os       # writes dist/os, what the OS's Marketplace installs
+npm run build:os       # writes dist/os, what the OS's Marketplace installs for Office
+npm run build:os --workspace=games   # writes games/dist/os, the Games group
 ```
 
 To try the apps, install the suite into an imbatranimOS you run locally from a commit of your checkout: [os/README.md](os/README.md#installing-from-a-local-checkout). More in [docs/getting-started.md](docs/getting-started.md).
@@ -56,11 +61,12 @@ To try the apps, install the suite into an imbatranimOS you run locally from a c
 | Path                       | What lives there                                                                 |
 | -------------------------- | -------------------------------------------------------------------------------- |
 | `apps/`                    | One package per app: `docs`, `sheets`, `slides`, `pdf`, `cad`                    |
+| `games/`                   | The Games group: `apps/minesweeper`, `apps/solitaire`, its descriptor template   |
 | `packages/shared/`         | The OS build, the externals plugin, shared types and a fake system for tests     |
 | `packages/pdfcore-engine/` | The PDF engine the PDF app uses                                                  |
 | `server/`                  | The suite's Fastify server: health and the DWG to DXF converter                  |
 | `vendor/imbatranim-ui/`    | The snapshot of the desktop's UI kit the apps build against (`npm run kit:sync`) |
-| `os/`                      | The catalog descriptor template the OS pins, and how to install from a checkout  |
+| `os/`                      | Office's descriptor template, and how to install a group from a checkout         |
 | `corpus/`                  | The project wiki: decisions, status and the briefs                               |
 
 ## Docs

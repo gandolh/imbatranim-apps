@@ -20,6 +20,8 @@ export default defineConfig({
       'apps/*/src/**/*.test.{ts,tsx}',
       'packages/*/src/**/*.test.{ts,tsx}',
       'server/src/**/*.test.ts',
+      'games/apps/*/src/**/*.test.{ts,tsx}',
+      'games/shared/src/**/*.test.{ts,tsx}',
     ],
   },
 })

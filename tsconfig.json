@@ -3,6 +3,7 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" },
+    { "path": "./games/tsconfig.json" },
     { "path": "./packages/pdfcore-engine/tsconfig.json" }
   ]
 }

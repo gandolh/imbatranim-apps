@@ -15,15 +15,16 @@ npm test             # vitest: the apps, packages/shared and the server
 npm run typecheck    # tsc -b across every workspace
 npm run lint
 npm run build:os     # writes dist/os: one folder per app, shared chunks and workers
+npm run build:os --workspace=games   # writes games/dist/os, the Games group
 ```
 
-`npm run build:os` is the exact build the OS's Marketplace runs after `npm ci`. Its test, `packages/shared/src/build/osBuild.test.ts`, checks the output against `os/descriptor.template.json`.
+`npm run build:os` is the exact build the OS's Marketplace runs for Office after `npm ci`. Its test, `packages/shared/src/build/osBuild.test.ts`, checks the output against `os/descriptor.template.json`. Every other group is a workspace folder the Marketplace installs with `npm ci --workspace=<group>` and builds with `npm run build:os --workspace=<group>`; `packages/shared/src/build/groups.test.ts` checks each against its `<group>/os/descriptor.template.json`.
 
 There is no dev server. The apps import React and `@imbatranim/ui` as externals that only the desktop provides, so they render only inside an OS window.
 
 ## See the apps in the OS
 
-Install the suite into a local imbatranimOS from a commit of your checkout. The steps, for the dev container and for the production image, are in [os/README.md](../os/README.md#installing-from-a-local-checkout). After the install the OS lists Docs, Sheets, Slides, PDF and CAD in Start, and opens matching files from File Manager in them.
+Install the suite into a local imbatranimOS from a commit of your checkout. The steps, for the dev container and for the production image, are in [os/README.md](../os/README.md#installing-from-a-local-checkout). After installing Office the OS lists Docs, Sheets, Slides, PDF and CAD in Start, and opens matching files from File Manager in them. After installing Games it lists Minesweeper and Solitaire.
 
 ## The UI kit snapshot
 

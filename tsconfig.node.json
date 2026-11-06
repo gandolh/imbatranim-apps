@@ -7,6 +7,7 @@
   "include": [
     "vite.config.ts",
     "vitest.config.ts",
+    "games/vite.config.ts",
     "tools",
     "packages/shared/src/build",
     "server/src"

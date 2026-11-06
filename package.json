@@ -12,7 +12,8 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "server"
+    "server",
+    "games"
   ],
   "scripts": {
     "build:os": "vite build",
