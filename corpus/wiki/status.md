@@ -59,20 +59,17 @@ Written 2026-11-03 from the open todos, in a grill with the owner; all three
 done 2026-11-05.
 
 In the backlog since 2026-11-06, from imbatranimOS's research on
-imbatranim-apps (approved by the owner the same day). Both were drafted as
-briefs 04 and 05 and kept as todos, so their open questions are grilled when
-work starts (the briefs are in `briefs/superseded/`). Both wait for
-imbatranimOS's todo `kit-apps-may-run-webassembly`, which lets the
-desktop's page run WebAssembly:
-- [cad-reads-dwg-in-the-tab](../todos/cad-reads-dwg-in-the-tab.md): LibreDWG
-  in a worker per file, and the suite loses its server if the phone can
-  carry the conversion. It also changes the "No WebAssembly" invariant.
+imbatranim-apps, grilled with the owner the same day:
 - [pdf-decodes-jpeg2000-and-jbig2-images](../todos/pdf-decodes-jpeg2000-and-jbig2-images.md):
-  pdf.js's own decoders shipped, a PDF's scripts still off.
+  pdf.js's own decoders shipped, a PDF's scripts still off. It waits for
+  imbatranimOS's todo `kit-apps-may-run-webassembly`, and it carries the
+  change to the "No WebAssembly" invariant.
+- `cad-reads-dwg-in-the-tab` was dropped: DWG conversion stays on the
+  suite's server.
 
 This repo is also to be renamed imbatranim-apps (imbatranimOS's todo
 `imbatranim-office-becomes-imbatranim-apps`), with Office as its first group.
 
-Those two are the open todos.
+That PDF todo is the open one.
 
 Test files for the walks: [test-files.md](test-files.md).

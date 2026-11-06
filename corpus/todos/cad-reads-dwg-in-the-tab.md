@@ -1,7 +1,7 @@
 ---
 title: CAD reads DWG in the tab
 created: 2026-11-06
-status: open
+status: dropped
 tags: [imbatranim-apps]
 ---
 
@@ -11,6 +11,8 @@ CAD converts DWG to DXF in the tab, in a worker per file, with the LibreDWG WebA
 
 Drafted as a brief on 2026-11-06 and kept in the backlog: grill the open
 questions below when the work starts, then promote this to a numbered brief.
+
+> DROPPED 2026-11-06 in the imbatranim-apps grill: the owner keeps DWG conversion on the suite's server and skips this work. The WASM invariant change it carried moves to [pdf-decodes-jpeg2000-and-jbig2-images](pdf-decodes-jpeg2000-and-jbig2-images.md).
 
 ## Open questions (grill before starting)
 

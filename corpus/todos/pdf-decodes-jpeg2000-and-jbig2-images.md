@@ -42,9 +42,10 @@ owner on 2026-11-06).
 ### Depends on
 
 imbatranimOS's todo `corpus/todos/kit-apps-may-run-webassembly.md`, built and running in the OS the walk uses (a header
-change, no kit sync needed). [cad-reads-dwg-in-the-tab](cad-reads-dwg-in-the-tab.md) changes this
-repo's invariant on WebAssembly. If that hasn't run, make that change here
-instead.
+change, no kit sync needed). This todo also changes the repo's "No WebAssembly in the apps" invariant to
+"WASM only from an npm package, pinned by the lockfile, never compiled here or
+committed" (CLAUDE.md and `wiki/decisions.md`), since the DWG todo that was to
+do it was dropped.
 
 ### What to do
 

@@ -402,3 +402,11 @@ their open questions first and the draft brief after. The briefs moved to
 `briefs/superseded/` with a note, so the numbers 04 and 05 stay unused; the
 next brief is 06.
 
+## [2026-11-06] grill | DWG stays on the server
+
+In imbatranimOS's grill on the imbatranim-apps backlog, the owner chose to
+keep DWG conversion on the suite's server, so the todo
+`cad-reads-dwg-in-the-tab` is dropped. The change to the "No WebAssembly in
+the apps" invariant moves to `pdf-decodes-jpeg2000-and-jbig2-images`. The
+owner confirmed WebAssembly is still worth allowing for it.
+
