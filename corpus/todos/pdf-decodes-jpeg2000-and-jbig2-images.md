@@ -1,7 +1,7 @@
 ---
 title: PDF decodes JPEG2000 and JBIG2 images
 created: 2026-11-06
-status: open
+status: promoted
 tags: [imbatranim-apps]
 ---
 
@@ -12,6 +12,8 @@ PDF ships pdf.js's own JPEG2000 and JBIG2 decoders, so scanned PDFs render their
 Drafted as a brief on 2026-11-06 and kept in the backlog: grill the open
 questions below when the work starts, then promote this to a numbered brief.
 
+
+> PROMOTED 2026-11-06 to [brief 06](../briefs/todo/06-pdf-decodes-jpeg2000-and-jbig2-images.md), after the grill. The brief is the spec; this todo keeps the questions as asked.
 ## Open questions (grill before starting)
 
 Settled: the owner approved the imbatranim-apps plan on 2026-11-06 ("looks good, write the briefs"); WASM engines from npm packages may run in the apps (imbatranimOS's research on imbatranim-apps).

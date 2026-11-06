@@ -60,16 +60,16 @@ done 2026-11-05.
 
 In the backlog since 2026-11-06, from imbatranimOS's research on
 imbatranim-apps, grilled with the owner the same day:
-- [pdf-decodes-jpeg2000-and-jbig2-images](../todos/pdf-decodes-jpeg2000-and-jbig2-images.md):
-  pdf.js's own decoders shipped, a PDF's scripts still off. It waits for
-  imbatranimOS's todo `kit-apps-may-run-webassembly`, and it carries the
-  change to the "No WebAssembly" invariant.
+- [Brief 06](../briefs/todo/06-pdf-decodes-jpeg2000-and-jbig2-images.md),
+  promoted from the todo the same day: pdf.js's own decoders shipped, a
+  PDF's scripts still off. It waits for imbatranimOS brief 67, and it
+  carries the change to the "No WebAssembly" invariant.
 - `cad-reads-dwg-in-the-tab` was dropped: DWG conversion stays on the
   suite's server.
 
 This repo is also to be renamed imbatranim-apps (imbatranimOS's todo
 `imbatranim-office-becomes-imbatranim-apps`), with Office as its first group.
 
-That PDF todo is the open one.
+No todo is open.
 
 Test files for the walks: [test-files.md](test-files.md).

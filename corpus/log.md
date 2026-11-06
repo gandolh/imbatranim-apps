@@ -410,3 +410,9 @@ keep DWG conversion on the suite's server, so the todo
 the apps" invariant moves to `pdf-decodes-jpeg2000-and-jbig2-images`. The
 owner confirmed WebAssembly is still worth allowing for it.
 
+## [2026-11-06] briefs | Brief 06: PDF decodes JPEG2000 and JBIG2
+
+The PDF todo was grilled and promoted with imbatranimOS's briefs 63-76. It
+waits for imbatranimOS brief 67 (WebAssembly with threads). Board ticket
+imbatranim-office-06 is in To Do.
+
