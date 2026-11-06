@@ -16,8 +16,8 @@ questions below when the work starts, then promote this to a numbered brief.
 
 Settled: the owner approved the imbatranim-apps plan on 2026-11-06 ("looks good, write the briefs"); WASM engines from npm packages may run in the apps (imbatranimOS's research on imbatranim-apps).
 
-1. **What ships: `openjpeg.wasm`, `jbig2.wasm` and `qcms_bg.wasm` with their licences, and never `quickjs-eval.wasm`, so a PDF's own scripts stay off?** Proposed: yes.
-2. **Do the `*_nowasm_fallback.js` files ship too, in case WASM fails to start?** Proposed: no; the CSP allows WASM by then and the fallbacks only add weight.
+1. **What ships: `openjpeg.wasm`, `jbig2.wasm` and `qcms_bg.wasm` with their licences, and never `quickjs-eval.wasm`, so a PDF's own scripts stay off?** Answered 2026-11-06: yes.
+2. **Do the `*_nowasm_fallback.js` files ship too, in case WASM fails to start?** Answered 2026-11-06: no fallbacks.
 
 ## Draft brief
 
