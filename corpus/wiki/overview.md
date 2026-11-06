@@ -1,12 +1,14 @@
 ---
-summary: What imbatranim-office is: the office apps of imbatranimOS (Docs, Sheets, Slides, PDF, CAD) in their own repo, installed from the OS's Marketplace as one entry and rendered with the desktop's own React and kit, and where it came from.
+summary: What imbatranim-apps is: the office apps of imbatranimOS (Docs, Sheets, Slides, PDF, CAD) in their own repo, installed from the OS's Marketplace as one entry and rendered with the desktop's own React and kit, and where it came from.
 updated: 2026-11-02
 ---
 
 # Overview
 
-imbatranim-office is the office suite of imbatranimOS, a web OS whose desktop
-is a React app served from one container. It holds five apps:
+imbatranim-apps is the repo of the apps installed on imbatranimOS, a web OS
+whose desktop is a React app served from one container (renamed from
+imbatranim-office on 2026-11-06). Its first group, Office, is the office suite,
+five apps:
 
 | App | What it does | Where it comes from |
 |---|---|---|

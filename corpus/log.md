@@ -416,3 +416,11 @@ The PDF todo was grilled and promoted with imbatranimOS's briefs 63-76. It
 waits for imbatranimOS brief 67 (WebAssembly with threads). Board ticket
 imbatranim-office-06 is in To Do.
 
+
+## [2026-11-06] rename | imbatranim-office becomes imbatranim-apps
+
+Words only (imbatranimOS brief 63): README, docs, corpus and the root package
+name (`@imbatranim-apps/root`). Kept: the descriptor id `imbatranim-office`,
+the `office-` app ids, the `@imbatranim-office/*` workspace packages, history.
+The local folder is now imbatranim-apps. The GitHub rename is the owner's.
+brief-board picks up the project name at the next sync.

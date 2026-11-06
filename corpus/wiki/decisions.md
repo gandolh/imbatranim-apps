@@ -1,6 +1,6 @@
 ---
-summary: The locked calls behind imbatranim-office: its own repo installed as one suite descriptor, TypeScript with editing in the browser, kit apps on the desktop's shared kit, the crafts as reference only, PDF Viewer and norPDF merged, and office-* app ids, with what each rejected and why. Read before proposing an alternative; CAD's engine (dxf-viewer's parser, @tarikjabiri/dxf, Canvas 2D) and Slides saving by patching the package in place; and DWG through the suite server, LibreDWG as WebAssembly in Node, one child process per file.
-updated: 2026-11-05
+summary: The locked calls behind imbatranim-apps: its own repo installed as one suite descriptor, TypeScript with editing in the browser, kit apps on the desktop's shared kit, the crafts as reference only, PDF Viewer and norPDF merged, and office-* app ids, with what each rejected and why. Read before proposing an alternative; CAD's engine (dxf-viewer's parser, @tarikjabiri/dxf, Canvas 2D) and Slides saving by patching the package in place; and DWG through the suite server, LibreDWG as WebAssembly in Node, one child process per file.
+updated: 2026-11-06
 ---
 
 # Decisions
@@ -170,3 +170,12 @@ Rejected: staying static with DWG off; every window leasing the server, as
 on 2026-10-28.
 **Why**: it brings DWG back without the 2.7–5.0 s first window and the
 failure in every Office window that made the suite static.
+
+## The repo is imbatranim-apps; the Office calls hold for the Office group
+_2026-11-06_ — The repo is renamed from imbatranim-office to imbatranim-apps:
+the home of every app installed on the OS, with Office as its first group. The
+descriptor keeps its id `imbatranim-office` and its name "Office", the app ids
+keep `office-`, the workspace packages keep `@imbatranim-office/*`, and the
+whole repo stays AGPL-3.0-only. Every decision above holds for the Office group.
+**Why**: installed rows, build directories and the server are keyed by the
+descriptor id, so changing it would break installs for a name.

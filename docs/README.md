@@ -1,4 +1,4 @@
-# imbatranim-office docs
+# imbatranim-apps docs
 
 Start with the [main README](../README.md). This folder holds what it links to.
 

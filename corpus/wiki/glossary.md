@@ -15,7 +15,7 @@ uses every day.
 
 **Suite**:
 This repo's five apps taken together, as the owner installs them.
-_Avoid_: Office (that is the descriptor's display name), the craft suite,
+_Avoid_: Office (that is the descriptor's display name and the first group's name), the craft suite,
 bundle, package.
 
 **Docs**, **Sheets**, **Slides**, **PDF**, **CAD**:

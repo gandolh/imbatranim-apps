@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# corpus/lint.sh — health check for the imbatranim-office corpus.
+# corpus/lint.sh — health check for the imbatranim-apps corpus.
 #   bash corpus/lint.sh          run all checks, exit non-zero on failure
 #   bash corpus/lint.sh --index  regenerate index.md's catalog block from summaries
 set -u
@@ -25,7 +25,7 @@ body_lines() { # lines excluding frontmatter
 regen_index() {
   local tmp="$CORPUS_DIR/index.md.tmp"
   {
-    echo "# imbatranim-office corpus — index"
+    echo "# imbatranim-apps corpus — index"
     echo
     echo "Start here. Triage on the summary lines; open at most 2–3 pages."
     echo

@@ -1,6 +1,6 @@
 # Third-party notices
 
-imbatranim-office is licensed under the AGPL-3.0-only (see [LICENSE](LICENSE)).
+imbatranim-apps is licensed under the AGPL-3.0-only (see [LICENSE](LICENSE)).
 Code translated or copied into this repository from another project keeps that
 project's copyright and licence notice here: one section per source, naming the
 project, its licence, the files here that carry its code, and the notice text.

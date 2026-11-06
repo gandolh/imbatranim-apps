@@ -67,8 +67,9 @@ imbatranim-apps, grilled with the owner the same day:
 - `cad-reads-dwg-in-the-tab` was dropped: DWG conversion stays on the
   suite's server.
 
-This repo is also to be renamed imbatranim-apps (imbatranimOS's todo
-`imbatranim-office-becomes-imbatranim-apps`), with Office as its first group.
+This repo was renamed imbatranim-apps on 2026-11-06 (imbatranimOS brief 63),
+with Office as its first group; words only. Left to the owner: rename the
+GitHub repository, then point `origin` at it.
 
 No todo is open.
 

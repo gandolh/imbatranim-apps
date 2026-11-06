@@ -1,5 +1,5 @@
 ---
-summary: How imbatranim-office is laid out and built: npm workspaces with one package per app, packages/shared (externals plugin, CSS rule, vendor stylesheets, OS build, fake system for tests), the kit snapshot and kit:sync, what `npm run build:os` writes to dist/os, the suite's server (server/, Fastify, run from source, the /dwg-to-dxf WebSocket), the OS descriptor template and the test that keeps it in step with the build, and how a window gets from the OS's catalog to an app component.
+summary: How imbatranim-apps is laid out and built: npm workspaces with one package per app, packages/shared (externals plugin, CSS rule, vendor stylesheets, OS build, fake system for tests), the kit snapshot and kit:sync, what `npm run build:os` writes to dist/os, the suite's server (server/, Fastify, run from source, the /dwg-to-dxf WebSocket), the OS descriptor template and the test that keeps it in step with the build, and how a window gets from the OS's catalog to an app component.
 updated: 2026-11-05
 ---
 

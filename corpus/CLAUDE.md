@@ -1,4 +1,4 @@
-# imbatranim-office corpus — schema and conventions
+# imbatranim-apps corpus — schema and conventions
 
 This directory is the project's wiki and work tracker, maintained by the LLM.
 The owner curates sources and asks questions; the LLM curates the synthesis and
@@ -28,7 +28,8 @@ corpus/
 
 ## Two repos, one product
 
-This repo holds the apps. The OS repo (imbatranimOS) holds the desktop, the
+This repo, imbatranim-apps (named imbatranim-office until 2026-11-06), holds
+the apps that install on the OS, in groups with Office first. The OS repo (imbatranimOS) holds the desktop, the
 marketplace that installs this suite, and the catalog descriptor that pins a
 commit of this repo. The calls that shaped the split were made in the OS's
 corpus (`corpus/wiki/decisions-office-suite.md` there) and are restated, from
