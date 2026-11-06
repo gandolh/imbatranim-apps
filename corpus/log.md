@@ -375,3 +375,21 @@ and Ctrl+S two seconds into a 19 s calculation waited and saved every cached val
 
 The OS's catalog entry is now this repo's descriptor template at `1b4394f` (OS commit `eb12677`), the
 service template with DWG back, after briefs 01-03. Push this repo before the OS.
+
+## [2026-11-06] briefs | 04 and 05: WebAssembly in the apps
+
+imbatranimOS researched turning this repo into imbatranim-apps, the home of
+every app that can be installed on the OS. The owner approved the plan on
+2026-11-06 (imbatranimOS `corpus/wiki/research-imbatranim-apps.md`; the
+rename is its brief 50, with Office kept as the descriptor id
+`imbatranim-office`). One of the plan's three kinds of app is a kit UI over a
+WASM engine from an npm package, which the desktop's CSP refused until
+imbatranimOS brief 53. Two briefs follow from it here:
+- **04, CAD reads DWG in the tab.** The server only converts DWG, so if the
+  phone can carry LibreDWG in a worker, the descriptor goes back to `static`
+  and `server/` goes. It also rewrites the "No WebAssembly in the apps"
+  invariant to "WASM only from an npm package, pinned, never compiled here or
+  committed".
+- **05, PDF decodes JPEG2000 and JBIG2.** It ships pdf.js's `openjpeg`,
+  `jbig2` and `qcms` wasm, never `quickjs-eval`.
+

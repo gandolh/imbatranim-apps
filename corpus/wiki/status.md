@@ -56,7 +56,21 @@ first-page gap; the measurements are in its own corpus.
 ## Open briefs
 
 Written 2026-11-03 from the open todos, in a grill with the owner; all three
-done 2026-11-05, and no brief is open.
+done 2026-11-05.
+
+Open since 2026-11-06, from imbatranimOS's research on imbatranim-apps (the
+owner approved it the same day). Both wait for imbatranimOS brief 53, which
+lets the desktop's page run WebAssembly:
+- 04, CAD reads DWG in the tab
+  ([brief](../briefs/todo/04-cad-reads-dwg-in-the-tab.md)): LibreDWG in a
+  worker per file, and the suite loses its server if the phone can carry
+  the conversion. It also changes the "No WebAssembly" invariant.
+- 05, PDF decodes JPEG2000 and JBIG2
+  ([brief](../briefs/todo/05-pdf-decodes-jpeg2000-and-jbig2-images.md)):
+  pdf.js's own decoders shipped, a PDF's scripts still off.
+
+This repo is also to be renamed imbatranim-apps (imbatranimOS brief 50),
+with Office as its first group.
 
 - 01, Save as opens where the file is: **done 2026-11-05**. Slides' and
   CAD's Save as open in the file's folder; Docs, Sheets and PDF have no Save
