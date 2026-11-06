@@ -1,6 +1,6 @@
 ---
 summary: Where the walks' test files come from (sourced 2026-10-21 and lost with /tmp in a restart): CAD drawings (and LibreDWG's three DWG samples), PDFs, decks, workbooks and documents, each with its source, licence and what it exercises, and which may be committed as fixtures. Re-fetch them into a scratch directory; never execute them.
-updated: 2026-11-02
+updated: 2026-11-06
 ---
 
 # Test files
@@ -33,6 +33,8 @@ was the cadastre sheet tiled 3×3 (11,088 entities).
 | `NIST.AI.100-1.pdf` | nvlpubs.nist.gov | US government work | 48 pages, outline | yes |
 | `fw9.pdf`, `f1040.pdf` | irs.gov | US government work | AcroForm, 27 and 229 fields | yes |
 | an annotated PDF | generate with pypdf (Highlight, Text, FreeText, Square, Line on pages of a NIST file) | derived from public domain | existing annotations | yes |
+| `jpeg2000.pdf` | generated 2026-11-06 with Pillow 12.2 (a 100 px RGB image, lossless JPEG2000, `/JPXDecode`, on a 200 pt page; a red square on blue) and written by hand | ours, AGPL-3.0-only | JPEG2000 decoding by pdf.js's `openjpeg.wasm` (`apps/pdf/fixtures/`) | yes |
+| `jbig2.pdf` | generated 2026-11-06: a 128 px 1-bit image (a black square on white) as a JBIG2 generic region, MMR-coded from a Pillow group-4 TIFF strip, in the embedded stream form PDF uses, written by hand | ours, AGPL-3.0-only | JBIG2 decoding by pdf.js's `jbig2.wasm` (`apps/pdf/fixtures/`) | yes |
 | a signature-field PDF | generate with pdf-lib (one empty `/Sig` field) | ours | the visual signature in a field | yes |
 
 ## Slides

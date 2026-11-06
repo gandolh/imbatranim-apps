@@ -424,3 +424,15 @@ name (`@imbatranim-apps/root`). Kept: the descriptor id `imbatranim-office`,
 the `office-` app ids, the `@imbatranim-office/*` workspace packages, history.
 The local folder is now imbatranim-apps. The GitHub rename is the owner's.
 brief-board picks up the project name at the next sync.
+
+
+## [2026-11-06] build | Brief 06: PDF decodes JPEG2000 and JBIG2
+
+Built in 5ead116. `pdfjs-wasm/` in the build holds `openjpeg.wasm`,
+`jbig2.wasm`, `qcms_bg.wasm` and six licence files (468,362 bytes in all;
+`dist/os` is 33.27 MB); a build plugin gives the app their directory as
+`virtual:pdfjs-wasm-dir`, and the reader and the engine pass it as `wasmUrl`.
+Two generated fixtures (`apps/pdf/fixtures/`) render in Node with pixel checks.
+The "No WebAssembly" invariant became "WebAssembly only from an npm package"
+([decisions](wiki/decisions.md)). Ticket imbatranim-office-06 is in Ready for
+test: the walk in the OS waits on imbatranimOS brief 67.

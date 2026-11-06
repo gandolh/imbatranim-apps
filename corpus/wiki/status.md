@@ -1,6 +1,6 @@
 ---
 summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Owner steps.
-updated: 2026-11-05
+updated: 2026-11-06
 ---
 
 # Status — 2026-11-05
@@ -60,10 +60,11 @@ done 2026-11-05.
 
 In the backlog since 2026-11-06, from imbatranimOS's research on
 imbatranim-apps, grilled with the owner the same day:
-- [Brief 06](../briefs/todo/06-pdf-decodes-jpeg2000-and-jbig2-images.md),
-  promoted from the todo the same day: pdf.js's own decoders shipped, a
-  PDF's scripts still off. It waits for imbatranimOS brief 67, and it
-  carries the change to the "No WebAssembly" invariant.
+- [Brief 06](../briefs/done/06-pdf-decodes-jpeg2000-and-jbig2-images.md),
+  built 2026-11-06: PDF ships pdf.js's JPEG2000, JBIG2 and colour decoders
+  (a PDF's scripts still off) and the invariant now reads "WebAssembly only
+  from an npm package". Tests pass in Node; the walk in the OS needs
+  imbatranimOS brief 67 running.
 - `cad-reads-dwg-in-the-tab` was dropped: DWG conversion stays on the
   suite's server.
 

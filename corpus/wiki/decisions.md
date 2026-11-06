@@ -38,6 +38,7 @@ craft engines (93k–201k lines each) have no stable API and change daily. A lat
 rewrite would build every app twice.
 - *Consequence*: no WebAssembly in an app, because the desktop's CSP refuses it.
   A library that needs wasm (a DWG reader, for one) can only run on the server.
+  Replaced on 2026-11-06 by "WebAssembly only from an npm package" below.
 
 ## Kit apps, on the desktop's shared kit
 _2026-10-21_ — Each app exports a React component. The desktop renders it in
@@ -179,3 +180,21 @@ keep `office-`, the workspace packages keep `@imbatranim-office/*`, and the
 whole repo stays AGPL-3.0-only. Every decision above holds for the Office group.
 **Why**: installed rows, build directories and the server are keyed by the
 descriptor id, so changing it would break installs for a name.
+
+## WebAssembly only from an npm package
+_2026-11-06_ — The rule "no WebAssembly in the apps" becomes: WASM only from an
+npm package, pinned by the lockfile, never compiled here and never committed.
+The first user is PDF, which ships pdf.js's `openjpeg.wasm`, `jbig2.wasm` and
+`qcms_bg.wasm` with their licences, under `pdfjs-wasm/` in the build, and hands
+`getDocument` a `wasmUrl` for them. pdf.js's `quickjs-eval.wasm` is never
+shipped, so a PDF's own scripts stay off, and nor are its JavaScript fallbacks.
+Rejected: keeping the ban and leaving scanned PDFs with holes; the JavaScript
+fallbacks, which the desktop no longer needs; compiling a decoder here, which
+the OS image cannot do.
+**Why**: scanned PDFs often use JBIG2, and some JPEG2000, and pdf.js decodes
+both only with WebAssembly. imbatranimOS brief 67 allows WebAssembly in the
+desktop's page, and the owner settled it in the OS's grill on 2026-11-06. CAD's
+DWG stays on the server.
+- *Consequence*: the build emits nine files under `dist/os/pdfjs-wasm/` (three
+  decoders, six licence files), 468,362 bytes. A test holds the list and the
+  absence of `quickjs-eval.wasm`.

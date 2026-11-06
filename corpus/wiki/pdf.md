@@ -1,6 +1,6 @@
 ---
 summary: PDF (apps/pdf), the OS's PDF Viewer and norPDF merged into one app, and @pdfcore/engine (packages/pdfcore-engine), moved from imbatranimOS 56e23b7 — what each module owns, the fast first page (pdf.js alone, the engine and editing tools after it), the shared pdf.js worker file, the save→reload cache contract, what the write path is proven to preserve, the timing (standalone, and in the OS where the suite is 40 ms behind PDF Viewer), and what is deliberately not supported.
-updated: 2026-11-02
+updated: 2026-11-06
 ---
 
 # PDF and `@pdfcore/engine`
@@ -17,14 +17,14 @@ Viewer and norPDF become one app".
 ## The split: app vs engine
 
 **`packages/pdfcore-engine`** keeps its name, `@pdfcore/engine`: the whole PDF
-capability, isomorphic, no React. pdf-lib (1.17.1) writes, pdf.js (6.1.200)
+capability, isomorphic, no React. pdf-lib (1.17.1) writes, pdf.js (6.4.299)
 reads. It imports nothing of the OS or of this repo, so its source stayed the
 OS's bytes except for the worker (below: `adapters/pdfjs/document.ts` and
 `worker.browser.ts` changed, `browser/pdf-worker.ts` and `pdf.worker.ts`
 added) and `package.json` (exact pins, the `./worker` export, `#pdfjs`). Its
-tests run as they did there (`npm test` picks up `src/__tests__/`). It keeps the OS's
-formatting (prettier defaults, its own `.prettierrc.json`) and its stricter
-tsconfig (`noUncheckedIndexedAccess`), checked by `tsc -b` as its own project.
+tests run as they did there (`npm test` picks up `src/__tests__/`). It keeps the
+OS's formatting (its own `.prettierrc.json`) and its stricter tsconfig
+(`noUncheckedIndexedAccess`), checked by `tsc -b` as its own project.
 
 **`apps/pdf`** is the React app around it (modules below).
 
@@ -99,12 +99,12 @@ stays readable: the notice says it cannot be searched, annotated or saved.
 
 Continuous scroll, virtualised (pages within a screen of the viewport are
 drawn). From PDF Viewer: previous/next page buttons and zoom in 25% steps (from
-a fitted 92%, in goes to 100%). Fit width fits the page in view when the fit
-is chosen, as PDF Viewer and pdf.js's viewer do; norPDF fitted the widest page,
-which halved NIST SP 800-218 (1224 pt spreads on pages 14-28 among 612 pt
-pages). Keys, top window only and never while typing: ↑/↓, PageUp/PageDown, Space,
-Home/End, `+`/`-`/`0`, and ←/→ for the previous/next page while the page in
-view fits the width. Ctrl+F focuses search, Ctrl+S saves.
+a fitted 92%, in goes to 100%). Fit width fits the page in view when chosen, as
+PDF Viewer and pdf.js's viewer do; norPDF fitted the widest page, which halved
+NIST SP 800-218 (1224 pt spreads among 612 pt pages). Keys, top window only and
+never while typing: ↑/↓, PageUp/PageDown, Space, Home/End, `+`/`-`/`0`, and
+←/→ for the previous/next page while the page in view fits the width. Ctrl+F
+focuses search, Ctrl+S saves.
 
 ## Engine: read vs write, and the cache contract
 
@@ -145,45 +145,38 @@ or here.
 | `editor/` | `EditorProvider` (edits, save, export); `AnnotateToolbar`, `PageAnnotateLayer`, `SignatureDialog` (lazy) |
 | `forms/`, `organize/` | `FormsPanel`, `OrganizeView` (lazy) |
 
-norPDF's `norpdf.css` became Tailwind utilities (the suite takes no CSS from
-JS); sticky notes, which have no appearance stream for pdf.js to draw, are
-drawn by the overlay so they show after a reopen.
+norPDF's `norpdf.css` became Tailwind utilities (the suite takes no CSS from JS);
+sticky notes, which have no appearance stream, are drawn by the overlay.
 
 ## What the write path is proven to preserve
 
-`preservation.node.test.ts` (from imbatranimOS, 2026-08-03, unchanged) runs a fixture with three
-pages, full Info metadata and two filled form fields through annotate, forms,
-sign and page reorder/delete/rotate/extract, and asserts the change landed and
-everything else survived: page count and order, other pages' text, metadata,
-untouched field values, annotations on their own page, no duplicates on a
-second save, an untouched save that damages nothing. The 2026-10-22 harness walk
-repeated it end to end on real files (below).
+`preservation.node.test.ts` (from imbatranimOS, 2026-08-03, unchanged) runs a
+three-page fixture with Info metadata and two filled fields through annotate,
+forms, sign and page reorder/delete/rotate/extract, and asserts the change
+landed and everything else survived: page count and order, other pages' text,
+metadata, untouched field values, annotations on their own page, no duplicates
+on a second save, an untouched save that damages nothing. The 2026-10-22
+harness walk repeated it end to end on real files (below).
 
 ## Timing (2026-10-21, standalone)
 
 Method: each app built for production in a harness page with the desktop's
 CSP, a fresh headless Chrome per run, runs interleaved; first inked page by
-sampling canvas pixels each frame (imbatranimOS's method), from the window mounting to
-ink. PDF Viewer at 720×640, PDF at 1040×560 with the rail open.
+sampling canvas pixels each frame, from the window mounting to ink. PDF Viewer
+at 720×640, PDF at 1040×560 with the rail open.
 
 | File | PDF Viewer (56e23b7) | PDF (suite) |
 |---|---|---|
 | NIST SP 800-218, 36 pages, 7 runs each | median **492 ms** | median **237 ms** |
 | NIST AI 100-1, 48 pages, 5 runs each | median **508 ms** | median **248 ms** |
 
-**In the OS (2026-10-27):** OS `74dfe27`'s production image, the
-same sampling from the Open With click, 36-page file, 7 runs each. Before `8880663`: PDF Viewer median
-518 ms, the suite 571. After it (pdf.js and its worker load beside the
-download): PDF Viewer 534, the suite 574 (550–608). The gap is before the
-download: the suite's `app.mjs` and ten shared chunks come from the
-marketplace route after the window mounts (about 70 ms, six connections),
-while PDF Viewer's chunk loads when the window opens.
-
-## `@napi-rs/canvas`
-
-Test-only (the engine's Node render tests), the engine's devDependency. No
-install script, prebuilt per platform: in `node:24.14.1-alpine` `npm ci` took
-the musl build, the tests passed offline, and `build:os` passed without it.
+**In the OS (2026-10-27):** OS `74dfe27`'s production image, sampled from
+the Open With click, 36-page file, 7 runs each. Before `8880663`: PDF Viewer
+median 518 ms, the suite 571. After it (pdf.js and its worker load beside the
+download): 534 and 574 (550–608). The gap is before the download: the suite's
+`app.mjs` and ten shared chunks come from the marketplace route after the
+window mounts (about 70 ms, six connections); PDF Viewer's chunk loads when
+the window opens.
 
 ## Not supported, deliberately
 
@@ -191,8 +184,15 @@ the musl build, the tests passed offline, and `build:os` passed without it.
   signature field's rect). No PKI.
 - **OCR.** Rejected in imbatranimOS on 2026-08-03.
 - **A second renderer.** pdf.js is the only one.
-- **JPEG2000 / JBIG2 images.** pdf.js decodes them with WebAssembly, which the
-  desktop's CSP refuses; no `wasmUrl` is set and no wasm is shipped.
+
+## JPEG2000 and JBIG2 images
+
+Supported since 2026-11-06 with pdf.js's WebAssembly decoders under
+`pdfjs-wasm/` (plugin `packages/shared/src/build/pdfjsWasm.ts`, module
+`virtual:pdfjs-wasm-dir`); never `quickjs-eval.wasm`. `loadTask` passes the
+directory as `wasmUrl` and sets it in the engine (`setPdfjsWasmUrl`); Node
+wants a path. See [decisions](decisions.md). Needs imbatranimOS brief 67. Node tests draw on `@napi-rs/canvas`
+(devDependency, prebuilt, no install script).
 
 ## Known gaps
 

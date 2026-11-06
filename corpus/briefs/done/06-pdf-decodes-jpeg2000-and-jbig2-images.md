@@ -72,3 +72,30 @@ headers, not the kit, so no kit sync is needed.
 
 - Tests and lint green; both fixtures render; the walk holds.
 - PDF's served output grows only by the three wasm files and their licences.
+
+## Outcome (2026-11-06)
+
+Built in 5ead116; the walk (step 3) is still to do, in the OS once its brief 67
+is in.
+
+- A Vite plugin (`packages/shared/src/build/pdfjsWasm.ts`) emits the three
+  decoders and their licences under `pdfjs-wasm/` with fixed names, because
+  pdf.js asks for `<wasmUrl>openjpeg.wasm`. `virtual:pdfjs-wasm-dir` is the
+  directory URL, relative to the importing chunk. Tests and the dev server get
+  a path. It is registered in every group's build and emits only when imported.
+- pdf.js 6.4.299 takes `wasmUrl` on `getDocument`. The reader passes it, and
+  sets it in the engine (`setPdfjsWasmUrl`, `browser/pdf-worker.ts`) for the
+  engine's own parses. This touched `packages/pdfcore-engine`, outside the
+  brief's file list, because the engine opens documents too.
+- pdf.js in Node reads a directory path, not a `file:` URL.
+- Fixtures: `jpeg2000.pdf` and `jbig2.pdf`, generated here (JBIG2 is a
+  hand-written MMR generic region), sources in `wiki/test-files.md`. The tests
+  are `packages/pdfcore-engine/src/__tests__/wasm-images.node.test.ts` (the
+  engine's Node entry is lint-restricted in the app) and two checks in
+  `osBuild.test.ts`: the nine files, byte-equal to the package's, and no
+  `quickjs` or `nowasm` file.
+- Without `wasmUrl` the JBIG2 image fails to decode, so the tests prove the
+  wasm path is used.
+- Size: +468,362 bytes in `dist/os`, all under `pdfjs-wasm/` (wasm 451,391,
+  licences 16,971), plus one line of JavaScript.
+- Left for the walk: the CSP and COEP console check, and one real scanned PDF.
