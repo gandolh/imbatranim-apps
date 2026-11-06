@@ -4,7 +4,7 @@ import type {
   PDFWorker,
 } from "pdfjs-dist";
 import type { PdfBytes } from "../../api/types.js";
-import { sharedPdfWorker } from "../../browser/pdf-worker.js";
+import { pdfjsWasmUrl, sharedPdfWorker } from "../../browser/pdf-worker.js";
 
 /**
  * pdf.js backend resolution.
@@ -56,7 +56,11 @@ export async function loadPdfjsTask(
 ): Promise<PDFDocumentLoadingTask> {
   const pdfjs = await getPdfjs();
   const data = new Uint8Array(bytes);
-  return pdfjs.getDocument({ data, worker: browserWorker(pdfjs) });
+  return pdfjs.getDocument({
+    data,
+    worker: browserWorker(pdfjs),
+    wasmUrl: pdfjsWasmUrl(),
+  });
 }
 
 /**

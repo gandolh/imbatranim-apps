@@ -51,9 +51,11 @@ the apps are built.
   bundle time. The OS's house rules apply unchanged (its
   `corpus/wiki/ui-conventions.md` and the locked identity: Win7-classic in two
   themes, Apricot by default and Classic, light or dark, since 2026-11-03).
-- **No WebAssembly in the apps.** The desktop's CSP is `script-src 'self'` with
-  no `'wasm-unsafe-eval'`. A library that needs wasm runs on the server, or not
-  at all.
+- **WebAssembly only from an npm package.** Pinned by the lockfile, never
+  compiled here and never committed. Today that is pdf.js's JPEG2000, JBIG2 and
+  colour decoders in PDF (its script engine stays out) and LibreDWG on the
+  server. The desktop allows wasm since imbatranimOS brief 67 (2026-11-06);
+  before that its CSP refused it.
 - **The ArtCraft crafts are a reference, never a dependency.** Read how they
   behave and how they build a feature. Code translated from them keeps its
   MIT/Apache notice in `THIRD-PARTY-NOTICES.md`. Their name and logos are never

@@ -15,6 +15,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { checkUtilitiesOnly } from './cssRule.ts'
 import { readKitSnapshot } from './kitSnapshot.ts'
 import { appStylePaths, discoverApps, osBuildConfig } from './osBuild.ts'
+import { PDFJS_WASM_FILES, PDFJS_WASM_OUT_DIR, pdfjsWasmSourceDir } from './pdfjsWasm.ts'
 import { BARE_SHARED_IMPORT } from './sharedKit.ts'
 
 const repoRoot = fileURLToPath(new URL('../../../../', import.meta.url))
@@ -256,7 +257,7 @@ describe("this repo's own build", () => {
     expect(template.sharedKit).toBe(readKitSnapshot(vendorDir).sharedKitVersion)
   })
 
-  it("runs the suite's server from source, and serves no WebAssembly", () => {
+  it("runs the suite's server from source, and serves only pdf.js's three decoders as WebAssembly", () => {
     const template = JSON.parse(
       readFileSync(join(repoRoot, 'os', 'descriptor.template.json'), 'utf8')
     ) as {
@@ -268,6 +269,7 @@ describe("this repo's own build", () => {
     // first DWG; every other window opens as fast as a static suite's.
     // LibreDWG's wasm runs on the server, which Node starts from the build's
     // root with its types stripped; nothing of it is in dist/os.
+    // PDF's decoders are the one WebAssembly the build ships.
     expect(template.type).toBe('service')
     expect(template.server).toEqual({
       command: ['node', 'server/src/index.ts'],
@@ -275,8 +277,29 @@ describe("this repo's own build", () => {
       health: '/health',
     })
     expect(existsSync(join(repoRoot, template.server.command[1]))).toBe(true)
-    expect(files(out).filter((f) => f.endsWith('.wasm'))).toEqual([])
+    expect(files(out).filter((f) => f.endsWith('.wasm'))).toEqual([
+      'pdfjs-wasm/jbig2.wasm',
+      'pdfjs-wasm/openjpeg.wasm',
+      'pdfjs-wasm/qcms_bg.wasm',
+    ])
     expect(template.apps.find((a) => a.id === 'office-cad')?.opens).toEqual(['dxf', 'dwg'])
+  })
+
+  it("ships pdf.js's JPEG2000, JBIG2 and colour decoders with their licences, never its script engine", () => {
+    const shipped = readdirSync(join(out, PDFJS_WASM_OUT_DIR)).sort()
+    expect(shipped).toEqual([...PDFJS_WASM_FILES].sort())
+    expect(shipped.some((f) => f.includes('quickjs'))).toBe(false)
+    expect(files(out).filter((f) => f.includes('quickjs') || f.includes('nowasm'))).toEqual([])
+    // The bytes are the installed package's, not rebuilt or edited here.
+    const source = pdfjsWasmSourceDir(repoRoot)
+    for (const name of PDFJS_WASM_FILES) {
+      expect(readFileSync(join(out, PDFJS_WASM_OUT_DIR, name))).toEqual(
+        readFileSync(join(source, name))
+      )
+    }
+    // The reader asks for the directory relative to the chunk it sits in.
+    const pdf = loaded('pdf/app.mjs')
+    expect(pdf).toMatch(/new URL\("\.", new URL\("[./]*pdfjs-wasm\/\w/)
   })
 
   it("builds Docs with SuperDoc loaded on first open and SuperDoc's stylesheet beside it", () => {

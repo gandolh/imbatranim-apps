@@ -31,10 +31,9 @@ import { installMapGetOrInsert } from "./mapGetOrInsert.js";
  * with an explicit URL BEFORE first use; documents are then opened on a
  * worker of their own from that URL, as before.
  *
- * (WASM note: pdf.js v4+ uses no WASM for the core render/text/outline paths we
- * ship in v1 — only the optional JPEG2000/JBIG2 decoders do, and those are not
- * on the v1 path. imbatranimOS's CSP refuses wasm, so they stay unsupported
- * there.)
+ * (WASM note: the core render/text/outline paths use no WASM; the JPEG2000,
+ * JBIG2 and colour-management decoders do. The consumer ships them and calls
+ * `setPdfjsWasmUrl` from `browser/pdf-worker.ts`.)
  */
 
 /** Explicitly set the worker source (escape hatch). Wins over the shared worker. */

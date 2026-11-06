@@ -19,6 +19,7 @@ import type { Plugin, UserConfig } from 'vite'
 import { appStyles } from './appCss.ts'
 import { readSharedExports } from './exportNames.ts'
 import { readKitSnapshot } from './kitSnapshot.ts'
+import { pdfjsWasm } from './pdfjsWasm.ts'
 import { BARE_SHARED_IMPORT, noSharedKitInWorkers, sharedKitExternals } from './sharedKit.ts'
 import { readVendorStyles, type VendorStyle } from './vendorCss.ts'
 
@@ -138,6 +139,7 @@ export function osBuildConfig(options: OsBuildOptions): UserConfig {
     envDir: false,
     logLevel: 'info',
     plugins: [
+      pdfjsWasm({ root }),
       sharedKitExternals({ exports: () => readSharedExports({ root, kitIndex: kit.index }) }),
       appStyles({
         apps,

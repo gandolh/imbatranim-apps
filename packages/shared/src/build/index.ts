@@ -20,6 +20,13 @@ export {
   type OsBuildOptions,
 } from './osBuild.ts'
 export {
+  PDFJS_WASM_FILES,
+  PDFJS_WASM_MODULE,
+  PDFJS_WASM_OUT_DIR,
+  pdfjsWasm,
+  pdfjsWasmSourceDir,
+} from './pdfjsWasm.ts'
+export {
   BARE_SHARED_IMPORT,
   SHARED_GLOBAL,
   SHARED_SPECIFIERS,

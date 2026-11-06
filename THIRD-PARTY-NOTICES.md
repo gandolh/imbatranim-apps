@@ -27,9 +27,25 @@ for test data, and for the one dependency whose licence differs from ours.
   and the AGPLv3. Their source is at the links above; nothing of either is
   copied into this repository.
 - Where it runs: only in `server/` (Node), one child process per conversion
-  (`server/src/converter.ts`). It is never bundled into an app: the desktop's
-  CSP forbids WebAssembly in the browser, and `npm run build:os` emits no
-  `.wasm` (a test checks).
+  (`server/src/converter.ts`). It is never bundled into an app: it is not
+  in the build, and `npm run build:os` emits no `.wasm` but pdf.js's three
+  decoders (a test checks).
+
+## pdf.js's image decoders, as WebAssembly (PDF)
+
+- What: `pdfjs-dist` 6.4.299 (Apache-2.0), installed from npm and pinned by the
+  lockfile, carries three WebAssembly decoders that PDF ships under
+  `pdfjs-wasm/` in the build, unchanged: `openjpeg.wasm` (JPEG2000, from
+  OpenJPEG), `jbig2.wasm` (JBIG2, from PDFium's decoder) and `qcms_bg.wasm`
+  (colour management, from Mozilla's qcms, with code from Little CMS).
+- Licences: OpenJPEG is BSD-2-Clause (Universite catholique de Louvain and
+  others), the JBIG2 decoder is BSD-3-Clause (The PDFium Authors), qcms is MIT.
+  pdf.js's wrappers around them are Apache-2.0 (the `LICENSE_PDFJS_*` files).
+  The build copies each licence file next to its decoder, under
+  `pdfjs-wasm/`; their text is the package's own, in `node_modules/pdfjs-dist/wasm/`.
+- Not shipped: `quickjs-eval.wasm`, which runs a PDF's own scripts, and the
+  decoders' JavaScript fallbacks.
+- Where it runs: in the browser, in pdf.js's worker. Nothing is compiled here.
 
 ## CADCraft: a sample drawing (CAD test fixture)
 

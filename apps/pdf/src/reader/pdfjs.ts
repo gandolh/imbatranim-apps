@@ -24,7 +24,8 @@
  * `@pdfcore/engine/worker` is the engine's worker file and nothing else.
  */
 import { installMapGetOrInsert } from '@imbatranim/ui'
-import { sharedPdfWorker, startPdfjsWorker } from '@pdfcore/engine/worker'
+import { setPdfjsWasmUrl, sharedPdfWorker, startPdfjsWorker } from '@pdfcore/engine/worker'
+import pdfjsWasmDir from 'virtual:pdfjs-wasm-dir'
 import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
 import type {
   PageViewport,
@@ -49,6 +50,9 @@ export function warmUpPdfjs(): Promise<Pdfjs> {
     // it starts loading before the library does. Messages pdf.js posts to it
     // before its module has run wait in the worker's queue.
     startPdfjsWorker()
+    // The decoders for JPEG2000 and JBIG2 images sit beside the build; every
+    // document, this reader's and the engine's, is opened with their location.
+    setPdfjsWasmUrl(pdfjsWasmDir)
     // pdf.js 6.1 calls Map.prototype.getOrInsertComputed on every render; on
     // Chrome 141 and earlier every page is blank without it.
     installMapGetOrInsert()
@@ -69,7 +73,11 @@ async function loadTask(bytes: Uint8Array): Promise<PDFDocumentLoadingTask> {
   // getDocument transfers its buffer to the worker; the caller keeps its bytes
   // (the engine parses them again with pdf-lib). The shared worker is passed,
   // not owned: destroying this document leaves it running for the others.
-  return lib.getDocument({ data: bytes.slice(), worker: sharedPdfWorker(lib) })
+  return lib.getDocument({
+    data: bytes.slice(),
+    worker: sharedPdfWorker(lib),
+    wasmUrl: pdfjsWasmDir,
+  })
 }
 
 /**

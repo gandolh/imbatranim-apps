@@ -49,3 +49,22 @@ export function sharedPdfWorker(pdfjs: Pdfjs): PDFWorker {
   });
   return pdfWorker;
 }
+
+let wasmUrl: string | undefined;
+
+/**
+ * Where pdf.js finds its WebAssembly decoders (JPEG2000, JBIG2, colour
+ * management): a directory URL ending in `/` that holds `openjpeg.wasm`,
+ * `jbig2.wasm` and `qcms_bg.wasm`. The consumer ships them and says where;
+ * every document the engine opens passes it as `getDocument({ wasmUrl })`.
+ * Unset, pdf.js decodes those images with its JavaScript fallbacks, or not at
+ * all where a CSP forbids WebAssembly.
+ */
+export function setPdfjsWasmUrl(url: string | undefined): void {
+  wasmUrl = url;
+}
+
+/** What {@link setPdfjsWasmUrl} set, for `getDocument`. */
+export function pdfjsWasmUrl(): string | undefined {
+  return wasmUrl;
+}
