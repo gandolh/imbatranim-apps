@@ -6,7 +6,7 @@ import {
   dataOf,
   useDataStore,
   type Action,
-} from '../../../../shared/src/dataStore'
+} from '../../../../../packages/shared/src/dataStore'
 import { bookmarkFiles } from '../store/bookmarkFiles'
 import * as ops from '../store/bookmarkOps'
 import type {

@@ -1,5 +1,10 @@
 import { useEffect, useSyncExternalStore } from 'react'
-import { FileConflictError, type SystemData, type SystemHandle } from '@imbatranim/ui'
+import {
+  FileConflictError,
+  type DataKind,
+  type SystemData,
+  type SystemHandle,
+} from '@imbatranim/ui'
 
 /**
  * An app's state as files in its own folder (`system.data`), held once per
@@ -184,6 +189,19 @@ export function dataOf(system: Pick<SystemHandle, 'data'>): SystemData {
     throw new Error('This desktop keeps no app data folders yet; update imbatranimOS.')
   }
   return system.data
+}
+
+/**
+ * `data` kept to one of the app's folders: every call goes to `kind` (the
+ * store's files live in `state`, say, rather than `data`).
+ */
+export function inFolder(data: SystemData, kind: DataKind): SystemData {
+  return {
+    read: (path, opts) => data.read(path, { ...opts, kind }),
+    write: (path, content, opts) => data.write(path, content, { ...opts, kind }),
+    list: (path, opts) => data.list(path, { ...opts, kind }),
+    remove: (path, opts) => data.remove(path, { ...opts, kind }),
+  }
 }
 
 /**

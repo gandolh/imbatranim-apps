@@ -1,5 +1,5 @@
 import type { SystemData } from '@imbatranim/ui'
-import type { DataStoreFiles, Loaded } from '../../../../shared/src/dataStore'
+import type { DataStoreFiles, Loaded } from '../../../../../packages/shared/src/dataStore'
 import type { BookmarkGroup, BookmarkLink } from '../types'
 import { isBookmarkUrl } from './bookmarkUrl'
 

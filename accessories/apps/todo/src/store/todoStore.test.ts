@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createFakeSystem } from '@imbatranim-office/shared/testing'
 import type { SystemData } from '@imbatranim/ui'
-import { createDataStore } from '../../../../shared/src/dataStore'
+import { createDataStore } from '../../../../../packages/shared/src/dataStore'
 import { oneEach, todoFiles, type TodoState } from './todoFiles'
 import * as ops from './todoOps'
 import type { Todo } from '../types'

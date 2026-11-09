@@ -6,7 +6,7 @@ import {
   dataOf,
   useDataStore,
   type Action,
-} from '../../../../shared/src/dataStore'
+} from '../../../../../packages/shared/src/dataStore'
 import { todoFiles, type TodoState } from '../store/todoFiles'
 import * as ops from '../store/todoOps'
 import type { Scope } from '../store/todoOps'
