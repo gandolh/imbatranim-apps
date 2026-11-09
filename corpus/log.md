@@ -448,3 +448,11 @@ functions over files in their own folders, and a small store in place of
 react-query, which the desktop doesn't lend. `ebc2be6` keeps both of two
 tasks two tabs gave one id. The OS pins `ebc2be6`. Not pushed: push this
 repo before the OS.
+
+## [2026-11-09] fix | Accessories: the review's fixes
+
+`59761f1` moves the kit snapshot to imbatranimOS `1b744e4` (kit 1.7.0, a
+versioned `system.data.remove`). `a5f3d0e`: the store removes only the
+version it read, a task renumbered on read is written back at once, a file
+that isn't JSON is named, and Bookmarks' palette source reads its file once
+per five seconds. The OS pins `a5f3d0e`.
