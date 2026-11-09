@@ -194,6 +194,13 @@ export function createFakeSystem(options: FakeSystemOptions = {}): FakeSystem {
       },
       async remove(path, opts) {
         const key = dataKey(path, opts?.kind)
+        if (
+          opts?.expected !== undefined &&
+          appData.has(key) &&
+          opts.expected !== dataVersion(key)
+        ) {
+          throw new FileConflictError(dataVersion(key))
+        }
         for (const k of [...appData.keys()]) {
           if (k === key || k.startsWith(`${key}/`)) {
             appData.delete(k)
