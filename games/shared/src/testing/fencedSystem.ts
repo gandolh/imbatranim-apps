@@ -14,6 +14,7 @@ const ALWAYS = new Set([
   'sound',
   'on',
   'server',
+  'data',
 ])
 
 /**

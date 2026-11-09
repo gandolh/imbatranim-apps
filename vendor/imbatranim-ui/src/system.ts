@@ -21,6 +21,10 @@
  * - **Scope is the security model.** A handle is minted for one app in one
  *   window. `window.*` acts on that window alone; `notify` stamps that app's
  *   id. An app cannot address what its handle does not name.
+ * - **A handle is a running copy of its app.** Its calls to the backend
+ *   (`fs`, `http`, `schedule`, `data`) carry a token the desktop minted for that copy,
+ *   so the OS knows which app, and which copy, is calling. The app never sees
+ *   the token. `fs.downloadUrl` is a bare URL and goes out as the user's.
  * - Bump {@link PROTOCOL_VERSION} on any breaking change.
  */
 
@@ -105,6 +109,85 @@ export interface SystemFs {
   recordRecent(root: string, path: string): void
   /** Drop a recents entry this app failed to reopen (self-heal). */
   removeRecent(root: string, path: string): void
+  /**
+   * Ask the OS to give this window one of this app's own recent files again
+   * (or, for Git GUI, one of its recent repositories): what a window that
+   * reopens a remembered path needs, such as a restored tab. Resolves once
+   * the OS has answered; a path that isn't this app's recent stays refused,
+   * and reading it answers 403. A method, not an `http` call, because the
+   * copy the grant names is the OS's to know.
+   */
+  reopenRecent(root: string, path: string): Promise<void>
+}
+
+// ── The app's own data ────────────────────────────────────────────────────────
+
+/**
+ * What a file in an app's folders is for. Each kind is a folder of its own,
+ * laid out the XDG way under `imbatranim/<app-id>/` in the home:
+ *
+ * - `config`: settings (`~/.config/…`);
+ * - `data`: what the app keeps for the owner (`~/.local/share/…`);
+ * - `state`: history, recents, where it was left (`~/.local/state/…`);
+ * - `cache`: anything it can rebuild (`~/.cache/…`). Backups skip it, and
+ *   uninstalling the app always removes it; the other kinds stay unless the
+ *   owner asks for them to go.
+ */
+export type DataKind = 'config' | 'data' | 'state' | 'cache'
+
+export type DataOptions = {
+  /** Which of the app's folders. `data` when absent. */
+  kind?: DataKind
+}
+
+export type DataWriteOptions = DataOptions & {
+  /**
+   * The version from the read this write builds on, or null when the read
+   * found no file (it must still be missing). A file that changed since makes
+   * the write throw `FileConflictError`, so two windows can't silently save
+   * over each other. Absent writes over whatever is there: for a cache, or a
+   * file only this copy of the app ever writes.
+   */
+  expected?: string | null
+}
+
+/** A file read from the app's folder: its text, and its version for the next write. */
+export type DataFile = { content: string; version: string }
+
+/** One entry of the app's folder. Links are not listed. */
+export type DataEntry = {
+  name: string
+  /** Its path inside the folder, to hand back to `read`, `list` or `remove`. */
+  path: string
+  type: 'file' | 'directory'
+  size: number
+  /** ISO 8601. */
+  modifiedAt: string
+}
+
+/**
+ * `system.data` — the app's own folders, its AppData. The OS makes a folder
+ * on the first write into it, named from the app's identity, so an app reaches
+ * only its own: a path is relative to the folder, and one that would lead out
+ * (`..`, or a link) is refused. What the app makes is its own and private
+ * (`rw-------`); who else may read it is the business of its owner and mode.
+ *
+ * Text only, up to 5 MB a file: settings, saves, lists, recents. Every
+ * method rejects with an HTTP-shaped error when the OS refuses, and `write`
+ * with `FileConflictError` when `expected` is stale.
+ */
+export interface SystemData {
+  /** A file's text and version, or null when there is no such file. */
+  read(path: string, opts?: DataOptions): Promise<DataFile | null>
+  /**
+   * Write a file, making the folders on the way. Resolves the new version,
+   * for the next write.
+   */
+  write(path: string, content: string, opts?: DataWriteOptions): Promise<{ version: string }>
+  /** A folder's entries, `''` for the app's folder itself; none for one not made yet. */
+  list(path?: string, opts?: DataOptions): Promise<DataEntry[]>
+  /** Remove a file or a folder and what is in it. Nothing there is not an error. */
+  remove(path: string, opts?: DataOptions): Promise<void>
 }
 
 // ── HTTP (the escape hatch) ───────────────────────────────────────────────────
@@ -204,7 +287,12 @@ export type OpenerResolution = {
   reason: 'override' | 'declared' | 'text-fallback' | 'none'
 }
 
-export type OpenerCandidate = { appId: string; name: string }
+export type OpenerCandidate = {
+  appId: string
+  name: string
+  /** An installed Linux app, offered after the OS's own apps; never a default by itself. */
+  linux?: boolean
+}
 
 /**
  * `system.intents` — the shell: launching apps, and receiving what was thrown
@@ -216,7 +304,12 @@ export type OpenerCandidate = { appId: string; name: string }
  * one-shot pull for apps that only ever read a launch payload.
  */
 export interface SystemIntents {
-  /** Launch (or focus) an app, optionally handing it a payload. Returns its window id, '' if refused. */
+  /**
+   * Launch (or focus) an app, optionally handing it a payload. Returns its
+   * window id, '' if refused. A file the payload names is given to the window
+   * as this app hands it on: only a file this app holds, or one of its own
+   * recent files to a window of its own; never the file's folder.
+   */
   openApp(appId: string, payload?: unknown): string
   /** Drain this window's pending intent, if any. */
   consume<T = unknown>(): T | undefined
@@ -258,7 +351,11 @@ export type SystemNotifyLevel = 'info' | 'success' | 'warning' | 'error'
  */
 export type SystemNotifyAction = {
   label: string
-  /** Delivered verbatim as the `openApp` payload; must be JSON-safe. */
+  /**
+   * Delivered verbatim as the `openApp` payload; must be JSON-safe. A file it
+   * names is not given: the window reopens it with `fs.reopenRecent` when it
+   * is one of the app's recent files.
+   */
   payload: unknown
 }
 
@@ -319,6 +416,25 @@ export interface SystemAppearance {
   get(): SystemAppearanceState
 }
 
+// ── Sound ─────────────────────────────────────────────────────────────────────
+
+/**
+ * The OS volume from the tray: `volume` from 0 to 1, on the same scale as a
+ * media element's `volume`, and whether the owner muted everything.
+ */
+export type SystemSoundState = { volume: number; muted: boolean }
+
+/**
+ * `system.sound` — the OS volume, read-only. An app that makes sound plays at
+ * its own volume times `volume`, and makes none while `muted`; its own volume
+ * control keeps working beside it. An app that makes no sound needs nothing
+ * here. Live changes arrive via `on('sound-changed', …)`. There is no setter:
+ * the tray is the one place the OS volume changes.
+ */
+export interface SystemSound {
+  get(): SystemSoundState
+}
+
 // ── Schedule ──────────────────────────────────────────────────────────────────
 
 export type ScheduleDomain = 'clock' | 'calendar' | 'todo'
@@ -368,13 +484,15 @@ export interface SystemServer {
 /**
  * Compositor → app events. `focus`/`blur` track top-most-visible status;
  * `visibility` fires with the new value on minimise/restore and workspace
- * switches; `appearance-changed` fires with the new theme + accent.
+ * switches; `appearance-changed` fires with the new theme + accent;
+ * `sound-changed` fires with the new OS volume (since kit 1.3.0).
  */
 export type SystemEventMap = {
   focus: void
   blur: void
   visibility: boolean
   'appearance-changed': SystemAppearanceState
+  'sound-changed': SystemSoundState
 }
 
 export type SystemEvent = keyof SystemEventMap
@@ -393,6 +511,12 @@ export interface SystemHandle {
   readonly intents: SystemIntents
   readonly shortcuts: SystemShortcuts
   readonly appearance: SystemAppearance
+  /**
+   * The OS volume. Since kit 1.3.0, and optional for that reason: a desktop
+   * from before it has none, so an app that may run there plays at its own
+   * volume when it is missing. Every app has it, needing no capability.
+   */
+  readonly sound?: SystemSound
   readonly schedule: SystemSchedule
   /**
    * The app's server, asked for when the app needs it. Since kit 1.2.0, and
@@ -401,6 +525,12 @@ export interface SystemHandle {
    * capability; one whose descriptor runs no server gets a rejection.
    */
   readonly server?: SystemServer
+  /**
+   * The app's own folders. Since kit 1.4.0, and optional for that reason: a
+   * desktop from before it has none, so an app that may run there checks for
+   * it. Every app has it, needing no capability, a windowless one included.
+   */
+  readonly data?: SystemData
   /** Raise a notification as this app. Returns the notification id. */
   notify(input: SystemNotifyInput): string
   /** Subscribe to a compositor event. Returns the unsubscribe function. */

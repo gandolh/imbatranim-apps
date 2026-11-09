@@ -28,6 +28,8 @@ export type FakeSystemOptions = {
   accent?: string
   /** `system.server`, for an app that asks for its suite's server. Absent by default, as on a desktop from before it. */
   server?: SystemServer
+  /** Initial files of the app's own folders (`system.data`), by `kind:path` (`'data:todos.json'`). */
+  appData?: Record<string, string>
 }
 
 export type FakeSystem = {
@@ -36,6 +38,8 @@ export type FakeSystem = {
   files: Map<string, Uint8Array>
   /** Every fs call, in order, as `method root:path`. */
   fsCalls: string[]
+  /** The app's own folders' files (`system.data`), by `kind:path`. */
+  appData: Map<string, string>
   notifications: { title: string; body?: string; level?: string }[]
   titles: string[]
   recents: string[]
@@ -81,6 +85,13 @@ export function createFakeSystem(options: FakeSystemOptions = {}): FakeSystem {
   const files = new Map(Object.entries(options.files ?? {}).map(([k, v]) => [k, toBytes(v)]))
   const versions = new Map<string, number>([...files.keys()].map((k) => [k, 1]))
   const fsCalls: string[] = []
+  const appData = new Map(Object.entries(options.appData ?? {}))
+  const appDataVersions = new Map<string, number>([...appData.keys()].map((k) => [k, 1]))
+  const dataKey = (path: string, kind = 'data') => `${kind}:${path.replace(/^\/+|\/+$/g, '')}`
+  const dataVersion = (key: string) => {
+    const v = appDataVersions.get(key)
+    return v === undefined ? null : `d${v}`
+  }
   const notifications: FakeSystem['notifications'] = []
   const titles: string[] = []
   const recents: string[] = []
@@ -143,6 +154,52 @@ export function createFakeSystem(options: FakeSystemOptions = {}): FakeSystem {
       removeRecent: (root, path) => {
         const i = recents.indexOf(fileKey(root, path))
         if (i >= 0) recents.splice(i, 1)
+      },
+      reopenRecent: async () => undefined,
+    },
+    data: {
+      async read(path, opts) {
+        const key = dataKey(path, opts?.kind)
+        const content = appData.get(key)
+        return content === undefined ? null : { content, version: dataVersion(key) as string }
+      },
+      async write(path, content, opts) {
+        const key = dataKey(path, opts?.kind)
+        if (opts?.expected !== undefined && opts.expected !== dataVersion(key)) {
+          throw new FileConflictError(dataVersion(key))
+        }
+        appData.set(key, content)
+        appDataVersions.set(key, (appDataVersions.get(key) ?? 0) + 1)
+        return { version: dataVersion(key) as string }
+      },
+      async list(path = '', opts) {
+        const prefix = dataKey(path, opts?.kind)
+        const under = prefix.endsWith(':') ? prefix : `${prefix}/`
+        const names = new Map<string, 'file' | 'directory'>()
+        for (const key of appData.keys()) {
+          if (!key.startsWith(under)) continue
+          const [first, ...rest] = key.slice(under.length).split('/')
+          names.set(first, rest.length > 0 ? 'directory' : 'file')
+        }
+        const base = under.slice(under.indexOf(':') + 1)
+        return [...names]
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([name, type]) => ({
+            name,
+            path: `${base}${name}`,
+            type,
+            size: type === 'file' ? (appData.get(`${under}${name}`)?.length ?? 0) : 0,
+            modifiedAt: new Date(0).toISOString(),
+          }))
+      },
+      async remove(path, opts) {
+        const key = dataKey(path, opts?.kind)
+        for (const k of [...appData.keys()]) {
+          if (k === key || k.startsWith(`${key}/`)) {
+            appData.delete(k)
+            appDataVersions.delete(k)
+          }
+        }
       },
     },
     http: {
@@ -221,6 +278,7 @@ export function createFakeSystem(options: FakeSystemOptions = {}): FakeSystem {
     system,
     files,
     fsCalls,
+    appData,
     notifications,
     titles,
     recents,
