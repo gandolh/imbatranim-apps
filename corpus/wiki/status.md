@@ -1,6 +1,6 @@
 ---
-summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Owner steps.
-updated: 2026-11-06
+summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Two more groups beside Office: Games (2026-11-06) and Accessories, Todo and Bookmarks with their data in system.data files (2026-11-09). Owner steps.
+updated: 2026-11-09
 ---
 
 # Status — 2026-11-05
@@ -31,6 +31,17 @@ are not pushed; brief numbering restarted at 01 on 2026-11-02 (see
   calculation (2026-11-05) ([sheets-app.md](sheets-app.md)).
 - **PDF** (2026-10-22, walked 2026-10-28). PDF Viewer and norPDF in one app;
   first page 574 ms against PDF Viewer's 534 in the OS ([pdf.md](pdf.md)).
+
+## The other groups
+
+- **Games** (2026-11-06, `647580f`): Minesweeper and Solitaire, from the OS's
+  built-ins (imbatranimOS brief 64); one root workspace folder, `games/`.
+- **Accessories** (2026-11-09, `1a04603`, `ebc2be6`): Todo and Bookmarks,
+  from the OS's built-ins (imbatranimOS brief 75). Their data is JSON files in
+  each app's own folder through `system.data`, which the OS moved once from
+  its database; `accessories/shared/src/dataStore.ts` is the store the window
+  and the hooks share. Todo exports `Background`, Bookmarks
+  `commandSources`. Not pushed; the walk in the OS is owed.
 
 ## In imbatranimOS
 

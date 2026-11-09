@@ -436,3 +436,15 @@ Two generated fixtures (`apps/pdf/fixtures/`) render in Node with pixel checks.
 The "No WebAssembly" invariant became "WebAssembly only from an npm package"
 ([decisions](wiki/decisions.md)). Ticket imbatranim-office-06 is in Ready for
 test: the walk in the OS waits on imbatranimOS brief 67.
+
+
+## [2026-11-09] build | Accessories, the third group: Todo and Bookmarks
+
+For imbatranimOS brief 75. `a8c87f7` moves the kit snapshot to the OS's
+`98e41ff` (kit 1.6.0: `system.data`, the hook types, a command source's
+`ctx.data`) and gives the fake system an in-memory `data`. `1a04603` adds
+`accessories/`: the two apps with the OS's code, their modules' rules as pure
+functions over files in their own folders, and a small store in place of
+react-query, which the desktop doesn't lend. `ebc2be6` keeps both of two
+tasks two tabs gave one id. The OS pins `ebc2be6`. Not pushed: push this
+repo before the OS.
