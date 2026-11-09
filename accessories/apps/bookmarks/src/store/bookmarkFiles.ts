@@ -23,7 +23,16 @@ const nullableString = (v: unknown) => (typeof v === 'string' ? v : null)
 
 /** The folders a file holds, checked: a hand-edited file may hold anything. */
 export function readGroups(content: string): BookmarkGroup[] {
-  const groups = (JSON.parse(content) as { groups?: unknown }).groups
+  let doc: unknown
+  try {
+    doc = JSON.parse(content)
+  } catch (err) {
+    throw new Error(
+      `${BOOKMARKS_FILE} is not valid JSON: ${err instanceof Error ? err.message : String(err)}`,
+      { cause: err }
+    )
+  }
+  const groups = (doc as { groups?: unknown } | null)?.groups
   if (!Array.isArray(groups)) throw new Error(`${BOOKMARKS_FILE} has no list of folders`)
   return groups.map((g: Partial<StoredGroup>) => {
     if (typeof g?.id !== 'number' || typeof g.name !== 'string') {

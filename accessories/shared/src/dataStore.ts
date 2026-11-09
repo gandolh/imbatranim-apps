@@ -25,6 +25,12 @@ export type Loaded<S> = {
   contents: Map<string, string>
   /** Each file's version, by path; null for a file that was not there. */
   versions: Map<string, string | null>
+  /**
+   * The state differs from the files in a way the files should catch up
+   * with now, not at the next change (a renumbered duplicate id): the store
+   * writes it back as soon as it has read it.
+   */
+  repaired?: boolean
 }
 
 export type DataStoreFiles<S> = {
@@ -49,6 +55,8 @@ export type DataStore<S> = {
   get(): S | undefined
   /** Whether the last load failed (and nothing was loaded before it). */
   failed(): boolean
+  /** When the files were last read or written (`Date.now()`), 0 before. */
+  loadedAt(): number
   subscribe(listener: () => void): () => void
   /** Read the files again. Resolves once read; rejects only if reading failed. */
   refresh(data: SystemData): Promise<S>
@@ -63,6 +71,7 @@ export function createDataStore<S>(files: DataStoreFiles<S>): DataStore<S> {
   /** What the windows see: `loaded`'s state, or a change not saved yet. */
   let shown: S | undefined
   let loadFailed = false
+  let loadedAt = 0
   let turn: Promise<unknown> = Promise.resolve()
   const listeners = new Set<() => void>()
 
@@ -81,9 +90,15 @@ export function createDataStore<S>(files: DataStoreFiles<S>): DataStore<S> {
 
   async function load(data: SystemData): Promise<Loaded<S>> {
     try {
-      const next = await files.load(data)
+      let next = await files.load(data)
+      if (next.repaired) {
+        // Write the repair back at once, so every tab sees the same ids. A
+        // tab that loses the race reads the winner's repair next time.
+        next = await save(data, next, next.state).catch(() => next)
+      }
       loaded = next
       loadFailed = false
+      loadedAt = Date.now()
       show(next.state)
       return next
     } catch (err) {
@@ -112,10 +127,9 @@ export function createDataStore<S>(files: DataStoreFiles<S>): DataStore<S> {
     }
     for (const path of base.contents.keys()) {
       if (after.has(path) || files.keep?.has(path)) continue
-      // Removing has no version to send: check it is still the file that was read.
-      const now = await data.read(path)
-      if (now && now.version !== base.versions.get(path)) throw new FileConflictError(now.version)
-      await data.remove(path)
+      // Only the file that was read: one another tab saved since stays (a 409).
+      const version = base.versions.get(path)
+      await data.remove(path, version ? { expected: version } : undefined)
       contents.delete(path)
       versions.delete(path)
     }
@@ -125,6 +139,7 @@ export function createDataStore<S>(files: DataStoreFiles<S>): DataStore<S> {
   return {
     get: () => shown,
     failed: () => loadFailed,
+    loadedAt: () => loadedAt,
     subscribe(listener) {
       listeners.add(listener)
       return () => listeners.delete(listener)
@@ -140,6 +155,7 @@ export function createDataStore<S>(files: DataStoreFiles<S>): DataStore<S> {
           show(next)
           try {
             loaded = await save(data, base, next)
+            loadedAt = Date.now()
             return result
           } catch (err) {
             // Whatever was written stays written; the reload shows what is there.
@@ -155,6 +171,7 @@ export function createDataStore<S>(files: DataStoreFiles<S>): DataStore<S> {
       loaded = undefined
       shown = undefined
       loadFailed = false
+      loadedAt = 0
       turn = Promise.resolve()
       emit()
     },

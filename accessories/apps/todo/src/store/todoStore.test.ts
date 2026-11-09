@@ -114,6 +114,36 @@ describe('one id per task', () => {
   })
 })
 
+describe('reading what a tab can trip over', () => {
+  it('writes a renumbered task back as soon as it reads it, so every tab sees one id', async () => {
+    const { system, appData } = createFakeSystem({
+      appData: {
+        'data:lists/1.json': JSON.stringify({
+          id: 1,
+          name: 'Work',
+          position: 1,
+          todos: [{ ...todo(4, 1, { text: 'from another' }), listId: undefined }],
+        }),
+        'data:unfiled.json': JSON.stringify({ todos: [todo(4, null, { text: 'from one tab' })] }),
+      },
+    })
+    const store = createDataStore(todoFiles)
+    await store.refresh(system.data as SystemData)
+    const onDisk = await todoFiles.load(system.data as SystemData)
+    expect(onDisk.repaired).toBe(false)
+    expect(onDisk.state.todos.map((t) => t.id).sort()).toEqual([4, 5])
+    // The list files are read first, so the unfiled copy is the one renumbered.
+    expect(JSON.parse(appData.get('data:unfiled.json') as string).todos[0].id).toBe(5)
+  })
+
+  it('names the file that is not valid JSON', async () => {
+    const { system } = createFakeSystem({ appData: { 'data:lists/2.json': '{ broken' } })
+    await expect(todoFiles.load(system.data as SystemData)).rejects.toThrow(
+      'lists/2.json is not valid JSON'
+    )
+  })
+})
+
 describe("Todo's rules", () => {
   it('numbers a new task after every other, in the list it was added to', () => {
     const { next, result } = ops.createTodo(state([todo(4, null)]), { text: 'new', listId: 1 }, AT)

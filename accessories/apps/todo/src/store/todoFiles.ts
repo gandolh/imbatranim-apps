@@ -43,6 +43,18 @@ function stored(todo: Todo): StoredTodo {
   }
 }
 
+/** A file's JSON, or an error that names the file. */
+function parse(content: string, path: string): unknown {
+  try {
+    return JSON.parse(content)
+  } catch (err) {
+    throw new Error(
+      `${path} is not valid JSON: ${err instanceof Error ? err.message : String(err)}`,
+      { cause: err }
+    )
+  }
+}
+
 const text = (doc: unknown) => `${JSON.stringify(doc, null, 2)}\n`
 
 /** The tasks a file holds, checked field by field: a hand-edited file may hold anything. */
@@ -109,7 +121,7 @@ export const todoFiles: DataStoreFiles<TodoState> = {
     )
     for (const { path, file } of reads) {
       if (!file) continue // removed since the listing
-      const doc = JSON.parse(file.content) as Partial<ListFile>
+      const doc = parse(file.content, path) as Partial<ListFile>
       const id = Number(LIST_FILE.exec(path.slice(LISTS_DIR.length + 1))?.[1])
       lists.push({
         id,
@@ -123,7 +135,7 @@ export const todoFiles: DataStoreFiles<TodoState> = {
 
     const unfiled = await data.read(UNFILED)
     if (unfiled) {
-      todos.push(...readTodos(JSON.parse(unfiled.content), null, UNFILED))
+      todos.push(...readTodos(parse(unfiled.content, UNFILED), null, UNFILED))
       contents.set(UNFILED, unfiled.content)
       versions.set(UNFILED, unfiled.version)
     } else {
@@ -132,10 +144,15 @@ export const todoFiles: DataStoreFiles<TodoState> = {
       versions.set(UNFILED, null)
     }
 
+    const unique = oneEach(todos)
+    const read = new Set(todos)
     return {
-      state: { todos: oneEach(todos).sort(byPosition), lists: lists.sort(byPosition) },
+      state: { todos: unique.sort(byPosition), lists: lists.sort(byPosition) },
       contents,
       versions,
+      // A renumbered task is written back at once, so no two tabs pick
+      // different ids for it (and toast it twice).
+      repaired: unique.some((t) => !read.has(t)),
     }
   },
 

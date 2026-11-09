@@ -20,6 +20,13 @@ const urlCache = new Map<number, string>()
 /** How many results the palette shows. More than this and the palette is a list app. */
 const LIMIT = 8
 
+/**
+ * How long a read of the file answers the palette's searches: typing a word
+ * is one read, not one per key. A change in this page shows at once anyway;
+ * another tab's within this.
+ */
+export const FRESH_MS = 5_000
+
 export const bookmarksSource: CommandSource = {
   group: GROUP,
 
@@ -27,7 +34,9 @@ export const bookmarksSource: CommandSource = {
     // A desktop from before kit 1.6.0 gives a source no folders to read.
     if (!ctx.data) return []
     try {
-      const groups = ordered(await bookmarkStore.refresh(ctx.data))
+      const held = bookmarkStore.get()
+      const fresh = held !== undefined && Date.now() - bookmarkStore.loadedAt() < FRESH_MS
+      const groups = ordered(fresh ? held : await bookmarkStore.refresh(ctx.data))
       const needle = query.trim().toLowerCase()
 
       // Searching the folder path too is the point of the palette after the bookmarks model:

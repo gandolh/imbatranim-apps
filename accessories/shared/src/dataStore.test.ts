@@ -84,7 +84,20 @@ describe('a data store', () => {
     })
     const data = system.data as SystemData
     const store = createDataStore(files)
-    await store.change(data, (names) => ({ next: names.filter((n) => n !== 'a'), result: null }))
+    const removes: unknown[] = []
+    const watched: SystemData = {
+      ...data,
+      remove: (path, opts) => {
+        removes.push([path, opts])
+        return data.remove(path, opts)
+      },
+    }
+    await store.change(watched, (names) => ({
+      next: names.filter((n) => n !== 'a'),
+      result: null,
+    }))
     expect([...appData.keys()]).toEqual(['data:b'])
+    // Only the version it read: another tab's save since would stay.
+    expect(removes).toEqual([['a', { expected: 'd1' }]])
   })
 })

@@ -59,6 +59,26 @@ describe('Bookmarks as a kit app', () => {
     expect(results[0].subtitle).toBe('Work · https://tracker.example')
   })
 
+  it('reads the file once for a burst of keystrokes', async () => {
+    const fake = createFakeSystem({
+      appId: 'bookmarks',
+      windowId: null,
+      appData: { 'data:bookmarks.json': JSON.stringify(FILE) },
+    })
+    const data = fake.system.data as NonNullable<typeof fake.system.data>
+    let reads = 0
+    const counted = {
+      ...data,
+      read: (path: string) => {
+        reads += 1
+        return data.read(path)
+      },
+    }
+    const ctx = { http: fake.system.http, data: counted } as CommandSourceContext
+    for (const query of ['t', 'tr', 'tra', 'trac']) await commandSources[0].search(query, ctx)
+    expect(reads).toBe(1)
+  })
+
   it('finds nothing on a desktop that gives a source no folders', async () => {
     const fake = createFakeSystem({ appId: 'bookmarks', windowId: null })
     expect(await commandSources[0].search('', { http: fake.system.http })).toEqual([])
