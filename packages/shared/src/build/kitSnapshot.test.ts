@@ -243,7 +243,7 @@ describe('the COMMIT file', () => {
   it('names the snapshot this repo builds against', () => {
     const snapshot = readKitSnapshot(join(import.meta.dirname, '../../../../vendor/imbatranim-ui'))
     expect(snapshot).toMatchObject({
-      commit: '1b744e4824771d6e1085db49ccf7f4a80bd8d456',
+      commit: '95b331d8f51288ebbb04f8a0686b239b20e03dcc',
       sharedKitVersion: 1,
       theme: 'src/theme.css',
     })
