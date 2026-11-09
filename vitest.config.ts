@@ -24,6 +24,7 @@ export default defineConfig({
       'server/src/**/*.test.ts',
       'games/apps/*/src/**/*.test.{ts,tsx}',
       'games/shared/src/**/*.test.{ts,tsx}',
+      'tools/*.test.ts',
     ],
   },
 })
