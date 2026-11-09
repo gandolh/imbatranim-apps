@@ -456,3 +456,16 @@ versioned `system.data.remove`). `a5f3d0e`: the store removes only the
 version it read, a task renumbered on read is written back at once, a file
 that isn't JSON is named, and Bookmarks' palette source reads its file once
 per five seconds. The OS pins `a5f3d0e`.
+
+## [2026-11-09] build | Developer, the fourth group: Git GUI and the REST API Client
+
+For imbatranimOS brief 76. `8a1e811` moves the data store from
+`accessories/shared/src` to `packages/shared/src`, for every group, with
+`inFolder` to keep a store in another of the app's folders. `4ef5f5a` adds
+`developer/`: the two apps with the OS's code. Git GUI's recent
+repositories are `recents.json` in its state folder (the OS writes it once
+from its old table), and each repository it opens is also one of its OS
+recents, a folder, which is what gives a new window it again (owner,
+2026-11-09); a repository the OS opens it with, from Start or the palette,
+opens. Both ask for `fs`, `http`, `intents` and `notify`. The OS pins
+`4ef5f5a`. Not pushed: push this repo before the OS.

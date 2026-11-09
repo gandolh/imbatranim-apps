@@ -1,5 +1,5 @@
 ---
-summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Two more groups beside Office: Games (2026-11-06) and Accessories, Todo and Bookmarks with their data in system.data files (2026-11-09). Owner steps.
+summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Three more groups beside Office: Games (2026-11-06), Accessories, Todo and Bookmarks with their data in system.data files, and Developer, Git GUI and the REST API Client (both 2026-11-09). Owner steps.
 updated: 2026-11-09
 ---
 
@@ -39,9 +39,16 @@ are not pushed; brief numbering restarted at 01 on 2026-11-02 (see
 - **Accessories** (2026-11-09, `1a04603`, `ebc2be6`): Todo and Bookmarks,
   from the OS's built-ins (imbatranimOS brief 75). Their data is JSON files in
   each app's own folder through `system.data`, which the OS moved once from
-  its database; `accessories/shared/src/dataStore.ts` is the store the window
-  and the hooks share. Todo exports `Background`, Bookmarks
-  `commandSources`. Not pushed; the walk in the OS is owed.
+  its database; `packages/shared/src/dataStore.ts` (moved there 2026-11-09
+  for Developer) is the store the window and the hooks share. Todo exports
+  `Background`, Bookmarks `commandSources`. Not pushed; the walk in the OS
+  is owed.
+- **Developer** (2026-11-09, `4ef5f5a`): Git GUI and the REST API Client,
+  from the OS's built-ins (imbatranimOS brief 76). Git and the request proxy
+  stay the OS's services. Git GUI's recent repositories are `recents.json`
+  in its state folder, and each is also one of its OS recents (a folder),
+  which is what reopens it in a new window; the REST client's collections
+  were already in its data folder. Not pushed; the walk in the OS is owed.
 
 ## In imbatranimOS
 
