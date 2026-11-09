@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createFakeSystem } from '@imbatranim-office/shared/testing'
 import type { SystemData } from '@imbatranim/ui'
 import { createDataStore } from '../../../../shared/src/dataStore'
-import { todoFiles, type TodoState } from './todoFiles'
+import { oneEach, todoFiles, type TodoState } from './todoFiles'
 import * as ops from './todoOps'
 import type { Todo } from '../types'
 
@@ -94,6 +94,23 @@ describe("Todo's files", () => {
     expect(result).toEqual({ unfiled: 1 })
     expect([...appData.keys()]).toEqual(['data:unfiled.json'])
     expect(JSON.parse(appData.get('data:unfiled.json') as string).todos[0].id).toBe(1)
+  })
+})
+
+describe('one id per task', () => {
+  it('keeps the newer copy of a task a stopped move left in two files', () => {
+    const old = todo(1, null)
+    const moved = todo(1, 1, { updatedAt: '2026-11-09 10:00:00' })
+    expect(oneEach([old, moved])).toEqual([moved])
+  })
+
+  it('keeps both of two tasks two tabs gave one id, the second renumbered', () => {
+    const first = todo(4, null, { text: 'from one tab' })
+    const second = todo(4, 1, { text: 'from another', createdAt: '2026-11-09 10:00:01' })
+    expect(oneEach([first, second]).map((t) => [t.id, t.text])).toEqual([
+      [4, 'from one tab'],
+      [5, 'from another'],
+    ])
   })
 })
 

@@ -67,6 +67,31 @@ function readTodos(raw: unknown, listId: number | null, path: string): Todo[] {
   })
 }
 
+/**
+ * Every task once, under an id of its own. Two files can hold one id two ways:
+ *
+ * - the same task (same text, made at the same time), when a move between
+ *   lists wrote the new list and failed on the old one: the newer copy stays;
+ * - two tasks, when two tabs each added one to a different list at once and
+ *   both took the next id: both stay, the second under a fresh id, which the
+ *   next save writes.
+ */
+export function oneEach(todos: Todo[]): Todo[] {
+  const out = new Map<number, Todo>()
+  let fresh = todos.reduce((max, t) => Math.max(max, t.id), 0) + 1
+  for (const todo of todos) {
+    const held = out.get(todo.id)
+    if (!held) out.set(todo.id, todo)
+    else if (held.text === todo.text && held.createdAt === todo.createdAt) {
+      if (todo.updatedAt > held.updatedAt) out.set(todo.id, todo)
+    } else {
+      const id = fresh++
+      out.set(id, { ...todo, id })
+    }
+  }
+  return [...out.values()]
+}
+
 export const todoFiles: DataStoreFiles<TodoState> = {
   async load(data: SystemData): Promise<Loaded<TodoState>> {
     const contents = new Map<string, string>()
@@ -107,11 +132,8 @@ export const todoFiles: DataStoreFiles<TodoState> = {
       versions.set(UNFILED, null)
     }
 
-    // A move whose second write failed leaves a task in two files; show it once.
-    const seen = new Set<number>()
-    const unique = todos.filter((t) => !seen.has(t.id) && seen.add(t.id))
     return {
-      state: { todos: unique.sort(byPosition), lists: lists.sort(byPosition) },
+      state: { todos: oneEach(todos).sort(byPosition), lists: lists.sort(byPosition) },
       contents,
       versions,
     }
