@@ -9,6 +9,7 @@
     "vitest.config.ts",
     "games/vite.config.ts",
     "accessories/vite.config.ts",
+    "developer/vite.config.ts",
     "tools",
     "packages/shared/src/build",
     "server/src"

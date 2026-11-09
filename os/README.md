@@ -29,7 +29,8 @@ touching one not listed throws. `minSystemVersion` is the kit's
 Every group but Office is one root workspace folder with its template in
 `<group>/os/descriptor.template.json` (Games: `games/os/`, copied to the OS's
 `marketplace/games.json`; Accessories: `accessories/os/`, copied to
-`marketplace/accessories.json`). `packages/shared/src/build/groups.test.ts` finds
+`marketplace/accessories.json`; Developer: `developer/os/`, copied to
+`marketplace/developer.json`). `packages/shared/src/build/groups.test.ts` finds
 each such workspace and checks it against a real build:
 
 - `id` is the folder name; each app's `id` is its `<group>/apps/<name>`, its
@@ -61,12 +62,14 @@ working tree. Never commit the local descriptor in the OS repo.
    `docker cp -a <clone> <container>:/home/imbatranim/fixtures/apps`
    (`-a` keeps uid 1000, the OS user).
 3. Write the descriptor: the group's template (`os/` for Office,
-   `games/os/` for Games, `accessories/os/` for Accessories) with
+   `games/os/` for Games, `accessories/os/` for Accessories, `developer/os/`
+   for Developer) with
    `"source": { "repo": "file:///home/imbatranim/fixtures/apps", "ref": "<commit>" }`.
    - **Dev container** (`MARKETPLACE_ALLOW_LOCAL_REPOS=true npm run dev` in the
      OS checkout; `docker exec infrastructure-dev-1 printenv MARKETPLACE_ALLOW_LOCAL_REPOS`
      says whether it was): save it over the OS checkout's
-     `marketplace/<id>.json` (`imbatranim-office.json`, `games.json`, `accessories.json`); compose
+     `marketplace/<id>.json` (`imbatranim-office.json`, `games.json`, `accessories.json`,
+     `developer.json`); compose
      watch syncs it into
      `/app/marketplace` in seconds. A rebuild of the dev image (any change to
      the OS's `package.json`, lockfile or Dockerfile, even a touch) drops it

@@ -5,6 +5,7 @@
     { "path": "./tsconfig.node.json" },
     { "path": "./games/tsconfig.json" },
     { "path": "./accessories/tsconfig.json" },
+    { "path": "./developer/tsconfig.json" },
     { "path": "./packages/pdfcore-engine/tsconfig.json" }
   ]
 }

@@ -26,6 +26,8 @@ export default defineConfig({
       'games/shared/src/**/*.test.{ts,tsx}',
       'accessories/apps/*/src/**/*.test.{ts,tsx}',
       'accessories/shared/src/**/*.test.{ts,tsx}',
+      'developer/apps/*/src/**/*.test.{ts,tsx}',
+      'developer/shared/src/**/*.test.{ts,tsx}',
       'tools/*.test.ts',
     ],
   },
