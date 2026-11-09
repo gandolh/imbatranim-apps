@@ -1,0 +1,24 @@
+{
+  "name": "@imbatranim-apps/accessories",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "description": "The Accessories group: Todo and Bookmarks. Moved from the OS's built-in apps/add-ons/todo and apps/add-ons/bookmarks.",
+  "scripts": {
+    "build:os": "vite build"
+  },
+  "dependencies": {
+    "@use-gesture/react": "10.3.1",
+    "lucide-react": "1.24.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/node": "4.3.3",
+    "@tailwindcss/oxide": "4.3.3",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "vite": "8.3.5"
+  }
+}

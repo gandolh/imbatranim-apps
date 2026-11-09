@@ -1,9 +1,10 @@
 # imbatranim-apps
 
-The apps installed on imbatranimOS, grouped by kind. Each group installs together from the OS's Marketplace and its apps open in OS windows with the desktop's own buttons, dialogs and theme. Two groups so far:
+The apps installed on imbatranimOS, grouped by kind. Each group installs together from the OS's Marketplace and its apps open in OS windows with the desktop's own buttons, dialogs and theme. Three groups so far:
 
 - **Office** (the repo was imbatranim-office until 2026-11-06): Docs, Sheets, Slides, PDF and CAD.
 - **Games** (2026-11-06): Minesweeper and Solitaire, which used to be built into the OS.
+- **Accessories** (2026-11-09): Todo and Bookmarks, which used to be built into the OS. Each keeps its data as JSON files in its own data folder.
 
 <p align="center">
   <img src="docs/images/docs.webp" width="100%" alt="Docs in an imbatranimOS window: a Word document titled Community garden plan, with a table of beds, crops and sowing weeks and a list of tasks, under a toolbar with font, size, bold, italic, lists and tables">
@@ -32,7 +33,7 @@ Editing runs in the browser, inside the OS window, so files never leave the mach
 
 ## How it works
 
-Each app exports one React component. `npm run build:os` bundles a group's apps into its `dist/os` with React, React DOM and `@imbatranim/ui` left external, so the desktop renders each app with its own instances. Office's apps are workspace packages under `apps/`, built from the repo root. Every other group is one workspace folder (`games/`) that the OS installs and builds on its own, `npm ci --workspace=games` then `npm run build:os --workspace=games`, so installing Games doesn't pull Office's dependencies. A small Fastify server, which the OS starts when an app first asks for it, does one-off jobs that cannot run in the browser, such as turning a DWG into DXF. More in the [wiki's architecture page](corpus/wiki/architecture.md).
+Each app exports one React component. `npm run build:os` bundles a group's apps into its `dist/os` with React, React DOM and `@imbatranim/ui` left external, so the desktop renders each app with its own instances. Office's apps are workspace packages under `apps/`, built from the repo root. Every other group is one workspace folder (`games/`, `accessories/`) that the OS installs and builds on its own, `npm ci --workspace=games` then `npm run build:os --workspace=games`, so installing Games doesn't pull Office's dependencies. A small Fastify server, which the OS starts when an app first asks for it, does one-off jobs that cannot run in the browser, such as turning a DWG into DXF. More in the [wiki's architecture page](corpus/wiki/architecture.md).
 
 ```mermaid
 flowchart LR
@@ -52,6 +53,7 @@ npm test               # vitest across the apps, the shared package and the serv
 npm run typecheck
 npm run build:os       # writes dist/os, what the OS's Marketplace installs for Office
 npm run build:os --workspace=games   # writes games/dist/os, the Games group
+npm run build:os --workspace=accessories   # writes accessories/dist/os, the Accessories group
 ```
 
 To try the apps, install the suite into an imbatranimOS you run locally from a commit of your checkout: [os/README.md](os/README.md#installing-from-a-local-checkout). More in [docs/getting-started.md](docs/getting-started.md).
@@ -62,6 +64,7 @@ To try the apps, install the suite into an imbatranimOS you run locally from a c
 | -------------------------- | -------------------------------------------------------------------------------- |
 | `apps/`                    | One package per app: `docs`, `sheets`, `slides`, `pdf`, `cad`                    |
 | `games/`                   | The Games group: `apps/minesweeper`, `apps/solitaire`, its descriptor template   |
+| `accessories/`             | The Accessories group: `apps/todo`, `apps/bookmarks`, its descriptor template    |
 | `packages/shared/`         | The OS build, the externals plugin, shared types and a fake system for tests     |
 | `packages/pdfcore-engine/` | The PDF engine the PDF app uses                                                  |
 | `server/`                  | The suite's Fastify server: health and the DWG to DXF converter                  |

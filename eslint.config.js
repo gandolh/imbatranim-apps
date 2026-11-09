@@ -144,6 +144,12 @@ export default defineConfig([
     },
   },
   {
+    // An app's entry is the module the desktop imports, and exports its hooks
+    // (`commandSources`) by name beside `App`; it is never hot-reloaded.
+    files: ['**/apps/*/src/App.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
+  {
     // Test helpers and tests export what they like.
     files: ['**/*.test.{ts,tsx}', 'packages/shared/src/testing/**', 'packages/shared/test/**'],
     rules: { 'react-refresh/only-export-components': 'off' },

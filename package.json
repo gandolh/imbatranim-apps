@@ -13,7 +13,8 @@
     "apps/*",
     "packages/*",
     "server",
-    "games"
+    "games",
+    "accessories"
   ],
   "scripts": {
     "build:os": "vite build",
