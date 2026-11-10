@@ -469,3 +469,17 @@ recents, a folder, which is what gives a new window it again (owner,
 2026-11-09); a repository the OS opens it with, from Start or the palette,
 opens. Both ask for `fs`, `http`, `intents` and `notify`. The OS pins
 `4ef5f5a`. Not pushed: push this repo before the OS.
+
+## [2026-11-10] briefs | 07-11: Base UI 1.9.0, the house style, Base UI by the conventions, the server, a redesign
+
+Written from the owner's estate calls of 2026-11-09 and 2026-11-10; none built.
+07 bumps Base UI through `kit:sync` at imbatranimOS brief 85's commit. 08 is the
+harness: Prettier at width 120 with the quote and semicolon move (355 files,
+about 29,600 lines), the typed lint rules, `check` and `check:fast`, the
+vendored `house-style`, `.claude/rules/` and a root `CLAUDE.md`. 09 audits the
+apps' use of the kit against the base-ui rules and swaps hand-built widgets
+for the kit components that imbatranimOS brief 87 adds. 10 puts the DWG server
+in the code structure, with the entry renamed `server.ts` (the descriptor's
+command changes with it). 11 is the Hallmark redesign on the estate board, after
+imbatranimOS brief 88. No Tailwind migration brief: every app is already
+utilities-only on the kit's tokens. Findings, with commands, are in each brief.
