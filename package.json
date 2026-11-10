@@ -27,7 +27,7 @@
     "kit:sync": "node tools/kit-sync.ts"
   },
   "devDependencies": {
-    "@base-ui/react": "1.6.0",
+    "@base-ui/react": "1.9.0",
     "@eslint/js": "10.0.1",
     "@tailwindcss/node": "4.3.3",
     "@tailwindcss/oxide": "4.3.3",
