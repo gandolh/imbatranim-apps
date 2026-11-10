@@ -90,6 +90,8 @@ This repo was renamed imbatranim-apps on 2026-11-06 (imbatranimOS brief 63),
 with Office as its first group; words only. Left to the owner: rename the
 GitHub repository, then point `origin` at it.
 
+Brief 07 (2026-11-10, `40450da`): the kit snapshot at imbatranimOS `dcdb648`, Base UI 1.9.0 pinned; no kit source change; the desktop walk is not done.
+
 No todo is open.
 
 Test files for the walks: [test-files.md](test-files.md).

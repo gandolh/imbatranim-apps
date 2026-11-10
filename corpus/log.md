@@ -483,3 +483,11 @@ in the code structure, with the entry renamed `server.ts` (the descriptor's
 command changes with it). 11 is the Hallmark redesign on the estate board, after
 imbatranimOS brief 88. No Tailwind migration brief: every app is already
 utilities-only on the kit's tokens. Findings, with commands, are in each brief.
+
+## [2026-11-10] done | Brief 07: Base UI 1.9.0, through kit:sync
+
+[Brief 07](briefs/done/07-base-ui-1-9-0-through-kit-sync.md) built in `40450da`.
+`kit:sync` at imbatranimOS `dcdb648` moved one pin, `@base-ui/react` 1.6.0 to
+1.9.0, and `COMMIT`; the vendored kit source is unchanged. Typecheck, lint,
+`kit:sync --check` and the four `build:os` runs pass. The desktop walk is not
+done.

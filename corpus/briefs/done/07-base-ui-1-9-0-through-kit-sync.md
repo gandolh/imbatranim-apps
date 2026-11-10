@@ -78,3 +78,18 @@ One commit for the bump: `The kit snapshot moves to imbatranimOS <short hash> (B
 - Brief 08 runs `kit:sync --check` again after its reformat, and it must stay green: `vendor` is in `.prettierignore` and `eslint.config.js` already.
 - Brief 09 syncs again at the last commit of imbatranimOS's brief 87, which adds kit components and the type and z-index scales.
 - imbatranimOS's brief 86 reformats the whole kit. When the owner later syncs at or after that commit, the diff of `vendor/imbatranim-ui/src` shows every file changed. That is expected and is not reviewed line by line.
+
+## Outcome (2026-11-10)
+
+Built in `40450da`. `kit:sync` at imbatranimOS `dcdb648` (brief 85) moved one
+pin, `@base-ui/react` 1.6.0 to 1.9.0, and `vendor/imbatranim-ui/COMMIT`; the
+other 12 tracked pins did not move and `vendor/imbatranim-ui/src` is
+unchanged (`git diff --stat -- vendor/`: `COMMIT`, 1 line). The lockfile holds
+one `@base-ui/react` at 1.9.0, `@base-ui/utils` 0.3.1 to 0.5.0, no nested copy.
+One forced test edit: the commit named in
+`packages/shared/src/build/kitSnapshot.test.ts:246`.
+Checks: `kit:sync --check` 0; typecheck, lint and the four `build:os` runs
+pass; tests 911 of 914 pass with 3 skipped, as many as the baseline. The PDF
+app test ("draws the first page with pdf.js alone") timed out in the full run
+both before and after the bump and passes alone. Skipped: the walk in a local
+imbatranimOS (step 5), so 1.6.0 to 1.9.0 behaviour in the desktop is unwalked.
