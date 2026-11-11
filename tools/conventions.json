@@ -1,0 +1,6 @@
+{
+  "$schema": "../vendor/house-style/conventions.schema.json",
+  "web": ["apps/*/src", "accessories/apps/*/src", "developer/apps/*/src", "games/apps/*/src"],
+  "server": ["server/src"],
+  "shared": ["games/shared/src", "accessories/shared/src", "developer/shared/src", "packages/pdfcore-engine/src"]
+}
