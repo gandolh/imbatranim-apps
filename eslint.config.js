@@ -53,10 +53,9 @@ export default [
     rules: { "n/no-process-env": "warn" },
   },
   {
-    // Build code passes the environment on to child processes on purpose, and the build tests' fixtures
-    // are sample apps that read it so the build can be shown to cope.
+    // Build code passes the environment on to child processes on purpose.
     name: "imbatranim-apps/build-env",
-    files: ["packages/shared/src/build/**", "packages/shared/test/fixtures/**"],
+    files: ["packages/shared/src/build/**"],
     rules: { "n/no-process-env": "off" },
   },
   {
