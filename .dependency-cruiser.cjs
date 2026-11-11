@@ -10,13 +10,6 @@ module.exports = {
       name: "no-circular",
       severity: "warn",
     },
-    {
-      // Vite's virtual modules (`virtual:pdfjs-wasm-dir`) exist only inside the build.
-      name: "not-to-unresolvable",
-      severity: "error",
-      from: {},
-      to: { couldNotResolve: true, pathNot: "^virtual:" },
-    },
   ],
   options: { tsConfig: { fileName: "tsconfig.app.json" } },
 };

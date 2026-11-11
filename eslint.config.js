@@ -35,8 +35,8 @@ export default [
     scripts: ["tools"],
     // The server entry prints where it listens before anything else is up.
     console: ["server/src/index.ts"],
-    // Ambient declarations for a package's default export (rbush, dxf-viewer) can only say `export default`.
-    defaultExports: ["**/*.d.ts"],
+    // The CAD tests check a geometry result through helpers that hold the `expect` calls.
+    assertFunctionNames: ["expect", "expectTypeOf", "expectPoint", "expectLine", "expectSameDrawing"],
     // vendor/ is the OS's kit, byte for byte: never linted or rewritten here.
     ignores: ["dist/**", "**/dist/**"],
   }),
@@ -58,17 +58,6 @@ export default [
     name: "imbatranim-apps/build-env",
     files: ["packages/shared/src/build/**", "packages/shared/test/fixtures/**"],
     rules: { "n/no-process-env": "off" },
-  },
-  {
-    // The CAD tests check a geometry result through these helpers, which hold the `expect` calls.
-    name: "imbatranim-apps/cad-assertion-helpers",
-    files: ["apps/cad/src/**/*.test.ts"],
-    rules: {
-      "vitest/expect-expect": [
-        "error",
-        { assertFunctionNames: ["expect", "expectPoint", "expectLine", "expectSameDrawing"] },
-      ],
-    },
   },
   {
     name: "imbatranim-apps/kit-imports",
