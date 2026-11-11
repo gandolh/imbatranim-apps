@@ -77,7 +77,9 @@ export function dwgFailureSentence(err: DwgOpenError, name: string): string {
 }
 
 async function gunzip(gz: ArrayBuffer): Promise<Uint8Array> {
-  const stream = new Response(gz).body!.pipeThrough(new DecompressionStream("gzip"));
+  const body = new Response(gz).body;
+  if (!body) throw new Error("The gzip stream has no body");
+  const stream = body.pipeThrough(new DecompressionStream("gzip"));
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
@@ -120,7 +122,7 @@ export function convertDwg(serverWs: string, dwg: ArrayBuffer): Promise<Uint8Arr
     ws.onclose = (e: CloseEvent) => {
       const gz = dxf;
       if (gz) {
-        return finish(() => gunzip(gz).then(resolve, () => reject(new DwgOpenError("failed", size))));
+        return finish(() => void gunzip(gz).then(resolve, () => reject(new DwgOpenError("failed", size))));
       }
       if (failure) {
         const { error, version } = failure;

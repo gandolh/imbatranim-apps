@@ -84,7 +84,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
     const csvFile = /\.csv$/i.test(source.path);
     setLoading(true);
     setError(null);
-    (async () => {
+    void (async () => {
       try {
         const { bytes, version } = await system.fs.readWithVersion(source.root, source.path);
         if (cancelled) return;
@@ -208,9 +208,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
     setError(null);
     try {
       const docName = fileName(source.path, isCsv ? "data.csv" : "workbook.xlsx");
-      const bytes = isCsv
-        ? (encoder.encode(univerToCsv(snapshot)).slice().buffer as ArrayBuffer)
-        : await univerToXlsx(snapshot);
+      const bytes = isCsv ? encoder.encode(univerToCsv(snapshot)).slice().buffer : await univerToXlsx(snapshot);
       const result = await saveOverRead(
         system.fs,
         { root: source.root, path: source.path, name: docName },

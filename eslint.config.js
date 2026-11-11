@@ -1,46 +1,95 @@
-import js from "@eslint/js";
-import globals from "globals";
-import reactHooks from "eslint-plugin-react-hooks";
+import { houseStyle } from "./vendor/house-style/eslint.config.js";
 import reactRefresh from "eslint-plugin-react-refresh";
-import tseslint from "typescript-eslint";
-import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigPrettier from "eslint-config-prettier";
 
-export default defineConfig([
-  // vendor/ is the OS's kit, byte for byte: never linted or rewritten here.
-  globalIgnores(["dist", "vendor", "coverage"]),
+// The folders an app's source lives in. An app imports only the kit (`@imbatranim/ui`) and the
+// shared helpers, never the desktop's own packages, so the same list scopes the import rules below.
+const APP_SOURCE = ["apps/*/src", "accessories/apps/*/src", "developer/apps/*/src", "games/apps/*/src"];
+const APP_FILES = APP_SOURCE.map((dir) => `${dir}/**/*.{ts,tsx}`);
+
+const KIT_IMPORTS = [
   {
+    group: ["@imbatranim/core", "@imbatranim/core/*"],
+    message: "The desktop's own package. An app reaches the OS through useSystem() and the kit, never core.",
+  },
+  {
+    group: ["@imbatranim/ui/*"],
+    message: 'The kit is lent as one module: import from "@imbatranim/ui".',
+  },
+];
+
+const PDF_FIRST_PAGE_MESSAGE =
+  "The engine (pdf-lib) loads after the first page: type imports only here; values come from app/engine.ts.";
+
+/**
+ * The house config from the vendored house-style copy, given this repo's folders. Thin on purpose:
+ * the compiler is the first gate, and the house adds only what it cannot see. The rules and the
+ * reason for each are in the copy.
+ */
+export default [
+  ...houseStyle({
+    root: import.meta.dirname,
+    // Every folder that holds React code: the apps, the shared helpers of each group and the engine.
+    web: [...APP_SOURCE, "games/shared/src", "accessories/shared/src", "developer/shared/src", "packages/shared/src"],
+    server: "server/src",
+    // Run by hand: the kit sync prints its result.
+    scripts: ["tools"],
+    // The server entry prints where it listens before anything else is up.
+    console: ["server/src/index.ts"],
+    // Ambient declarations for a package's default export (rbush, dxf-viewer) can only say `export default`.
+    defaultExports: ["**/*.d.ts"],
+    // vendor/ is the OS's kit, byte for byte: never linted or rewritten here.
+    ignores: ["dist/**", "**/dist/**"],
+  }),
+  {
+    name: "imbatranim-apps/react-refresh",
     files: ["**/*.{ts,tsx}"],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-      eslintConfigPrettier,
-    ],
-    languageOptions: {
-      globals: globals.browser,
-    },
+    ...reactRefresh.configs.vite,
+  },
+  {
+    name: "imbatranim-apps/process-env-warns",
+    // A warning for now (2026-11-11): the server entry still reads PORT and HOST itself. When the
+    // server takes its settings from config.ts, this block goes and the rule is an error again.
+    files: ["server/src/index.ts"],
+    rules: { "n/no-process-env": "warn" },
+  },
+  {
+    // Build code passes the environment on to child processes on purpose, and the build tests' fixtures
+    // are sample apps that read it so the build can be shown to cope.
+    name: "imbatranim-apps/build-env",
+    files: ["packages/shared/src/build/**", "packages/shared/test/fixtures/**"],
+    rules: { "n/no-process-env": "off" },
+  },
+  {
+    // The CAD tests check a geometry result through these helpers, which hold the `expect` calls.
+    name: "imbatranim-apps/cad-assertion-helpers",
+    files: ["apps/cad/src/**/*.test.ts"],
     rules: {
-      "@typescript-eslint/no-unused-vars": [
+      "vitest/expect-expect": [
         "error",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_",
-        },
+        { assertFunctionNames: ["expect", "expectPoint", "expectLine", "expectSameDrawing"] },
       ],
+    },
+  },
+  {
+    name: "imbatranim-apps/kit-imports",
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: KIT_IMPORTS }],
+    },
+  },
+  {
+    // Every app imports the kit, which wraps Base UI. Base UI itself is the kit's.
+    name: "imbatranim-apps/base-ui-imports",
+    files: APP_FILES,
+    rules: {
       "no-restricted-imports": [
         "error",
         {
           patterns: [
+            ...KIT_IMPORTS,
             {
-              group: ["@imbatranim/core", "@imbatranim/core/*"],
-              message: "The desktop's own package. An app reaches the OS through useSystem() and the kit, never core.",
-            },
-            {
-              group: ["@imbatranim/ui/*"],
-              message: 'The kit is lent as one module: import from "@imbatranim/ui".',
+              group: ["@base-ui/react", "@base-ui/react/*"],
+              message: 'Apps import only the kit: use the component from "@imbatranim/ui", never Base UI directly.',
             },
           ],
         },
@@ -48,23 +97,9 @@ export default defineConfig([
     },
   },
   {
-    // Build code, scripts and the suite's server run in Node.
-    files: ["packages/shared/src/build/**", "tools/**", "server/**", "*.config.ts"],
-    languageOptions: { globals: globals.node },
-  },
-  {
-    // The PDF engine, moved from the OS with the lint settings it
-    // had there: it spans the browser (render, text layer) and Node (its
-    // tests), and its one `@ts-ignore` (pdf.js's untyped legacy build) says why.
-    files: ["packages/pdfcore-engine/**"],
-    languageOptions: { globals: { ...globals.browser, ...globals.node } },
-    rules: {
-      "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": "allow-with-description" }],
-    },
-  },
-  {
     // Nothing in a browser bundle may reach the engine's Node entry (it binds
     // pdf.js to @napi-rs/canvas, a native module).
+    name: "imbatranim-apps/pdf-engine-node-entry",
     files: ["apps/**/*.{ts,tsx}"],
     rules: {
       "@typescript-eslint/no-restricted-imports": [
@@ -85,6 +120,7 @@ export default defineConfig([
     // PDF's first page: every module on the way to it imports only
     // types from the engine and pdf.js, and none of the chunks that load after
     // it. lazy.ts and app/engine.ts reach those with dynamic imports.
+    name: "imbatranim-apps/pdf-first-page",
     files: ["apps/pdf/src/**/*.{ts,tsx}"],
     ignores: [
       "apps/pdf/src/**/*.test.{ts,tsx}",
@@ -101,17 +137,11 @@ export default defineConfig([
         "error",
         {
           paths: [
-            {
-              name: "@pdfcore/engine",
-              allowTypeImports: true,
-              message:
-                "The engine (pdf-lib) loads after the first page: type imports only here; values come from app/engine.ts.",
-            },
+            { name: "@pdfcore/engine", allowTypeImports: true, message: PDF_FIRST_PAGE_MESSAGE },
             {
               name: "@pdfcore/engine/browser",
               allowTypeImports: true,
-              message:
-                "The engine (pdf-lib) loads after the first page: type imports only here; values come from app/engine.ts.",
+              message: PDF_FIRST_PAGE_MESSAGE,
             },
             {
               name: "pdfjs-dist",
@@ -145,12 +175,14 @@ export default defineConfig([
   {
     // An app's entry is the module the desktop imports, and exports its hooks
     // (`commandSources`) by name beside `App`; it is never hot-reloaded.
+    name: "imbatranim-apps/app-entry",
     files: ["**/apps/*/src/App.tsx"],
     rules: { "react-refresh/only-export-components": "off" },
   },
   {
     // Test helpers and tests export what they like.
+    name: "imbatranim-apps/test-exports",
     files: ["**/*.test.{ts,tsx}", "packages/shared/src/testing/**", "packages/shared/test/**"],
     rules: { "react-refresh/only-export-components": "off" },
   },
-]);
+];

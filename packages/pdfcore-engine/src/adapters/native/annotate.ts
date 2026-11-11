@@ -1,7 +1,7 @@
 import {
   PDFHexString,
   PDFName,
-  PDFRef,
+  type PDFRef,
   PDFString,
   type PDFContext,
   type PDFDocument,
@@ -186,8 +186,10 @@ export class NativeAnnotationWriter {
     const ops: string[] = [`${fmt(width)} w`, "1 J", "1 j", `${rgb(color)} RG`];
     for (const path of ann.paths) {
       if (!path.length) continue;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the path has at least two points here
       ops.push(`${fmt(path[0]!.x)} ${fmt(path[0]!.y)} m`);
       for (let i = 1; i < path.length; i++) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the loop stays inside the path
         ops.push(`${fmt(path[i]!.x)} ${fmt(path[i]!.y)} l`);
       }
       ops.push("S");

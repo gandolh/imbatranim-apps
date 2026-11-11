@@ -786,7 +786,8 @@ export class Editor {
     p: Extract<Prompt, { kind: "entity" }>,
   ): { handle: string; refused: null } | { handle: null; refused: string } {
     const all = this.pickCandidates(screen);
-    const accepted = p.filter ? all.filter((c) => p.filter!(c.e) === null) : all;
+    const accepts = p.filter;
+    const accepted = accepts ? all.filter((c) => accepts(c.e) === null) : all;
     const first = nearest(accepted);
     if (!first) {
       const refused = nearest(all);

@@ -35,7 +35,7 @@ export const useGamesStats = create<GamesStats>()(
             losses: s.minesweeper.losses + (result === "loss" ? 1 : 0),
             best:
               result === "win" &&
-              (s.minesweeper.best[difficulty] === undefined || seconds < s.minesweeper.best[difficulty]!)
+              (s.minesweeper.best[difficulty] === undefined || seconds < s.minesweeper.best[difficulty])
                 ? { ...s.minesweeper.best, [difficulty]: seconds }
                 : s.minesweeper.best,
           },

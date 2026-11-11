@@ -10,5 +10,6 @@ process.once("message", ({ dwg }: ConverterRequest) => {
   if (first === "h") return setInterval(() => undefined, 1000);
   if (first === "x") process.exit(3);
   const reply: ConverterReply = first === "e" ? { ok: false, detail: "stand-in failure" } : { ok: true, dxf: dwg };
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a forked child always has an IPC channel
   process.send!(reply, () => process.exit(0));
 });

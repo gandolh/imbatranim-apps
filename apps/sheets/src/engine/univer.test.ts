@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CALCULATION_WAIT_MS, PROGRESS_STRINGS, createSheetEngine } from "./univer";
+import { CALCULATION_WAIT_MS, type PROGRESS_STRINGS, createSheetEngine } from "./univer";
 
 /**
  * Univer, at the module boundary: what is under test is how Sheets wires the
@@ -12,7 +12,7 @@ const u = vi.hoisted(() => ({
   presetConfig: null as null | Record<string, unknown>,
   commandListener: null as null | ((c: { type: number; id: string }) => void),
   waits: [] as (number | undefined)[],
-  calculation: Promise.resolve() as Promise<void>,
+  calculation: Promise.resolve<void>(undefined),
   saved: 0,
   univerDisposed: false,
   order: [] as string[],

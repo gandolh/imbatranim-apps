@@ -2,7 +2,7 @@ import { PDFDict, PDFDocument, PDFName } from "pdf-lib";
 import type { Document } from "../../capabilities/Document.js";
 import {
   PdfEngineError,
-  PdfEngineWarning,
+  type PdfEngineWarning,
   SignatureInvalidationWarning,
 } from "../../api/errors.js";
 import type { DocumentMetadata, PageSize, PdfBytes } from "../../api/types.js";

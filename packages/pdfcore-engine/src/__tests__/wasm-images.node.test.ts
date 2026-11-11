@@ -4,7 +4,6 @@ import { dirname, join } from "node:path";
 import { createCanvas } from "@napi-rs/canvas";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { loadPdf } from "../index.node.js";
-import type { RenderTarget } from "../index.node.js";
 import { setPdfjsWasmUrl } from "../browser/pdf-worker.js";
 
 // Scanned PDFs use JBIG2 and sometimes JPEG2000; pdf.js decodes both with
@@ -29,7 +28,7 @@ const wasmDir =
 async function render(name: string) {
   const doc = await loadPdf(fixture(name));
   const canvas = createCanvas(1, 1);
-  await doc.render.page(1, canvas as unknown as RenderTarget, { scale: 1 });
+  await doc.render.page(1, canvas, { scale: 1 });
   const ctx = canvas.getContext("2d");
   return (x: number, y: number) =>
     Array.from(ctx.getImageData(x, y, 1, 1).data.slice(0, 3));

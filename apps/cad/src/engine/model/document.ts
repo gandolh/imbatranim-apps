@@ -133,7 +133,7 @@ export class CadDocument {
       linetype: "ByLayer",
       ...props,
       ...shape,
-    } as unknown as Entity;
+    };
   }
 
   // ── Transactions ───────────────────────────────────────────────────────────

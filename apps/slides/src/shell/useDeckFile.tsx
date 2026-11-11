@@ -134,7 +134,7 @@ export function useDeckFile(): DeckFile {
             key,
             kind: known ? "refused" : "failed",
             message: known
-              ? reportFileRefusal(system, (err as Error).message, { name: docName })
+              ? reportFileRefusal(system, err.message, { name: docName })
               : reportFileFailure(system, "open", err, { noun: NOUN, name: docName }),
           });
         }

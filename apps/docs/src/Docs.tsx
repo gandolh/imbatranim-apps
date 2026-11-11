@@ -96,7 +96,7 @@ export function Docs({ windowId }: { windowId: string }) {
     let engine: DocEngine | null = null;
     setLoading(true);
     setError(null);
-    (async () => {
+    void (async () => {
       try {
         const { bytes, version } = await system.fs.readWithVersion(source.root, source.path);
         if (cancelled) return;
@@ -119,6 +119,7 @@ export function Docs({ windowId }: { windowId: string }) {
         if (normalized.repaired.length > 0) {
           // Worth knowing when a save is investigated later, not worth a toast:
           // the repair is exactly what makes the save correct.
+          // eslint-disable-next-line no-console -- the only trace of a repair, kept out of the user's way on purpose
           console.info("[docs] repaired missing docx parts", normalized.repaired);
         }
         const file = new File([normalized.bytes as BlobPart], docName, {

@@ -142,6 +142,7 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
 
   const fail = useCallback(
     (what: string, err: unknown) => {
+      // eslint-disable-next-line no-console -- the notification below cannot carry the error object
       console.error(`slides: ${what} failed`, err);
       system.notify({
         level: "error",
@@ -874,6 +875,7 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
 
   const getModel = useCallback((i: number) => store.model(i), [store]);
 
+  const exportModel = exporting ? store.model(exporting.index) : null;
   return (
     <div className="bg-surface-container-lowest flex h-full min-h-0 flex-col">
       <Toolbar state={toolbarState} actions={actions} />
@@ -940,10 +942,10 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
           }}
         />
       )}
-      {exporting && store.model(exporting.index) && (
+      {exportModel && (
         <div aria-hidden="true" style={{ position: "fixed", left: -20000, top: 0, pointerEvents: "none" }}>
           <div ref={exportRef}>
-            <SlideView model={store.model(exporting.index)!} />
+            <SlideView model={exportModel} />
           </div>
         </div>
       )}

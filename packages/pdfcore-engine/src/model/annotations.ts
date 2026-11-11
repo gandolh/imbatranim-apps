@@ -37,7 +37,7 @@ export class AnnotationModel {
   /** Add a spec, assign an id, and return it. */
   add(spec: AnnotationSpec): string {
     const id = `anno_${++this.#seq}`;
-    this.#byId.set(id, { ...spec, id } as Annotation);
+    this.#byId.set(id, { ...spec, id });
     return id;
   }
 
@@ -55,7 +55,7 @@ export class AnnotationModel {
   update(id: string, patch: AnnotationPatch): void {
     const existing = this.#byId.get(id);
     if (!existing) return;
-    this.#byId.set(id, { ...existing, ...patch } as Annotation);
+    this.#byId.set(id, { ...existing, ...patch });
     if (this.#seeded.has(id)) this.#dirty.add(id);
   }
 

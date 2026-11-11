@@ -65,7 +65,7 @@ async function workbookBytes(): Promise<ArrayBuffer> {
   const other = wb.addWorksheet("Other sheet");
   other.getCell("A1").value = "tiny";
   const buf = await wb.xlsx.writeBuffer();
-  return buf as ArrayBuffer;
+  return buf;
 }
 
 const sheetNamed = (wb: Partial<IWorkbookData>, name: string) =>
@@ -132,8 +132,8 @@ describe("in Univer, the formulas compute", () => {
   it("control: without the sizes, Univer computes #NAME? (the bug)", async () => {
     const { workbook } = await parse(await workbookBytes());
     for (const sheet of Object.values(workbook.sheets ?? {})) {
-      delete sheet!.rowCount;
-      delete sheet!.columnCount;
+      delete sheet.rowCount;
+      delete sheet.columnCount;
     }
     const v = await compute(workbook);
     expect(v("B1000")).toBe(2000);

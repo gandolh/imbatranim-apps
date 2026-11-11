@@ -103,7 +103,9 @@ async function main() {
     );
   }
 
-  createRoot(document.getElementById("root")!).render(
+  const root = document.getElementById("root");
+  if (!root) throw new Error("The harness page has no #root element");
+  createRoot(root).render(
     <StrictMode>
       <Frame />
     </StrictMode>,

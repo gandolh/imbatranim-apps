@@ -184,12 +184,10 @@ describe("Forms capability (pdf-lib adapter + pdf.js geometry)", () => {
       /not a valid option/,
     );
     // Type mismatches.
-    expect(() =>
-      doc.forms.set("subscribe", "yes" as unknown as boolean),
-    ).toThrow(/expects a boolean/);
-    expect(() => doc.forms.set("fullName", true as unknown as string)).toThrow(
-      /expects a string/,
+    expect(() => doc.forms.set("subscribe", "yes")).toThrow(
+      /expects a boolean/,
     );
+    expect(() => doc.forms.set("fullName", true)).toThrow(/expects a string/);
   });
 
   it("reports a text field's MaxLen and refuses a longer value at set(), not at save()", async () => {

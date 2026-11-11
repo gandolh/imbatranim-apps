@@ -164,7 +164,7 @@ function SideBySide({ hunk }: { hunk: Hunk }) {
       {rows.map((row, i) => {
         // Word highlight only for a real replacement pair; highlighting a lone
         // insertion against nothing would mark the whole line for no information.
-        const words = row.paired ? wordDiff(row.left!.text, row.right!.text) : null;
+        const words = row.paired && row.left && row.right ? wordDiff(row.left.text, row.right.text) : null;
         return (
           <div key={i} className="flex">
             <Side

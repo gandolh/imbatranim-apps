@@ -42,7 +42,7 @@ function freshDeck(): Card[] {
   const deck: Card[] = [];
   for (const suit of SUITS) {
     for (let rank = 1 as Rank; rank <= 13; rank++) {
-      deck.push({ suit, rank: rank as Rank, faceUp: false, id: `${suit}${rank}` });
+      deck.push({ suit, rank: rank, faceUp: false, id: `${suit}${rank}` });
     }
   }
   return deck;

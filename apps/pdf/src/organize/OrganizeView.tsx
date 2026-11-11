@@ -337,7 +337,7 @@ function PageCard({
     const canvas = canvasRef.current;
     if (!canvas) return;
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const vp = await doc.render.viewport(pageNo, { scale: 1 });
         if (cancelled) return;

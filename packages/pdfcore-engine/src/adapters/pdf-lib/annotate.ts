@@ -127,6 +127,7 @@ export class PdfLibAnnotate implements Annotate {
     const pdf = this.doc.pdfLibDocument;
     const pages = pdf.getPages();
     for (let p = 0; p < pages.length; p++) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the loop index is inside pages
       const annots = pages[p]!.node.Annots();
       if (!annots) continue;
       for (let i = 0; i < annots.size(); i++) {
@@ -139,7 +140,8 @@ export class PdfLibAnnotate implements Annotate {
         const spec = rawToSpec(raw);
         if (!spec) continue;
         const id = `existing_p${p + 1}_${i}`;
-        this.model.seed({ ...spec, id } as Annotation);
+        this.model.seed({ ...spec, id });
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the loop index is inside pages
         this.#refs.set(id, { ref: el, pageRef: pages[p]!.ref });
       }
     }
@@ -229,7 +231,9 @@ function numbersOf(dict: PDFDict, key: string): number[] | undefined {
 
 function colorOf(nums: number[] | undefined): Color | undefined {
   if (!nums || !nums.length) return undefined;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the length is checked on this line
   if (nums.length === 1) return { r: nums[0]!, g: nums[0]!, b: nums[0]! };
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the length is checked on this line
   if (nums.length >= 3) return { r: nums[0]!, g: nums[1]!, b: nums[2]! };
   return undefined;
 }
@@ -239,6 +243,7 @@ function dictToRaw(dict: PDFDict, page: number): RawAnnotation | undefined {
   if (!subtype) return undefined;
   const rectNums = numbersOf(dict, "Rect");
   if (!rectNums || rectNums.length < 4) return undefined;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the length is checked above
   const rect: Rect = [rectNums[0]!, rectNums[1]!, rectNums[2]!, rectNums[3]!];
 
   const bs = dict.lookupMaybe(PDFName.of("BS"), PDFDict);
@@ -285,7 +290,8 @@ function dictToRaw(dict: PDFDict, page: number): RawAnnotation | undefined {
     inkList,
     line:
       lineNums && lineNums.length >= 4
-        ? [lineNums[0]!, lineNums[1]!, lineNums[2]!, lineNums[3]!]
+        ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the length is checked on this line
+          [lineNums[0]!, lineNums[1]!, lineNums[2]!, lineNums[3]!]
         : undefined,
     arrow,
     name: nameOf(dict, "Name"),

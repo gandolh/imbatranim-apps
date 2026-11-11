@@ -37,13 +37,13 @@ export function parsePointInput(text: string, units: Units, last: Vec | null): T
     }
   }
   const base = relative ? last : { x: 0, y: 0 };
-  if (relative && !base) return null;
+  if (!base) return null;
   if (t.includes("<")) {
     const [dText, aText] = t.split("<");
     const d = parseDistance(dText, units);
     const a = parseAngle(aText);
     if (d === null || a === null) return null;
-    return { kind: "point", p: polar(base!, d, a) };
+    return { kind: "point", p: polar(base, d, a) };
   }
   if (t.includes(",")) {
     const parts = t.split(",");
@@ -52,7 +52,7 @@ export function parsePointInput(text: string, units: Units, last: Vec | null): T
     const y = parseDistance(parts[1], units);
     if (x === null || y === null) return null;
     if (parts.length === 3 && parseDistance(parts[2], units) === null) return null;
-    return { kind: "point", p: { x: base!.x + x, y: base!.y + y } };
+    return { kind: "point", p: { x: base.x + x, y: base.y + y } };
   }
   if (relative) return null;
   const d = parseDistance(t, units);

@@ -415,7 +415,8 @@ export function readDxf(bytes: Uint8Array): ReadResult {
     const t = raw.header.get(name);
     return t ? (tagNumber(t, 70) ?? tagNumber(t, 40) ?? tagNumber(t, 5)) : undefined;
   };
-  report.version = raw.header.get("$ACADVER") ? (tagValue(raw.header.get("$ACADVER")!, 1)?.trim() ?? null) : null;
+  const acadVersion = raw.header.get("$ACADVER");
+  report.version = acadVersion ? (tagValue(acadVersion, 1)?.trim() ?? null) : null;
 
   // Entities without a handle (R12 files written without $HANDLING) get one above every handle in the file.
   let handleSeed = parseInt(tagValue(raw.header.get("$HANDSEED") ?? [], 5)?.trim() ?? "0", 16) || 0;

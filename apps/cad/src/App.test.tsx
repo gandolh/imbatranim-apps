@@ -536,7 +536,7 @@ describe("CAD App with DWG", () => {
       intent: { root: "home", openPath: "plan.dwg" },
     });
     const view = renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system);
-    await until(() => view.container.textContent!.includes("Starting the DWG converter…"));
+    await until(() => view.container.textContent.includes("Starting the DWG converter…"));
     expect(opened).toEqual([]);
     act(() => start());
     await until(() => promptText().includes("Converted from DWG"));

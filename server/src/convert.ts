@@ -65,6 +65,7 @@ export function createConverter(options: ConverterOptions = {}): Converter {
   const timeoutMs = options.timeoutMs ?? CONVERT_TIMEOUT_MS;
   const maxWaiting = options.maxWaiting ?? 3;
   const entry = options.entry ?? new URL("./converter.ts", import.meta.url);
+  // eslint-disable-next-line no-console -- the default sink when the caller gives no logger
   const log = options.log ?? ((line) => console.error(line));
   let tail: Promise<unknown> = Promise.resolve();
   let waiting = 0;

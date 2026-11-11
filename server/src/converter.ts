@@ -35,8 +35,10 @@ async function convert(dwg: Uint8Array): Promise<ConverterReply> {
 
 process.once("message", (msg: ConverterRequest) => {
   convert(msg.dwg).then(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a forked child always has an IPC channel
     (reply) => process.send!(reply, () => process.exit(0)),
     (err: unknown) =>
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a forked child always has an IPC channel
       process.send!({ ok: false, detail: String(err).slice(0, 300) } satisfies ConverterReply, () => process.exit(0)),
   );
 });

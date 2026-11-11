@@ -39,7 +39,7 @@ vi.mock("./reader/pdfjs", async () => {
       return (await sizesOf(this.bytes)).length;
     }
     async viewport(page: number, opts?: { scale?: number }) {
-      const s = (await sizesOf(this.bytes))[page - 1]!;
+      const s = (await sizesOf(this.bytes))[page - 1];
       const scale = opts?.scale ?? 1;
       return {
         width: s.w * scale,
@@ -51,7 +51,7 @@ vi.mock("./reader/pdfjs", async () => {
       };
     }
     async page(page: number, target: { width: number; height: number }, opts?: { scale?: number }) {
-      const s = (await sizesOf(this.bytes))[page - 1]!;
+      const s = (await sizesOf(this.bytes))[page - 1];
       target.width = Math.ceil(s.w * (opts?.scale ?? 1));
       target.height = Math.ceil(s.h * (opts?.scale ?? 1));
       events.log.push(`draw ${page}`);
@@ -154,10 +154,10 @@ beforeAll(() => {
   // jsdom has no scrolling: keep the positions, so the reader can read them back.
   HTMLElement.prototype.scrollTo = function (this: HTMLElement, opts?: ScrollToOptions | number) {
     if (typeof opts === "object") this.scrollTop = opts.top ?? this.scrollTop;
-  } as HTMLElement["scrollTo"];
+  };
   HTMLElement.prototype.scrollBy = function (this: HTMLElement, opts?: ScrollToOptions | number) {
     if (typeof opts === "object") this.scrollTop += opts.top ?? 0;
-  } as HTMLElement["scrollBy"];
+  };
   HTMLElement.prototype.scrollIntoView = () => {};
 });
 
@@ -304,17 +304,17 @@ describe("PDF, as a kit app", () => {
     const inputs = await openForms(2);
     expect(inputs).toHaveLength(2);
     // The field's /MaxLen reaches the input, so it cannot be overfilled.
-    expect(inputs[1]!.maxLength).toBe(20);
-    expect(inputs[0]!.maxLength).toBe(-1);
-    type(inputs[0]!, "Jane Q. Public");
+    expect(inputs[1].maxLength).toBe(20);
+    expect(inputs[0].maxLength).toBe(-1);
+    type(inputs[0], "Jane Q. Public");
     expect(fake.titles.at(-1)).toBe("report.pdf •");
 
     const upload = vi.spyOn(fake.system.fs, "upload");
     press("s");
     await until(() => fake.titles.at(-1) === "report.pdf", "the save");
     expect(upload).toHaveBeenCalledTimes(1);
-    expect(upload.mock.calls[0]!.slice(0, 2)).toEqual(["home", PATH]);
-    expect(upload.mock.calls[0]![4]).toEqual({ expected: "v1" });
+    expect(upload.mock.calls[0].slice(0, 2)).toEqual(["home", PATH]);
+    expect(upload.mock.calls[0][4]).toEqual({ expected: "v1" });
     expect(fake.titles.at(-1)).toBe("report.pdf");
 
     const saved = await PDFDocument.load(fake.files.get(`home:${PATH}`)!);
@@ -329,7 +329,7 @@ describe("PDF, as a kit app", () => {
     const fake = createFakeSystem({ files: { [`home:${PATH}`]: await pdfBytes() }, intent: opened });
     renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system);
     await openDocument();
-    type((await openForms(2))[0]!, "Mine");
+    type((await openForms(2))[0], "Mine");
     // Someone else saves the file after PDF read it.
     const theirs = new TextEncoder().encode("theirs");
     await fake.system.fs.upload("home", PATH, theirs, "report.pdf");
@@ -388,7 +388,7 @@ describe("PDF, as a kit app", () => {
     const recorded = recordingHandle(fake.system);
     renderWithSystem(<App windowId="window-1" host={fakeHost()} />, recorded.system);
     await openDocument();
-    type((await openForms(2))[0]!, "x");
+    type((await openForms(2))[0], "x");
     press("f");
     press("s");
     await until(() => recorded.used.has("notify"), "the save notification");

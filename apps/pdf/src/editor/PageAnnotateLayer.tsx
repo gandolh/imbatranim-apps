@@ -95,6 +95,7 @@ export function PageAnnotateLayer({ page, vp }: PageAnnotateLayerProps): JSX.Ele
   const marks: Annotation[] = doc ? doc.annotate.list(page).filter((a) => addedIds.has(a.id) || a.type === "note") : [];
 
   const local = (e: { clientX: number; clientY: number }): Pt => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the handlers run only while the layer is mounted
     const r = svgRef.current!.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   };

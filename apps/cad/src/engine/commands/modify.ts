@@ -42,7 +42,7 @@ function applyTransform(ctx: CommandContext, list: Entity[], m: Affine, copy: bo
   for (const e of list) {
     const t = transformEntity(e, m);
     if (!t) continue;
-    out.push(copy ? ({ ...t, handle: ctx.doc.newHandle() } as Entity) : t);
+    out.push(copy ? { ...t, handle: ctx.doc.newHandle() } : t);
   }
   if (copy) ctx.doc.add(...out);
   else ctx.doc.replace(...out);
@@ -212,7 +212,7 @@ export const ERASE: CommandFn = function* erase(ctx) {
 
 /** Replace an entity's geometry, keeping its handle, layer and look. */
 function withShape(e: Entity, shape: CurveShape): Entity {
-  return { ...e, ...shape } as Entity;
+  return { ...e, ...shape };
 }
 
 export const OFFSET: CommandFn = function* offset(ctx) {
@@ -266,7 +266,7 @@ export const OFFSET: CommandFn = function* offset(ctx) {
       ctx.message(r);
       continue;
     }
-    const copy = { ...withShape(e, r), handle: ctx.doc.newHandle() } as Entity;
+    const copy = { ...withShape(e, r), handle: ctx.doc.newHandle() };
     ctx.doc.add(copy);
     made.push(copy.handle);
   }
@@ -367,7 +367,7 @@ function* trimOrExtend(ctx: CommandContext, mode: "trim" | "extend"): CommandGen
         ctx.doc.replace(kept);
         after.push(kept);
         for (const piece of rest) {
-          const copy = { ...withShape(e, piece), handle: ctx.doc.newHandle() } as Entity;
+          const copy = { ...withShape(e, piece), handle: ctx.doc.newHandle() };
           ctx.doc.add(copy);
           after.push(copy);
         }

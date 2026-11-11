@@ -6,7 +6,6 @@ import {
   PDFHexString,
   PDFString,
   PDFDict,
-  PDFRef,
   StandardFonts,
   rgb,
 } from "pdf-lib";
@@ -155,7 +154,7 @@ describe("T1-10 — editing a seeded annotation keeps its other keys", () => {
     //    /Popup that points back at the annotation.
     const lib = await PDFDocument.load(emitted);
     const annots = lib.getPage(0).node.Annots()!;
-    const annotDict = lib.context.lookup(annots.get(0) as PDFRef, PDFDict);
+    const annotDict = lib.context.lookup(annots.get(0), PDFDict);
     annotDict.set(PDFName.of("NM"), PDFHexString.fromText("third-party-id"));
     const popupRef = lib.context.register(
       lib.context.obj({
@@ -179,7 +178,7 @@ describe("T1-10 — editing a seeded annotation keeps its other keys", () => {
     const checkAnnots = check.getPage(0).node.Annots()!;
     let found: PDFDict | undefined;
     for (let i = 0; i < checkAnnots.size(); i++) {
-      const d = check.context.lookup(checkAnnots.get(i) as PDFRef, PDFDict);
+      const d = check.context.lookup(checkAnnots.get(i), PDFDict);
       if (
         d.lookupMaybe(PDFName.of("Subtype"), PDFName)?.decodeText() ===
         "Highlight"

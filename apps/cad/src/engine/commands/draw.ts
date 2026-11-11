@@ -3,8 +3,8 @@ import { arcThrough, circumcenter, type Seg } from "../geom/seg";
 import { angleFrom, cross, dist, dot, mid, normAngle, polar, sub, type Vec } from "../geom/vec";
 import { dsegFromBulge, dTangent, polySegs } from "../geom/path";
 import { formatDistance } from "../model/units";
-import type { Entity, PolyVertex } from "../model/types";
-import { kw, type CommandContext, type CommandFn, type CommandGen, type Prompt } from "./types";
+import type { PolyVertex } from "../model/types";
+import { kw, type CommandContext, type CommandFn, type CommandGen } from "./types";
 
 const lineSeg = (a: Vec, b: Vec): Seg => ({ kind: "line", a, b });
 
@@ -70,7 +70,7 @@ export const PLINE: CommandFn = function* pline(ctx) {
     };
     if (handle) {
       const prev = ctx.doc.entities.get(handle);
-      if (prev) ctx.doc.replace({ ...prev, ...shape } as Entity);
+      if (prev) ctx.doc.replace({ ...prev, ...shape });
     } else if (vertices.length > 1) {
       const e = ctx.doc.create(shape);
       handle = e.handle;
@@ -401,7 +401,7 @@ export const TEXT: CommandFn = function* text(ctx) {
   const rotation = normAngle(rot.value);
   // One TEXT per line; each next line sits below the last, as DTEXT places them.
   for (;;) {
-    const t = yield { kind: "text", message: "Enter text:", allowNone: true } as Prompt;
+    const t = yield { kind: "text", message: "Enter text:", allowNone: true };
     if (t.kind !== "text" || t.value === "") return;
     ctx.doc.add(
       ctx.doc.create({

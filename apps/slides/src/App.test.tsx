@@ -112,7 +112,7 @@ describe("Slides", () => {
     expect(await fake.closeGuard()!()).toBe(true);
     press("Delete slide");
     await settle();
-    let answer: boolean | Promise<boolean> = false;
+    let answer = false as boolean | Promise<boolean>;
     act(() => {
       answer = fake.closeGuard()!();
     });

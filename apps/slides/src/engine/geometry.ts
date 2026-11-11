@@ -246,7 +246,7 @@ export function presetPath(name: string, w: number, h: number, adj: Adj = {}): S
             [0, h - x],
             [0, x],
             [x, x],
-          ].map(([px, py]) => [px, py]) as [number, number][],
+          ].map<[number, number]>(([px, py]) => [px, py]),
         ),
       );
     }

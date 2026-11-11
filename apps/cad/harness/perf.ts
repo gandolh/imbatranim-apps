@@ -41,13 +41,19 @@ function summary(values: number[]): Summary {
 
 const params = new URLSearchParams(location.search);
 const file = params.get("file") ?? "3_us_main.dxf";
+/** The harness page is ours, so a missing piece of it is a bug to stop on. */
+function present<T>(value: T | null, what: string): T {
+  if (!value) throw new Error(`The perf page has no ${what}`);
+  return value;
+}
+
 const frames = Number(params.get("frames") ?? 180);
 const canvas = document.getElementById("c") as HTMLCanvasElement;
-const out = document.getElementById("out")!;
+const out = present(document.getElementById("out"), "#out element");
 const dpr = window.devicePixelRatio || 1;
 canvas.width = 1100 * dpr;
 canvas.height = 680 * dpr;
-const ctx = canvas.getContext("2d")!;
+const ctx = present(canvas.getContext("2d"), "canvas 2d context");
 
 const w = window as unknown as { __perf?: unknown; __perfRun?: () => Promise<unknown> };
 
@@ -63,7 +69,8 @@ async function main() {
   const tile = Number(params.get("tile") ?? 1);
   if (tile > 1) {
     const src = doc;
-    const ext = new SpatialIndex(src).extents()!;
+    const ext = new SpatialIndex(src).extents();
+    if (!ext) throw new Error("The drawing has no extents to tile");
     const w = (ext.maxX - ext.minX) * 1.05;
     const h = (ext.maxY - ext.minY) * 1.05;
     const entities: Entity[] = [];

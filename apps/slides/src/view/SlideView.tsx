@@ -402,7 +402,7 @@ function Picture({ shape, width, height, scale }: { shape: ShapeModel; width: nu
 
 export function Text({ body, scale }: { body: TextBody; scale: number }) {
   return (
-    <div style={bodyCss(body, scale) as CSSProperties}>
+    <div style={bodyCss(body, scale)}>
       {body.paragraphs.map((p, i) => (
         <div key={i} style={paragraphCss(p, body, scale, i === 0) as CSSProperties}>
           {p.bullet && <span style={bulletCss(p.bullet, p, body, scale) as CSSProperties}>{bulletText(p.bullet)}</span>}
@@ -442,7 +442,7 @@ function Prompt({ shape, scale }: { shape: ShapeModel; scale: number }) {
           ? `${body.insets.t * scale}px ${body.insets.r * scale}px ${body.insets.b * scale}px ${body.insets.l * scale}px`
           : 4,
         color: "rgba(110, 110, 110, 0.95)",
-        fontFamily: p ? (runCss(p.endStyle, scale, 1).fontFamily as string) : "sans-serif",
+        fontFamily: p ? runCss(p.endStyle, scale, 1).fontFamily : "sans-serif",
         fontSize: Math.max(6, size),
         lineHeight: 1.2,
         boxSizing: "border-box",

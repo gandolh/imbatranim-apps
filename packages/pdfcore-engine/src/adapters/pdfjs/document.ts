@@ -30,7 +30,7 @@ let backendPromise: Promise<Pdfjs> | undefined;
 
 export function getPdfjs(): Promise<Pdfjs> {
   if (!backendPromise) {
-    backendPromise = import("#pdfjs") as Promise<Pdfjs>;
+    backendPromise = import("#pdfjs");
   }
   return backendPromise;
 }

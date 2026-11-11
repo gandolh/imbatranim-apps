@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import type { IWorkbookData, ICellData } from "@univerjs/presets";
+import type { IWorkbookData } from "@univerjs/presets";
 import { parse, serialize } from "./xlsxMapping";
 import { inspectXlsx, lossyWarning, scanXlsx, type LossyFeature } from "./xlsxScan";
 
@@ -30,7 +30,7 @@ const fixtureBytes = () => {
 const cell = (wb: Partial<IWorkbookData>, sheetIdx: number, r: number, c: number) => {
   const id = wb.sheetOrder?.[sheetIdx];
   const sheet = id ? wb.sheets?.[id] : undefined;
-  const rows = sheet?.cellData as Record<number, Record<number, ICellData>> | undefined;
+  const rows = sheet?.cellData;
   return rows?.[r]?.[c];
 };
 
@@ -72,7 +72,7 @@ describe("scanXlsx — what the fixture actually contains", () => {
 
   it("returns nothing rather than throwing on bytes that are not a zip", async () => {
     const junk = new TextEncoder().encode("not a workbook");
-    const buf = junk.buffer.slice(junk.byteOffset, junk.byteOffset + junk.byteLength) as ArrayBuffer;
+    const buf = junk.buffer.slice(junk.byteOffset, junk.byteOffset + junk.byteLength);
     expect(await scanXlsx(buf)).toEqual([]);
   });
 });
@@ -378,7 +378,7 @@ async function dateWorkbookBytes(when: Date, numFmt: string): Promise<ArrayBuffe
   c.value = when;
   c.numFmt = numFmt;
   const buf = await wb.xlsx.writeBuffer();
-  return buf as ArrayBuffer;
+  return buf;
 }
 
 describe("T0-3 — a date cell survives as a date, not ISO text", () => {

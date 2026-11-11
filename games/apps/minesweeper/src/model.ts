@@ -45,7 +45,7 @@ export function createBoard(width: number, height: number, mines: number): Board
     cells: Array.from({ length: width * height }, () => ({
       mine: false,
       revealed: false,
-      mark: "none" as Mark,
+      mark: "none",
       adjacent: 0,
     })),
     minesPlaced: false,
@@ -127,8 +127,7 @@ export function reveal(board: Board, index: number, rng: () => number = Math.ran
 
   const cells = [...b.cells];
   const stack = [index];
-  while (stack.length > 0) {
-    const i = stack.pop()!;
+  for (let i = stack.pop(); i !== undefined; i = stack.pop()) {
     const c = cells[i];
     if (c.revealed || c.mark === "flag") continue;
     cells[i] = { ...c, revealed: true, mark: "none" };

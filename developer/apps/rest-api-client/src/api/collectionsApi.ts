@@ -1,5 +1,5 @@
 import { FileConflictError, type SystemHandle } from "@imbatranim/ui";
-import type { Environment, HistoryEntry, RestClientData, SavedRequest } from "../types";
+import type { RestClientData } from "../types";
 
 /*
  * The collections, history and environments are one JSON doc in the app's
@@ -47,10 +47,10 @@ export const DATA_FILE: FileRef = {
  */
 function normalize(raw: unknown): RestClientData {
   const doc = (raw ?? {}) as Partial<RestClientData>;
-  const collections = Array.isArray(doc.collections) ? (doc.collections as SavedRequest[]) : [];
-  const history = Array.isArray(doc.history) ? (doc.history as HistoryEntry[]) : [];
+  const collections = Array.isArray(doc.collections) ? doc.collections : [];
+  const history = Array.isArray(doc.history) ? doc.history : [];
   const environments = Array.isArray(doc.environments)
-    ? (doc.environments as Environment[]).filter((env) => typeof env?.id === "string" && Array.isArray(env?.vars))
+    ? doc.environments.filter((env) => typeof env?.id === "string" && Array.isArray(env?.vars))
     : [];
   const activeEnvId =
     typeof doc.activeEnvId === "string" && environments.some((e) => e.id === doc.activeEnvId) ? doc.activeEnvId : null;
@@ -130,7 +130,7 @@ async function load(system: CollectionsSystem, attempts: number): Promise<LoadRe
   } catch (err) {
     return failed(err, "the data folder");
   }
-  if (!stored) return moveLegacy(system, attempts);
+  if (!stored) return moveLegacy(system, data, attempts);
 
   const parsed = parse(stored.content, DATA_FILE);
   if (isResult(parsed)) return parsed;
@@ -146,7 +146,11 @@ async function load(system: CollectionsSystem, attempts: number): Promise<LoadRe
  * theirs), and the original goes only once the copy reads back byte for byte.
  * A malformed original is reported and left alone, moved nowhere.
  */
-async function moveLegacy(system: CollectionsSystem, attempts: number): Promise<LoadResult> {
+async function moveLegacy(
+  system: CollectionsSystem,
+  data: NonNullable<CollectionsSystem["data"]>,
+  attempts: number,
+): Promise<LoadResult> {
   let legacy: string;
   try {
     const res = await system.http.get<{ content: string }>("/files/content", { params: LEGACY });
@@ -164,14 +168,14 @@ async function moveLegacy(system: CollectionsSystem, attempts: number): Promise<
 
   let version: string;
   try {
-    ({ version } = await system.data!.write(DATA_PATH, legacy, { expected: null }));
+    ({ version } = await data.write(DATA_PATH, legacy, { expected: null }));
   } catch (err) {
     // Another window moved it first: read theirs.
     if (err instanceof FileConflictError && attempts > 0) return load(system, attempts - 1);
     return failed(err, "the data folder");
   }
   // The original goes only once the copy reads back the same.
-  const back = await system.data!.read(DATA_PATH).catch(() => null);
+  const back = await data.read(DATA_PATH).catch(() => null);
   if (back?.content === legacy) await dropLegacy(system, legacy);
   return { status: "ok", data: parsed, version };
 }

@@ -69,7 +69,9 @@ const clamp01 = (v: number): number => Math.max(0, Math.min(1, v));
 
 /** Bounding rect of a group-of-8 quad `[x1,y1,x2,y2,x3,y3,x4,y4]`. */
 function quadBounds(q: number[]): Rect {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a quad has eight numbers
   const xs = [q[0]!, q[2]!, q[4]!, q[6]!];
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a quad has eight numbers
   const ys = [q[1]!, q[3]!, q[5]!, q[7]!];
   return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
 }
@@ -78,6 +80,7 @@ function quadBounds(q: number[]): Rect {
 function toPoints(flat: number[]): Point[] {
   const pts: Point[] = [];
   for (let i = 0; i + 1 < flat.length; i += 2) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the loop steps over pairs inside the array
     pts.push({ x: flat[i]!, y: flat[i + 1]! });
   }
   return pts;
@@ -147,8 +150,8 @@ export function rawToSpec(raw: RawAnnotation): AnnotationSpec | undefined {
       return {
         ...base,
         type: raw.arrow ? "arrow" : "line",
-        start: { x: l[0]!, y: l[1]! },
-        end: { x: l[2]!, y: l[3]! },
+        start: { x: l[0], y: l[1] },
+        end: { x: l[2], y: l[3] },
         ...(raw.width !== undefined ? { width: raw.width } : {}),
       };
     }
@@ -184,9 +187,11 @@ function colorFrom(
 ): Color | undefined {
   if (!c || c.length < 3) return undefined;
   return {
+    /* eslint-disable @typescript-eslint/no-non-null-assertion -- the colour has three components here */
     r: clamp01(c[0]! / 255),
     g: clamp01(c[1]! / 255),
     b: clamp01(c[2]! / 255),
+    // eslint-enable @typescript-eslint/no-non-null-assertion
   };
 }
 
@@ -202,8 +207,8 @@ export async function readAnnotationsWithPdfjs(
     const out: AnnotationSpec[] = [];
     for (let p = 1; p <= pdf.numPages; p++) {
       const page = await pdf.getPage(p);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const anns = (await page.getAnnotations()) as any[];
+
+      const anns = await page.getAnnotations();
       for (const a of anns) {
         const endings: string[] = Array.isArray(a.lineEndings)
           ? a.lineEndings

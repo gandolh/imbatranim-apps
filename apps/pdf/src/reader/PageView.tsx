@@ -23,16 +23,7 @@
  */
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { JSX } from "react";
-import type {
-  DomDocumentLike,
-  DomElementLike,
-  PageViewport,
-  PdfDoc,
-  Rect,
-  Render,
-  TextHit,
-  TextLayerHandle,
-} from "@pdfcore/engine";
+import type { DomElementLike, PageViewport, PdfDoc, Rect, Render, TextHit, TextLayerHandle } from "@pdfcore/engine";
 import type { Engine } from "../app/engine";
 import { PageAnnotateLayer } from "../lazy";
 
@@ -114,6 +105,7 @@ export function PageView({
         if (!cancelled) {
           setFailed(true);
           onPainted();
+          // eslint-disable-next-line no-console -- keeps the error object that the failed-page state drops
           console.error(`render page ${pageNumber} failed`, err);
         }
       }
@@ -143,13 +135,14 @@ export function PageView({
         handle = engine.buildTextLayer({
           // The engine types these structurally (DomDocumentLike/DomElementLike)
           // to stay free of lib.dom; the real DOM nodes satisfy that surface.
-          document: document as unknown as DomDocumentLike,
+          document,
           container: host as unknown as DomElementLike,
           items,
           viewport: vp,
         });
         setTextLayer(handle);
       } catch (err) {
+        // eslint-disable-next-line no-console -- a failed text layer has no UI; the page stays readable without it
         if (!cancelled) console.error(`text layer for page ${pageNumber} failed`, err);
       }
     })();

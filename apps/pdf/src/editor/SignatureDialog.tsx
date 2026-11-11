@@ -63,6 +63,7 @@ function SignaturePad({
   };
 
   const padPoint = (e: React.PointerEvent): Point => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the pointer handlers run only while the canvas is mounted
     const r = canvasRef.current!.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   };
@@ -83,7 +84,7 @@ function SignaturePad({
     cur?.push(p);
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx && cur && cur.length >= 2) {
-      const a = cur[cur.length - 2]!;
+      const a = cur[cur.length - 2];
       ctx.strokeStyle = "#1c1712";
       ctx.lineWidth = 2.2;
       ctx.lineCap = "round";

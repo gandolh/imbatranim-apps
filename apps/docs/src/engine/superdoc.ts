@@ -179,6 +179,7 @@ export async function createDocEngine(opts: CreateDocEngineOptions): Promise<Doc
     // range of internal, often-benign conditions (incl. during export), so it is
     // logged, not surfaced as an "open failed" error.
     onContentError: ({ error }) => opts.onError(error),
+    // eslint-disable-next-line no-console -- SuperDoc's own exceptions are diagnostics with no UI to go to
     onException: (params) => console.warn("[docs] superdoc exception", params),
   });
 

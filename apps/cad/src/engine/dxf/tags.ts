@@ -104,8 +104,11 @@ export function rawSections(tags: Tag[]): RawSections {
         let record: Map<number, string> | null = null;
         let recordType = "";
         const flush = () => {
-          if (record && recordType === "LAYER" && record.has(2)) out.layers.set(record.get(2)!.trim(), record);
-          if (record && recordType === "APPID" && record.has(2)) out.appIds.push(record.get(2)!.trim());
+          const name = record?.get(2)?.trim();
+          if (record && name !== undefined) {
+            if (recordType === "LAYER") out.layers.set(name, record);
+            if (recordType === "APPID") out.appIds.push(name);
+          }
           record = null;
         };
         for (; i < tags.length && !(tags[i][0] === 0 && tags[i][1].trim() === "ENDSEC"); i++) {
@@ -123,7 +126,7 @@ export function rawSections(tags: Tag[]): RawSections {
             }
             continue;
           }
-          if (record && !(record as Map<number, string>).has(c)) (record as Map<number, string>).set(c, v);
+          if (record && !record.has(c)) record.set(c, v);
         }
         flush();
       } else if (name === "BLOCKS") {

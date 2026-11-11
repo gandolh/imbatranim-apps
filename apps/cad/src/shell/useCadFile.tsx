@@ -155,7 +155,6 @@ export function useCadFile(): CadFile {
     if (!source) return;
     const dwg = isDwgPath(source.path);
     if (!dwg && !/\.dxf$/i.test(source.path)) {
-      /* eslint-disable-next-line react-hooks/set-state-in-effect */
       setError(
         reportFileRefusal(system, "CAD opens .dxf and .dwg drawings.", {
           name: fileName(source.path),

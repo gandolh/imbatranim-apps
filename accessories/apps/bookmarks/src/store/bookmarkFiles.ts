@@ -51,7 +51,7 @@ export function readGroups(content: string): BookmarkGroup[] {
           id: l.id,
           groupId: g.id as number,
           title: typeof l.title === "string" ? l.title : l.url,
-          url: l.url as string,
+          url: l.url,
           icon: nullableString(l.icon),
           position: typeof l.position === "number" ? l.position : 0,
         })),

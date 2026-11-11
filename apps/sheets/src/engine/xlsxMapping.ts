@@ -164,7 +164,7 @@ function cellToUniverBorders(cell: ExcelJS.Cell): IStyleData["bd"] | undefined {
     // Univer requires a colour on a border; Excel's default is black.
     bd[edge.univer] = { s, cl: { rgb: argbToHex(side.color?.argb) ?? "#000000" } };
   }
-  return Object.keys(bd).length ? (bd as IStyleData["bd"]) : undefined;
+  return Object.keys(bd).length ? bd : undefined;
 }
 
 /**
@@ -210,7 +210,7 @@ function cellValueToUniver(cell: ExcelJS.Cell): Pick<ICellData, "v" | "f"> {
     if (v instanceof Date) return { v: dateToExcelSerial(v) };
     return {};
   }
-  return { v: v as string | number | boolean };
+  return { v: v };
 }
 
 /**
@@ -350,7 +350,7 @@ function univerToExcelBorders(bd: IStyleData["bd"]): Partial<ExcelJS.Borders> | 
     const argb = hexToArgb(rgbOf((side as { cl?: unknown }).cl)) ?? "FF000000";
     out[edge.excel] = { style, color: { argb } };
   }
-  return Object.keys(out).length ? (out as Partial<ExcelJS.Borders>) : undefined;
+  return Object.keys(out).length ? out : undefined;
 }
 
 /** Serialize a Univer workbook snapshot back to xlsx bytes. */
@@ -374,10 +374,10 @@ export async function serialize(snapshot: IWorkbookData): Promise<ArrayBuffer> {
         if (uc.f) {
           cell.value = {
             formula: String(uc.f).replace(/^=/, ""),
-            result: (uc.v ?? undefined) as string | number | boolean | undefined,
+            result: uc.v ?? undefined,
           };
         } else if (uc.v !== undefined && uc.v !== null) {
-          cell.value = uc.v as string | number | boolean;
+          cell.value = uc.v;
         }
         applyUniverStyle(cell, resolveStyle(uc.s, snapshot.styles));
       }
