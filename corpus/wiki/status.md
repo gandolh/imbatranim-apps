@@ -1,6 +1,6 @@
 ---
-summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Three more groups beside Office: Games (2026-11-06), Accessories, Todo and Bookmarks with their data in system.data files, and Developer, Git GUI and the REST API Client (both 2026-11-09). Owner steps.
-updated: 2026-11-09
+summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Three more groups beside Office: Games (2026-11-06), Accessories, Todo and Bookmarks with their data in system.data files, and Developer, Git GUI and the REST API Client (both 2026-11-09). Owner steps. Since 2026-11-11 the repo is formatted at width 120 and gated by `npm run check` (the house-style harness).
+updated: 2026-11-11
 ---
 
 # Status — 2026-11-05
@@ -91,6 +91,8 @@ with Office as its first group; words only. Left to the owner: rename the
 GitHub repository, then point `origin` at it.
 
 Brief 07 (2026-11-10, `40450da`): the kit snapshot at imbatranimOS `dcdb648`, Base UI 1.9.0 pinned; no kit source change; the desktop walk is not done.
+
+Brief 08 (2026-11-11): the house-style harness. Formatted at width 120 (`8fbe7dd`), `vendor/house-style/` 1.0.0, typed lint, `npm run check` and `check:fast`, `.claude/rules/` and a root `CLAUDE.md`. `check-structure` runs `--warn-only` until brief 10; `check-base-ui` is already strict (no finding).
 
 No todo is open.
 

@@ -196,3 +196,66 @@ One commit per step. After each: `npm run typecheck`, `npm test`, `npm run lint`
 - Brief 09 drops `check-base-ui`'s `--warn-only`; brief 10 drops `check-structure`'s and turns `no-process-env` into an error and adds dependency-cruiser; brief 11 runs under this gate.
 - imbatranimOS's brief 86 reformats the kit. When the owner syncs at or after that commit, `vendor/imbatranim-ui/src` shows whole-file diffs, and this repo's `.prettierignore` and ESLint ignore keep them out of the gate.
 - The owner's plugin hooks format every saved file, so the reformat commit should be made when no other brief has uncommitted work.
+
+## Outcome (2026-11-11)
+
+Built in `faeb45c`, `2911e1c`, `a4d9642`, `8fbe7dd` (the reformat), `c5775a7`
+(blame ignore), `dda7f9f`, `bbe5671` and `9aa73e7`. Nothing deploys; the OS builds
+the suite.
+
+**The reformat.** 320 files (the brief measured 355; Prettier 3.9.10 and the
+width-120 result on the tree after brief 07). Esbuild bundle compare over 416
+files (TypeScript, JavaScript, CSS through the `css` loader, JSON parsed):
+415 identical, plus `tsconfig.json` of the engine, unparseable on both sides
+(comments). The two differences, both in `developer/apps/rest-api-client`:
+`AuthDialog.tsx` and `EnvironmentDialog.tsx`, where JSX text split as `"Adds"` +
+`" "` is now one string `"Adds "`, rendering the same. `npm run build:os` for
+all four groups, before and after: `diff -r` of the four `dist` folders shows
+only `developer/dist/os/rest-api-client/app.mjs`, from those two joins.
+`vendor/` unchanged by the commit; `kit:sync --check` exits 0.
+
+**Rule counts**, before (first run of the house config on the reformatted tree)
+and after:
+
+| Rule | Before | After |
+|---|---|---|
+| `no-non-null-assertion` | 62 source errors, 251 test | 0 errors (6 removed by autofix, 18 narrowed, 38 kept on 17 one-line disables with a reason: refs in event handlers, IPC `process.send`, pdfcore-engine array reads whose length is checked); 238 test warnings |
+| `no-unnecessary-type-assertion` | 37 source, 25 test | 0 (autofix; one `map<...>`, one `Promise.resolve<void>(undefined)`) |
+| `consistent-type-imports` | 2 source, 2 test | 0 |
+| `no-floating-promises` | 3 | 0 (`void` on three async IIFEs that catch inside) |
+| `no-misused-promises` | 1 | 0 (`apps/cad/src/shell/dwg.ts`) |
+| `await-thenable` | 1 | 0 (`apps/slides/src/App.test.tsx`, the test's `let` is typed as the union it is) |
+| `switch-exhaustiveness-check` | 0 | 0 |
+| `no-console` | 6 | 0 (see verdicts) |
+| `vitest/expect-expect` | 12 | 0 (`assertFunctionNames`: `expectPoint`, `expectLine`, `expectSameDrawing`, CAD tests only) |
+| `import-x/no-default-export` | 4 (`.d.ts` modules) | allowed by a `**/*.d.ts` glob |
+| `n/no-process-env` | 2 in `server/src/index.ts`, 2 in a build-test fixture | warning for the entry (dated comment); off for build code and fixtures |
+| `ban-ts-comment`, `no-explicit-any`, enums, `TODO` | 0 | 0 |
+| unused disable directive | 1 (`useCadFile.tsx`) | removed by autofix |
+| parse errors | 2 (`apps/cad/harness`) | 0, the harness has a tsconfig |
+
+The autofix left seven imports unused; removed. `consistent-type-imports` found 4, not the 10 the brief counted.
+
+**The five `console` calls.** All stay behind a one-line `eslint-disable-next-line no-console`: `Docs.tsx` `console.info` of a docx repair (a deliberate trace its own comment explains, not a failure; the owner may prefer it removed), `superdoc.ts` `console.warn` for SuperDoc's `onException` (no UI to send it to), `PageView.tsx` two `console.error` calls (a failed page render and text layer keep the error object), `Editor.tsx` `console.error` beside the notification (the notification cannot carry the error). `server/src/convert.ts` has a sixth, the default log sink, behind the same comment; `server/src/index.ts` is in the `console` option.
+
+**Checkers.** `check-base-ui`: 0 errors, 0 warnings, so it runs strict. `check-structure`: 0 errors under `--warn-only`, 41 warnings at the start (rule-1 1, rule-2 1, rule-3 2, rule-6 1: the five that are errors, all in `server/src`; rule-11 36 files over 400 lines), 36 after the reformat (rule-11 31). It stays `--warn-only` until brief 10. knip from the preset: 27 unused files, 16 unused dev dependencies, 1 unlisted, 95 unused exports and 24 types (warnings); the config now reports 0 errors (the build tests' fixtures ignored, the CAD harness as entries, five pdfcore-engine barrels nothing imports ignored with a dated comment, the groups' Tailwind build packages and `pdfjs-dist` ignored as dependencies). dependency-cruiser: one finding, `no-circular` (CAD `export/job.ts` and `run.ts`), a warning by name with a dated comment; the `virtual:pdfjs-wasm-dir` import is allowed as a Vite virtual module.
+
+**Timings** (load average 6 to 21, other agents working, so slow): `check:fast` with one changed file 28.7 and 35.4 s, with none 22.6 s; `tsc -b` alone about 18 s; `npm run lint` 43-65 s (the brief measured 24-31 s on a quiet machine); `npm run check` 3 min 3 s. `check:fast` is over the 30 s target under that load.
+
+**Deliberate violations.** An `enum`, a `!`, a `console.log`, a `// TODO:` and an `export default` (in new `server/src/zz*.ts` files, not `app.ts`) and a `@base-ui/react/dialog` import in `apps/docs/src/Docs.tsx` each reported by `npx eslint`, and `npm run lint` exited 1; reverted.
+
+**The test suite is load-sensitive.** `apps/pdf/src/App.test.tsx` waits about 2 s for the engine and times out when the whole suite runs on a loaded machine (it passes alone, 9 of 9). The same failures (9 in that file, plus one more timeout elsewhere) happen on `b64323a`, before this brief, under the same load, so `npm run check` exits 1 on a busy machine through no change here. A fresh clone with `npm ci` installs (exit 0) and `npm test` failed on the same timeouts under load 9-21.
+
+**Deviations.**
+- `prettier.config.js` replaces `.prettierrc` (the skill's form), spreading the house config to keep the Tailwind plugin.
+- No `tools/house-style-sync.ts`: the package's own sync, per the skill.
+- `tsconfig.base.json` keeps the flags itself and does not extend the vendored one (bundler resolution, `.ts` suffixes).
+- `check-fast.mjs` is in `tools/`, not `scripts/`.
+- The deliberate violations were placed in new `server/src` files, not in `app.ts`.
+- `eslint-config-prettier` and `globals` removed (unused).
+- dependency-cruiser landed here (controller's ruling), and `check-base-ui` is strict from the start; briefs 09 and 10 carry a dated line.
+- The hooks' live check waits for the plugin update; the PostToolUse formatter was seen formatting files saved by the Write tool during this run (with the old config before the reformat).
+
+**For house-style:** `house-style/eslint.config.js:276` the `defaultExports` option has no default for `*.d.ts`, where an ambient `export default` is the only form (4 findings here). `README.md` knip sample does not say a workspace package whose group build resolves devDependencies from its folder needs `ignoreDependencies`. The `check-structure` rule 11 count includes tests, which may be meant. `vendor/house-style/package.json` sits inside an npm workspaces repo's tree without being a workspace; no harm seen.
+
+**Owner steps:** `git config blame.ignoreRevsFile .git-blame-ignore-revs`; push this repo, then the OS bumps its pin.

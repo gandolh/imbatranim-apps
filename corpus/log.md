@@ -491,3 +491,23 @@ utilities-only on the kit's tokens. Findings, with commands, are in each brief.
 1.9.0, and `COMMIT`; the vendored kit source is unchanged. Typecheck, lint,
 `kit:sync --check` and the four `build:os` runs pass. The desktop walk is not
 done.
+
+## [2026-11-11] done | Brief 08: the house style and the quality harness
+
+[Brief 08](briefs/done/08-the-house-style-harness.md) built in eight commits,
+`faeb45c` to `9aa73e7`. `vendor/house-style/` 1.0.0 and the pins; tsconfig
+`isolatedModules` and `noImplicitOverride` and a project for the CAD harness;
+`.prettierrc` became `prettier.config.js` (width 120, double quotes,
+semicolons, the Tailwind plugin kept); the reformat `8fbe7dd` touched 320
+files, with an esbuild bundle compare that found two JSX text joins in the
+REST client and a byte-identical build of every group otherwise; ESLint on the
+house config with the typed rules; the gate (`check`, `check:fast`,
+`check:conventions` with knip, dependency-cruiser and the Base UI checker
+strict, the structure checker `--warn-only`); `.claude/rules/` and a root
+`CLAUDE.md`. The five `console` calls each stay behind a one-line allowance:
+Docs `console.info` of a docx repair (a deliberate trace its comment explains;
+the owner may prefer it gone), SuperDoc's `onException` warn (no UI for it),
+PDF's two `console.error` calls (the failed page and text layer keep the error
+object) and Slides' `console.error` beside its notification. `corpus/CLAUDE.md`
+no longer says Win7-classic (stale against the owner's 2026-11-06 call) and
+sends the hard rules and brief-board to the root file.

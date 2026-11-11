@@ -1,6 +1,6 @@
 ---
-summary: The locked calls behind imbatranim-apps: its own repo installed as one suite descriptor, TypeScript with editing in the browser, kit apps on the desktop's shared kit, the crafts as reference only, PDF Viewer and norPDF merged, and office-* app ids, with what each rejected and why. Read before proposing an alternative; CAD's engine (dxf-viewer's parser, @tarikjabiri/dxf, Canvas 2D) and Slides saving by patching the package in place; and DWG through the suite server, LibreDWG as WebAssembly in Node, one child process per file.
-updated: 2026-11-06
+summary: The locked calls behind imbatranim-apps: its own repo installed as one suite descriptor, TypeScript with editing in the browser, kit apps on the desktop's shared kit, the crafts as reference only, PDF Viewer and norPDF merged, and office-* app ids, with what each rejected and why. Read before proposing an alternative; CAD's engine (dxf-viewer's parser, @tarikjabiri/dxf, Canvas 2D) and Slides saving by patching the package in place; and DWG through the suite server, LibreDWG as WebAssembly in Node, one child process per file. The house style, formatted and checked, is in house-style.md.
+updated: 2026-11-11
 ---
 
 # Decisions
@@ -198,3 +198,7 @@ DWG stays on the server.
 - *Consequence*: the build emits nine files under `dist/os/pdfjs-wasm/` (three
   decoders, six licence files), 468,362 bytes. A test holds the list and the
   absence of `quickjs-eval.wasm`.
+
+## The house style, formatted and checked
+
+Split out: [house-style.md](house-style.md) (2026-11-11).

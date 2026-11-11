@@ -49,8 +49,8 @@ the apps are built.
 - **The UI comes from the desktop's shared kit.** React, React DOM and
   `@imbatranim/ui` are the desktop's instances, lent at runtime and external at
   bundle time. The OS's house rules apply unchanged (its
-  `corpus/wiki/ui-conventions.md` and the locked identity: Win7-classic in two
-  themes, Apricot by default and Classic, light or dark, since 2026-11-03).
+  `corpus/wiki/ui-conventions.md`, and the visual identity it sets). Since the
+  owner's call of 2026-11-06 the aim is the best UX, not a Win7 copy.
 - **WebAssembly only from an npm package.** Pinned by the lockfile, never
   compiled here and never committed. Today that is pdf.js's JPEG2000, JBIG2 and
   colour decoders in PDF (its script engine stays out) and LibreDWG on the
@@ -101,7 +101,7 @@ Capture → `todos/`. Promote → `briefs/todo/NN-slug.md`. Build → move the b
 to `briefs/done/` with an outcome note, append a `log.md` entry, fold durable
 findings into `wiki/` (always `status.md`).
 
-## brief-board
+## Hard rules and brief-board
 
-Brief progress goes on brief-board. Run `brief-board guide` before you
-start or resume a brief, and follow it.
+The hard rules (no hosted CI, exact pins, no pushes) and the brief-board
+section are in the root [CLAUDE.md](../CLAUDE.md), which every session loads.

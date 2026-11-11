@@ -111,7 +111,7 @@ One commit per step, with `npm run check` green after each (`check-base-ui` runs
 3. **The widget swaps.** In order, one commit each: (a) `disablePointerDismissal` on the form dialogs; (b) the 13 `aria-pressed` buttons onto `Toggle` or `RadioGroup`; (c) the two tab sets onto `Tabs`; (d) the 2 selects onto `Select`; (e) the 6 checkboxes and `LayerDialog.tsx:118` onto the kit's controls. Keep each swap's keyboard behaviour: a `RadioGroup` chooses on arrow keys (Q41).
 4. **Sizes.** Pin the 4 rem-sized sites to the pixel values they have in the desktop today (read them with `getComputedStyle` before the sync; at 13 px a `max-w-md` is 364 px and a `max-w-sm` 312 px, a `text-lg` 14.625 px, which Q19 lets round to the nearest scale entry). Put `apps/slides/src/editor/Presenter.tsx:129`'s `z-[100]` on the kit's z scale. Move the dev page's 13 px onto `body`. Move the 216 `text-[Npx]` classes onto the kit's named sizes. The kit's `cn()` already knows the new names.
 5. **Conventions.** Add `tools/conventions.json` with the exceptions above (the Slides rail, the PDF form radio, the white and black surfaces, the 4 stacking `z-[N]`, the no-stylesheet rule 5), each with its reason. Update [wiki/stylesheets.md](../../wiki/stylesheets.md) and [wiki/decisions.md](../../wiki/decisions.md).
-6. **Drop `--warn-only`** from `check-base-ui` in `check:conventions`.
+6. **Drop `--warn-only`** from `check-base-ui` in `check:conventions`. (2026-11-11: brief 08 found no finding and runs it strict from the start, so this step has only the audit's own findings to keep clean.)
 7. **After.** The same screenshots, compared with step 1's. Write the [log.md](../../log.md) entry, run `bash corpus/lint.sh` clean.
 
 ## Acceptance
