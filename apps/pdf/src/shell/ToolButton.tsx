@@ -3,16 +3,16 @@
  * (ghost / primary) with a `Tooltip`, so every toolbar affordance stays in the
  * OS design language. `icon` is a lucide-react component.
  */
-import type { ComponentType, JSX } from 'react'
-import { Button, Tooltip } from '@imbatranim/ui'
+import type { ComponentType, JSX } from "react";
+import { Button, Tooltip } from "@imbatranim/ui";
 
 export interface ToolButtonProps {
-  icon: ComponentType<{ size?: number }>
-  label: string
-  active?: boolean
-  disabled?: boolean
-  iconSize?: number
-  onClick?: () => void
+  icon: ComponentType<{ size?: number }>;
+  label: string;
+  active?: boolean;
+  disabled?: boolean;
+  iconSize?: number;
+  onClick?: () => void;
 }
 
 export function ToolButton({
@@ -26,7 +26,7 @@ export function ToolButton({
   return (
     <Tooltip content={label}>
       <Button
-        variant={active ? 'primary' : 'ghost'}
+        variant={active ? "primary" : "ghost"}
         size="sm"
         className="h-7 w-7 justify-center p-0"
         onClick={onClick}
@@ -37,5 +37,5 @@ export function ToolButton({
         <Icon size={iconSize} />
       </Button>
     </Tooltip>
-  )
+  );
 }

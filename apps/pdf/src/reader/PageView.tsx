@@ -21,8 +21,8 @@
  * per-page annotation overlay below, sized to the sheet and driven by the same
  * viewport the text layer uses.
  */
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
-import type { JSX } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import type { JSX } from "react";
 import type {
   DomDocumentLike,
   DomElementLike,
@@ -32,38 +32,38 @@ import type {
   Render,
   TextHit,
   TextLayerHandle,
-} from '@pdfcore/engine'
-import type { Engine } from '../app/engine'
-import { PageAnnotateLayer } from '../lazy'
+} from "@pdfcore/engine";
+import type { Engine } from "../app/engine";
+import { PageAnnotateLayer } from "../lazy";
 
-const MAX_DPR = 2
+const MAX_DPR = 2;
 
 /** Every search hit on a page (the engine text layer's highlight marks). */
-const HIT_CLASS = 'bg-primary/25 mix-blend-multiply'
+const HIT_CLASS = "bg-primary/25 mix-blend-multiply";
 
 export interface PageViewProps {
   /** The page renderer (pdf.js). */
-  render: Render
+  render: Render;
   /** The engine's document, once loaded: the text layer and the overlay need it. */
-  doc: PdfDoc | null
-  engine: Engine | null
+  doc: PdfDoc | null;
+  engine: Engine | null;
   /** 1-based page number. */
-  pageNumber: number
+  pageNumber: number;
   /** CSS px width/height for this page at the current scale (layout box). */
-  width: number
-  height: number
+  width: number;
+  height: number;
   /** Points → CSS px scale. */
-  scale: number
+  scale: number;
   /** Bumped by the controller to force a re-render/rebuild after an edit. */
-  renderEpoch: number
+  renderEpoch: number;
   /** Search hits located on this page (base highlight). */
-  hits: TextHit[]
+  hits: TextHit[];
   /** The rects of the active hit, if it is on this page (focus ring). */
-  activeRects: Rect[] | null
+  activeRects: Rect[] | null;
   /** Report the page's true (rotation-corrected) point size after first render. */
-  onMeasured: (index0: number, w: number, h: number) => void
+  onMeasured: (index0: number, w: number, h: number) => void;
   /** The page has been drawn, or has failed to: the rest of the app may load. */
-  onPainted: () => void
+  onPainted: () => void;
 }
 
 export function PageView({
@@ -80,70 +80,66 @@ export function PageView({
   onMeasured,
   onPainted,
 }: PageViewProps): JSX.Element {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const textHostRef = useRef<HTMLDivElement>(null)
-  const [textLayer, setTextLayer] = useState<TextLayerHandle | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const textHostRef = useRef<HTMLDivElement>(null);
+  const [textLayer, setTextLayer] = useState<TextLayerHandle | null>(null);
   // Serialises render.page() calls for this canvas — pdf.js rejects two
   // concurrent render()s onto the same canvas (esp. under StrictMode).
-  const renderChain = useRef<Promise<unknown>>(Promise.resolve())
-  const [vp, setVp] = useState<PageViewport | null>(null)
-  const [failed, setFailed] = useState(false)
+  const renderChain = useRef<Promise<unknown>>(Promise.resolve());
+  const [vp, setVp] = useState<PageViewport | null>(null);
+  const [failed, setFailed] = useState(false);
 
   // (Re)draw whenever the renderer, page, scale, or render epoch changes.
   useEffect(() => {
-    let cancelled = false
-    const canvas = canvasRef.current
-    if (!canvas) return
+    let cancelled = false;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
     const run = async () => {
       try {
-        const viewport = await render.viewport(pageNumber, { scale })
-        if (cancelled) return
+        const viewport = await render.viewport(pageNumber, { scale });
+        if (cancelled) return;
         // Report the rotation-corrected point size (viewport px ÷ scale).
-        onMeasured(
-          pageNumber - 1,
-          viewport.width / viewport.scale,
-          viewport.height / viewport.scale
-        )
+        onMeasured(pageNumber - 1, viewport.width / viewport.scale, viewport.height / viewport.scale);
 
-        const dpr = Math.min(MAX_DPR, window.devicePixelRatio || 1)
-        await render.page(pageNumber, canvas, { scale: scale * dpr })
-        if (cancelled) return
-        canvas.style.width = `${viewport.width}px`
-        canvas.style.height = `${viewport.height}px`
-        setVp(viewport)
-        setFailed(false)
-        onPainted()
+        const dpr = Math.min(MAX_DPR, window.devicePixelRatio || 1);
+        await render.page(pageNumber, canvas, { scale: scale * dpr });
+        if (cancelled) return;
+        canvas.style.width = `${viewport.width}px`;
+        canvas.style.height = `${viewport.height}px`;
+        setVp(viewport);
+        setFailed(false);
+        onPainted();
       } catch (err) {
         if (!cancelled) {
-          setFailed(true)
-          onPainted()
-          console.error(`render page ${pageNumber} failed`, err)
+          setFailed(true);
+          onPainted();
+          console.error(`render page ${pageNumber} failed`, err);
         }
       }
-    }
+    };
 
     // Chain so this instance never has two overlapping render.page() calls.
-    renderChain.current = renderChain.current.then(run, run)
+    renderChain.current = renderChain.current.then(run, run);
 
     return () => {
-      cancelled = true
-    }
-  }, [render, pageNumber, scale, renderEpoch, onMeasured, onPainted])
+      cancelled = true;
+    };
+  }, [render, pageNumber, scale, renderEpoch, onMeasured, onPainted]);
 
   // The selectable text layer, aligned to the drawn viewport. It needs the
   // engine's text extraction, so it follows the canvas rather than delaying it.
   useEffect(() => {
-    const host = textHostRef.current
-    if (!host || !vp || !doc || !engine) return
-    let cancelled = false
-    let handle: TextLayerHandle | null = null
+    const host = textHostRef.current;
+    if (!host || !vp || !doc || !engine) return;
+    let cancelled = false;
+    let handle: TextLayerHandle | null = null;
     void (async () => {
       try {
-        const items = await doc.text.extract({ pages: [pageNumber] })
-        if (cancelled) return
-        host.style.width = `${vp.width}px`
-        host.style.height = `${vp.height}px`
+        const items = await doc.text.extract({ pages: [pageNumber] });
+        if (cancelled) return;
+        host.style.width = `${vp.width}px`;
+        host.style.height = `${vp.height}px`;
         handle = engine.buildTextLayer({
           // The engine types these structurally (DomDocumentLike/DomElementLike)
           // to stay free of lib.dom; the real DOM nodes satisfy that surface.
@@ -151,39 +147,39 @@ export function PageView({
           container: host as unknown as DomElementLike,
           items,
           viewport: vp,
-        })
-        setTextLayer(handle)
+        });
+        setTextLayer(handle);
       } catch (err) {
-        if (!cancelled) console.error(`text layer for page ${pageNumber} failed`, err)
+        if (!cancelled) console.error(`text layer for page ${pageNumber} failed`, err);
       }
-    })()
+    })();
     return () => {
-      cancelled = true
-      handle?.destroy()
-      setTextLayer((cur) => (cur === handle ? null : cur))
-    }
-  }, [doc, engine, pageNumber, vp, renderEpoch])
+      cancelled = true;
+      handle?.destroy();
+      setTextLayer((cur) => (cur === handle ? null : cur));
+    };
+  }, [doc, engine, pageNumber, vp, renderEpoch]);
 
   // Base search highlight — drive the engine text layer's highlightRects with
   // every hit on this page.
   useEffect(() => {
-    if (!textLayer) return
+    if (!textLayer) return;
     if (hits.length) {
       textLayer.highlightRects(
         hits.flatMap((h) => h.rects),
-        { className: HIT_CLASS }
-      )
+        { className: HIT_CLASS },
+      );
     } else {
-      textLayer.clearHighlights()
+      textLayer.clearHighlights();
     }
-  }, [hits, textLayer])
+  }, [hits, textLayer]);
 
   // Active-hit focus ring — rendered as React nodes so it can layer above the
   // base fill. Uses the engine's layoutHighlightRects helper.
   const activeBoxes = useMemo(() => {
-    if (!vp || !engine || !activeRects || !activeRects.length) return []
-    return engine.layoutHighlightRects(activeRects, vp)
-  }, [vp, engine, activeRects])
+    if (!vp || !engine || !activeRects || !activeRects.length) return [];
+    return engine.layoutHighlightRects(activeRects, vp);
+  }, [vp, engine, activeRects]);
 
   return (
     <div className="relative" data-page={pageNumber} style={{ width, height }}>
@@ -192,10 +188,7 @@ export function PageView({
         style={{ width, height }}
       >
         <canvas ref={canvasRef} className="absolute inset-0 block" />
-        <div
-          ref={textHostRef}
-          className="pdfcore-text-layer selection:bg-primary/40 absolute inset-0"
-        />
+        <div ref={textHostRef} className="pdfcore-text-layer selection:bg-primary/40 absolute inset-0" />
         <div className="pointer-events-none absolute inset-0 z-[3]" aria-hidden="true">
           {activeBoxes.map((b, i) => (
             <span
@@ -221,5 +214,5 @@ export function PageView({
         {pageNumber}
       </span>
     </div>
-  )
+  );
 }

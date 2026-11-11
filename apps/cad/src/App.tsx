@@ -1,5 +1,5 @@
-import type { KitAppProps } from '@imbatranim-office/shared'
-import { CadApp } from './ui/CadApp'
+import type { KitAppProps } from "@imbatranim-office/shared";
+import { CadApp } from "./ui/CadApp";
 
 /**
  * CAD: a 2D drafting app in the AutoCAD mould. A command line
@@ -10,5 +10,5 @@ import { CadApp } from './ui/CadApp'
 export function App(_props: KitAppProps) {
   // The suite's server, for DWG, is asked for through `system.server` when a
   // DWG needs it; `host.server` is always null for a kit app.
-  return <CadApp />
+  return <CadApp />;
 }

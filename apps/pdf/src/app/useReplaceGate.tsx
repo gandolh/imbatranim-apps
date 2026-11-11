@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
-import { UnsavedChangesDialog } from '@imbatranim/ui'
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import { UnsavedChangesDialog } from "@imbatranim/ui";
 
 /** A deferred document load: fetch + adopt, run only once the user agrees. */
-export type ReplaceLoad = () => Promise<void>
+export type ReplaceLoad = () => Promise<void>;
 
 /**
  * The one gate in front of every path that replaces the open document:
@@ -20,72 +20,72 @@ export type ReplaceLoad = () => Promise<void>
 export function useReplaceGate(
   dirty: boolean,
   name: string,
-  save: () => Promise<void>
+  save: () => Promise<void>,
 ): { requestReplace: (load: ReplaceLoad) => void; dialog: ReactNode } {
-  const dirtyRef = useRef(dirty)
+  const dirtyRef = useRef(dirty);
   useEffect(() => {
-    dirtyRef.current = dirty
-  })
+    dirtyRef.current = dirty;
+  });
 
-  const [pending, setPending] = useState<ReplaceLoad | null>(null)
-  const [saving, setSaving] = useState(false)
+  const [pending, setPending] = useState<ReplaceLoad | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const requestReplace = useCallback((load: ReplaceLoad) => {
     if (!dirtyRef.current) {
-      void load()
-      return
+      void load();
+      return;
     }
-    setPending(() => load)
-  }, [])
+    setPending(() => load);
+  }, []);
 
   // The Save verdict is the committed `dirty`, not the save promise: `saveToDisk`
   // reports its own failure and leaves `dirty` set, and its state updates have
   // not rendered yet when it resolves. The effect only hands the committed value
   // to the waiting handler (the `useUnsavedGuard` precedent).
-  const verdictRef = useRef<((stillDirty: boolean) => void) | null>(null)
-  const [verdictTick, setVerdictTick] = useState(0)
+  const verdictRef = useRef<((stillDirty: boolean) => void) | null>(null);
+  const [verdictTick, setVerdictTick] = useState(0);
   useEffect(() => {
-    const resolve = verdictRef.current
-    if (!resolve) return
-    verdictRef.current = null
-    resolve(dirty)
-  }, [verdictTick, dirty])
+    const resolve = verdictRef.current;
+    if (!resolve) return;
+    verdictRef.current = null;
+    resolve(dirty);
+  }, [verdictTick, dirty]);
 
   const onSave = useCallback(async () => {
-    const load = pending
-    setSaving(true)
+    const load = pending;
+    setSaving(true);
     try {
-      await save()
+      await save();
     } catch {
       // The save path reports its own failures; `dirty` decides.
     }
     const stillDirty = await new Promise<boolean>((resolve) => {
-      verdictRef.current = resolve
-      setVerdictTick((t) => t + 1)
-    })
-    setSaving(false)
-    setPending(null)
+      verdictRef.current = resolve;
+      setVerdictTick((t) => t + 1);
+    });
+    setSaving(false);
+    setPending(null);
     // A failed save keeps the current document, still dirty, on screen.
-    if (!stillDirty && load) await load()
-  }, [pending, save])
+    if (!stillDirty && load) await load();
+  }, [pending, save]);
 
   const onDiscard = useCallback(() => {
-    const load = pending
-    setPending(null)
-    if (load) void load()
-  }, [pending])
+    const load = pending;
+    setPending(null);
+    if (load) void load();
+  }, [pending]);
 
-  const onCancel = useCallback(() => setPending(null), [])
+  const onCancel = useCallback(() => setPending(null), []);
 
   const dialog = (
     <UnsavedChangesDialog
       open={pending !== null}
-      name={name || 'This document'}
+      name={name || "This document"}
       onSave={() => void onSave()}
       saving={saving}
       onDiscard={onDiscard}
       onCancel={onCancel}
     />
-  )
-  return { requestReplace, dialog }
+  );
+  return { requestReplace, dialog };
 }

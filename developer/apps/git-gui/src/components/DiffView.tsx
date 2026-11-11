@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
-import { Columns2, Minus, Plus, Rows3 } from 'lucide-react'
-import { Button, ScrollArea, cn } from '@imbatranim/ui'
+import { useMemo } from "react";
+import { Columns2, Minus, Plus, Rows3 } from "lucide-react";
+import { Button, ScrollArea, cn } from "@imbatranim/ui";
 import {
   hunkStats,
   parseDiff,
@@ -10,7 +10,7 @@ import {
   type DiffLine,
   type FileDiff,
   type Hunk,
-} from '../lib/diffModel'
+} from "../lib/diffModel";
 
 /**
  * The diff pane: unified or side-by-side, word-level highlight, per-hunk staging.
@@ -22,41 +22,34 @@ import {
  */
 
 export type DiffViewProps = {
-  diff: string
+  diff: string;
   /** True when the pane is showing the index side, which flips what a hunk does. */
-  staged: boolean
-  sideBySide: boolean
-  onToggleLayout: () => void
+  staged: boolean;
+  sideBySide: boolean;
+  onToggleLayout: () => void;
   /** Stage (or unstage, when `staged`) one hunk. */
-  onApplyHunk: (patch: string, reverse: boolean) => void
-  busy: boolean
-}
+  onApplyHunk: (patch: string, reverse: boolean) => void;
+  busy: boolean;
+};
 
-export function DiffView({
-  diff,
-  staged,
-  sideBySide,
-  onToggleLayout,
-  onApplyHunk,
-  busy,
-}: DiffViewProps) {
-  const files = useMemo(() => parseDiff(diff), [diff])
+export function DiffView({ diff, staged, sideBySide, onToggleLayout, onApplyHunk, busy }: DiffViewProps) {
+  const files = useMemo(() => parseDiff(diff), [diff]);
 
   if (diff.trim().length === 0) {
     return (
       <div className="text-on-surface-variant flex flex-1 items-center justify-center text-[12px]">
         No changes to show
       </div>
-    )
+    );
   }
 
-  const totalHunks = files.reduce((n, f) => n + f.hunks.length, 0)
+  const totalHunks = files.reduce((n, f) => n + f.hunks.length, 0);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="border-outline-variant bg-surface-container-low flex shrink-0 items-center gap-2 border-b px-2 py-1">
         <span className="font-ui text-on-surface-variant text-[11px]">
-          {totalHunks} hunk{totalHunks === 1 ? '' : 's'}
+          {totalHunks} hunk{totalHunks === 1 ? "" : "s"}
         </span>
         <span className="flex-1" />
         <Button
@@ -65,14 +58,10 @@ export function DiffView({
           className="gap-1"
           onClick={onToggleLayout}
           aria-pressed={sideBySide}
-          title={sideBySide ? 'Switch to a single column' : 'Switch to side by side'}
+          title={sideBySide ? "Switch to a single column" : "Switch to side by side"}
         >
-          {sideBySide ? (
-            <Rows3 size={12} strokeWidth={2} />
-          ) : (
-            <Columns2 size={12} strokeWidth={2} />
-          )}
-          {sideBySide ? 'Unified' : 'Side by side'}
+          {sideBySide ? <Rows3 size={12} strokeWidth={2} /> : <Columns2 size={12} strokeWidth={2} />}
+          {sideBySide ? "Unified" : "Side by side"}
         </Button>
       </div>
 
@@ -86,9 +75,7 @@ export function DiffView({
               )}
             </div>
             {file.binary ? (
-              <div className="text-on-surface-variant px-2 py-2 text-[12px]">
-                Binary file — nothing to show
-              </div>
+              <div className="text-on-surface-variant px-2 py-2 text-[12px]">Binary file — nothing to show</div>
             ) : (
               file.hunks.map((hunk, i) => (
                 <HunkBlock
@@ -106,7 +93,7 @@ export function DiffView({
         ))}
       </ScrollArea>
     </div>
-  )
+  );
 }
 
 function HunkBlock({
@@ -117,14 +104,14 @@ function HunkBlock({
   onApplyHunk,
   busy,
 }: {
-  file: FileDiff
-  hunk: Hunk
-  staged: boolean
-  sideBySide: boolean
-  onApplyHunk: (patch: string, reverse: boolean) => void
-  busy: boolean
+  file: FileDiff;
+  hunk: Hunk;
+  staged: boolean;
+  sideBySide: boolean;
+  onApplyHunk: (patch: string, reverse: boolean) => void;
+  busy: boolean;
 }) {
-  const stats = hunkStats(hunk)
+  const stats = hunkStats(hunk);
   return (
     <div className="border-outline-variant border-b last:border-b-0">
       <div className="bg-surface-container-low flex items-center gap-2 px-2 py-0.5">
@@ -140,45 +127,44 @@ function HunkBlock({
           // Staging one hunk and unstaging one hunk are the same patch applied in
           // opposite directions — see applyPatch on the backend.
           onClick={() => onApplyHunk(patchForHunk(file, hunk), staged)}
-          title={staged ? 'Unstage just this hunk' : 'Stage just this hunk'}
+          title={staged ? "Unstage just this hunk" : "Stage just this hunk"}
         >
           {staged ? <Minus size={11} strokeWidth={2} /> : <Plus size={11} strokeWidth={2} />}
-          {staged ? 'Unstage hunk' : 'Stage hunk'}
+          {staged ? "Unstage hunk" : "Stage hunk"}
         </Button>
       </div>
       {sideBySide ? <SideBySide hunk={hunk} /> : <Unified hunk={hunk} />}
     </div>
-  )
+  );
 }
 
-const GUTTER =
-  'text-on-surface-variant w-10 shrink-0 select-none px-1 text-right font-mono text-[11px]'
+const GUTTER = "text-on-surface-variant w-10 shrink-0 select-none px-1 text-right font-mono text-[11px]";
 
 function Unified({ hunk }: { hunk: Hunk }) {
   return (
     <div className="font-mono text-[11px] leading-snug">
       {hunk.lines.map((line, i) => (
-        <div key={i} className={cn('flex', bgFor(line.kind))}>
-          <span className={GUTTER}>{line.oldNo ?? ''}</span>
-          <span className={GUTTER}>{line.newNo ?? ''}</span>
-          <span className={cn('w-3 shrink-0 select-none', fgFor(line.kind))}>
-            {line.kind === 'add' ? '+' : line.kind === 'del' ? '−' : ' '}
+        <div key={i} className={cn("flex", bgFor(line.kind))}>
+          <span className={GUTTER}>{line.oldNo ?? ""}</span>
+          <span className={GUTTER}>{line.newNo ?? ""}</span>
+          <span className={cn("w-3 shrink-0 select-none", fgFor(line.kind))}>
+            {line.kind === "add" ? "+" : line.kind === "del" ? "−" : " "}
           </span>
-          <span className="whitespace-pre">{line.text || ' '}</span>
+          <span className="whitespace-pre">{line.text || " "}</span>
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 function SideBySide({ hunk }: { hunk: Hunk }) {
-  const rows = useMemo(() => toSideBySide(hunk), [hunk])
+  const rows = useMemo(() => toSideBySide(hunk), [hunk]);
   return (
     <div className="font-mono text-[11px] leading-snug">
       {rows.map((row, i) => {
         // Word highlight only for a real replacement pair; highlighting a lone
         // insertion against nothing would mark the whole line for no information.
-        const words = row.paired ? wordDiff(row.left!.text, row.right!.text) : null
+        const words = row.paired ? wordDiff(row.left!.text, row.right!.text) : null;
         return (
           <div key={i} className="flex">
             <Side
@@ -189,10 +175,10 @@ function SideBySide({ hunk }: { hunk: Hunk }) {
             />
             <Side line={row.right} side="new" parts={words?.right} className="w-1/2 min-w-0" />
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
 function Side({
@@ -201,18 +187,18 @@ function Side({
   parts,
   className,
 }: {
-  line: DiffLine | null
-  side: 'old' | 'new'
-  parts?: { text: string; changed: boolean }[]
-  className?: string
+  line: DiffLine | null;
+  side: "old" | "new";
+  parts?: { text: string; changed: boolean }[];
+  className?: string;
 }) {
   if (!line) {
     // A blank filler, tinted so the eye reads "nothing here" rather than "unchanged".
-    return <div className={cn('bg-surface-container-low/60 flex', className)}>&nbsp;</div>
+    return <div className={cn("bg-surface-container-low/60 flex", className)}>&nbsp;</div>;
   }
   return (
-    <div className={cn('flex', bgFor(line.kind), className)}>
-      <span className={GUTTER}>{(side === 'old' ? line.oldNo : line.newNo) ?? ''}</span>
+    <div className={cn("flex", bgFor(line.kind), className)}>
+      <span className={GUTTER}>{(side === "old" ? line.oldNo : line.newNo) ?? ""}</span>
       <span className="min-w-0 whitespace-pre">
         {parts
           ? parts.map((part, i) => (
@@ -220,18 +206,16 @@ function Side({
                 key={i}
                 className={cn(
                   part.changed &&
-                    (line.kind === 'add'
-                      ? 'bg-primary/25 text-on-surface'
-                      : 'bg-error/25 text-on-surface')
+                    (line.kind === "add" ? "bg-primary/25 text-on-surface" : "bg-error/25 text-on-surface"),
                 )}
               >
                 {part.text}
               </span>
             ))
-          : line.text || ' '}
+          : line.text || " "}
       </span>
     </div>
-  )
+  );
 }
 
 /**
@@ -242,14 +226,14 @@ function Side({
  * than new ones. The **sign in the gutter** carries the same information for anyone
  * who cannot use the colour, which is what the rule is actually protecting.
  */
-function bgFor(kind: DiffLine['kind']): string {
-  if (kind === 'add') return 'bg-primary/10'
-  if (kind === 'del') return 'bg-error/10'
-  return ''
+function bgFor(kind: DiffLine["kind"]): string {
+  if (kind === "add") return "bg-primary/10";
+  if (kind === "del") return "bg-error/10";
+  return "";
 }
 
-function fgFor(kind: DiffLine['kind']): string {
-  if (kind === 'add') return 'text-primary'
-  if (kind === 'del') return 'text-error'
-  return 'text-on-surface-variant'
+function fgFor(kind: DiffLine["kind"]): string {
+  if (kind === "add") return "text-primary";
+  if (kind === "del") return "text-error";
+  return "text-on-surface-variant";
 }

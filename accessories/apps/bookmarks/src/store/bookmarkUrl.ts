@@ -8,22 +8,22 @@
  * renders bookmarks as `<a href>`, so a `javascript:` or `data:` URL in the
  * file would be stored XSS. The file is checked on every write and every read.
  */
-export const ALLOWED_SCHEMES = ['http:', 'https:'] as const
+export const ALLOWED_SCHEMES = ["http:", "https:"] as const;
 
 /** Longest URL accepted. Chrome's own limit is ~2MB; 2048 is the practical one. */
-export const MAX_URL_LENGTH = 2048
+export const MAX_URL_LENGTH = 2048;
 
 export function isBookmarkUrl(value: unknown): value is string {
-  if (typeof value !== 'string') return false
-  const trimmed = value.trim()
-  if (trimmed === '' || trimmed.length > MAX_URL_LENGTH) return false
-  let parsed: URL
+  if (typeof value !== "string") return false;
+  const trimmed = value.trim();
+  if (trimmed === "" || trimmed.length > MAX_URL_LENGTH) return false;
+  let parsed: URL;
   try {
-    parsed = new URL(trimmed)
+    parsed = new URL(trimmed);
   } catch {
-    return false
+    return false;
   }
-  if (!(ALLOWED_SCHEMES as readonly string[]).includes(parsed.protocol)) return false
+  if (!(ALLOWED_SCHEMES as readonly string[]).includes(parsed.protocol)) return false;
   // An empty host is never a bookmark, whatever a runtime's parser allows.
-  return parsed.hostname !== ''
+  return parsed.hostname !== "";
 }

@@ -86,8 +86,7 @@ describe("Annotate capability (pdf-lib + native adapter)", () => {
 
     const reloaded = await loadPdf(saved);
     const ft = byType(reloaded.annotate.list(), "freeText") as
-      | { text: string; rect: number[] }
-      | undefined;
+      { text: string; rect: number[] } | undefined;
     expect(ft).toBeDefined();
     expect(ft!.text).toBe("Hello annotation");
     expect(ft!.rect[0]).toBeCloseTo(40);
@@ -112,8 +111,7 @@ describe("Annotate capability (pdf-lib + native adapter)", () => {
 
     const reloaded = await loadPdf(saved);
     const ink = byType(reloaded.annotate.list(), "ink") as
-      | { paths: { x: number; y: number }[][] }
-      | undefined;
+      { paths: { x: number; y: number }[][] } | undefined;
     expect(ink).toBeDefined();
     expect(ink!.paths).toHaveLength(1);
     expect(ink!.paths[0]).toHaveLength(3);

@@ -1,4 +1,4 @@
-import { Solitaire } from './Solitaire'
+import { Solitaire } from "./Solitaire";
 
 /**
  * The module the desktop renders for `solitaire`. The built-in's manifest
@@ -8,5 +8,5 @@ import { Solitaire } from './Solitaire'
  * key) come back when Games is installed.
  */
 export function App() {
-  return <Solitaire />
+  return <Solitaire />;
 }

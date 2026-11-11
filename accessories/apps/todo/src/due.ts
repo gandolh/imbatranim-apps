@@ -18,22 +18,22 @@
  * arithmetic plus `Intl`.
  */
 
-import type { Todo } from './types'
+import type { Todo } from "./types";
 
-const DAY_MS = 24 * 60 * 60 * 1000
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** Local midnight of the day containing `ms`. */
 export function startOfDay(ms: number): number {
-  const d = new Date(ms)
-  d.setHours(0, 0, 0, 0)
-  return d.getTime()
+  const d = new Date(ms);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
 }
 
 /** The last representable instant of the day containing `ms`. */
 export function endOfDay(ms: number): number {
-  const d = new Date(ms)
-  d.setHours(23, 59, 59, 999)
-  return d.getTime()
+  const d = new Date(ms);
+  d.setHours(23, 59, 59, 999);
+  return d.getTime();
 }
 
 /**
@@ -43,37 +43,37 @@ export function endOfDay(ms: number): number {
  * becomes a due date of NaN.
  */
 export function dueAtFromInput(date: string, time?: string): number | null {
-  if (!date) return null
-  const [y, m, d] = date.split('-').map(Number)
-  if (!y || !m || !d) return null
+  if (!date) return null;
+  const [y, m, d] = date.split("-").map(Number);
+  if (!y || !m || !d) return null;
   if (time) {
-    const [hh, mm] = time.split(':').map(Number)
-    if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null
-    const withTime = new Date(y, m - 1, d, hh, mm, 0, 0)
-    return Number.isNaN(withTime.getTime()) ? null : withTime.getTime()
+    const [hh, mm] = time.split(":").map(Number);
+    if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
+    const withTime = new Date(y, m - 1, d, hh, mm, 0, 0);
+    return Number.isNaN(withTime.getTime()) ? null : withTime.getTime();
   }
-  const dayEnd = new Date(y, m - 1, d, 23, 59, 59, 999)
-  return Number.isNaN(dayEnd.getTime()) ? null : dayEnd.getTime()
+  const dayEnd = new Date(y, m - 1, d, 23, 59, 59, 999);
+  return Number.isNaN(dayEnd.getTime()) ? null : dayEnd.getTime();
 }
 
 /** The `YYYY-MM-DD` a due instant belongs to, for the date input. */
 export function dateInputValue(dueAt: number): string {
-  const d = new Date(dueAt)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  const d = new Date(dueAt);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 /** The `HH:mm` for the time input, or '' when the due date carries no time. */
 export function timeInputValue(dueAt: number): string {
-  if (isDateOnly(dueAt)) return ''
-  const d = new Date(dueAt)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`
+  if (isDateOnly(dueAt)) return "";
+  const d = new Date(dueAt);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 /** True when the instant is the end of its day — the date-only encoding. */
 export function isDateOnly(dueAt: number): boolean {
-  return dueAt === endOfDay(dueAt)
+  return dueAt === endOfDay(dueAt);
 }
 
 /**
@@ -82,31 +82,31 @@ export function isDateOnly(dueAt: number): boolean {
  * A completed todo is never overdue however long it sat there: overdue is a call
  * to action, and there is nothing left to do.
  */
-export function isOverdue(todo: Pick<Todo, 'dueAt' | 'completed'>, now: number): boolean {
-  return !todo.completed && todo.dueAt !== null && todo.dueAt < now
+export function isOverdue(todo: Pick<Todo, "dueAt" | "completed">, now: number): boolean {
+  return !todo.completed && todo.dueAt !== null && todo.dueAt < now;
 }
 
 /** Due today (and not yet late). Drives the "today" emphasis, not the error one. */
-export function isDueToday(todo: Pick<Todo, 'dueAt' | 'completed'>, now: number): boolean {
-  if (todo.completed || todo.dueAt === null) return false
-  return startOfDay(todo.dueAt) === startOfDay(now) && todo.dueAt >= now
+export function isDueToday(todo: Pick<Todo, "dueAt" | "completed">, now: number): boolean {
+  if (todo.completed || todo.dueAt === null) return false;
+  return startOfDay(todo.dueAt) === startOfDay(now) && todo.dueAt >= now;
 }
 
 /** Whole days from `now`'s day to `dueAt`'s day. Negative when late. */
 export function daysUntil(dueAt: number, now: number): number {
-  return Math.round((startOfDay(dueAt) - startOfDay(now)) / DAY_MS)
+  return Math.round((startOfDay(dueAt) - startOfDay(now)) / DAY_MS);
 }
 
-const DATE_FMT = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' })
+const DATE_FMT = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
 const DATE_YEAR_FMT = new Intl.DateTimeFormat(undefined, {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-})
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
 
 function timeOf(dueAt: number): string {
-  const d = new Date(dueAt)
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  const d = new Date(dueAt);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
 /**
@@ -116,15 +116,15 @@ function timeOf(dueAt: number): string {
  * actually wants to read; absolute beyond that, because "in 9 days" is not.
  */
 export function dueLabel(dueAt: number, now: number): string {
-  const days = daysUntil(dueAt, now)
-  const withTime = !isDateOnly(dueAt)
+  const days = daysUntil(dueAt, now);
+  const withTime = !isDateOnly(dueAt);
 
-  if (days === 0) return withTime ? `Today ${timeOf(dueAt)}` : 'Today'
-  if (days === 1) return withTime ? `Tomorrow ${timeOf(dueAt)}` : 'Tomorrow'
-  if (days === -1) return withTime ? `Yesterday ${timeOf(dueAt)}` : 'Yesterday'
-  if (days < -1) return `${Math.abs(days)} days late`
+  if (days === 0) return withTime ? `Today ${timeOf(dueAt)}` : "Today";
+  if (days === 1) return withTime ? `Tomorrow ${timeOf(dueAt)}` : "Tomorrow";
+  if (days === -1) return withTime ? `Yesterday ${timeOf(dueAt)}` : "Yesterday";
+  if (days < -1) return `${Math.abs(days)} days late`;
 
-  const sameYear = new Date(dueAt).getFullYear() === new Date(now).getFullYear()
-  const date = sameYear ? DATE_FMT.format(dueAt) : DATE_YEAR_FMT.format(dueAt)
-  return withTime ? `${date} ${timeOf(dueAt)}` : date
+  const sameYear = new Date(dueAt).getFullYear() === new Date(now).getFullYear();
+  const date = sameYear ? DATE_FMT.format(dueAt) : DATE_YEAR_FMT.format(dueAt);
+  return withTime ? `${date} ${timeOf(dueAt)}` : date;
 }

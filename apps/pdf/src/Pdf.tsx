@@ -30,21 +30,21 @@
  *     `await reloadDocument()`
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
-import type { JSX } from 'react'
-import { useFileDialog, useOpenIntent, useUnsavedGuard, type OpenedFile } from '@imbatranim/ui'
-import { Download, FileText } from 'lucide-react'
-import { ReaderContext, useReader } from './app/context'
-import { useEditor } from './editor/context'
-import { useReaderController } from './app/useReaderController'
-import { useReplaceGate, type ReplaceLoad } from './app/useReplaceGate'
-import { EmptyState } from './app/EmptyState'
-import { TopBar } from './shell/TopBar'
-import { SidePanel } from './shell/SidePanel'
-import type { SidePanelTab } from './shell/SidePanel'
-import { Reader } from './reader/Reader'
-import { EditorProvider } from './editor/EditorProvider'
-import { AnnotateToolbar, FormsPanel, OrganizeView, SignatureDialog } from './lazy'
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import type { JSX } from "react";
+import { useFileDialog, useOpenIntent, useUnsavedGuard, type OpenedFile } from "@imbatranim/ui";
+import { Download, FileText } from "lucide-react";
+import { ReaderContext, useReader } from "./app/context";
+import { useEditor } from "./editor/context";
+import { useReaderController } from "./app/useReaderController";
+import { useReplaceGate, type ReplaceLoad } from "./app/useReplaceGate";
+import { EmptyState } from "./app/EmptyState";
+import { TopBar } from "./shell/TopBar";
+import { SidePanel } from "./shell/SidePanel";
+import type { SidePanelTab } from "./shell/SidePanel";
+import { Reader } from "./reader/Reader";
+import { EditorProvider } from "./editor/EditorProvider";
+import { AnnotateToolbar, FormsPanel, OrganizeView, SignatureDialog } from "./lazy";
 
 /**
  * The unsaved-close guard, as a component INSIDE both providers: the dialog's
@@ -53,14 +53,14 @@ import { AnnotateToolbar, FormsPanel, OrganizeView, SignatureDialog } from './la
  * `useReaderController` itself cannot reach from outside `EditorProvider`.
  */
 function UnsavedCloseGuard(): JSX.Element {
-  const { dirty, docName } = useReader()
-  const { saveToDisk } = useEditor()
-  const unsavedDialog = useUnsavedGuard(dirty, docName, saveToDisk)
-  return <>{unsavedDialog}</>
+  const { dirty, docName } = useReader();
+  const { saveToDisk } = useEditor();
+  const unsavedDialog = useUnsavedGuard(dirty, docName, saveToDisk);
+  return <>{unsavedDialog}</>;
 }
 
 export function Pdf({ windowId: _windowId }: { windowId: string }): JSX.Element {
-  const ctrl = useReaderController()
+  const ctrl = useReaderController();
   return (
     <ReaderContext.Provider value={ctrl}>
       <EditorProvider>
@@ -68,16 +68,16 @@ export function Pdf({ windowId: _windowId }: { windowId: string }): JSX.Element 
         <PdfShell />
       </EditorProvider>
     </ReaderContext.Provider>
-  )
+  );
 }
 
 /** The forms tab, appended to the rail. Its panel is a lazy chunk. */
 const FORMS_TAB: SidePanelTab = {
-  id: 'forms',
-  label: 'Forms',
+  id: "forms",
+  label: "Forms",
   icon: FileText,
   render: () => <FormsPanel />,
-}
+};
 
 /**
  * The shell, INSIDE both providers: every path that replaces the open document
@@ -85,37 +85,33 @@ const FORMS_TAB: SidePanelTab = {
  * `saveToDisk` — the same reason `UnsavedCloseGuard` lives here.
  */
 function PdfShell(): JSX.Element {
-  const ctrl = useReader()
-  const { saveToDisk, signDialogOpen } = useEditor()
-  const { requestReplace, dialog: replaceDialog } = useReplaceGate(
-    ctrl.dirty,
-    ctrl.docName,
-    saveToDisk
-  )
+  const ctrl = useReader();
+  const { saveToDisk, signDialogOpen } = useEditor();
+  const { requestReplace, dialog: replaceDialog } = useReplaceGate(ctrl.dirty, ctrl.docName, saveToDisk);
   // One-shot open intent, drained by the shared hook (StrictMode-safe).
-  const source = useOpenIntent()
-  const [dragging, setDragging] = useState(false)
-  const dragDepth = useRef(0)
+  const source = useOpenIntent();
+  const [dragging, setDragging] = useState(false);
+  const dragDepth = useRef(0);
 
   // Ctrl/Cmd+S (write-back Save) is registered in TopBar, which lives inside
   // EditorProvider and can reach the editor's save-and-reload path.
 
   /* ── Open an OS-provided file ──────────────────────────────────────────── */
-  const openFromOs = ctrl.openFromOs
-  const loadSource = useCallback((file: OpenedFile) => openFromOs(file), [openFromOs])
+  const openFromOs = ctrl.openFromOs;
+  const loadSource = useCallback((file: OpenedFile) => openFromOs(file), [openFromOs]);
 
   // Each latched intent is handled once, whatever the answer: Cancel keeps the
   // current document, and the same intent must not ask again on the next render
   // (`requestReplace` changes identity as nothing else here does, but `dirty`
   // flipping re-runs this effect).
-  const handledSource = useRef<OpenedFile | null>(null)
-  const latestSource = useRef<OpenedFile | null>(null)
+  const handledSource = useRef<OpenedFile | null>(null);
+  const latestSource = useRef<OpenedFile | null>(null);
   useEffect(() => {
-    latestSource.current = source
-    if (!source || handledSource.current === source) return
-    handledSource.current = source
-    requestReplace(() => loadSource(source))
-  }, [source, requestReplace, loadSource])
+    latestSource.current = source;
+    if (!source || handledSource.current === source) return;
+    handledSource.current = source;
+    requestReplace(() => loadSource(source));
+  }, [source, requestReplace, loadSource]);
 
   /* ── Manual open (OS picker + drag-drop) ───────────────────────────────── */
   // The OS's own Open dialog, browsing the CONTAINER's filesystem. It used to be
@@ -124,66 +120,64 @@ function PdfShell(): JSX.Element {
   // and a dialog that browses the user's laptop instead of their home directory
   // is actively wrong here. The pick latches into the same store `useOpenIntent`
   // reads, so it runs the identical load path a File Manager double-click does.
-  const { openFile: pickFromOs } = useFileDialog()
+  const { openFile: pickFromOs } = useFileDialog();
   const pickFile = useCallback(() => {
     void (async () => {
-      const before = latestSource.current
-      const choice = await pickFromOs({ extensions: ['pdf'] })
+      const before = latestSource.current;
+      const choice = await pickFromOs({ extensions: ["pdf"] });
       // Picking the file that is already latched (the open one, or one whose
       // replace was cancelled) does not change the latch, so the effect above
       // never sees it. Ask directly instead.
       if (choice && before && choice.root === before.root && choice.path === before.path) {
-        requestReplace(() => loadSource(choice))
+        requestReplace(() => loadSource(choice));
       }
-    })()
-  }, [pickFromOs, requestReplace, loadSource])
+    })();
+  }, [pickFromOs, requestReplace, loadSource]);
 
   const takeFile = useCallback(
     (file: File | undefined | null) => {
-      if (!file) return
-      const load: ReplaceLoad = () => ctrl.openFile(file)
-      requestReplace(load)
+      if (!file) return;
+      const load: ReplaceLoad = () => ctrl.openFile(file);
+      requestReplace(load);
     },
-    [ctrl, requestReplace]
-  )
+    [ctrl, requestReplace],
+  );
 
   const onDragEnter = useCallback((e: React.DragEvent) => {
-    if (!Array.from(e.dataTransfer.types).includes('Files')) return
-    e.preventDefault()
-    dragDepth.current += 1
-    setDragging(true)
-  }, [])
+    if (!Array.from(e.dataTransfer.types).includes("Files")) return;
+    e.preventDefault();
+    dragDepth.current += 1;
+    setDragging(true);
+  }, []);
   const onDragOver = useCallback((e: React.DragEvent) => {
-    if (Array.from(e.dataTransfer.types).includes('Files')) {
-      e.preventDefault()
-      e.dataTransfer.dropEffect = 'copy'
+    if (Array.from(e.dataTransfer.types).includes("Files")) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
     }
-  }, [])
+  }, []);
   const onDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    dragDepth.current = Math.max(0, dragDepth.current - 1)
-    if (dragDepth.current === 0) setDragging(false)
-  }, [])
+    e.preventDefault();
+    dragDepth.current = Math.max(0, dragDepth.current - 1);
+    if (dragDepth.current === 0) setDragging(false);
+  }, []);
   const onDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault()
-      dragDepth.current = 0
-      setDragging(false)
-      const file = Array.from(e.dataTransfer.files).find(
-        (f) => f.type === 'application/pdf' || /\.pdf$/i.test(f.name)
-      )
-      takeFile(file)
+      e.preventDefault();
+      dragDepth.current = 0;
+      setDragging(false);
+      const file = Array.from(e.dataTransfer.files).find((f) => f.type === "application/pdf" || /\.pdf$/i.test(f.name));
+      takeFile(file);
     },
-    [takeFile]
-  )
+    [takeFile],
+  );
 
   // Mounted from the first time it is asked for, so it can animate closed.
-  const [signMounted, setSignMounted] = useState(false)
-  if (signDialogOpen && !signMounted) setSignMounted(true)
+  const [signMounted, setSignMounted] = useState(false);
+  if (signDialogOpen && !signMounted) setSignMounted(true);
 
-  const opened = ctrl.render !== null
+  const opened = ctrl.render !== null;
   // The editing tools arrive with the engine, after the first page.
-  const tools = ctrl.doc !== null
+  const tools = ctrl.doc !== null;
 
   return (
     <>
@@ -216,7 +210,7 @@ function PdfShell(): JSX.Element {
           <main className="flex min-h-0 min-w-0 flex-1 flex-col">
             {!opened ? (
               <EmptyState onOpenClick={pickFile} error={ctrl.error} loading={ctrl.loading} />
-            ) : ctrl.mode === 'organize' && tools ? (
+            ) : ctrl.mode === "organize" && tools ? (
               /* 3. The organize view replaces the reader here. */
               <div className="min-h-0 flex-1" data-slot="organize-view">
                 <Suspense fallback={null}>
@@ -249,5 +243,5 @@ function PdfShell(): JSX.Element {
         )}
       </div>
     </>
-  )
+  );
 }

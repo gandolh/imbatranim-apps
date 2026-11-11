@@ -1,15 +1,9 @@
-import { useState } from 'react'
-import { Eye, EyeOff, Plus, Trash2 } from 'lucide-react'
-import { Button, Dialog, Input, ScrollArea, Select, cn } from '@imbatranim/ui'
-import type { Environment } from '../types'
-import {
-  MAX_ENVIRONMENTS,
-  MAX_VARS_PER_ENV,
-  looksSecret,
-  maskValue,
-  newVar,
-} from '../lib/environments'
-import { newId } from '../lib/ui'
+import { useState } from "react";
+import { Eye, EyeOff, Plus, Trash2 } from "lucide-react";
+import { Button, Dialog, Input, ScrollArea, Select, cn } from "@imbatranim/ui";
+import type { Environment } from "../types";
+import { MAX_ENVIRONMENTS, MAX_VARS_PER_ENV, looksSecret, maskValue, newVar } from "../lib/environments";
+import { newId } from "../lib/ui";
 
 /**
  * The environment editor.
@@ -26,56 +20,54 @@ export function EnvironmentDialog({
   onChange,
   onClose,
 }: {
-  environments: Environment[]
-  activeEnvId: string | null
-  onChange: (environments: Environment[], activeEnvId: string | null) => void
-  onClose: () => void
+  environments: Environment[];
+  activeEnvId: string | null;
+  onChange: (environments: Environment[], activeEnvId: string | null) => void;
+  onClose: () => void;
 }) {
-  const [selectedId, setSelectedId] = useState<string | null>(
-    activeEnvId ?? environments[0]?.id ?? null
-  )
-  const [revealed, setRevealed] = useState<Set<string>>(new Set())
+  const [selectedId, setSelectedId] = useState<string | null>(activeEnvId ?? environments[0]?.id ?? null);
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
 
-  const selected = environments.find((e) => e.id === selectedId) ?? null
+  const selected = environments.find((e) => e.id === selectedId) ?? null;
 
   const update = (next: Environment) =>
     onChange(
       environments.map((e) => (e.id === next.id ? next : e)),
-      activeEnvId
-    )
+      activeEnvId,
+    );
 
   const addEnvironment = () => {
-    if (environments.length >= MAX_ENVIRONMENTS) return
+    if (environments.length >= MAX_ENVIRONMENTS) return;
     const created: Environment = {
       id: newId(),
       name: `Environment ${environments.length + 1}`,
       vars: [],
-    }
-    onChange([...environments, created], activeEnvId ?? created.id)
-    setSelectedId(created.id)
-  }
+    };
+    onChange([...environments, created], activeEnvId ?? created.id);
+    setSelectedId(created.id);
+  };
 
   const removeEnvironment = (id: string) => {
-    const remaining = environments.filter((e) => e.id !== id)
-    onChange(remaining, activeEnvId === id ? (remaining[0]?.id ?? null) : activeEnvId)
-    setSelectedId(remaining[0]?.id ?? null)
-  }
+    const remaining = environments.filter((e) => e.id !== id);
+    onChange(remaining, activeEnvId === id ? (remaining[0]?.id ?? null) : activeEnvId);
+    setSelectedId(remaining[0]?.id ?? null);
+  };
 
   const toggleReveal = (id: string) =>
     setRevealed((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()} title="Environments">
       <div className="flex w-[34rem] max-w-full flex-col gap-2">
         <p className="text-on-surface-variant text-[11px]">
-          Values are stored <strong>unencrypted</strong> in{' '}
-          <code className="font-mono">~/.config/rest-client/collections.json</code>. Marking one
-          secret masks it here and leaves its value out of an export — it does not encrypt it.
+          Values are stored <strong>unencrypted</strong> in{" "}
+          <code className="font-mono">~/.config/rest-client/collections.json</code>. Marking one secret masks it here
+          and leaves its value out of an export — it does not encrypt it.
         </p>
 
         <div className="flex items-end gap-2">
@@ -83,9 +75,9 @@ export function EnvironmentDialog({
             <Select
               label="Environment"
               options={environments.map((e) => ({ value: e.id, label: e.name }))}
-              value={selectedId ?? ''}
+              value={selectedId ?? ""}
               onValueChange={(v) => setSelectedId(String(v))}
-              placeholder={environments.length === 0 ? 'None yet' : 'Choose one'}
+              placeholder={environments.length === 0 ? "None yet" : "Choose one"}
             />
           </div>
           <Button
@@ -112,28 +104,21 @@ export function EnvironmentDialog({
 
         {selected === null ? (
           <div className="text-on-surface-variant py-8 text-center text-[12px]">
-            No environments yet. Create one to use{' '}
-            <code className="font-mono">{'{{variables}}'}</code> in a request.
+            No environments yet. Create one to use <code className="font-mono">{"{{variables}}"}</code> in a request.
           </div>
         ) : (
           <>
-            <Input
-              label="Name"
-              value={selected.name}
-              onChange={(e) => update({ ...selected, name: e.target.value })}
-            />
+            <Input label="Name" value={selected.name} onChange={(e) => update({ ...selected, name: e.target.value })} />
 
             <div className="font-ui text-on-surface-variant mt-1 text-[11px] font-semibold tracking-wider uppercase">
               Variables
             </div>
             <ScrollArea className="rounded-control border-outline-variant max-h-64 min-h-0 border">
               {selected.vars.length === 0 ? (
-                <div className="text-on-surface-variant px-2 py-3 text-[12px]">
-                  No variables yet
-                </div>
+                <div className="text-on-surface-variant px-2 py-3 text-[12px]">No variables yet</div>
               ) : (
                 selected.vars.map((entry) => {
-                  const show = revealed.has(entry.id) || !entry.secret
+                  const show = revealed.has(entry.id) || !entry.secret;
                   return (
                     <div
                       key={entry.id}
@@ -154,28 +139,26 @@ export function EnvironmentDialog({
                                     name: e.target.value,
                                     // Only auto-flip while the row is still untouched,
                                     // so a deliberate un-tick is never overridden.
-                                    secret: v.value === '' ? looksSecret(e.target.value) : v.secret,
+                                    secret: v.value === "" ? looksSecret(e.target.value) : v.secret,
                                   }
-                                : v
+                                : v,
                             ),
                           })
                         }
                       />
                       <input
                         className={cn(
-                          'focus-visible:ring-primary rounded-control border-outline-variant bg-surface-container-lowest text-on-surface min-w-0 flex-1 border px-1.5 py-1 font-mono text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset'
+                          "focus-visible:ring-primary rounded-control border-outline-variant bg-surface-container-lowest text-on-surface min-w-0 flex-1 border px-1.5 py-1 font-mono text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
                         )}
                         placeholder="value"
                         value={show ? entry.value : maskValue(entry.value)}
                         readOnly={!show}
                         spellCheck={false}
-                        aria-label={`Value of ${entry.name || 'variable'}`}
+                        aria-label={`Value of ${entry.name || "variable"}`}
                         onChange={(e) =>
                           update({
                             ...selected,
-                            vars: selected.vars.map((v) =>
-                              v.id === entry.id ? { ...v, value: e.target.value } : v
-                            ),
+                            vars: selected.vars.map((v) => (v.id === entry.id ? { ...v, value: e.target.value } : v)),
                           })
                         }
                       />
@@ -184,8 +167,8 @@ export function EnvironmentDialog({
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleReveal(entry.id)}
-                          aria-label={show ? 'Hide value' : 'Reveal value'}
-                          title={show ? 'Hide' : 'Reveal'}
+                          aria-label={show ? "Hide value" : "Reveal value"}
+                          title={show ? "Hide" : "Reveal"}
                         >
                           {show ? <EyeOff size={12} /> : <Eye size={12} />}
                         </Button>
@@ -199,7 +182,7 @@ export function EnvironmentDialog({
                             update({
                               ...selected,
                               vars: selected.vars.map((v) =>
-                                v.id === entry.id ? { ...v, secret: e.target.checked } : v
+                                v.id === entry.id ? { ...v, secret: e.target.checked } : v,
                               ),
                             })
                           }
@@ -215,13 +198,13 @@ export function EnvironmentDialog({
                             vars: selected.vars.filter((v) => v.id !== entry.id),
                           })
                         }
-                        aria-label={`Remove ${entry.name || 'variable'}`}
+                        aria-label={`Remove ${entry.name || "variable"}`}
                         title="Remove"
                       >
                         <Trash2 size={12} />
                       </Button>
                     </div>
-                  )
+                  );
                 })
               )}
             </ScrollArea>
@@ -244,5 +227,5 @@ export function EnvironmentDialog({
         </div>
       </div>
     </Dialog>
-  )
+  );
 }

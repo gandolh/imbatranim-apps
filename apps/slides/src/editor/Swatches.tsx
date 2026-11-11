@@ -3,8 +3,8 @@ export function Swatches({
   colors,
   onPick,
 }: {
-  colors: { hex: string; label: string }[]
-  onPick: (hex: string) => void
+  colors: { hex: string; label: string }[];
+  onPick: (hex: string) => void;
 }) {
   return (
     <div className="flex gap-1 px-3 py-1" role="group">
@@ -21,5 +21,5 @@ export function Swatches({
         />
       ))}
     </div>
-  )
+  );
 }

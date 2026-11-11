@@ -1,5 +1,5 @@
-import type { KitAppProps } from '@imbatranim/ui'
-import { RestApiClient } from './RestApiClient'
+import type { KitAppProps } from "@imbatranim/ui";
+import { RestApiClient } from "./RestApiClient";
 
 /**
  * The module the desktop imports for `rest-api-client`. The built-in's
@@ -15,5 +15,5 @@ import { RestApiClient } from './RestApiClient'
  * were.
  */
 export function App({ windowId }: KitAppProps) {
-  return <RestApiClient windowId={windowId} />
+  return <RestApiClient windowId={windowId} />;
 }

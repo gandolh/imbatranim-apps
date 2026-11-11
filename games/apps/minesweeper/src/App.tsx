@@ -1,4 +1,4 @@
-import { Minesweeper } from './Minesweeper'
+import { Minesweeper } from "./Minesweeper";
 
 /**
  * The module the desktop renders for `minesweeper`. The built-in's manifest
@@ -8,5 +8,5 @@ import { Minesweeper } from './Minesweeper'
  * key) come back when Games is installed.
  */
 export function App() {
-  return <Minesweeper />
+  return <Minesweeper />;
 }

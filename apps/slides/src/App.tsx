@@ -1,8 +1,8 @@
-import { Download, FilePlus2, FileWarning, Loader2, Presentation } from 'lucide-react'
-import { Button } from '@imbatranim/ui'
-import type { KitAppProps } from '@imbatranim-office/shared'
-import { Editor } from './editor/Editor'
-import { useDeckFile } from './shell/useDeckFile'
+import { Download, FilePlus2, FileWarning, Loader2, Presentation } from "lucide-react";
+import { Button } from "@imbatranim/ui";
+import type { KitAppProps } from "@imbatranim-office/shared";
+import { Editor } from "./editor/Editor";
+import { useDeckFile } from "./shell/useDeckFile";
 
 /**
  * Slides: opens a .pptx, draws it with its own renderer, edits it, and saves
@@ -10,11 +10,11 @@ import { useDeckFile } from './shell/useDeckFile'
  * renders this component in the window, with its own React and kit.
  */
 export function App(_props: KitAppProps) {
-  const doc = useDeckFile()
-  const { state } = doc
+  const doc = useDeckFile();
+  const { state } = doc;
 
-  let body
-  if (state.kind === 'open') {
+  let body;
+  if (state.kind === "open") {
     body = (
       <Editor
         key={state.store.id}
@@ -30,8 +30,8 @@ export function App(_props: KitAppProps) {
           setBeforeSave: doc.setBeforeSave,
         }}
       />
-    )
-  } else if (state.kind === 'empty') {
+    );
+  } else if (state.kind === "empty") {
     body = (
       <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 text-center">
         <Presentation size={40} strokeWidth={1} />
@@ -40,25 +40,20 @@ export function App(_props: KitAppProps) {
           <Button size="sm" variant="primary" onClick={() => void doc.open()}>
             Open a presentation
           </Button>
-          <Button
-            size="sm"
-            variant="default"
-            className="flex items-center gap-1"
-            onClick={() => void doc.newDeck()}
-          >
+          <Button size="sm" variant="default" className="flex items-center gap-1" onClick={() => void doc.newDeck()}>
             <FilePlus2 size={12} />
             New presentation
           </Button>
         </div>
       </div>
-    )
-  } else if (state.kind === 'loading') {
+    );
+  } else if (state.kind === "loading") {
     body = (
       <div className="bg-surface-container-lowest text-on-surface-variant font-ui flex h-full items-center justify-center gap-2 text-[12px]">
         <Loader2 size={16} className="animate-spin" />
         Opening {state.name}…
       </div>
-    )
+    );
   } else {
     body = (
       <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
@@ -69,20 +64,15 @@ export function App(_props: KitAppProps) {
           <Button size="sm" variant="primary" onClick={() => void doc.open()}>
             Open a .pptx instead
           </Button>
-          {state.kind === 'failed' && doc.download && (
-            <Button
-              size="sm"
-              variant="default"
-              className="flex items-center gap-1"
-              onClick={doc.download}
-            >
+          {state.kind === "failed" && doc.download && (
+            <Button size="sm" variant="default" className="flex items-center gap-1" onClick={doc.download}>
               <Download size={12} />
               Download
             </Button>
           )}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -90,5 +80,5 @@ export function App(_props: KitAppProps) {
       {body}
       {doc.dialogs}
     </div>
-  )
+  );
 }

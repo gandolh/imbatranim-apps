@@ -15,8 +15,8 @@
  * loads), so the page below does not move when it arrives. It carries
  * `data-slot="annotate-toolbar"` for direct targeting.
  */
-import { useRef, useState } from 'react'
-import type { JSX, ReactNode } from 'react'
+import { useRef, useState } from "react";
+import type { JSX, ReactNode } from "react";
 import {
   FilePen,
   FolderOpen,
@@ -32,17 +32,17 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react'
-import { Button, Separator, Tooltip, useSaveHotkey, useTopWindowKeydown } from '@imbatranim/ui'
-import { useReader } from '../app/context'
-import { ACTUAL } from '../app/useReaderController'
-import { useEditor } from '../editor/context'
-import { ToolButton } from './ToolButton'
+} from "lucide-react";
+import { Button, Separator, Tooltip, useSaveHotkey, useTopWindowKeydown } from "@imbatranim/ui";
+import { useReader } from "../app/context";
+import { ACTUAL } from "../app/useReaderController";
+import { useEditor } from "../editor/context";
+import { ToolButton } from "./ToolButton";
 
 export interface TopBarProps {
-  onOpenClick: () => void
+  onOpenClick: () => void;
   /** PART B annotate toolbar mounts here; `null` keeps the row empty. */
-  toolbarSlot?: ReactNode
+  toolbarSlot?: ReactNode;
 }
 
 export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
@@ -66,27 +66,27 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
     clearSearch,
     nextHit,
     prevHit,
-  } = useReader()
-  const { saveToDisk, exportCopy, busy } = useEditor()
-  const opened = render !== null
+  } = useReader();
+  const { saveToDisk, exportCopy, busy } = useEditor();
+  const opened = render !== null;
 
-  const [query, setQuery] = useState('')
-  const [pageInput, setPageInput] = useState(() => String(currentPage))
-  const searchRef = useRef<HTMLInputElement>(null)
+  const [query, setQuery] = useState("");
+  const [pageInput, setPageInput] = useState(() => String(currentPage));
+  const searchRef = useRef<HTMLInputElement>(null);
 
   // Sync local input state from props during render (the React-endorsed
   // "adjust state on prop change" pattern) rather than in an effect: the page
   // box follows external navigation, and the search box clears when the
   // controller's query is reset.
-  const [syncedPage, setSyncedPage] = useState(currentPage)
+  const [syncedPage, setSyncedPage] = useState(currentPage);
   if (currentPage !== syncedPage) {
-    setSyncedPage(currentPage)
-    setPageInput(String(currentPage))
+    setSyncedPage(currentPage);
+    setPageInput(String(currentPage));
   }
-  const [syncedQuery, setSyncedQuery] = useState(search.query)
+  const [syncedQuery, setSyncedQuery] = useState(search.query);
   if (search.query !== syncedQuery) {
-    setSyncedQuery(search.query)
-    if (!search.query) setQuery('')
+    setSyncedQuery(search.query);
+    if (!search.query) setQuery("");
   }
 
   // Ctrl/Cmd+S writes the document back to its file (the save spine), and
@@ -96,20 +96,20 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
   // Save can reach the editor's write-back-and-reload path. `ignoreTextEntry:
   // false` on Find so it still works while a field (the search box itself, the
   // page jump) is focused.
-  useSaveHotkey(() => void saveToDisk())
+  useSaveHotkey(() => void saveToDisk());
   useTopWindowKeydown(
     (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f' && doc) {
-        e.preventDefault()
-        searchRef.current?.focus()
-        searchRef.current?.select()
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f" && doc) {
+        e.preventDefault();
+        searchRef.current?.focus();
+        searchRef.current?.select();
       }
     },
-    { ignoreTextEntry: false }
-  )
+    { ignoreTextEntry: false },
+  );
 
-  const pct = Math.round((scale / ACTUAL) * 100)
-  const hasHits = search.hits.length > 0
+  const pct = Math.round((scale / ACTUAL) * 100);
+  const hasHits = search.hits.length > 0;
 
   return (
     <header className="border-outline-variant bg-surface-container-low border-b">
@@ -117,7 +117,7 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
         {/* Identity + panel toggle */}
         <ToolButton
           icon={PanelLeft}
-          label={panelOpen ? 'Hide side panel' : 'Show side panel'}
+          label={panelOpen ? "Hide side panel" : "Show side panel"}
           active={panelOpen}
           onClick={togglePanel}
           disabled={!opened}
@@ -133,9 +133,7 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
         <div className="flex min-w-0 items-center gap-1.5" title={docName}>
           {opened ? (
             <>
-              <span className="text-on-surface-variant font-ui max-w-[180px] truncate text-[11px]">
-                {docName}
-              </span>
+              <span className="text-on-surface-variant font-ui max-w-[180px] truncate text-[11px]">{docName}</span>
               <ToolButton
                 icon={ChevronLeft}
                 label="Previous page"
@@ -147,12 +145,12 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
                   className="border-outline-variant bg-surface-container-lowest text-on-surface focus:border-primary w-9 border px-1 py-0.5 text-center outline-none"
                   value={pageInput}
                   inputMode="numeric"
-                  onChange={(e) => setPageInput(e.target.value.replace(/[^0-9]/g, ''))}
+                  onChange={(e) => setPageInput(e.target.value.replace(/[^0-9]/g, ""))}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      const n = parseInt(pageInput, 10)
-                      if (Number.isFinite(n)) goToPage(n)
-                      ;(e.target as HTMLInputElement).blur()
+                    if (e.key === "Enter") {
+                      const n = parseInt(pageInput, 10);
+                      if (Number.isFinite(n)) goToPage(n);
+                      (e.target as HTMLInputElement).blur();
                     }
                   }}
                   onFocus={(e) => e.target.select()}
@@ -168,9 +166,7 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
               />
             </>
           ) : (
-            <span className="text-on-surface-variant font-ui text-[11px] italic">
-              No document open
-            </span>
+            <span className="text-on-surface-variant font-ui text-[11px] italic">No document open</span>
           )}
         </div>
 
@@ -188,18 +184,18 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
             disabled={!doc}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') void runSearch(query)
-              if (e.key === 'Escape') {
-                setQuery('')
-                clearSearch()
-                ;(e.target as HTMLInputElement).blur()
+              if (e.key === "Enter") void runSearch(query);
+              if (e.key === "Escape") {
+                setQuery("");
+                clearSearch();
+                (e.target as HTMLInputElement).blur();
               }
             }}
           />
           {search.busy && <span className="text-on-surface-variant text-[10px]">…</span>}
           {!search.busy && search.ran && (
             <span className="text-on-surface-variant text-[10px] tabular-nums">
-              {hasHits ? `${search.activeIndex + 1}/${search.hits.length}` : '0'}
+              {hasHits ? `${search.activeIndex + 1}/${search.hits.length}` : "0"}
             </span>
           )}
           {hasHits && (
@@ -214,25 +210,22 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
 
         {/* Zoom / fit */}
         <ToolButton icon={ZoomOut} label="Zoom out (−)" onClick={zoomOut} disabled={!opened} />
-        <span
-          className="text-on-surface-variant min-w-[38px] text-center text-[11px] tabular-nums"
-          aria-live="polite"
-        >
-          {opened ? `${pct}%` : '—'}
+        <span className="text-on-surface-variant min-w-[38px] text-center text-[11px] tabular-nums" aria-live="polite">
+          {opened ? `${pct}%` : "—"}
         </span>
         <ToolButton icon={ZoomIn} label="Zoom in (+)" onClick={zoomIn} disabled={!opened} />
         <ToolButton
           icon={MoveHorizontal}
           label="Fit width"
-          active={fitMode === 'width'}
-          onClick={() => setFitMode('width')}
+          active={fitMode === "width"}
+          onClick={() => setFitMode("width")}
           disabled={!opened}
         />
         <ToolButton
           icon={Maximize}
           label="Fit page"
-          active={fitMode === 'page'}
-          onClick={() => setFitMode('page')}
+          active={fitMode === "page"}
+          onClick={() => setFitMode("page")}
           disabled={!opened}
         />
 
@@ -276,5 +269,5 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
         </div>
       )}
     </header>
-  )
+  );
 }

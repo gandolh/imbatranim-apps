@@ -5,37 +5,37 @@
  * and never touches the desktop boot bundle. Only `import type` lives at module
  * top level, and those are erased at build time.
  */
-import type { IWorkbookData } from '@univerjs/presets'
-import { trackFirstCalculation, type CalculationEvents } from './firstCalculation'
+import type { IWorkbookData } from "@univerjs/presets";
+import { trackFirstCalculation, type CalculationEvents } from "./firstCalculation";
 
 // Minimal shape of the Univer facade surface we actually call. Univer's full
 // FUniver/FWorkbook types come from several packages (core augmented by the
 // sheets facade); pinning to just what we use keeps this bridge decoupled from
 // that augmentation graph.
-type UniverWorkbook = { dispose: () => void; save: () => IWorkbookData }
-type UniverCommand = { type: number; id: string }
+type UniverWorkbook = { dispose: () => void; save: () => IWorkbookData };
+type UniverCommand = { type: number; id: string };
 type UniverApi = {
-  createWorkbook: (data: Partial<IWorkbookData>) => UniverWorkbook
-  onCommandExecuted: (cb: (command: UniverCommand) => void) => { dispose: () => void }
+  createWorkbook: (data: Partial<IWorkbookData>) => UniverWorkbook;
+  onCommandExecuted: (cb: (command: UniverCommand) => void) => { dispose: () => void };
   getFormula: () => CalculationEvents & {
-    onCalculationResultApplied: (timeout?: number) => Promise<void>
-  }
-}
-type UniverInstance = { dispose: () => void }
+    onCalculationResultApplied: (timeout?: number) => Promise<void>;
+  };
+};
+type UniverInstance = { dispose: () => void };
 
 /**
  * How long a save waits for formulas to finish calculating. Generous: a large
  * workbook's first calculation takes seconds, and the engine runs in a worker,
  * so the window stays usable while it waits.
  */
-export const CALCULATION_WAIT_MS = 120_000
+export const CALCULATION_WAIT_MS = 120_000;
 
 /**
  * How long a save waits for a workbook's first calculation. Much longer than
  * {@link CALCULATION_WAIT_MS}: a 220,000-formula workbook's first calculation
  * took 4.6-5.3 minutes in the worker on a loaded machine.
  */
-export const FIRST_CALCULATION_WAIT_MS = 15 * 60_000
+export const FIRST_CALCULATION_WAIT_MS = 15 * 60_000;
 
 /**
  * The formula bar's progress labels. Univer's formula plugin asks for these
@@ -43,20 +43,20 @@ export const FIRST_CALCULATION_WAIT_MS = 15 * 60_000
  * key (`sheets-formula.progress.calculating`).
  */
 export const PROGRESS_STRINGS = {
-  'sheets-formula': {
+  "sheets-formula": {
     progress: {
-      analyzing: 'Analyzing formulas',
-      calculating: 'Calculating',
-      'array-analysis': 'Analyzing array formulas',
-      'array-calculation': 'Calculating array formulas',
-      done: 'Done',
+      analyzing: "Analyzing formulas",
+      calculating: "Calculating",
+      "array-analysis": "Analyzing array formulas",
+      "array-calculation": "Calculating array formulas",
+      done: "Done",
     },
   },
-}
+};
 
 export type SheetEngine = {
   /** Load a workbook snapshot into the mounted grid. */
-  loadWorkbook: (data: Partial<IWorkbookData>) => void
+  loadWorkbook: (data: Partial<IWorkbookData>) => void;
   /**
    * The workbook as a snapshot, for serialization on save, once the formula
    * engine has applied its latest results: a save never writes a value a
@@ -66,20 +66,20 @@ export type SheetEngine = {
    * {@link FIRST_CALCULATION_WAIT_MS} (the first calculation) or
    * {@link CALCULATION_WAIT_MS} (any later one).
    */
-  snapshot: () => Promise<IWorkbookData | null>
+  snapshot: () => Promise<IWorkbookData | null>;
   /** True while the loaded workbook's first calculation runs: a save waits for it. */
-  firstCalculationPending: () => boolean
+  firstCalculationPending: () => boolean;
   /** Fire `cb` every time the user mutates the sheet (for dirty tracking). */
-  onEdit: (cb: () => void) => void
+  onEdit: (cb: () => void) => void;
   /**
    * Monotonic count of every user edit since the current workbook was loaded.
    * Save records this at snapshot time and only clears dirty if it is unchanged
    * once the upload resolves — so edits made mid-save aren't silently clobbered.
    */
-  editCount: () => number
+  editCount: () => number;
   /** Tear down Univer and release its render resources. */
-  destroy: () => void
-}
+  destroy: () => void;
+};
 
 /**
  * Boot a Univer instance mounted into `container`. The presets bundle the sheet
@@ -94,14 +94,14 @@ export type SheetEngine = {
  */
 export async function createSheetEngine(container: HTMLElement): Promise<SheetEngine> {
   const [{ createUniver, defaultTheme, LocaleType, merge }, sheetsCore, enUS] = await Promise.all([
-    import('@univerjs/presets'),
-    import('@univerjs/preset-sheets-core'),
-    import('@univerjs/preset-sheets-core/locales/en-US'),
-  ])
+    import("@univerjs/presets"),
+    import("@univerjs/preset-sheets-core"),
+    import("@univerjs/preset-sheets-core/locales/en-US"),
+  ]);
 
-  const formulaWorker = new Worker(new URL('./formulaWorker.ts', import.meta.url), {
-    type: 'module',
-  })
+  const formulaWorker = new Worker(new URL("./formulaWorker.ts", import.meta.url), {
+    type: "module",
+  });
   const { univer, univerAPI } = createUniver({
     locale: LocaleType.EN_US,
     locales: {
@@ -114,18 +114,18 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
         workerURL: formulaWorker,
       }),
     ],
-  }) as unknown as { univer: UniverInstance; univerAPI: UniverApi }
+  }) as unknown as { univer: UniverInstance; univerAPI: UniverApi };
 
-  const formula = univerAPI.getFormula()
-  const firstCalculation = trackFirstCalculation(formula)
-  let workbook: UniverWorkbook | null = null
-  let editListeners: Array<() => void> = []
+  const formula = univerAPI.getFormula();
+  const firstCalculation = trackFirstCalculation(formula);
+  let workbook: UniverWorkbook | null = null;
+  let editListeners: Array<() => void> = [];
   // Counts EVERY user edit since the last load, so a save can tell whether
   // edits landed while it was in flight.
-  let editCount = 0
+  let editCount = 0;
   // Suppress edit notifications while a workbook is being loaded — building the
   // model can emit mutations that would otherwise register as a user edit.
-  let suppressEdits = true
+  let suppressEdits = true;
 
   // Univer namespaces every change: `sheet.command.*` are user-initiated edits,
   // `sheet.mutation.*` are low-level model writes (incl. formula recalculation
@@ -134,54 +134,50 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
   // mutations) never registers as an edit. Every edit notifies, not just the
   // first: a save clears dirty, and the next edit must set it again.
   const commandSub = univerAPI.onCommandExecuted((command) => {
-    if (
-      typeof command.id === 'string' &&
-      command.id.startsWith('sheet.command.') &&
-      !suppressEdits
-    ) {
-      editCount++
-      editListeners.forEach((cb) => cb())
+    if (typeof command.id === "string" && command.id.startsWith("sheet.command.") && !suppressEdits) {
+      editCount++;
+      editListeners.forEach((cb) => cb());
     }
-  })
+  });
 
   return {
     loadWorkbook: (data) => {
-      workbook?.dispose()
-      editCount = 0
-      suppressEdits = true
-      firstCalculation.reset()
-      workbook = univerAPI.createWorkbook(data)
+      workbook?.dispose();
+      editCount = 0;
+      suppressEdits = true;
+      firstCalculation.reset();
+      workbook = univerAPI.createWorkbook(data);
       // Release suppression once the load's synchronous + immediate-async
       // mutations have flushed; genuine user edits arrive after this.
       setTimeout(() => {
-        suppressEdits = false
-      }, 0)
+        suppressEdits = false;
+      }, 0);
     },
     snapshot: async () => {
-      if (!workbook) return null
-      await firstCalculation.whenDone(FIRST_CALCULATION_WAIT_MS)
+      if (!workbook) return null;
+      await firstCalculation.whenDone(FIRST_CALCULATION_WAIT_MS);
       // Resolves once the latest calculation's results are in the model, or
       // after Univer's start window (500 ms) when none is running or starting.
-      await formula.onCalculationResultApplied(CALCULATION_WAIT_MS)
+      await formula.onCalculationResultApplied(CALCULATION_WAIT_MS);
       // The first calculation may have started inside that window.
       if (firstCalculation.pending()) {
-        await firstCalculation.whenDone(FIRST_CALCULATION_WAIT_MS)
-        await formula.onCalculationResultApplied(CALCULATION_WAIT_MS)
+        await firstCalculation.whenDone(FIRST_CALCULATION_WAIT_MS);
+        await formula.onCalculationResultApplied(CALCULATION_WAIT_MS);
       }
-      return workbook?.save() ?? null
+      return workbook?.save() ?? null;
     },
     firstCalculationPending: () => workbook !== null && firstCalculation.pending(),
     onEdit: (cb) => {
-      editListeners.push(cb)
+      editListeners.push(cb);
     },
     editCount: () => editCount,
     destroy: () => {
-      editListeners = []
-      commandSub.dispose()
-      firstCalculation.dispose()
-      workbook?.dispose()
-      univer.dispose()
-      formulaWorker.terminate()
+      editListeners = [];
+      commandSub.dispose();
+      firstCalculation.dispose();
+      workbook?.dispose();
+      univer.dispose();
+      formulaWorker.terminate();
     },
-  }
+  };
 }

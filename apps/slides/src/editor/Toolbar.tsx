@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 import {
   AlignCenter,
   AlignJustify,
@@ -33,77 +33,77 @@ import {
   Type,
   Underline,
   Undo2,
-} from 'lucide-react'
-import { Button, Tooltip } from '@imbatranim/ui'
+} from "lucide-react";
+import { Button, Tooltip } from "@imbatranim/ui";
 
 /** Every control a toolbar button can open a menu from: its bottom-left corner. */
-export type MenuAnchor = { x: number; y: number }
+export type MenuAnchor = { x: number; y: number };
 
 export type ToolbarState = {
-  name: string
-  dirty: boolean
-  saving: boolean
-  exporting: boolean
-  canUndo: boolean
-  canRedo: boolean
-  undoLabel: string | null
-  redoLabel: string | null
-  slideCount: number
-  current: number
-  zoomLabel: string
-  showRail: boolean
-  showNotes: boolean
+  name: string;
+  dirty: boolean;
+  saving: boolean;
+  exporting: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  undoLabel: string | null;
+  redoLabel: string | null;
+  slideCount: number;
+  current: number;
+  zoomLabel: string;
+  showRail: boolean;
+  showNotes: boolean;
   /** Shapes are selected (or text is being edited): formatting applies. */
-  hasSelection: boolean
-  hasText: boolean
-  bold: boolean
-  italic: boolean
-  underline: boolean
-  sizeLabel: string
-  canDownload: boolean
-}
+  hasSelection: boolean;
+  hasText: boolean;
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+  sizeLabel: string;
+  canDownload: boolean;
+};
 
 export type ToolbarActions = {
-  newDeck: () => void
-  open: () => void
-  save: () => void
-  saveAs: () => void
-  undo: () => void
-  redo: () => void
-  toggleRail: () => void
-  prev: () => void
-  next: () => void
-  zoomOut: () => void
-  zoomIn: () => void
-  toggleFit: () => void
-  toggleNotes: () => void
-  present: () => void
-  exportPng: () => void
-  download: () => void
-  newSlideMenu: (at: MenuAnchor) => void
-  duplicateSlide: () => void
-  deleteSlide: () => void
-  insertTextBox: () => void
-  insertPicture: () => void
-  shapeMenu: (at: MenuAnchor) => void
-  toggle: (what: 'bold' | 'italic' | 'underline') => void
-  sizeMenu: (at: MenuAnchor) => void
-  sizeStep: (direction: 1 | -1) => void
-  colorMenu: (at: MenuAnchor) => void
-  align: (a: 'l' | 'ctr' | 'r' | 'just') => void
-  fillMenu: (at: MenuAnchor) => void
-  outlineMenu: (at: MenuAnchor) => void
-  arrangeMenu: (at: MenuAnchor) => void
-  deleteShapes: () => void
-}
+  newDeck: () => void;
+  open: () => void;
+  save: () => void;
+  saveAs: () => void;
+  undo: () => void;
+  redo: () => void;
+  toggleRail: () => void;
+  prev: () => void;
+  next: () => void;
+  zoomOut: () => void;
+  zoomIn: () => void;
+  toggleFit: () => void;
+  toggleNotes: () => void;
+  present: () => void;
+  exportPng: () => void;
+  download: () => void;
+  newSlideMenu: (at: MenuAnchor) => void;
+  duplicateSlide: () => void;
+  deleteSlide: () => void;
+  insertTextBox: () => void;
+  insertPicture: () => void;
+  shapeMenu: (at: MenuAnchor) => void;
+  toggle: (what: "bold" | "italic" | "underline") => void;
+  sizeMenu: (at: MenuAnchor) => void;
+  sizeStep: (direction: 1 | -1) => void;
+  colorMenu: (at: MenuAnchor) => void;
+  align: (a: "l" | "ctr" | "r" | "just") => void;
+  fillMenu: (at: MenuAnchor) => void;
+  outlineMenu: (at: MenuAnchor) => void;
+  arrangeMenu: (at: MenuAnchor) => void;
+  deleteShapes: () => void;
+};
 
 const anchorOf = (e: React.MouseEvent): MenuAnchor => {
-  const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
-  return { x: r.left, y: r.bottom }
-}
+  const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  return { x: r.left, y: r.bottom };
+};
 
 /** Formatting buttons keep the text editor's selection: no focus on press. */
-const keepFocus = (e: React.MouseEvent) => e.preventDefault()
+const keepFocus = (e: React.MouseEvent) => e.preventDefault();
 
 function Icon({
   label,
@@ -115,24 +115,24 @@ function Icon({
   menu,
   keep,
 }: {
-  label: string
-  shortcut?: string
-  onClick: (e: React.MouseEvent) => void
-  disabled?: boolean
-  pressed?: boolean
-  children: ReactNode
-  menu?: boolean
-  keep?: boolean
+  label: string;
+  shortcut?: string;
+  onClick: (e: React.MouseEvent) => void;
+  disabled?: boolean;
+  pressed?: boolean;
+  children: ReactNode;
+  menu?: boolean;
+  keep?: boolean;
 }) {
   return (
     <Tooltip content={shortcut ? `${label} (${shortcut})` : label}>
       <Button
-        variant={pressed ? 'primary' : 'ghost'}
+        variant={pressed ? "primary" : "ghost"}
         size="sm"
-        className={menu ? 'h-6 gap-0.5 px-1' : 'h-6 w-6 justify-center p-0'}
+        className={menu ? "h-6 gap-0.5 px-1" : "h-6 w-6 justify-center p-0"}
         aria-label={label}
         aria-pressed={pressed}
-        aria-haspopup={menu ? 'menu' : undefined}
+        aria-haspopup={menu ? "menu" : undefined}
         disabled={disabled}
         onMouseDown={keep ? keepFocus : undefined}
         onClick={onClick}
@@ -141,15 +141,15 @@ function Icon({
         {menu && <span className="text-[8px] leading-none">▾</span>}
       </Button>
     </Tooltip>
-  )
+  );
 }
 
-const Sep = () => <div className="border-outline-variant mx-1 h-4 border-l" />
+const Sep = () => <div className="border-outline-variant mx-1 h-4 border-l" />;
 
 export function Toolbar({ state, actions }: { state: ToolbarState; actions: ToolbarActions }) {
-  const s = state
-  const a = actions
-  const canNavigate = s.slideCount > 1
+  const s = state;
+  const a = actions;
+  const canNavigate = s.slideCount > 1;
   return (
     <div className="shrink-0">
       <div className="border-outline-variant bg-surface-container-low flex flex-wrap items-center gap-1 border-b px-2 py-1">
@@ -178,7 +178,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         </Tooltip>
         <Sep />
         <Icon
-          label={s.undoLabel ? `Undo ${s.undoLabel.toLowerCase()}` : 'Undo'}
+          label={s.undoLabel ? `Undo ${s.undoLabel.toLowerCase()}` : "Undo"}
           shortcut="Ctrl+Z"
           onClick={a.undo}
           disabled={!s.canUndo}
@@ -186,7 +186,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
           <Undo2 size={12} />
         </Icon>
         <Icon
-          label={s.redoLabel ? `Redo ${s.redoLabel.toLowerCase()}` : 'Redo'}
+          label={s.redoLabel ? `Redo ${s.redoLabel.toLowerCase()}` : "Redo"}
           shortcut="Ctrl+Y"
           onClick={a.redo}
           disabled={!s.canRedo}
@@ -197,16 +197,11 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         <Icon label="Slide thumbnails" onClick={a.toggleRail} pressed={s.showRail}>
           <PanelLeft size={12} />
         </Icon>
-        <Icon
-          label="Previous slide"
-          shortcut="Page Up"
-          onClick={a.prev}
-          disabled={!canNavigate || s.current === 0}
-        >
+        <Icon label="Previous slide" shortcut="Page Up" onClick={a.prev} disabled={!canNavigate || s.current === 0}>
           <ChevronLeft size={13} />
         </Icon>
         <span className="font-ui text-on-surface-variant min-w-[52px] text-center text-[11px] tabular-nums">
-          {s.slideCount === 0 ? '—' : `${s.current + 1} / ${s.slideCount}`}
+          {s.slideCount === 0 ? "—" : `${s.current + 1} / ${s.slideCount}`}
         </span>
         <Icon
           label="Next slide"
@@ -235,19 +230,10 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         <Icon label="Speaker notes" onClick={a.toggleNotes} pressed={s.showNotes}>
           <NotebookText size={12} />
         </Icon>
-        <Icon
-          label="Present (Escape to exit)"
-          shortcut="F5"
-          onClick={a.present}
-          disabled={s.slideCount === 0}
-        >
+        <Icon label="Present (Escape to exit)" shortcut="F5" onClick={a.present} disabled={s.slideCount === 0}>
           <Maximize2 size={12} />
         </Icon>
-        <Icon
-          label="Export this slide as a PNG"
-          onClick={a.exportPng}
-          disabled={s.slideCount === 0 || s.exporting}
-        >
+        <Icon label="Export this slide as a PNG" onClick={a.exportPng} disabled={s.slideCount === 0 || s.exporting}>
           {s.exporting ? <Loader2 size={12} className="animate-spin" /> : <ImageDown size={12} />}
         </Icon>
         <div className="min-w-2 flex-1" />
@@ -256,7 +242,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         </Tooltip>
         <span className="font-ui text-on-surface-variant max-w-[160px] min-w-0 truncate text-[11px]">
           {s.name}
-          {s.dirty ? ' •' : ''}
+          {s.dirty ? " •" : ""}
         </span>
         <Tooltip content="Download original (the file as last saved)">
           <Button
@@ -289,12 +275,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         <Icon label="Picture" onClick={a.insertPicture} disabled={s.slideCount === 0}>
           <ImageIcon size={12} />
         </Icon>
-        <Icon
-          label="Shape"
-          menu
-          onClick={(e) => a.shapeMenu(anchorOf(e))}
-          disabled={s.slideCount === 0}
-        >
+        <Icon label="Shape" menu onClick={(e) => a.shapeMenu(anchorOf(e))} disabled={s.slideCount === 0}>
           <Shapes size={12} />
         </Icon>
         <Sep />
@@ -304,7 +285,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
           keep
           pressed={s.bold}
           disabled={!s.hasText}
-          onClick={() => a.toggle('bold')}
+          onClick={() => a.toggle("bold")}
         >
           <Bold size={12} />
         </Icon>
@@ -314,7 +295,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
           keep
           pressed={s.italic}
           disabled={!s.hasText}
-          onClick={() => a.toggle('italic')}
+          onClick={() => a.toggle("italic")}
         >
           <Italic size={12} />
         </Icon>
@@ -324,7 +305,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
           keep
           pressed={s.underline}
           disabled={!s.hasText}
-          onClick={() => a.toggle('underline')}
+          onClick={() => a.toggle("underline")}
         >
           <Underline size={12} />
         </Icon>
@@ -343,93 +324,36 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
             <span className="text-[8px] leading-none">▾</span>
           </Button>
         </Tooltip>
-        <Icon
-          label="Increase font size"
-          shortcut="Ctrl+]"
-          keep
-          disabled={!s.hasText}
-          onClick={() => a.sizeStep(1)}
-        >
+        <Icon label="Increase font size" shortcut="Ctrl+]" keep disabled={!s.hasText} onClick={() => a.sizeStep(1)}>
           <span className="font-ui text-[11px] leading-none font-semibold">A+</span>
         </Icon>
-        <Icon
-          label="Decrease font size"
-          shortcut="Ctrl+["
-          keep
-          disabled={!s.hasText}
-          onClick={() => a.sizeStep(-1)}
-        >
+        <Icon label="Decrease font size" shortcut="Ctrl+[" keep disabled={!s.hasText} onClick={() => a.sizeStep(-1)}>
           <span className="font-ui text-[10px] leading-none font-semibold">A-</span>
         </Icon>
-        <Icon
-          label="Font colour"
-          menu
-          keep
-          disabled={!s.hasText}
-          onClick={(e) => a.colorMenu(anchorOf(e))}
-        >
+        <Icon label="Font colour" menu keep disabled={!s.hasText} onClick={(e) => a.colorMenu(anchorOf(e))}>
           <Baseline size={12} />
         </Icon>
         <Sep />
-        <Icon
-          label="Align left"
-          shortcut="Ctrl+L"
-          keep
-          disabled={!s.hasText}
-          onClick={() => a.align('l')}
-        >
+        <Icon label="Align left" shortcut="Ctrl+L" keep disabled={!s.hasText} onClick={() => a.align("l")}>
           <AlignLeft size={12} />
         </Icon>
-        <Icon
-          label="Centre"
-          shortcut="Ctrl+E"
-          keep
-          disabled={!s.hasText}
-          onClick={() => a.align('ctr')}
-        >
+        <Icon label="Centre" shortcut="Ctrl+E" keep disabled={!s.hasText} onClick={() => a.align("ctr")}>
           <AlignCenter size={12} />
         </Icon>
-        <Icon
-          label="Align right"
-          shortcut="Ctrl+R"
-          keep
-          disabled={!s.hasText}
-          onClick={() => a.align('r')}
-        >
+        <Icon label="Align right" shortcut="Ctrl+R" keep disabled={!s.hasText} onClick={() => a.align("r")}>
           <AlignRight size={12} />
         </Icon>
-        <Icon
-          label="Justify"
-          shortcut="Ctrl+J"
-          keep
-          disabled={!s.hasText}
-          onClick={() => a.align('just')}
-        >
+        <Icon label="Justify" shortcut="Ctrl+J" keep disabled={!s.hasText} onClick={() => a.align("just")}>
           <AlignJustify size={12} />
         </Icon>
         <Sep />
-        <Icon
-          label="Shape fill"
-          menu
-          disabled={!s.hasSelection}
-          onClick={(e) => a.fillMenu(anchorOf(e))}
-        >
+        <Icon label="Shape fill" menu disabled={!s.hasSelection} onClick={(e) => a.fillMenu(anchorOf(e))}>
           <PaintBucket size={12} />
         </Icon>
-        <Icon
-          label="Shape outline"
-          menu
-          disabled={!s.hasSelection}
-          onClick={(e) => a.outlineMenu(anchorOf(e))}
-        >
+        <Icon label="Shape outline" menu disabled={!s.hasSelection} onClick={(e) => a.outlineMenu(anchorOf(e))}>
           <SquareDashed size={12} />
         </Icon>
-        <Icon
-          label="Arrange"
-          menu
-          disabled={!s.hasSelection}
-          onClick={(e) => a.arrangeMenu(anchorOf(e))}
-        >
+        <Icon label="Arrange" menu disabled={!s.hasSelection} onClick={(e) => a.arrangeMenu(anchorOf(e))}>
           <span className="flex">
             <ArrowUpToLine size={12} />
             <ArrowDownToLine size={12} className="-ml-1" />
@@ -440,5 +364,5 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         </Icon>
       </div>
     </div>
-  )
+  );
 }

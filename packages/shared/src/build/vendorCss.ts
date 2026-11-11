@@ -37,9 +37,9 @@
  * is therefore about the desktop, not the vendor: a vendor rule may style the
  * vendor's own elements however it likes, and may not touch anything else.
  */
-import { existsSync, readFileSync } from 'node:fs'
-import { createRequire } from 'node:module'
-import { join } from 'node:path'
+import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { join } from "node:path";
 import {
   cssEscapeLength,
   cssUnescape,
@@ -47,108 +47,98 @@ import {
   parseCssTopLevel,
   type CssNode,
   type CssRuleProblem,
-} from './cssRule.ts'
+} from "./cssRule.ts";
 
 export type VendorStyle = {
   /** The file written beside `app.css`: `dist/os/<app>/<fileName>`. */
-  fileName: string
+  fileName: string;
   /** What the app's package.json names as `from`, for messages. */
-  specifier: string
+  specifier: string;
   /** The resolved stylesheet on disk. */
-  path: string
+  path: string;
   /** Attributes only the library's elements carry (`data-tippy-root`). */
-  ownAttributes: string[]
+  ownAttributes: string[];
   /** Custom-property namespaces only the library uses (`--univer-`). */
-  ownCustomProperties: string[]
+  ownCustomProperties: string[];
   /** Top-level rules, by exact source text, the build leaves out of the copy. */
-  dropRules: string[]
-}
+  dropRules: string[];
+};
 
-const VENDOR_FILE = /^[a-z0-9][a-z0-9-]*\.css$/
-const DATA_ATTRIBUTE = /^data-[a-z0-9-]+$/
+const VENDOR_FILE = /^[a-z0-9][a-z0-9-]*\.css$/;
+const DATA_ATTRIBUTE = /^data-[a-z0-9-]+$/;
 /**
  * A custom-property namespace: whole lowercase segments and a closing dash
  * (`--univer-`, `--lib-ui-`). Never a bare stem like `--t`, which would reach
  * into `--tw-*` and `--text-*`.
  */
-const CUSTOM_PROPERTY_NAMESPACE = /^--[a-z0-9]+(?:-[a-z0-9]+)*-$/
+const CUSTOM_PROPERTY_NAMESPACE = /^--[a-z0-9]+(?:-[a-z0-9]+)*-$/;
 /** The OS allows 8 styles per app; `app.css` is one of them. */
-export const MAX_VENDOR_STYLES = 7
+export const MAX_VENDOR_STYLES = 7;
 
-const isObject = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null && !Array.isArray(v)
+const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
 
 /** Read and resolve `imbatranimOffice.vendorStyles` from `apps/<name>/package.json`. */
 export function readVendorStyles(appDir: string, appName: string): VendorStyle[] {
-  const pkgPath = join(appDir, 'package.json')
-  if (!existsSync(pkgPath)) return []
-  const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as { imbatranimOffice?: unknown }
-  const where = `apps/${appName}/package.json`
-  const settings = pkg.imbatranimOffice
-  if (settings === undefined) return []
-  if (!isObject(settings)) throw new Error(`${where}: "imbatranimOffice" is an object`)
-  const declared = settings.vendorStyles
-  if (declared === undefined) return []
+  const pkgPath = join(appDir, "package.json");
+  if (!existsSync(pkgPath)) return [];
+  const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as { imbatranimOffice?: unknown };
+  const where = `apps/${appName}/package.json`;
+  const settings = pkg.imbatranimOffice;
+  if (settings === undefined) return [];
+  if (!isObject(settings)) throw new Error(`${where}: "imbatranimOffice" is an object`);
+  const declared = settings.vendorStyles;
+  if (declared === undefined) return [];
   if (!isObject(declared)) {
     throw new Error(
-      `${where}: "imbatranimOffice.vendorStyles" maps a file name to a stylesheet, { "lib.css": { "from": "lib/style.css" } }`
-    )
+      `${where}: "imbatranimOffice.vendorStyles" maps a file name to a stylesheet, { "lib.css": { "from": "lib/style.css" } }`,
+    );
   }
-  const entries = Object.entries(declared)
+  const entries = Object.entries(declared);
   if (entries.length > MAX_VENDOR_STYLES) {
     throw new Error(
-      `${where}: at most ${MAX_VENDOR_STYLES} vendor stylesheets (the desktop takes 8 styles per app, app.css included)`
-    )
+      `${where}: at most ${MAX_VENDOR_STYLES} vendor stylesheets (the desktop takes 8 styles per app, app.css included)`,
+    );
   }
-  const require = createRequire(pkgPath)
+  const require = createRequire(pkgPath);
   return entries.map(([fileName, value]) => {
-    const name = `${where}: vendor stylesheet "${fileName}"`
-    if (!VENDOR_FILE.test(fileName) || fileName === 'app.css') {
-      throw new Error(
-        `${name} must be lowercase letters, digits and "-", end in .css, and not be app.css`
-      )
+    const name = `${where}: vendor stylesheet "${fileName}"`;
+    if (!VENDOR_FILE.test(fileName) || fileName === "app.css") {
+      throw new Error(`${name} must be lowercase letters, digits and "-", end in .css, and not be app.css`);
     }
-    const spec = typeof value === 'string' ? { from: value } : value
-    if (!isObject(spec) || typeof spec.from !== 'string' || spec.from === '') {
-      throw new Error(`${name} names no stylesheet: give "from"`)
+    const spec = typeof value === "string" ? { from: value } : value;
+    if (!isObject(spec) || typeof spec.from !== "string" || spec.from === "") {
+      throw new Error(`${name} names no stylesheet: give "from"`);
     }
-    const own = spec.ownAttributes ?? []
-    if (
-      !Array.isArray(own) ||
-      !own.every((a): a is string => typeof a === 'string' && DATA_ATTRIBUTE.test(a))
-    ) {
-      throw new Error(`${name}: "ownAttributes" lists data-* attribute names`)
+    const own = spec.ownAttributes ?? [];
+    if (!Array.isArray(own) || !own.every((a): a is string => typeof a === "string" && DATA_ATTRIBUTE.test(a))) {
+      throw new Error(`${name}: "ownAttributes" lists data-* attribute names`);
     }
-    const ownVariables = spec.ownCustomProperties ?? []
+    const ownVariables = spec.ownCustomProperties ?? [];
     if (
       !Array.isArray(ownVariables) ||
-      !ownVariables.every(
-        (p): p is string => typeof p === 'string' && CUSTOM_PROPERTY_NAMESPACE.test(p)
-      )
+      !ownVariables.every((p): p is string => typeof p === "string" && CUSTOM_PROPERTY_NAMESPACE.test(p))
     ) {
       throw new Error(
-        `${name}: "ownCustomProperties" lists custom-property namespaces, lowercase and ending in "-" ("--lib-")`
-      )
+        `${name}: "ownCustomProperties" lists custom-property namespaces, lowercase and ending in "-" ("--lib-")`,
+      );
     }
-    const drop = spec.dropRules ?? []
+    const drop = spec.dropRules ?? [];
     if (
       !Array.isArray(drop) ||
-      !drop.every((r): r is string => typeof r === 'string' && r.trim() === r && r !== '') ||
+      !drop.every((r): r is string => typeof r === "string" && r.trim() === r && r !== "") ||
       new Set(drop).size !== drop.length
     ) {
       throw new Error(
-        `${name}: "dropRules" lists the exact text of top-level rules, each once and without surrounding whitespace`
-      )
+        `${name}: "dropRules" lists the exact text of top-level rules, each once and without surrounding whitespace`,
+      );
     }
-    let path: string
+    let path: string;
     try {
-      path = require.resolve(spec.from)
+      path = require.resolve(spec.from);
     } catch {
-      throw new Error(
-        `${name}: cannot resolve "${spec.from}" from apps/${appName} (is its package a dependency?)`
-      )
+      throw new Error(`${name}: cannot resolve "${spec.from}" from apps/${appName} (is its package a dependency?)`);
     }
-    if (!path.endsWith('.css')) throw new Error(`${name}: "${spec.from}" is not a .css file`)
+    if (!path.endsWith(".css")) throw new Error(`${name}: "${spec.from}" is not a .css file`);
     return {
       fileName,
       specifier: spec.from,
@@ -156,8 +146,8 @@ export function readVendorStyles(appDir: string, appName: string): VendorStyle[]
       ownAttributes: [...own],
       ownCustomProperties: [...ownVariables],
       dropRules: [...drop],
-    }
-  })
+    };
+  });
 }
 
 /**
@@ -171,16 +161,16 @@ export function readVendorStyles(appDir: string, appName: string): VendorStyle[]
  * `--tw-*` always are.
  */
 export function desktopVariables(sheets: readonly string[]): (name: string) => boolean {
-  const names = new Set<string>()
-  const namespaces = new Set<string>(['--color-', '--tw-'])
+  const names = new Set<string>();
+  const namespaces = new Set<string>(["--color-", "--tw-"]);
   for (const sheet of sheets) {
-    for (const name of sheet.replace(/\/\*[\s\S]*?\*\//g, '').match(/--[\w-]+/g) ?? []) {
-      names.add(name)
-      const space = /^--[a-zA-Z0-9]+-/.exec(name)
-      if (space) namespaces.add(space[0])
+    for (const name of sheet.replace(/\/\*[\s\S]*?\*\//g, "").match(/--[\w-]+/g) ?? []) {
+      names.add(name);
+      const space = /^--[a-zA-Z0-9]+-/.exec(name);
+      if (space) namespaces.add(space[0]);
     }
   }
-  return (name) => names.has(name) || [...namespaces].some((ns) => name.startsWith(ns))
+  return (name) => names.has(name) || [...namespaces].some((ns) => name.startsWith(ns));
 }
 
 /**
@@ -194,64 +184,62 @@ export function desktopVariables(sheets: readonly string[]): (name: string) => b
  * at the sheet again rather than a build that passes on its own.
  */
 export function dropVendorRules(source: Buffer, dropRules: readonly string[]): Buffer {
-  if (dropRules.length === 0) return source
-  const css = source.toString('utf8')
-  if (!Buffer.from(css, 'utf8').equals(source)) {
-    throw new Error('dropRules: the stylesheet is not valid UTF-8, so no rule can be cut from it')
+  if (dropRules.length === 0) return source;
+  const css = source.toString("utf8");
+  if (!Buffer.from(css, "utf8").equals(source)) {
+    throw new Error("dropRules: the stylesheet is not valid UTF-8, so no rule can be cut from it");
   }
-  const top = parseCssTopLevel(css)
-  const cuts: { start: number; end: number }[] = []
-  const wrong: string[] = []
+  const top = parseCssTopLevel(css);
+  const cuts: { start: number; end: number }[] = [];
+  const wrong: string[] = [];
   for (const [k, rule] of dropRules.entries()) {
-    const found = top.filter((t) => css.slice(t.start, t.end) === rule)
-    if (dropRules.indexOf(rule) !== k) wrong.push(`"${rule}" is listed twice`)
-    else if (found.length === 1) cuts.push(found[0])
-    else wrong.push(`"${rule}" is in the sheet ${found.length} times as a top-level rule, not once`)
+    const found = top.filter((t) => css.slice(t.start, t.end) === rule);
+    if (dropRules.indexOf(rule) !== k) wrong.push(`"${rule}" is listed twice`);
+    else if (found.length === 1) cuts.push(found[0]);
+    else wrong.push(`"${rule}" is in the sheet ${found.length} times as a top-level rule, not once`);
   }
   if (wrong.length > 0) {
-    throw new Error(
-      ['dropRules do not match the sheet:', ...wrong.map((w) => `  - ${w}`)].join('\n')
-    )
+    throw new Error(["dropRules do not match the sheet:", ...wrong.map((w) => `  - ${w}`)].join("\n"));
   }
-  const bytesTo = (index: number) => Buffer.byteLength(css.slice(0, index), 'utf8')
-  const kept: Buffer[] = []
-  let at = 0
+  const bytesTo = (index: number) => Buffer.byteLength(css.slice(0, index), "utf8");
+  const kept: Buffer[] = [];
+  let at = 0;
   for (const cut of cuts.sort((a, b) => a.start - b.start)) {
-    kept.push(source.subarray(at, bytesTo(cut.start)))
-    at = bytesTo(cut.end)
+    kept.push(source.subarray(at, bytesTo(cut.start)));
+    at = bytesTo(cut.end);
   }
-  kept.push(source.subarray(at))
-  return Buffer.concat(kept)
+  kept.push(source.subarray(at));
+  return Buffer.concat(kept);
 }
 
 // ── Selector analysis ────────────────────────────────────────────────────────
 
 /** Split `text` where `isBreak` holds outside (), [] and strings. Empty parts dropped. */
 function splitTopLevel(text: string, isBreak: (ch: string) => boolean): string[] {
-  const parts: string[] = []
-  let depth = 0
-  let start = 0
+  const parts: string[] = [];
+  let depth = 0;
+  let start = 0;
   for (let i = 0; i < text.length; i++) {
-    const ch = text[i]
-    if (ch === '\\') {
-      i += cssEscapeLength(text, i) - 1
+    const ch = text[i];
+    if (ch === "\\") {
+      i += cssEscapeLength(text, i) - 1;
     } else if (ch === '"' || ch === "'") {
-      for (i++; i < text.length && text[i] !== ch; i++) if (text[i] === '\\') i++
-    } else if (ch === '(' || ch === '[') {
-      depth++
-    } else if (ch === ')' || ch === ']') {
-      depth--
+      for (i++; i < text.length && text[i] !== ch; i++) if (text[i] === "\\") i++;
+    } else if (ch === "(" || ch === "[") {
+      depth++;
+    } else if (ch === ")" || ch === "]") {
+      depth--;
     } else if (depth === 0 && isBreak(ch)) {
-      parts.push(text.slice(start, i))
-      start = i + 1
+      parts.push(text.slice(start, i));
+      start = i + 1;
     }
   }
-  parts.push(text.slice(start))
-  return parts.map((p) => p.trim()).filter((p) => p !== '')
+  parts.push(text.slice(start));
+  return parts.map((p) => p.trim()).filter((p) => p !== "");
 }
 
-const selectorList = (selector: string) => splitTopLevel(selector, (ch) => ch === ',')
-const compoundsOf = (complex: string) => splitTopLevel(complex, (ch) => /[\s>+~]/.test(ch))
+const selectorList = (selector: string) => splitTopLevel(selector, (ch) => ch === ",");
+const compoundsOf = (complex: string) => splitTopLevel(complex, (ch) => /[\s>+~]/.test(ch));
 
 /**
  * `selector` with every escape replaced by `_`, an ordinary name character. An
@@ -261,30 +249,30 @@ const compoundsOf = (complex: string) => splitTopLevel(complex, (ch) => /[\s>+~]
  * on this escape-free text.
  */
 function neutral(selector: string): string {
-  let out = ''
+  let out = "";
   for (let i = 0; i < selector.length; i++) {
-    if (selector[i] === '\\') {
-      out += '_'
-      i += cssEscapeLength(selector, i) - 1
+    if (selector[i] === "\\") {
+      out += "_";
+      i += cssEscapeLength(selector, i) - 1;
     } else {
-      out += selector[i]
+      out += selector[i];
     }
   }
-  return out
+  return out;
 }
 
 /** Pseudo-classes whose argument narrows the compound to what it matches. */
-const NARROWING = new Set(['is', 'where', 'matches', '-webkit-any', '-moz-any'])
+const NARROWING = new Set(["is", "where", "matches", "-webkit-any", "-moz-any"]);
 
 type Selectors = {
   /** True when some compound ties the element, or an ancestor, to the library. */
-  anchored(complex: string): boolean
+  anchored(complex: string): boolean;
   /** True when the subject is the document itself: `html`, `body`, `:root`, `:host`. */
-  isRoot(complex: string): boolean
-}
+  isRoot(complex: string): boolean;
+};
 
 function selectorAnalysis(ownAttributes: readonly string[]): Selectors {
-  const own = new Set(ownAttributes)
+  const own = new Set(ownAttributes);
 
   /**
    * Replace each functional pseudo-class in `compound` by what it contributes:
@@ -294,37 +282,37 @@ function selectorAnalysis(ownAttributes: readonly string[]): Selectors {
    * `compound` is escape-free (see {@link neutral}).
    */
   const flatten = (compound: string): string => {
-    let out = ''
+    let out = "";
     for (let i = 0; i < compound.length; i++) {
-      const ch = compound[i]
+      const ch = compound[i];
       if (ch === '"' || ch === "'") {
-        const close = compound.indexOf(ch, i + 1)
-        i = close < 0 ? compound.length : close
-      } else if (ch === '(') {
-        let depth = 1
-        let j = i + 1
+        const close = compound.indexOf(ch, i + 1);
+        i = close < 0 ? compound.length : close;
+      } else if (ch === "(") {
+        let depth = 1;
+        let j = i + 1;
         for (; j < compound.length && depth > 0; j++) {
-          if (compound[j] === '(') depth++
-          else if (compound[j] === ')') depth--
+          if (compound[j] === "(") depth++;
+          else if (compound[j] === ")") depth--;
         }
-        const pseudo = /:([\w-]+)$/.exec(out)
-        if (pseudo) out = out.slice(0, pseudo.index)
-        const name = pseudo?.[1].toLowerCase() ?? ''
+        const pseudo = /:([\w-]+)$/.exec(out);
+        if (pseudo) out = out.slice(0, pseudo.index);
+        const name = pseudo?.[1].toLowerCase() ?? "";
         if (NARROWING.has(name) && selectorList(compound.slice(i + 1, j - 1)).every(anchored)) {
-          out += '.anchored'
+          out += ".anchored";
         }
-        i = j - 1
+        i = j - 1;
       } else {
-        out += ch
+        out += ch;
       }
     }
-    return out
-  }
+    return out;
+  };
 
   const isRootCompound = (compound: string): boolean => {
-    const flat = flatten(compound)
-    return /^(?:html|body)(?![\w-])/i.test(flat) || /:(?:root|host)(?![\w-])/i.test(flat)
-  }
+    const flat = flatten(compound);
+    return /^(?:html|body)(?![\w-])/i.test(flat) || /:(?:root|host)(?![\w-])/i.test(flat);
+  };
 
   /**
    * A compound ties an element to the library when it carries a class, an id,
@@ -335,26 +323,26 @@ function selectorAnalysis(ownAttributes: readonly string[]): Selectors {
    * elements carry those too.
    */
   const compoundAnchors = (compound: string): boolean => {
-    if (isRootCompound(compound)) return false
-    const flat = flatten(compound)
-    if (/[.#](?:[-_a-zA-Z]|[^\p{ASCII}])/u.test(flat)) return true
+    if (isRootCompound(compound)) return false;
+    const flat = flatten(compound);
+    if (/[.#](?:[-_a-zA-Z]|[^\p{ASCII}])/u.test(flat)) return true;
     for (const m of flat.matchAll(/\[\s*([\w-]+)/g)) {
-      if (m[1].startsWith('data-v-') || own.has(m[1])) return true
+      if (m[1].startsWith("data-v-") || own.has(m[1])) return true;
     }
-    return false
-  }
+    return false;
+  };
 
   function anchored(complex: string): boolean {
-    return compoundsOf(neutral(complex).replace(/&/g, ' ')).some(compoundAnchors)
+    return compoundsOf(neutral(complex).replace(/&/g, " ")).some(compoundAnchors);
   }
 
   return {
     anchored,
     isRoot(complex) {
-      const parts = compoundsOf(neutral(complex))
-      return parts.length > 0 && isRootCompound(parts[parts.length - 1])
+      const parts = compoundsOf(neutral(complex));
+      return parts.length > 0 && isRootCompound(parts[parts.length - 1]);
     },
-  }
+  };
 }
 
 // ── The check ────────────────────────────────────────────────────────────────
@@ -389,166 +377,155 @@ function selectorAnalysis(ownAttributes: readonly string[]): Selectors {
 export function checkVendorCss(
   css: string,
   options: {
-    isDesktopVariable: (name: string) => boolean
-    ownAttributes?: readonly string[]
-    ownCustomProperties?: readonly string[]
-  }
+    isDesktopVariable: (name: string) => boolean;
+    ownAttributes?: readonly string[];
+    ownCustomProperties?: readonly string[];
+  },
 ): CssRuleProblem[] {
-  const problems: CssRuleProblem[] = []
-  const selectors = selectorAnalysis(options.ownAttributes ?? [])
-  const owned = options.isDesktopVariable
+  const problems: CssRuleProblem[] = [];
+  const selectors = selectorAnalysis(options.ownAttributes ?? []);
+  const owned = options.isDesktopVariable;
 
   // A namespace is whole segments and a dash, and the desktop's namespaces are
   // one segment each (`--tw-`, `--k-`), so a declared namespace overlaps one of
   // them, or a name the desktop uses, exactly when it is a desktop name itself.
-  const ownNamespaces: string[] = []
+  const ownNamespaces: string[] = [];
   for (const namespace of options.ownCustomProperties ?? []) {
     if (!CUSTOM_PROPERTY_NAMESPACE.test(namespace)) {
       problems.push({
-        kind: 'unsupported',
+        kind: "unsupported",
         detail: `ownCustomProperties "${namespace}" is not a namespace like "--lib-"`,
-      })
+      });
     } else if (owned(namespace)) {
       problems.push({
-        kind: 'token',
+        kind: "token",
         detail: `ownCustomProperties "${namespace}" overlaps the desktop's custom properties`,
-      })
+      });
     } else {
-      ownNamespaces.push(namespace)
+      ownNamespaces.push(namespace);
     }
   }
   const isOwnVariable = (property: string) => {
-    const name = cssUnescape(property)
-    return ownNamespaces.some((ns) => name.startsWith(ns)) && !owned(name)
-  }
+    const name = cssUnescape(property);
+    return ownNamespaces.some((ns) => name.startsWith(ns)) && !owned(name);
+  };
 
-  const checkDeclarations = (
-    nodes: CssNode[],
-    where: { rootSelector: string | null; selector: string }
-  ) => {
+  const checkDeclarations = (nodes: CssNode[], where: { rootSelector: string | null; selector: string }) => {
     for (const node of nodes) {
-      if (node.type !== 'decl') continue
-      const property = cssUnescape(node.property)
+      if (node.type !== "decl") continue;
+      const property = cssUnescape(node.property);
       if (/^--color-/.test(property)) {
-        problems.push({ kind: 'token', detail: `defines the token ${property}` })
+        problems.push({ kind: "token", detail: `defines the token ${property}` });
       } else if (where.rootSelector !== null) {
-        if (!property.startsWith('--')) {
+        if (!property.startsWith("--")) {
           problems.push({
-            kind: 'global',
+            kind: "global",
             detail: `"${where.rootSelector}" sets ${property} on the desktop's document`,
-          })
+          });
         } else if (owned(property)) {
           problems.push({
-            kind: 'token',
+            kind: "token",
             detail: `"${where.rootSelector}" sets the desktop's ${property}`,
-          })
+          });
         }
       }
       // A quoted URL may hold the other quote (SuperDoc's inline SVGs do).
       for (const m of node.value.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^"')]*))\s*\)/gi)) {
-        const url = (m[1] ?? m[2] ?? m[3]).trim()
+        const url = (m[1] ?? m[2] ?? m[3]).trim();
         if (!/^data:/i.test(url)) {
           problems.push({
-            kind: 'external',
-            detail: `"${where.selector}" loads ${url || '(an empty url)'}, which the build does not copy`,
-          })
+            kind: "external",
+            detail: `"${where.selector}" loads ${url || "(an empty url)"}, which the build does not copy`,
+          });
         }
       }
     }
-  }
+  };
 
   const visit = (nodes: CssNode[], parentAnchored: boolean) => {
     for (const node of nodes) {
-      if (node.type === 'decl') {
+      if (node.type === "decl") {
         // Only an at-rule nested in an anchored rule holds declarations of its own.
-        if (parentAnchored) checkDeclarations([node], { rootSelector: null, selector: '(nested)' })
+        if (parentAnchored) checkDeclarations([node], { rootSelector: null, selector: "(nested)" });
         else
           problems.push({
-            kind: 'unsupported',
+            kind: "unsupported",
             detail: `a declaration outside any rule: ${node.property}`,
-          })
-        continue
+          });
+        continue;
       }
-      if (node.type === 'rule') {
-        const parts = selectorList(node.selector)
-        const rootParts = parentAnchored ? [] : parts.filter((p) => selectors.isRoot(p))
-        const loose = parentAnchored
-          ? []
-          : parts.filter((p) => !selectors.isRoot(p) && !selectors.anchored(p))
+      if (node.type === "rule") {
+        const parts = selectorList(node.selector);
+        const rootParts = parentAnchored ? [] : parts.filter((p) => selectors.isRoot(p));
+        const loose = parentAnchored ? [] : parts.filter((p) => !selectors.isRoot(p) && !selectors.anchored(p));
         // A loose rule may stand when all it sets is the library's own variables.
         // Its nested rules are still read as loose (see the visit below).
-        const declarations = node.children.filter((c) => c.type === 'decl')
-        const notOwn = declarations.find((d) => !isOwnVariable(d.property))
-        const ownVariablesOnly =
-          ownNamespaces.length > 0 && declarations.length > 0 && notOwn === undefined
+        const declarations = node.children.filter((c) => c.type === "decl");
+        const notOwn = declarations.find((d) => !isOwnVariable(d.property));
+        const ownVariablesOnly = ownNamespaces.length > 0 && declarations.length > 0 && notOwn === undefined;
         for (const part of ownVariablesOnly ? [] : loose) {
           const why =
             ownNamespaces.length > 0 && notOwn
-              ? `, and ${cssUnescape(notOwn.property)} is not one of its own custom properties (${ownNamespaces.map((ns) => `${ns}*`).join(', ')})`
-              : ''
+              ? `, and ${cssUnescape(notOwn.property)} is not one of its own custom properties (${ownNamespaces.map((ns) => `${ns}*`).join(", ")})`
+              : "";
           problems.push({
-            kind: 'global',
+            kind: "global",
             detail: `"${part}" is not tied to the library's own elements (no class or id of its own)${why}`,
-          })
+          });
         }
         checkDeclarations(node.children, {
-          rootSelector: rootParts.length > 0 ? rootParts.join(', ') : null,
+          rootSelector: rootParts.length > 0 ? rootParts.join(", ") : null,
           selector: node.selector,
-        })
+        });
         visit(
-          node.children.filter((c) => c.type !== 'decl'),
-          parentAnchored || (rootParts.length === 0 && loose.length === 0)
-        )
-        continue
+          node.children.filter((c) => c.type !== "decl"),
+          parentAnchored || (rootParts.length === 0 && loose.length === 0),
+        );
+        continue;
       }
       switch (node.name) {
-        case 'media':
-        case 'supports':
-        case 'container':
-          visit(node.children ?? [], parentAnchored)
-          continue
-        case 'layer':
-          if (node.children) visit(node.children, parentAnchored)
-          continue
-        case 'keyframes':
-        case '-webkit-keyframes':
-        case 'charset':
-          continue
-        case 'property':
+        case "media":
+        case "supports":
+        case "container":
+          visit(node.children ?? [], parentAnchored);
+          continue;
+        case "layer":
+          if (node.children) visit(node.children, parentAnchored);
+          continue;
+        case "keyframes":
+        case "-webkit-keyframes":
+        case "charset":
+          continue;
+        case "property":
           if (owned(cssUnescape(node.prelude))) {
-            problems.push({ kind: 'token', detail: `@property ${node.prelude} is the desktop's` })
+            problems.push({ kind: "token", detail: `@property ${node.prelude} is the desktop's` });
           }
-          continue
-        case 'import':
+          continue;
+        case "import":
           problems.push({
-            kind: 'external',
+            kind: "external",
             detail: `@import ${node.prelude}: another stylesheet, which the build does not copy or check`,
-          })
-          continue
-        case 'font-face':
+          });
+          continue;
+        case "font-face":
           problems.push({
-            kind: 'external',
-            detail:
-              "@font-face: the build copies no font files, and a family could shadow the desktop's",
-          })
-          continue
+            kind: "external",
+            detail: "@font-face: the build copies no font files, and a family could shadow the desktop's",
+          });
+          continue;
         default:
-          problems.push({ kind: 'unsupported', detail: `@${node.name} ${node.prelude}`.trim() })
+          problems.push({ kind: "unsupported", detail: `@${node.name} ${node.prelude}`.trim() });
       }
     }
-  }
+  };
 
-  visit(parseCss(css), false)
-  return problems
+  visit(parseCss(css), false);
+  return problems;
 }
 
-export function describeVendorProblems(
-  file: string,
-  specifier: string,
-  problems: CssRuleProblem[]
-): string {
+export function describeVendorProblems(file: string, specifier: string, problems: CssRuleProblem[]): string {
   return [
     `${file} (${specifier}) would restyle the desktop outside the window:`,
     ...problems.map((p) => `  - ${p.kind}: ${p.detail}`),
-  ].join('\n')
+  ].join("\n");
 }

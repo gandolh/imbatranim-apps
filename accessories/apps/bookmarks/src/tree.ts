@@ -1,6 +1,6 @@
-import type { BookmarkGroup, BookmarkLink } from './types'
-import { normaliseUrl } from './urlNormalise'
-import type { ParsedFolder, ParsedLink } from './netscape'
+import type { BookmarkGroup, BookmarkLink } from "./types";
+import { normaliseUrl } from "./urlNormalise";
+import type { ParsedFolder, ParsedLink } from "./netscape";
 
 /**
  * Turning the API's flat folder list into something renderable.
@@ -13,15 +13,15 @@ import type { ParsedFolder, ParsedLink } from './netscape'
  */
 
 export type TreeNode = {
-  group: BookmarkGroup
-  children: TreeNode[]
-  depth: number
-}
+  group: BookmarkGroup;
+  children: TreeNode[];
+  depth: number;
+};
 
 /** One rendered line: a folder or a bookmark, already indented. */
 export type Row =
-  | { kind: 'folder'; group: BookmarkGroup; depth: number; childCount: number }
-  | { kind: 'link'; link: BookmarkLink; depth: number }
+  | { kind: "folder"; group: BookmarkGroup; depth: number; childCount: number }
+  | { kind: "link"; link: BookmarkLink; depth: number };
 
 /**
  * Build the forest.
@@ -33,38 +33,38 @@ export type Row =
  * should prevent one, but the renderer is not the place to find out it failed.
  */
 export function buildTree(groups: BookmarkGroup[]): TreeNode[] {
-  const byId = new Map(groups.map((g) => [g.id, g]))
-  const childrenOf = new Map<number | null, BookmarkGroup[]>()
+  const byId = new Map(groups.map((g) => [g.id, g]));
+  const childrenOf = new Map<number | null, BookmarkGroup[]>();
   for (const group of groups) {
-    const parentId = group.parentId !== null && byId.has(group.parentId) ? group.parentId : null
-    const bucket = childrenOf.get(parentId)
-    if (bucket) bucket.push(group)
-    else childrenOf.set(parentId, [group])
+    const parentId = group.parentId !== null && byId.has(group.parentId) ? group.parentId : null;
+    const bucket = childrenOf.get(parentId);
+    if (bucket) bucket.push(group);
+    else childrenOf.set(parentId, [group]);
   }
 
-  const seen = new Set<number>()
+  const seen = new Set<number>();
   const build = (parentId: number | null, depth: number): TreeNode[] =>
     (childrenOf.get(parentId) ?? [])
       .filter((group) => {
-        if (seen.has(group.id)) return false
-        seen.add(group.id)
-        return true
+        if (seen.has(group.id)) return false;
+        seen.add(group.id);
+        return true;
       })
-      .map((group) => ({ group, children: build(group.id, depth + 1), depth }))
+      .map((group) => ({ group, children: build(group.id, depth + 1), depth }));
 
-  const roots = build(null, 0)
+  const roots = build(null, 0);
   // A *pure* cycle (A→B→A, both present) has no member parented at `null`, so the
   // walk above never reaches it and both folders vanish (L5). Surface any group the
   // walk never visited as a root — the same "wrong place beats silently dropped"
   // choice as a dangling parentId. `seen` still bounds the recursion, so a cycle
   // stays finite. `groups` order is stable, so this is deterministic.
   for (const group of groups) {
-    if (seen.has(group.id)) continue
-    seen.add(group.id)
-    roots.push({ group, children: build(group.id, 1), depth: 0 })
+    if (seen.has(group.id)) continue;
+    seen.add(group.id);
+    roots.push({ group, children: build(group.id, 1), depth: 0 });
   }
 
-  return roots
+  return roots;
 }
 
 /**
@@ -74,34 +74,34 @@ export function buildTree(groups: BookmarkGroup[]): TreeNode[] {
  * the row can say what is inside without the user having to open it.
  */
 export function toRows(nodes: TreeNode[], expanded: ReadonlySet<number>): Row[] {
-  const rows: Row[] = []
+  const rows: Row[] = [];
   const walk = (list: TreeNode[]) => {
     for (const node of list) {
       rows.push({
-        kind: 'folder',
+        kind: "folder",
         group: node.group,
         depth: node.depth,
         childCount: node.children.length + node.group.links.length,
-      })
-      if (!expanded.has(node.group.id)) continue
+      });
+      if (!expanded.has(node.group.id)) continue;
       for (const link of node.group.links) {
-        rows.push({ kind: 'link', link, depth: node.depth + 1 })
+        rows.push({ kind: "link", link, depth: node.depth + 1 });
       }
-      walk(node.children)
+      walk(node.children);
     }
-  }
-  walk(nodes)
-  return rows
+  };
+  walk(nodes);
+  return rows;
 }
 
 export type SearchResult = {
   /** The tree with non-matching branches removed. */
-  nodes: TreeNode[]
+  nodes: TreeNode[];
   /** Folders to force open so every match is visible. */
-  expand: Set<number>
+  expand: Set<number>;
   /** How many bookmarks matched. */
-  matches: number
-}
+  matches: number;
+};
 
 /**
  * Filter the tree to what matches, keeping the folders needed to reach it.
@@ -113,34 +113,34 @@ export type SearchResult = {
  * because "show me the Work folder" should show the Work folder.
  */
 export function searchTree(nodes: TreeNode[], query: string): SearchResult {
-  const needle = query.trim().toLowerCase()
-  if (needle === '') return { nodes, expand: new Set(), matches: 0 }
+  const needle = query.trim().toLowerCase();
+  if (needle === "") return { nodes, expand: new Set(), matches: 0 };
 
-  const expand = new Set<number>()
-  let matches = 0
+  const expand = new Set<number>();
+  let matches = 0;
 
   const linkMatches = (link: BookmarkLink) =>
-    link.title.toLowerCase().includes(needle) || link.url.toLowerCase().includes(needle)
+    link.title.toLowerCase().includes(needle) || link.url.toLowerCase().includes(needle);
 
   const prune = (list: TreeNode[]): TreeNode[] => {
-    const kept: TreeNode[] = []
+    const kept: TreeNode[] = [];
     for (const node of list) {
-      const nameHit = node.group.name.toLowerCase().includes(needle)
-      const children = prune(node.children)
-      const links = nameHit ? node.group.links : node.group.links.filter(linkMatches)
-      if (!nameHit && children.length === 0 && links.length === 0) continue
-      matches += links.length
-      expand.add(node.group.id)
+      const nameHit = node.group.name.toLowerCase().includes(needle);
+      const children = prune(node.children);
+      const links = nameHit ? node.group.links : node.group.links.filter(linkMatches);
+      if (!nameHit && children.length === 0 && links.length === 0) continue;
+      matches += links.length;
+      expand.add(node.group.id);
       kept.push({
         group: { ...node.group, links },
         children,
         depth: node.depth,
-      })
+      });
     }
-    return kept
-  }
+    return kept;
+  };
 
-  return { nodes: prune(nodes), expand, matches }
+  return { nodes: prune(nodes), expand, matches };
 }
 
 /**
@@ -155,47 +155,44 @@ export function searchTree(nodes: TreeNode[], query: string): SearchResult {
 export function subtreeOf(nodes: TreeNode[], id: number): BookmarkGroup[] {
   const find = (list: TreeNode[]): TreeNode | null => {
     for (const node of list) {
-      if (node.group.id === id) return node
-      const hit = find(node.children)
-      if (hit) return hit
+      if (node.group.id === id) return node;
+      const hit = find(node.children);
+      if (hit) return hit;
     }
-    return null
-  }
-  const collect = (node: TreeNode): BookmarkGroup[] => [
-    node.group,
-    ...node.children.flatMap(collect),
-  ]
-  const found = find(nodes)
-  return found ? collect(found) : []
+    return null;
+  };
+  const collect = (node: TreeNode): BookmarkGroup[] => [node.group, ...node.children.flatMap(collect)];
+  const found = find(nodes);
+  return found ? collect(found) : [];
 }
 
 /** Every folder id, for "expand all" and for the initial open-the-roots state. */
 export function allFolderIds(nodes: TreeNode[]): number[] {
-  const ids: number[] = []
+  const ids: number[] = [];
   const walk = (list: TreeNode[]) => {
     for (const node of list) {
-      ids.push(node.group.id)
-      walk(node.children)
+      ids.push(node.group.id);
+      walk(node.children);
     }
-  }
-  walk(nodes)
-  return ids
+  };
+  walk(nodes);
+  return ids;
 }
 
 /** `Work / Specs / Draft`, for a search result's subtitle and the command palette. */
 export function folderPath(groups: BookmarkGroup[], groupId: number): string {
-  const byId = new Map(groups.map((g) => [g.id, g]))
-  const names: string[] = []
-  const seen = new Set<number>()
-  let cursor: number | null = groupId
+  const byId = new Map(groups.map((g) => [g.id, g]));
+  const names: string[] = [];
+  const seen = new Set<number>();
+  let cursor: number | null = groupId;
   while (cursor !== null && !seen.has(cursor)) {
-    seen.add(cursor)
-    const group: BookmarkGroup | undefined = byId.get(cursor)
-    if (!group) break
-    names.unshift(group.name)
-    cursor = group.parentId
+    seen.add(cursor);
+    const group: BookmarkGroup | undefined = byId.get(cursor);
+    if (!group) break;
+    names.unshift(group.name);
+    cursor = group.parentId;
   }
-  return names.join(' / ')
+  return names.join(" / ");
 }
 
 /**
@@ -205,19 +202,16 @@ export function folderPath(groups: BookmarkGroup[], groupId: number): string {
  * two folders is the duplicate a user most wants to be warned about, since it is the
  * one they cannot see.
  */
-export function findDuplicate(
-  groups: BookmarkGroup[],
-  url: string
-): { link: BookmarkLink; path: string } | null {
-  const needle = normaliseUrl(url)
+export function findDuplicate(groups: BookmarkGroup[], url: string): { link: BookmarkLink; path: string } | null {
+  const needle = normaliseUrl(url);
   for (const group of groups) {
     for (const link of group.links) {
       if (normaliseUrl(link.url) === needle) {
-        return { link, path: folderPath(groups, group.id) }
+        return { link, path: folderPath(groups, group.id) };
       }
     }
   }
-  return null
+  return null;
 }
 
 /**
@@ -230,52 +224,52 @@ export function findDuplicate(
  */
 export function dedupeImport(
   folders: ParsedFolder[],
-  existing: BookmarkGroup[]
+  existing: BookmarkGroup[],
 ): { folders: ParsedFolder[]; duplicates: number } {
-  const known = new Set<string>()
+  const known = new Set<string>();
   for (const group of existing) {
-    for (const link of group.links) known.add(normaliseUrl(link.url))
+    for (const link of group.links) known.add(normaliseUrl(link.url));
   }
-  let duplicates = 0
+  let duplicates = 0;
 
   const keepLink = (link: ParsedLink) => {
-    const key = normaliseUrl(link.url)
+    const key = normaliseUrl(link.url);
     if (known.has(key)) {
-      duplicates += 1
-      return false
+      duplicates += 1;
+      return false;
     }
     // Also dedupes within the file itself, which real exports do contain.
-    known.add(key)
-    return true
-  }
+    known.add(key);
+    return true;
+  };
 
   const prune = (list: ParsedFolder[]): ParsedFolder[] => {
-    const kept: ParsedFolder[] = []
+    const kept: ParsedFolder[] = [];
     for (const folder of list) {
-      const links = folder.links.filter(keepLink)
-      const children = prune(folder.folders)
-      if (links.length === 0 && children.length === 0) continue
-      kept.push({ name: folder.name, links, folders: children })
+      const links = folder.links.filter(keepLink);
+      const children = prune(folder.folders);
+      if (links.length === 0 && children.length === 0) continue;
+      kept.push({ name: folder.name, links, folders: children });
     }
-    return kept
-  }
+    return kept;
+  };
 
-  return { folders: prune(folders), duplicates }
+  return { folders: prune(folders), duplicates };
 }
 
 /** Count what an import will actually create, for the confirmation and the report. */
 export function countTree(folders: ParsedFolder[]): { folders: number; links: number } {
-  let folderCount = 0
-  let linkCount = 0
+  let folderCount = 0;
+  let linkCount = 0;
   const walk = (list: ParsedFolder[]) => {
     for (const folder of list) {
-      folderCount += 1
-      linkCount += folder.links.length
-      walk(folder.folders)
+      folderCount += 1;
+      linkCount += folder.links.length;
+      walk(folder.folders);
     }
-  }
-  walk(folders)
-  return { folders: folderCount, links: linkCount }
+  };
+  walk(folders);
+  return { folders: folderCount, links: linkCount };
 }
 
 /** The whole collection as a parsed tree, for export. */
@@ -284,5 +278,5 @@ export function toParsedTree(nodes: TreeNode[]): ParsedFolder[] {
     name: node.group.name,
     links: node.group.links.map((link) => ({ title: link.title, url: link.url })),
     folders: toParsedTree(node.children),
-  }))
+  }));
 }

@@ -16,10 +16,10 @@
  * UI packages, React or the desktop's kit; the OS build refuses a worker that
  * does.
  */
-import { createUniver, LocaleType } from '@univerjs/presets'
-import { UniverSheetsCoreWorkerPreset } from '@univerjs/preset-sheets-core/worker'
+import { createUniver, LocaleType } from "@univerjs/presets";
+import { UniverSheetsCoreWorkerPreset } from "@univerjs/preset-sheets-core/worker";
 
 createUniver({
   locale: LocaleType.EN_US,
   presets: [UniverSheetsCoreWorkerPreset()],
-})
+});

@@ -1,34 +1,34 @@
-import { ScrollArea, cn } from '@imbatranim/ui'
-import { useMemo, useState } from 'react'
-import type { ProxyResponse } from '../types'
-import { base64ToBytes, base64ToText, formatBytes, prettyBody } from '../lib/body'
-import { statusToken } from '../lib/ui'
+import { ScrollArea, cn } from "@imbatranim/ui";
+import { useMemo, useState } from "react";
+import type { ProxyResponse } from "../types";
+import { base64ToBytes, base64ToText, formatBytes, prettyBody } from "../lib/body";
+import { statusToken } from "../lib/ui";
 
-type ResponseTab = 'body' | 'headers'
+type ResponseTab = "body" | "headers";
 
 interface ResponseViewerProps {
-  response: ProxyResponse | null
-  error: string | null
-  loading: boolean
+  response: ProxyResponse | null;
+  error: string | null;
+  loading: boolean;
 }
 
 export function ResponseViewer({ response, error, loading }: ResponseViewerProps) {
-  const [tab, setTab] = useState<ResponseTab>('body')
+  const [tab, setTab] = useState<ResponseTab>("body");
 
   const decoded = useMemo(() => {
-    if (!response) return { text: '', size: 0 }
+    if (!response) return { text: "", size: 0 };
     return {
-      text: prettyBody(base64ToText(response.bodyBase64), response.headers['content-type']),
+      text: prettyBody(base64ToText(response.bodyBase64), response.headers["content-type"]),
       size: base64ToBytes(response.bodyBase64).byteLength,
-    }
-  }, [response])
+    };
+  }, [response]);
 
   if (loading) {
     return (
       <div className="text-on-surface-variant font-ui flex flex-1 items-center justify-center text-[12px]">
         Sending request…
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -36,7 +36,7 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
       <div className="flex flex-1 items-center justify-center p-4">
         <p className="text-error max-w-full font-mono text-[12px] break-words">{error}</p>
       </div>
-    )
+    );
   }
 
   if (!response) {
@@ -44,16 +44,16 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
       <div className="text-on-surface-variant font-ui flex flex-1 items-center justify-center text-[12px]">
         Send a request to see the response
       </div>
-    )
+    );
   }
 
-  const headerEntries = Object.entries(response.headers)
+  const headerEntries = Object.entries(response.headers);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Status line */}
       <div className="border-outline-variant flex flex-wrap items-center gap-x-4 gap-y-1 border-b px-3 py-1.5 text-[12px]">
-        <span className={cn('font-ui font-semibold', statusToken(response.status))}>
+        <span className={cn("font-ui font-semibold", statusToken(response.status))}>
           {response.status} {response.statusText}
         </span>
         <span className="text-on-surface-variant font-ui">{response.elapsedMs} ms</span>
@@ -67,16 +67,16 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
 
       {/* Tabs */}
       <div className="border-outline-variant flex gap-0 border-b">
-        <ResTab active={tab === 'body'} onClick={() => setTab('body')}>
+        <ResTab active={tab === "body"} onClick={() => setTab("body")}>
           Body
         </ResTab>
-        <ResTab active={tab === 'headers'} onClick={() => setTab('headers')}>
+        <ResTab active={tab === "headers"} onClick={() => setTab("headers")}>
           Headers ({headerEntries.length})
         </ResTab>
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
-        {tab === 'body' ? (
+        {tab === "body" ? (
           <pre className="text-on-surface p-3 font-mono text-[12px] leading-relaxed break-words whitespace-pre-wrap">
             {decoded.text || <span className="text-on-surface-variant">(empty body)</span>}
           </pre>
@@ -92,30 +92,20 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
         )}
       </ScrollArea>
     </div>
-  )
+  );
 }
 
-function ResTab({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
+function ResTab({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        'focus-visible:ring-primary font-ui -mb-px cursor-pointer border-b-2 px-3 py-1.5 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset',
-        active
-          ? 'border-primary text-primary'
-          : 'text-on-surface-variant hover:text-on-surface border-transparent'
+        "focus-visible:ring-primary font-ui -mb-px cursor-pointer border-b-2 px-3 py-1.5 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
+        active ? "border-primary text-primary" : "text-on-surface-variant hover:text-on-surface border-transparent",
       )}
     >
       {children}
     </button>
-  )
+  );
 }

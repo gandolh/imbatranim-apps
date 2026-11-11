@@ -23,23 +23,23 @@
  * hundred KB of base64 into SQLite for decoration is not a trade worth making.
  */
 
-export type ParsedLink = { title: string; url: string }
+export type ParsedLink = { title: string; url: string };
 
 export type ParsedFolder = {
-  name: string
-  links: ParsedLink[]
-  folders: ParsedFolder[]
-}
+  name: string;
+  links: ParsedLink[];
+  folders: ParsedFolder[];
+};
 
 export type ParseResult = {
-  folders: ParsedFolder[]
+  folders: ParsedFolder[];
   /** Links at the very top level, outside any folder. */
-  looseLinks: ParsedLink[]
+  looseLinks: ParsedLink[];
   /** Bookmarks skipped because the URL was not http(s) — javascript:, place:, etc. */
-  skipped: number
+  skipped: number;
   /** Folders past MAX_DEPTH, flattened into their deepest allowed ancestor. */
-  flattened: number
-}
+  flattened: number;
+};
 
 /**
  * How deep a folder tree may nest.
@@ -48,31 +48,31 @@ export type ParseResult = {
  * thousands deep purely to blow a stack. Real trees are ~5 deep; 20 is generous and
  * the excess is flattened rather than dropped, so no bookmark is lost to the limit.
  */
-export const MAX_DEPTH = 20
+export const MAX_DEPTH = 20;
 
 /** Only what the app can actually open, and what the backend DTO will accept. */
 function usableUrl(raw: string): string | null {
-  const trimmed = raw.trim()
-  if (trimmed === '') return null
-  let parsed: URL
+  const trimmed = raw.trim();
+  if (trimmed === "") return null;
+  let parsed: URL;
   try {
-    parsed = new URL(trimmed)
+    parsed = new URL(trimmed);
   } catch {
-    return null
+    return null;
   }
-  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null
-  if (parsed.hostname === '') return null
-  return trimmed
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+  if (parsed.hostname === "") return null;
+  return trimmed;
 }
 
 const ENTITIES: Record<string, string> = {
-  amp: '&',
-  lt: '<',
-  gt: '>',
+  amp: "&",
+  lt: "<",
+  gt: ">",
   quot: '"',
   apos: "'",
-  nbsp: ' ',
-}
+  nbsp: " ",
+};
 
 /**
  * Decode the entities a browser actually writes.
@@ -82,39 +82,30 @@ const ENTITIES: Record<string, string> = {
  */
 export function decodeEntities(text: string): string {
   return text.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (match, body: string) => {
-    if (body.startsWith('#')) {
-      const code =
-        body[1] === 'x' || body[1] === 'X'
-          ? parseInt(body.slice(2), 16)
-          : parseInt(body.slice(1), 10)
-      return Number.isFinite(code) && code > 0 && code <= 0x10ffff
-        ? String.fromCodePoint(code)
-        : match
+    if (body.startsWith("#")) {
+      const code = body[1] === "x" || body[1] === "X" ? parseInt(body.slice(2), 16) : parseInt(body.slice(1), 10);
+      return Number.isFinite(code) && code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : match;
     }
-    return ENTITIES[body.toLowerCase()] ?? match
-  })
+    return ENTITIES[body.toLowerCase()] ?? match;
+  });
 }
 
 function encodeEntities(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 /** Strip any nested markup out of a title, e.g. `<A ...><B>bold</B></A>`. */
 function textOf(html: string): string {
-  return decodeEntities(html.replace(/<[^>]*>/g, '')).trim()
+  return decodeEntities(html.replace(/<[^>]*>/g, "")).trim();
 }
 
 /** Pull an attribute out of a tag, single or double quoted, case-insensitive. */
 function attr(tag: string, name: string): string | null {
-  const match = new RegExp(`${name}\\s*=\\s*("([^"]*)"|'([^']*)')`, 'i').exec(tag)
-  if (match) return match[2] ?? match[3] ?? null
+  const match = new RegExp(`${name}\\s*=\\s*("([^"]*)"|'([^']*)')`, "i").exec(tag);
+  if (match) return match[2] ?? match[3] ?? null;
   // Unquoted, which Safari has been known to emit for HREF.
-  const bare = new RegExp(`${name}\\s*=\\s*([^\\s>]+)`, 'i').exec(tag)
-  return bare ? bare[1] : null
+  const bare = new RegExp(`${name}\\s*=\\s*([^\\s>]+)`, "i").exec(tag);
+  return bare ? bare[1] : null;
 }
 
 /**
@@ -130,10 +121,10 @@ function attr(tag: string, name: string): string | null {
  * the `<H3>`/`<A>` inside it does not.
  */
 const TOKENS =
-  /<dl\b[^>]*>|<\/dl\s*>|<h3\b([^>]*)>([\s\S]*?)(?:<\/h3\s*>|(?=<dt\b)|(?=<\/?dl\b))|<a\b([^>]*)>([\s\S]*?)(?:<\/a\s*>|(?=<dt\b)|(?=<\/?dl\b))/gi
+  /<dl\b[^>]*>|<\/dl\s*>|<h3\b([^>]*)>([\s\S]*?)(?:<\/h3\s*>|(?=<dt\b)|(?=<\/?dl\b))|<a\b([^>]*)>([\s\S]*?)(?:<\/a\s*>|(?=<dt\b)|(?=<\/?dl\b))/gi;
 
 /** One open `<DL>`. `folder` is where children go; `counts` is false for the root list. */
-type Frame = { folder: ParsedFolder; counts: boolean }
+type Frame = { folder: ParsedFolder; counts: boolean };
 
 /**
  * Parse a bookmark file into a folder tree.
@@ -147,89 +138,82 @@ type Frame = { folder: ParsedFolder; counts: boolean }
  * measuring the stack would charge the file for structure the user never sees.
  */
 export function parseNetscape(html: string): ParseResult {
-  const root: ParsedFolder = { name: '', links: [], folders: [] }
-  const stack: Frame[] = [{ folder: root, counts: false }]
+  const root: ParsedFolder = { name: "", links: [], folders: [] };
+  const stack: Frame[] = [{ folder: root, counts: false }];
   // The folder the next `<DL>` should open, set by the `<H3>` just before it.
-  let pending: ParsedFolder | null = null
-  let depth = 0
-  let skipped = 0
-  let flattened = 0
+  let pending: ParsedFolder | null = null;
+  let depth = 0;
+  let skipped = 0;
+  let flattened = 0;
 
-  const current = () => stack[stack.length - 1].folder
+  const current = () => stack[stack.length - 1].folder;
 
-  TOKENS.lastIndex = 0
-  let match: RegExpExecArray | null
+  TOKENS.lastIndex = 0;
+  let match: RegExpExecArray | null;
   while ((match = TOKENS.exec(html)) !== null) {
-    const text = match[0]
+    const text = match[0];
 
     if (/^<\/dl/i.test(text)) {
       // Never pop the root: a file with an extra `</DL>` (Safari adds one) must not
       // start attaching bookmarks above the tree.
       if (stack.length > 1) {
-        if (stack[stack.length - 1].counts) depth -= 1
-        stack.pop()
+        if (stack[stack.length - 1].counts) depth -= 1;
+        stack.pop();
       }
-      continue
+      continue;
     }
 
     if (/^<dl/i.test(text)) {
       if (pending === null) {
         // The outermost list, or one with no heading — stay where we are so its
         // children land here rather than in an invented folder.
-        stack.push({ folder: current(), counts: false })
+        stack.push({ folder: current(), counts: false });
       } else if (depth < MAX_DEPTH) {
-        current().folders.push(pending)
-        stack.push({ folder: pending, counts: true })
-        depth += 1
+        current().folders.push(pending);
+        stack.push({ folder: pending, counts: true });
+        depth += 1;
       } else {
         // Too deep: keep the bookmarks by folding this folder's contents into the
         // deepest allowed ancestor rather than dropping them.
-        flattened += 1
-        stack.push({ folder: current(), counts: false })
+        flattened += 1;
+        stack.push({ folder: current(), counts: false });
       }
-      pending = null
-      continue
+      pending = null;
+      continue;
     }
 
     if (/^<h3/i.test(text)) {
-      pending = { name: textOf(match[2] ?? '') || 'Untitled folder', links: [], folders: [] }
-      continue
+      pending = { name: textOf(match[2] ?? "") || "Untitled folder", links: [], folders: [] };
+      continue;
     }
 
     // <A>
-    const href = attr(match[3] ?? '', 'href')
-    const url = href === null ? null : usableUrl(decodeEntities(href))
+    const href = attr(match[3] ?? "", "href");
+    const url = href === null ? null : usableUrl(decodeEntities(href));
     if (url === null) {
-      skipped += 1
-      continue
+      skipped += 1;
+      continue;
     }
-    current().links.push({ title: textOf(match[4] ?? '') || url, url })
+    current().links.push({ title: textOf(match[4] ?? "") || url, url });
   }
 
-  return { folders: root.folders, looseLinks: root.links, skipped, flattened }
+  return { folders: root.folders, looseLinks: root.links, skipped, flattened };
 }
 
 /** A human sentence about an import, so the result is never a silent partial. */
-export function describeImport(result: {
-  folders: number
-  links: number
-  skipped: number
-  flattened: number
-}): string {
+export function describeImport(result: { folders: number; links: number; skipped: number; flattened: number }): string {
   const parts = [
-    `${result.links} bookmark${result.links === 1 ? '' : 's'}`,
-    `${result.folders} folder${result.folders === 1 ? '' : 's'}`,
-  ]
-  let text = `Imported ${parts.join(' in ')}.`
+    `${result.links} bookmark${result.links === 1 ? "" : "s"}`,
+    `${result.folders} folder${result.folders === 1 ? "" : "s"}`,
+  ];
+  let text = `Imported ${parts.join(" in ")}.`;
   if (result.skipped > 0) {
-    text += ` ${result.skipped} skipped (not a web address).`
+    text += ` ${result.skipped} skipped (not a web address).`;
   }
   if (result.flattened > 0) {
-    text += ` ${result.flattened} deeply nested folder${
-      result.flattened === 1 ? '' : 's'
-    } flattened.`
+    text += ` ${result.flattened} deeply nested folder${result.flattened === 1 ? "" : "s"} flattened.`;
   }
-  return text
+  return text;
 }
 
 /**
@@ -242,36 +226,34 @@ export function describeImport(result: {
  */
 export function toNetscape(folders: ParsedFolder[], looseLinks: ParsedLink[] = []): string {
   const out: string[] = [
-    '<!DOCTYPE NETSCAPE-Bookmark-file-1>',
-    '<!-- This is an automatically generated file.',
-    '     It will be read and overwritten.',
-    '     DO NOT EDIT! -->',
+    "<!DOCTYPE NETSCAPE-Bookmark-file-1>",
+    "<!-- This is an automatically generated file.",
+    "     It will be read and overwritten.",
+    "     DO NOT EDIT! -->",
     '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">',
-    '<TITLE>Bookmarks</TITLE>',
-    '<H1>Bookmarks</H1>',
-    '<DL><p>',
-  ]
+    "<TITLE>Bookmarks</TITLE>",
+    "<H1>Bookmarks</H1>",
+    "<DL><p>",
+  ];
 
-  const indent = (depth: number) => '    '.repeat(depth + 1)
+  const indent = (depth: number) => "    ".repeat(depth + 1);
 
   const writeLinks = (links: ParsedLink[], depth: number) => {
     for (const link of links) {
-      out.push(
-        `${indent(depth)}<DT><A HREF="${encodeEntities(link.url)}">${encodeEntities(link.title)}</A>`
-      )
+      out.push(`${indent(depth)}<DT><A HREF="${encodeEntities(link.url)}">${encodeEntities(link.title)}</A>`);
     }
-  }
+  };
 
   const writeFolder = (folder: ParsedFolder, depth: number) => {
-    out.push(`${indent(depth)}<DT><H3>${encodeEntities(folder.name)}</H3>`)
-    out.push(`${indent(depth)}<DL><p>`)
-    writeLinks(folder.links, depth + 1)
-    for (const child of folder.folders) writeFolder(child, depth + 1)
-    out.push(`${indent(depth)}</DL><p>`)
-  }
+    out.push(`${indent(depth)}<DT><H3>${encodeEntities(folder.name)}</H3>`);
+    out.push(`${indent(depth)}<DL><p>`);
+    writeLinks(folder.links, depth + 1);
+    for (const child of folder.folders) writeFolder(child, depth + 1);
+    out.push(`${indent(depth)}</DL><p>`);
+  };
 
-  writeLinks(looseLinks, 0)
-  for (const folder of folders) writeFolder(folder, 0)
-  out.push('</DL><p>', '')
-  return out.join('\n')
+  writeLinks(looseLinks, 0);
+  for (const folder of folders) writeFolder(folder, 0);
+  out.push("</DL><p>", "");
+  return out.join("\n");
 }

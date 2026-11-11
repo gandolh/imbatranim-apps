@@ -1,6 +1,6 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import type { Difficulty } from '../../apps/minesweeper/src/model'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { Difficulty } from "../../apps/minesweeper/src/model";
 
 /**
  * Win/loss records and best times. User config in the house key
@@ -9,19 +9,19 @@ import type { Difficulty } from '../../apps/minesweeper/src/model'
  */
 type GamesStats = {
   minesweeper: {
-    wins: number
-    losses: number
+    wins: number;
+    losses: number;
     /** Best completion time in seconds, per difficulty. */
-    best: Partial<Record<Difficulty, number>>
-  }
+    best: Partial<Record<Difficulty, number>>;
+  };
   solitaire: {
-    wins: number
-    losses: number
-  }
-  recordMinesweeper: (result: 'win' | 'loss', difficulty: Difficulty, seconds: number) => void
-  recordSolitaireWin: () => void
-  recordSolitaireLoss: () => void
-}
+    wins: number;
+    losses: number;
+  };
+  recordMinesweeper: (result: "win" | "loss", difficulty: Difficulty, seconds: number) => void;
+  recordSolitaireWin: () => void;
+  recordSolitaireLoss: () => void;
+};
 
 export const useGamesStats = create<GamesStats>()(
   persist(
@@ -31,21 +31,18 @@ export const useGamesStats = create<GamesStats>()(
       recordMinesweeper: (result, difficulty, seconds) =>
         set((s) => ({
           minesweeper: {
-            wins: s.minesweeper.wins + (result === 'win' ? 1 : 0),
-            losses: s.minesweeper.losses + (result === 'loss' ? 1 : 0),
+            wins: s.minesweeper.wins + (result === "win" ? 1 : 0),
+            losses: s.minesweeper.losses + (result === "loss" ? 1 : 0),
             best:
-              result === 'win' &&
-              (s.minesweeper.best[difficulty] === undefined ||
-                seconds < s.minesweeper.best[difficulty]!)
+              result === "win" &&
+              (s.minesweeper.best[difficulty] === undefined || seconds < s.minesweeper.best[difficulty]!)
                 ? { ...s.minesweeper.best, [difficulty]: seconds }
                 : s.minesweeper.best,
           },
         })),
-      recordSolitaireWin: () =>
-        set((s) => ({ solitaire: { ...s.solitaire, wins: s.solitaire.wins + 1 } })),
-      recordSolitaireLoss: () =>
-        set((s) => ({ solitaire: { ...s.solitaire, losses: s.solitaire.losses + 1 } })),
+      recordSolitaireWin: () => set((s) => ({ solitaire: { ...s.solitaire, wins: s.solitaire.wins + 1 } })),
+      recordSolitaireLoss: () => set((s) => ({ solitaire: { ...s.solitaire, losses: s.solitaire.losses + 1 } })),
     }),
-    { name: 'imbatranimos:games' }
-  )
-)
+    { name: "imbatranimos:games" },
+  ),
+);

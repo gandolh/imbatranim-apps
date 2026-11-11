@@ -8,7 +8,7 @@
   --accent-on: #ffffff;
 }
 :root,
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
   --k-surface: #0d0d0e;
   --k-surface-dim: #070708;
   --k-surface-bright: #1b1b1d;
@@ -28,7 +28,7 @@
   --k-on-error-container: #ffb4ab;
   color-scheme: dark;
 }
-:root[data-theme='light'] {
+:root[data-theme="light"] {
   --k-surface: #f3f3f1;
   --k-surface-dim: #e0e0dc;
   --k-surface-bright: #ffffff;
@@ -62,7 +62,7 @@ body,
   overflow: hidden;
   background-color: var(--k-surface);
   color: var(--k-on-surface);
-  font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   font-size: 13px;
 }
 .harness-window {

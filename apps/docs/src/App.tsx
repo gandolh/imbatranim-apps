@@ -1,5 +1,5 @@
-import type { KitAppProps } from '@imbatranim-office/shared'
-import { Docs } from './Docs'
+import type { KitAppProps } from "@imbatranim-office/shared";
+import { Docs } from "./Docs";
 
 /**
  * The module the desktop renders: the built-in's manifest
@@ -14,5 +14,5 @@ import { Docs } from './Docs'
  * URL and has no server.
  */
 export function App({ windowId }: KitAppProps) {
-  return <Docs windowId={windowId} />
+  return <Docs windowId={windowId} />;
 }

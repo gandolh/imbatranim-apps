@@ -1,5 +1,5 @@
-import type { Environment, EnvVar, RestClientData } from '../types'
-import type { Variables } from './interpolate'
+import type { Environment, EnvVar, RestClientData } from "../types";
+import type { Variables } from "./interpolate";
 
 /**
  * Environments: named sets of variables, and the honesty rules around secrets.
@@ -17,15 +17,15 @@ import type { Variables } from './interpolate'
  *   and interpolates at send time.
  */
 
-export const MAX_ENVIRONMENTS = 20
-export const MAX_VARS_PER_ENV = 100
+export const MAX_ENVIRONMENTS = 20;
+export const MAX_VARS_PER_ENV = 100;
 
 export function newEnvironment(name: string, id: string): Environment {
-  return { id, name, vars: [] }
+  return { id, name, vars: [] };
 }
 
 export function newVar(id: string): EnvVar {
-  return { id, name: '', value: '', secret: false }
+  return { id, name: "", value: "", secret: false };
 }
 
 /**
@@ -35,20 +35,20 @@ export function newVar(id: string): EnvVar {
  * half-typed row in the editor cannot break a send.
  */
 export function toVariables(env: Environment | null): Variables {
-  if (!env) return {}
-  const vars: Variables = {}
+  if (!env) return {};
+  const vars: Variables = {};
   for (const entry of env.vars) {
-    const name = entry.name.trim()
-    if (name === '') continue
-    vars[name] = entry.value
+    const name = entry.name.trim();
+    if (name === "") continue;
+    vars[name] = entry.value;
   }
-  return vars
+  return vars;
 }
 
 /** The active environment, or null when none is selected or it has been deleted. */
 export function activeEnvironment(data: RestClientData): Environment | null {
-  if (!data.activeEnvId) return null
-  return data.environments.find((e) => e.id === data.activeEnvId) ?? null
+  if (!data.activeEnvId) return null;
+  return data.environments.find((e) => e.id === data.activeEnvId) ?? null;
 }
 
 /**
@@ -61,14 +61,14 @@ export function activeEnvironment(data: RestClientData): Environment | null {
 export function exportableEnvironments(environments: Environment[]): Environment[] {
   return environments.map((env) => ({
     ...env,
-    vars: env.vars.map((entry) => (entry.secret ? { ...entry, value: '' } : entry)),
-  }))
+    vars: env.vars.map((entry) => (entry.secret ? { ...entry, value: "" } : entry)),
+  }));
 }
 
 /** Mask for display. Never used for anything but rendering. */
 export function maskValue(value: string): string {
-  if (value === '') return ''
-  return '•'.repeat(Math.min(value.length, 12))
+  if (value === "") return "";
+  return "•".repeat(Math.min(value.length, 12));
 }
 
 /**
@@ -78,8 +78,8 @@ export function maskValue(value: string): string {
  * common case is typing `{{userId}}` into a URL and then wanting somewhere to put it.
  */
 export function undefinedVars(referenced: string[], env: Environment | null): string[] {
-  const known = new Set(Object.keys(toVariables(env)))
-  return referenced.filter((name) => !known.has(name))
+  const known = new Set(Object.keys(toVariables(env)));
+  return referenced.filter((name) => !known.has(name));
 }
 
 /**
@@ -87,17 +87,13 @@ export function undefinedVars(referenced: string[], env: Environment | null): st
  *
  * Returns a new environment; never mutates, because the caller holds it in React state.
  */
-export function withVars(
-  env: Environment,
-  names: string[],
-  idFor: (i: number) => string
-): Environment {
-  const known = new Set(env.vars.map((v) => v.name.trim()))
+export function withVars(env: Environment, names: string[], idFor: (i: number) => string): Environment {
+  const known = new Set(env.vars.map((v) => v.name.trim()));
   const additions = names
     .filter((name) => !known.has(name))
     .slice(0, Math.max(0, MAX_VARS_PER_ENV - env.vars.length))
-    .map((name, i) => ({ id: idFor(i), name, value: '', secret: looksSecret(name) }))
-  return { ...env, vars: [...env.vars, ...additions] }
+    .map((name, i) => ({ id: idFor(i), name, value: "", secret: looksSecret(name) }));
+  return { ...env, vars: [...env.vars, ...additions] };
 }
 
 /**
@@ -108,7 +104,7 @@ export function withVars(
  * is one click.
  */
 export function looksSecret(name: string): boolean {
-  return /token|secret|password|passwd|pwd|key|auth|bearer|credential/i.test(name)
+  return /token|secret|password|passwd|pwd|key|auth|bearer|credential/i.test(name);
 }
 
 // ---------------------------------------------------------------------------
@@ -123,7 +119,7 @@ export function looksSecret(name: string): boolean {
  * safe to export and correct in every environment, instead of a token baked into a file.
  */
 export function bearerHeader(varName: string): { name: string; value: string } {
-  return { name: 'Authorization', value: `Bearer {{${varName}}}` }
+  return { name: "Authorization", value: `Bearer {{${varName}}}` };
 }
 
 /**
@@ -135,18 +131,15 @@ export function bearerHeader(varName: string): { name: string; value: string } {
  * IS a `{{var}}`, encoding it would produce nonsense, so that case is refused loudly
  * rather than silently sending a broken header.
  */
-export function basicHeader(
-  user: string,
-  password: string
-): { name: string; value: string } | { error: string } {
+export function basicHeader(user: string, password: string): { name: string; value: string } | { error: string } {
   if (/\{\{/.test(user) || /\{\{/.test(password)) {
     return {
       error:
-        'Basic auth has to be encoded, so it cannot use a {{variable}} directly. Put the whole encoded value in a variable and use Bearer-style header instead, or type the password here.',
-    }
+        "Basic auth has to be encoded, so it cannot use a {{variable}} directly. Put the whole encoded value in a variable and use Bearer-style header instead, or type the password here.",
+    };
   }
-  const bytes = new TextEncoder().encode(`${user}:${password}`)
-  let binary = ''
-  for (const byte of bytes) binary += String.fromCharCode(byte)
-  return { name: 'Authorization', value: `Basic ${btoa(binary)}` }
+  const bytes = new TextEncoder().encode(`${user}:${password}`);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return { name: "Authorization", value: `Basic ${btoa(binary)}` };
 }

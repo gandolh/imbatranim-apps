@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { CalendarClock, CheckCheck, FolderInput, ListPlus, Plus, Trash2, X } from 'lucide-react'
-import { ScrollArea, cn, useConfirm, usePrompt, useSystem } from '@imbatranim/ui'
-import { TodoRow } from './TodoRow'
-import { hasHiddenSelection, pruneSelection } from './bulkSelection'
-import { dueAtFromInput, isOverdue } from './due'
-import { SORT_LABELS, SORT_MODES, canReorder, sortTodos } from './sort'
+import { useEffect, useMemo, useRef, useState } from "react";
+import { CalendarClock, CheckCheck, FolderInput, ListPlus, Plus, Trash2, X } from "lucide-react";
+import { ScrollArea, cn, useConfirm, usePrompt, useSystem } from "@imbatranim/ui";
+import { TodoRow } from "./TodoRow";
+import { hasHiddenSelection, pruneSelection } from "./bulkSelection";
+import { dueAtFromInput, isOverdue } from "./due";
+import { SORT_LABELS, SORT_MODES, canReorder, sortTodos } from "./sort";
 import {
   useClearCompletedMutation,
   useCreateListMutation,
@@ -15,16 +15,16 @@ import {
   useReorderTodosMutation,
   useTodosQuery,
   useUpdateTodoMutation,
-} from './queries/todosQueries'
-import type { Filter, SortMode, Todo as TodoItem } from './types'
+} from "./queries/todosQueries";
+import type { Filter, SortMode, Todo as TodoItem } from "./types";
 
-const FILTERS: Filter[] = ['all', 'active', 'completed']
+const FILTERS: Filter[] = ["all", "active", "completed"];
 
 const EMPTY_MESSAGES: Record<Filter, string> = {
-  all: 'No tasks',
-  active: 'Nothing active',
-  completed: 'Nothing completed',
-}
+  all: "No tasks",
+  active: "Nothing active",
+  completed: "Nothing completed",
+};
 
 /**
  * How often the relative due labels are refreshed.
@@ -33,101 +33,101 @@ const EMPTY_MESSAGES: Record<Filter, string> = {
  * occasional `HH:mm`, none of which change faster. Without a tick at all, a window
  * left open overnight would keep calling yesterday's tasks "Today".
  */
-const CLOCK_TICK_MS = 60_000
+const CLOCK_TICK_MS = 60_000;
 
 function useMinuteClock(): number {
-  const [now, setNow] = useState(() => Date.now())
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), CLOCK_TICK_MS)
-    return () => clearInterval(id)
-  }, [])
-  return now
+    const id = setInterval(() => setNow(Date.now()), CLOCK_TICK_MS);
+    return () => clearInterval(id);
+  }, []);
+  return now;
 }
 
 export function Todo({ windowId: _windowId }: { windowId: string }) {
-  const [filter, setFilter] = useState<Filter>('all')
-  const [listId, setListId] = useState<number | null>(null)
-  const [sort, setSort] = useState<SortMode>('manual')
-  const [addText, setAddText] = useState('')
-  const [addDue, setAddDue] = useState('')
-  const [addDueOpen, setAddDueOpen] = useState(false)
-  const [selected, setSelected] = useState<Set<number>>(() => new Set())
-  const [selectMode, setSelectMode] = useState(false)
-  const addInputRef = useRef<HTMLInputElement>(null)
-  const now = useMinuteClock()
-  const system = useSystem()
+  const [filter, setFilter] = useState<Filter>("all");
+  const [listId, setListId] = useState<number | null>(null);
+  const [sort, setSort] = useState<SortMode>("manual");
+  const [addText, setAddText] = useState("");
+  const [addDue, setAddDue] = useState("");
+  const [addDueOpen, setAddDueOpen] = useState(false);
+  const [selected, setSelected] = useState<Set<number>>(() => new Set());
+  const [selectMode, setSelectMode] = useState(false);
+  const addInputRef = useRef<HTMLInputElement>(null);
+  const now = useMinuteClock();
+  const system = useSystem();
 
-  const { confirm, confirmDialog } = useConfirm()
-  const { prompt, promptDialog } = usePrompt()
+  const { confirm, confirmDialog } = useConfirm();
+  const { prompt, promptDialog } = usePrompt();
 
-  const scope = { filter, listId }
-  const { data: serverItems, isPending } = useTodosQuery(scope)
-  const { data: lists } = useListsQuery()
+  const scope = { filter, listId };
+  const { data: serverItems, isPending } = useTodosQuery(scope);
+  const { data: lists } = useListsQuery();
 
-  const createTodo = useCreateTodoMutation()
-  const updateTodo = useUpdateTodoMutation()
-  const deleteTodo = useDeleteTodoMutation()
-  const reorder = useReorderTodosMutation()
-  const clearCompleted = useClearCompletedMutation()
-  const createList = useCreateListMutation()
-  const deleteList = useDeleteListMutation()
+  const createTodo = useCreateTodoMutation();
+  const updateTodo = useUpdateTodoMutation();
+  const deleteTodo = useDeleteTodoMutation();
+  const reorder = useReorderTodosMutation();
+  const clearCompleted = useClearCompletedMutation();
+  const createList = useCreateListMutation();
+  const deleteList = useDeleteListMutation();
 
   /**
    * Local order, so a drag moves the row under the cursor instead of waiting for a
    * round trip. Resynced when the server data changes — state adjustment during
    * render rather than an effect, which is the house idiom here.
    */
-  const [items, setItems] = useState<TodoItem[]>([])
-  const [prevServerItems, setPrevServerItems] = useState(serverItems)
+  const [items, setItems] = useState<TodoItem[]>([]);
+  const [prevServerItems, setPrevServerItems] = useState(serverItems);
   if (serverItems !== prevServerItems) {
-    setPrevServerItems(serverItems)
-    setItems(serverItems ?? [])
+    setPrevServerItems(serverItems);
+    setItems(serverItems ?? []);
   }
 
-  const visible = useMemo(() => sortTodos(items, sort), [items, sort])
+  const visible = useMemo(() => sortTodos(items, sort), [items, sort]);
 
   // Confine the bulk selection to visible rows. A filter/list switch (or a reload)
   // changes what is on screen, so without this a bulk Delete/Complete could act on
   // a task the user can no longer see (M2). Adjusted during render — the house
   // idiom here — and converges: after pruning, nothing hidden remains selected.
-  const visibleIds = useMemo(() => new Set(visible.map((t) => t.id)), [visible])
+  const visibleIds = useMemo(() => new Set(visible.map((t) => t.id)), [visible]);
   if (hasHiddenSelection(selected, visibleIds)) {
-    setSelected(pruneSelection(selected, visibleIds))
+    setSelected(pruneSelection(selected, visibleIds));
   }
 
-  const reorderable = canReorder(sort)
+  const reorderable = canReorder(sort);
   // Only meaningful when the loaded scope can contain completed todos — the Active
   // tab has never seen them, so counting its rows would always give 0.
-  const knowsCompletedCount = filter !== 'active'
-  const completedCount = items.filter((t) => t.completed).length
-  const overdueCount = items.filter((t) => isOverdue(t, now)).length
+  const knowsCompletedCount = filter !== "active";
+  const completedCount = items.filter((t) => t.completed).length;
+  const overdueCount = items.filter((t) => isOverdue(t, now)).length;
 
   function handleDragEnd(fromIndex: number, toIndex: number) {
-    const next = [...visible]
-    const [moved] = next.splice(fromIndex, 1)
-    next.splice(toIndex, 0, moved)
-    setItems(next)
+    const next = [...visible];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    setItems(next);
     // The ids of the VISIBLE rows only. The store treats them as a relative
     // reordering and leaves rows this view filters out exactly where they are — it
     // used to stamp 1..N across the whole table, which collided with the hidden
     // rows' positions.
-    reorder.mutate(next.map((t) => t.id))
+    reorder.mutate(next.map((t) => t.id));
   }
 
   function handleAdd() {
-    const text = addText.trim()
-    if (!text) return
+    const text = addText.trim();
+    if (!text) return;
     createTodo.mutate({
       text,
       dueAt: addDue ? dueAtFromInput(addDue) : null,
       // A task added while looking at one list belongs to it — anything else means
       // typing into a list and watching the task land somewhere else.
       listId,
-    })
-    setAddText('')
+    });
+    setAddText("");
     // Keeps the date (several tasks often share a day) and keeps focus, so adding
     // the next one is just typing.
-    addInputRef.current?.focus()
+    addInputRef.current?.focus();
   }
 
   /**
@@ -140,45 +140,45 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
    * server actually deleted.
    */
   async function handleClearCompleted() {
-    if (knowsCompletedCount && completedCount === 0) return
+    if (knowsCompletedCount && completedCount === 0) return;
     const ok = await confirm({
-      title: 'Clear completed',
+      title: "Clear completed",
       message: knowsCompletedCount
-        ? `Delete ${completedCount} completed task${completedCount === 1 ? '' : 's'}${listId === null ? '' : ' in this list'}? This cannot be undone.`
-        : `Delete every completed task${listId === null ? '' : ' in this list'}? This cannot be undone.`,
+        ? `Delete ${completedCount} completed task${completedCount === 1 ? "" : "s"}${listId === null ? "" : " in this list"}? This cannot be undone.`
+        : `Delete every completed task${listId === null ? "" : " in this list"}? This cannot be undone.`,
       destructive: true,
-    })
-    if (!ok) return
+    });
+    if (!ok) return;
     clearCompleted.mutate(listId, {
       onSuccess: ({ deleted }) => {
         if (deleted === 0) {
           system.notify({
-            title: 'Nothing to clear',
-            body: 'There were no completed tasks here.',
-            level: 'info',
-          })
+            title: "Nothing to clear",
+            body: "There were no completed tasks here.",
+            level: "info",
+          });
         } else if (!knowsCompletedCount) {
           system.notify({
-            title: 'Completed tasks cleared',
-            body: `${deleted} task${deleted === 1 ? '' : 's'} deleted.`,
-            level: 'success',
-          })
+            title: "Completed tasks cleared",
+            body: `${deleted} task${deleted === 1 ? "" : "s"} deleted.`,
+            level: "success",
+          });
         }
       },
-    })
+    });
   }
 
   async function handleBulkDelete() {
-    if (selected.size === 0) return
+    if (selected.size === 0) return;
     const ok = await confirm({
-      title: 'Delete tasks',
-      message: `Delete ${selected.size} selected task${selected.size === 1 ? '' : 's'}? This cannot be undone.`,
+      title: "Delete tasks",
+      message: `Delete ${selected.size} selected task${selected.size === 1 ? "" : "s"}? This cannot be undone.`,
       destructive: true,
-    })
-    if (!ok) return
-    for (const id of selected) deleteTodo.mutate(id)
-    setSelected(new Set())
-    setSelectMode(false)
+    });
+    if (!ok) return;
+    for (const id of selected) deleteTodo.mutate(id);
+    setSelected(new Set());
+    setSelectMode(false);
   }
 
   /**
@@ -191,81 +191,81 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
    * list filter.
    */
   async function handleBulkMove() {
-    if (selected.size === 0) return
+    if (selected.size === 0) return;
     const options = [
-      { id: 'none', label: 'No list' },
+      { id: "none", label: "No list" },
       ...(lists ?? []).map((l) => ({ id: String(l.id), label: l.name })),
-    ]
+    ];
     const picked = await prompt({
-      title: `Move ${selected.size} task${selected.size === 1 ? '' : 's'}`,
-      message: `Type a list name to file them under: ${options.map((o) => o.label).join(', ')}`,
-      placeholder: options[1]?.label ?? 'No list',
-      confirmLabel: 'Move',
-    })
-    const name = picked?.trim()
-    if (!name) return
-    const match = options.find((o) => o.label.toLowerCase() === name.toLowerCase())
+      title: `Move ${selected.size} task${selected.size === 1 ? "" : "s"}`,
+      message: `Type a list name to file them under: ${options.map((o) => o.label).join(", ")}`,
+      placeholder: options[1]?.label ?? "No list",
+      confirmLabel: "Move",
+    });
+    const name = picked?.trim();
+    if (!name) return;
+    const match = options.find((o) => o.label.toLowerCase() === name.toLowerCase());
     if (!match) {
-      system.notify({ title: 'No such list', body: name, level: 'error' })
-      return
+      system.notify({ title: "No such list", body: name, level: "error" });
+      return;
     }
-    const target = match.id === 'none' ? null : Number(match.id)
-    for (const id of selected) updateTodo.mutate({ id, patch: { listId: target } })
-    setSelected(new Set())
-    setSelectMode(false)
+    const target = match.id === "none" ? null : Number(match.id);
+    for (const id of selected) updateTodo.mutate({ id, patch: { listId: target } });
+    setSelected(new Set());
+    setSelectMode(false);
   }
 
   function handleBulkComplete() {
-    for (const id of selected) updateTodo.mutate({ id, patch: { completed: true } })
-    setSelected(new Set())
-    setSelectMode(false)
+    for (const id of selected) updateTodo.mutate({ id, patch: { completed: true } });
+    setSelected(new Set());
+    setSelectMode(false);
   }
 
   async function handleNewList() {
     const name = await prompt({
-      title: 'New list',
-      message: 'Tasks can be filed under one list.',
-      placeholder: 'Work',
-      confirmLabel: 'Create',
-    })
-    if (!name?.trim()) return
-    createList.mutate(name.trim(), { onSuccess: (created) => setListId(created.id) })
+      title: "New list",
+      message: "Tasks can be filed under one list.",
+      placeholder: "Work",
+      confirmLabel: "Create",
+    });
+    if (!name?.trim()) return;
+    createList.mutate(name.trim(), { onSuccess: (created) => setListId(created.id) });
   }
 
   async function handleDeleteList() {
-    const current = lists?.find((l) => l.id === listId)
-    if (!current) return
+    const current = lists?.find((l) => l.id === listId);
+    if (!current) return;
     const ok = await confirm({
-      title: 'Delete list',
+      title: "Delete list",
       message: `Delete “${current.name}”? Its tasks are kept and become unfiled.`,
       destructive: true,
-    })
-    if (!ok) return
+    });
+    if (!ok) return;
     deleteList.mutate(current.id, {
       onSuccess: (result) => {
-        setListId(null)
+        setListId(null);
         if (result.unfiled > 0) {
           system.notify({
-            title: 'List deleted',
-            body: `${result.unfiled} task${result.unfiled === 1 ? '' : 's'} kept, now unfiled.`,
-            level: 'info',
-          })
+            title: "List deleted",
+            body: `${result.unfiled} task${result.unfiled === 1 ? "" : "s"} kept, now unfiled.`,
+            level: "info",
+          });
         }
       },
-    })
+    });
   }
 
   function toggleSelected(id: number) {
     setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }
 
   const tab =
-    'font-ui flex h-full items-center px-2.5 text-[12px] capitalize whitespace-nowrap outline-none focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset'
+    "font-ui flex h-full items-center px-2.5 text-[12px] capitalize whitespace-nowrap outline-none focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset";
 
   return (
     <div className="bg-surface-container-lowest flex h-full flex-col">
@@ -275,10 +275,10 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
           type="button"
           onClick={() => setListId(null)}
           className={cn(
-            'focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset',
+            "focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
             listId === null
-              ? 'border-primary bg-primary-container text-on-primary-container'
-              : 'border-outline-variant text-on-surface-variant hover:text-on-surface'
+              ? "border-primary bg-primary-container text-on-primary-container"
+              : "border-outline-variant text-on-surface-variant hover:text-on-surface",
           )}
         >
           All
@@ -289,10 +289,10 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             type="button"
             onClick={() => setListId(l.id)}
             className={cn(
-              'focus-visible:ring-primary font-ui rounded-control max-w-28 truncate border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset',
+              "focus-visible:ring-primary font-ui rounded-control max-w-28 truncate border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
               listId === l.id
-                ? 'border-primary bg-primary-container text-on-primary-container'
-                : 'border-outline-variant text-on-surface-variant hover:text-on-surface'
+                ? "border-primary bg-primary-container text-on-primary-container"
+                : "border-outline-variant text-on-surface-variant hover:text-on-surface",
             )}
           >
             {l.name}
@@ -329,8 +329,8 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             onClick={() => setFilter(f)}
             className={cn(
               tab,
-              'text-on-surface-variant',
-              filter === f && 'border-primary text-on-surface border-b-2 font-semibold'
+              "text-on-surface-variant",
+              filter === f && "border-primary text-on-surface border-b-2 font-semibold",
             )}
           >
             {f}
@@ -365,24 +365,22 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
         <button
           type="button"
           onClick={() => {
-            setSelectMode((on) => !on)
-            setSelected(new Set())
+            setSelectMode((on) => !on);
+            setSelected(new Set());
           }}
           aria-pressed={selectMode}
           className={cn(
-            'focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset',
+            "focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
             selectMode
-              ? 'border-primary bg-primary-container text-on-primary-container'
-              : 'border-outline-variant text-on-surface-variant hover:text-on-surface'
+              ? "border-primary bg-primary-container text-on-primary-container"
+              : "border-outline-variant text-on-surface-variant hover:text-on-surface",
           )}
         >
-          {selectMode ? 'Done selecting' : 'Select'}
+          {selectMode ? "Done selecting" : "Select"}
         </button>
         {selectMode ? (
           <>
-            <span className="font-ui text-on-surface-variant text-[11px]">
-              {selected.size} selected
-            </span>
+            <span className="font-ui text-on-surface-variant text-[11px]">{selected.size} selected</span>
             <button
               type="button"
               onClick={handleBulkComplete}
@@ -418,7 +416,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             disabled={knowsCompletedCount && completedCount === 0}
             className="rounded-control border-outline-variant text-on-surface-variant hover:text-on-surface font-ui focus-visible:ring-primary border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
           >
-            Clear completed{knowsCompletedCount && completedCount > 0 ? ` (${completedCount})` : ''}
+            Clear completed{knowsCompletedCount && completedCount > 0 ? ` (${completedCount})` : ""}
           </button>
         )}
         {!reorderable && (
@@ -453,9 +451,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
               onPatch={(id, patch) => updateTodo.mutate({ id, patch })}
               onDelete={(id) => deleteTodo.mutate(id)}
               lists={lists ?? []}
-              selection={
-                selectMode ? { selected: selected.has(todo.id), onToggle: toggleSelected } : null
-              }
+              selection={selectMode ? { selected: selected.has(todo.id), onToggle: toggleSelected } : null}
             />
           ))
         )}
@@ -471,20 +467,18 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             autoFocus
             className="font-content text-on-surface placeholder:text-on-surface-variant focus-visible:ring-primary min-w-0 flex-1 bg-transparent text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
             placeholder={
-              listId === null
-                ? 'Add a task…'
-                : `Add to ${lists?.find((l) => l.id === listId)?.name ?? 'list'}…`
+              listId === null ? "Add a task…" : `Add to ${lists?.find((l) => l.id === listId)?.name ?? "list"}…`
             }
             value={addText}
             onChange={(e) => setAddText(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') handleAdd()
+              if (e.key === "Enter") handleAdd();
               // Escape clears the field rather than blurring, so a half-typed task
               // can be abandoned without reaching for the mouse.
-              if (e.key === 'Escape') {
-                setAddText('')
-                setAddDue('')
-                setAddDueOpen(false)
+              if (e.key === "Escape") {
+                setAddText("");
+                setAddDue("");
+                setAddDueOpen(false);
               }
             }}
           />
@@ -495,8 +489,8 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             aria-label="Set a due date for new tasks"
             title="Set a due date for new tasks"
             className={cn(
-              'focus-visible:ring-primary shrink-0 p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset',
-              addDue ? 'text-primary' : 'text-on-surface-variant'
+              "focus-visible:ring-primary shrink-0 p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset",
+              addDue ? "text-primary" : "text-on-surface-variant",
             )}
           >
             <CalendarClock size={13} />
@@ -513,9 +507,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
         </div>
         {addDueOpen && (
           <div className="border-outline-variant flex items-center gap-1.5 border-t px-2 py-1.5">
-            <span className="font-ui text-on-surface-variant text-[10px] tracking-wider uppercase">
-              Due
-            </span>
+            <span className="font-ui text-on-surface-variant text-[10px] tracking-wider uppercase">Due</span>
             <input
               type="date"
               value={addDue}
@@ -526,7 +518,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             {addDue && (
               <button
                 type="button"
-                onClick={() => setAddDue('')}
+                onClick={() => setAddDue("")}
                 aria-label="Clear the due date"
                 className="text-on-surface-variant hover:text-error focus-visible:ring-primary p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset"
               >
@@ -545,5 +537,5 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
       {confirmDialog}
       {promptDialog}
     </div>
-  )
+  );
 }

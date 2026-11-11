@@ -13,28 +13,28 @@
  * Every URL is relative (`base: './'`), so the tree works wherever the OS
  * serves `dist/os`.
  */
-import { existsSync, readdirSync } from 'node:fs'
-import { join } from 'node:path'
-import type { Plugin, UserConfig } from 'vite'
-import { appStyles } from './appCss.ts'
-import { readSharedExports } from './exportNames.ts'
-import { readKitSnapshot } from './kitSnapshot.ts'
-import { pdfjsWasm } from './pdfjsWasm.ts'
-import { BARE_SHARED_IMPORT, noSharedKitInWorkers, sharedKitExternals } from './sharedKit.ts'
-import { readVendorStyles, type VendorStyle } from './vendorCss.ts'
+import { existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import type { Plugin, UserConfig } from "vite";
+import { appStyles } from "./appCss.ts";
+import { readSharedExports } from "./exportNames.ts";
+import { readKitSnapshot } from "./kitSnapshot.ts";
+import { pdfjsWasm } from "./pdfjsWasm.ts";
+import { BARE_SHARED_IMPORT, noSharedKitInWorkers, sharedKitExternals } from "./sharedKit.ts";
+import { readVendorStyles, type VendorStyle } from "./vendorCss.ts";
 
 export type OsApp = {
   /** The directory name under `apps/`, and the output directory under `dist/os/`. */
-  name: string
+  name: string;
   /** `apps/<name>` */
-  dir: string
+  dir: string;
   /** `apps/<name>/src/App.tsx`, the module the desktop imports. */
-  entry: string
+  entry: string;
   /** Library stylesheets from `imbatranimOffice.vendorStyles` in its package.json. */
-  vendorStyles: VendorStyle[]
-}
+  vendorStyles: VendorStyle[];
+};
 
-const APP_NAME = /^[a-z][a-z0-9-]*$/
+const APP_NAME = /^[a-z][a-z0-9-]*$/;
 
 /**
  * Every `apps/<name>` that has `src/App.tsx` is an app: adding a workspace
@@ -43,66 +43,62 @@ const APP_NAME = /^[a-z][a-z0-9-]*$/
  * anything is built.
  */
 export function discoverApps(root: string): OsApp[] {
-  const appsDir = join(root, 'apps')
-  if (!existsSync(appsDir)) return []
+  const appsDir = join(root, "apps");
+  if (!existsSync(appsDir)) return [];
   return readdirSync(appsDir, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && existsSync(join(appsDir, d.name, 'src', 'App.tsx')))
+    .filter((d) => d.isDirectory() && existsSync(join(appsDir, d.name, "src", "App.tsx")))
     .map((d) => {
       if (!APP_NAME.test(d.name)) {
-        throw new Error(`apps/${d.name}: an app directory is lowercase letters, digits and "-"`)
+        throw new Error(`apps/${d.name}: an app directory is lowercase letters, digits and "-"`);
       }
-      const dir = join(appsDir, d.name)
+      const dir = join(appsDir, d.name);
       return {
         name: d.name,
         dir,
-        entry: join(dir, 'src', 'App.tsx'),
+        entry: join(dir, "src", "App.tsx"),
         vendorStyles: readVendorStyles(dir, d.name),
-      }
+      };
     })
-    .sort((a, b) => (a.name < b.name ? -1 : 1))
+    .sort((a, b) => (a.name < b.name ? -1 : 1));
 }
 
 /**
  * What the descriptor lists as the app's `styles`, paths inside `dist/os`:
  * `app.css` first, then the vendor stylesheets in their declared order.
  */
-export function appStylePaths(app: Pick<OsApp, 'name' | 'vendorStyles'>): string[] {
-  return [`${app.name}/app.css`, ...app.vendorStyles.map((v) => `${app.name}/${v.fileName}`)]
+export function appStylePaths(app: Pick<OsApp, "name" | "vendorStyles">): string[] {
+  return [`${app.name}/app.css`, ...app.vendorStyles.map((v) => `${app.name}/${v.fileName}`)];
 }
 
 /** Checks on the finished bundle that would otherwise surface as a broken window. */
 export function osOutputChecks(options: { apps: readonly OsApp[]; kitNotice?: string }): Plugin {
   return {
-    name: 'imbatranim-office:output-checks',
-    enforce: 'post',
+    name: "imbatranim-office:output-checks",
+    enforce: "post",
     buildStart() {
-      if (options.kitNotice) this.warn(options.kitNotice)
+      if (options.kitNotice) this.warn(options.kitNotice);
     },
     generateBundle(_output, bundle) {
       for (const app of options.apps) {
-        const chunk = bundle[`${app.name}/app.mjs`]
-        if (!chunk || chunk.type !== 'chunk' || !chunk.isEntry) {
-          this.error(`${app.name}/app.mjs was not emitted`)
-        } else if (!chunk.exports.includes('App')) {
-          this.error(
-            `apps/${app.name}/src/App.tsx must export App, the component the desktop renders`
-          )
+        const chunk = bundle[`${app.name}/app.mjs`];
+        if (!chunk || chunk.type !== "chunk" || !chunk.isEntry) {
+          this.error(`${app.name}/app.mjs was not emitted`);
+        } else if (!chunk.exports.includes("App")) {
+          this.error(`apps/${app.name}/src/App.tsx must export App, the component the desktop renders`);
         }
       }
       for (const file of Object.values(bundle)) {
-        if (!/\.m?js$/.test(file.fileName)) continue
-        const code = file.type === 'chunk' ? file.code : String(file.source)
+        if (!/\.m?js$/.test(file.fileName)) continue;
+        const code = file.type === "chunk" ? file.code : String(file.source);
         if (BARE_SHARED_IMPORT.test(code)) {
-          this.error(
-            `${file.fileName} still imports a shared module by name; the desktop lends those on its global`
-          )
+          this.error(`${file.fileName} still imports a shared module by name; the desktop lends those on its global`);
         }
         if (/\bprocess\.env\b/.test(code)) {
-          this.error(`${file.fileName} reads process.env, which does not exist in the browser`)
+          this.error(`${file.fileName} reads process.env, which does not exist in the browser`);
         }
       }
     },
-  }
+  };
 }
 
 export type OsBuildOptions = {
@@ -110,34 +106,33 @@ export type OsBuildOptions = {
    * The build's root: the repo root for Office, a group's folder for any other
    * group (`games`). Its `apps/<name>` are the apps.
    */
-  root: string
+  root: string;
   /** Defaults to `<root>/dist/os`. */
-  outDir?: string
+  outDir?: string;
   /** The kit snapshot; defaults to `<root>/vendor/imbatranim-ui`. */
-  vendorDir?: string
+  vendorDir?: string;
   /**
    * Source the apps share, scanned for every app's Tailwind classes, without
    * its `build` and `testing` directories. Defaults to
    * `<root>/packages/shared/src`; a directory that does not exist is skipped.
    */
-  sharedDir?: string
-}
+  sharedDir?: string;
+};
 
 /** The whole Vite config of `npm run build:os`. */
 export function osBuildConfig(options: OsBuildOptions): UserConfig {
-  const { root } = options
-  const apps = discoverApps(root)
-  if (apps.length === 0)
-    throw new Error(`no apps: nothing under ${join(root, 'apps')} has src/App.tsx`)
-  const kit = readKitSnapshot(options.vendorDir ?? join(root, 'vendor', 'imbatranim-ui'))
-  const shared = options.sharedDir ?? join(root, 'packages', 'shared', 'src')
+  const { root } = options;
+  const apps = discoverApps(root);
+  if (apps.length === 0) throw new Error(`no apps: nothing under ${join(root, "apps")} has src/App.tsx`);
+  const kit = readKitSnapshot(options.vendorDir ?? join(root, "vendor", "imbatranim-ui"));
+  const shared = options.sharedDir ?? join(root, "packages", "shared", "src");
 
   return {
     root,
-    base: './',
+    base: "./",
     publicDir: false,
     envDir: false,
-    logLevel: 'info',
+    logLevel: "info",
     plugins: [
       pdfjsWasm({ root }),
       sharedKitExternals({ exports: () => readSharedExports({ root, kitIndex: kit.index }) }),
@@ -145,7 +140,7 @@ export function osBuildConfig(options: OsBuildOptions): UserConfig {
         apps,
         themeCss: kit.themeCss,
         sharedSources: [shared],
-        sharedExcludes: [join(shared, 'build'), join(shared, 'testing')],
+        sharedExcludes: [join(shared, "build"), join(shared, "testing")],
       }),
       osOutputChecks({
         apps,
@@ -161,36 +156,36 @@ export function osBuildConfig(options: OsBuildOptions): UserConfig {
     // FORCE_COLOR, behind a check for Node) reads an empty object, as the
     // browser would see if it had one.
     define: {
-      'process.env.NODE_ENV': JSON.stringify('production'),
-      'process.env': '{}',
+      "process.env.NODE_ENV": JSON.stringify("production"),
+      "process.env": "{}",
     },
     worker: {
-      format: 'es',
+      format: "es",
       plugins: () => [noSharedKitInWorkers()],
       rolldownOptions: {
         output: {
-          entryFileNames: 'workers/[name]-[hash].mjs',
-          chunkFileNames: 'workers/[name]-[hash].mjs',
-          assetFileNames: 'assets/[name]-[hash][extname]',
+          entryFileNames: "workers/[name]-[hash].mjs",
+          chunkFileNames: "workers/[name]-[hash].mjs",
+          assetFileNames: "assets/[name]-[hash][extname]",
         },
       },
     },
     build: {
-      outDir: options.outDir ?? join(root, 'dist', 'os'),
+      outDir: options.outDir ?? join(root, "dist", "os"),
       emptyOutDir: true,
       copyPublicDir: false,
       reportCompressedSize: false,
       lib: {
         entry: Object.fromEntries(apps.map((app) => [`${app.name}/app`, app.entry])),
-        formats: ['es'],
+        formats: ["es"],
         fileName: (_format, entryName) => `${entryName}.mjs`,
       },
       rolldownOptions: {
         output: {
-          chunkFileNames: 'chunks/[name]-[hash].mjs',
-          assetFileNames: 'assets/[name]-[hash][extname]',
+          chunkFileNames: "chunks/[name]-[hash].mjs",
+          assetFileNames: "assets/[name]-[hash][extname]",
         },
       },
     },
-  }
+  };
 }

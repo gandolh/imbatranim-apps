@@ -17,45 +17,45 @@
  * <FormsPanel/> }`. The active tab id is the controller's `panelTab`, so Part B
  * can switch to its tab programmatically via `setPanelTab('forms')`.
  */
-import { Suspense } from 'react'
-import type { ComponentType, JSX, ReactNode } from 'react'
-import { LayoutGrid, List } from 'lucide-react'
-import { useReader } from '../app/context'
-import type { PanelTab } from '../app/types'
-import { OutlinePanel, ThumbnailsPanel } from '../lazy'
+import { Suspense } from "react";
+import type { ComponentType, JSX, ReactNode } from "react";
+import { LayoutGrid, List } from "lucide-react";
+import { useReader } from "../app/context";
+import type { PanelTab } from "../app/types";
+import { OutlinePanel, ThumbnailsPanel } from "../lazy";
 
 export interface SidePanelTab {
-  id: PanelTab
-  label: string
-  icon: ComponentType<{ size?: number }>
-  render: () => ReactNode
+  id: PanelTab;
+  label: string;
+  icon: ComponentType<{ size?: number }>;
+  render: () => ReactNode;
 }
 
 export interface SidePanelProps {
   /** PART B appends tabs (e.g. Forms) here. */
-  extraTabs?: SidePanelTab[]
+  extraTabs?: SidePanelTab[];
 }
 
 export function SidePanel({ extraTabs = [] }: SidePanelProps): JSX.Element {
-  const { panelTab, setPanelTab, painted } = useReader()
+  const { panelTab, setPanelTab, painted } = useReader();
 
   const tabs: SidePanelTab[] = [
     {
-      id: 'thumbnails',
-      label: 'Thumbnails',
+      id: "thumbnails",
+      label: "Thumbnails",
       icon: LayoutGrid,
       render: () => <ThumbnailsPanel />,
     },
     {
-      id: 'outline',
-      label: 'Outline',
+      id: "outline",
+      label: "Outline",
       icon: List,
       render: () => <OutlinePanel />,
     },
     ...extraTabs,
-  ]
+  ];
 
-  const active = tabs.find((t) => t.id === panelTab) ?? tabs[0]
+  const active = tabs.find((t) => t.id === panelTab) ?? tabs[0];
 
   return (
     <aside
@@ -64,8 +64,8 @@ export function SidePanel({ extraTabs = [] }: SidePanelProps): JSX.Element {
     >
       <div className="border-outline-variant flex border-b" role="tablist">
         {tabs.map((tab) => {
-          const isActive = tab.id === active?.id
-          const Icon = tab.icon
+          const isActive = tab.id === active?.id;
+          const Icon = tab.icon;
           return (
             <button
               key={tab.id}
@@ -73,22 +73,22 @@ export function SidePanel({ extraTabs = [] }: SidePanelProps): JSX.Element {
               role="tab"
               aria-selected={isActive}
               className={
-                'font-ui flex min-w-0 flex-1 items-center justify-center gap-1 px-1 py-2 text-[11px] ' +
+                "font-ui flex min-w-0 flex-1 items-center justify-center gap-1 px-1 py-2 text-[11px] " +
                 (isActive
-                  ? 'text-on-surface border-primary border-b-2'
-                  : 'text-on-surface-variant hover:bg-surface-container-high border-b-2 border-transparent')
+                  ? "text-on-surface border-primary border-b-2"
+                  : "text-on-surface-variant hover:bg-surface-container-high border-b-2 border-transparent")
               }
               onClick={() => setPanelTab(tab.id)}
             >
               <Icon size={14} />
               <span className="truncate">{tab.label}</span>
             </button>
-          )
+          );
         })}
       </div>
       <div className="min-h-0 flex-1 overflow-auto" role="tabpanel" data-panel-scroll>
         {painted && <Suspense fallback={null}>{active?.render()}</Suspense>}
       </div>
     </aside>
-  )
+  );
 }

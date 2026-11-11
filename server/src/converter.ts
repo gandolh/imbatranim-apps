@@ -11,34 +11,32 @@
  * `{ dwg: Uint8Array }`; this answers `{ ok: true, dxf }` (gzipped) or
  * `{ ok: false, detail }`, then exits.
  */
-import { fileURLToPath } from 'node:url'
-import { gzipSync } from 'node:zlib'
+import { fileURLToPath } from "node:url";
+import { gzipSync } from "node:zlib";
 
-export type ConverterRequest = { dwg: Uint8Array }
-export type ConverterReply = { ok: true; dxf: Uint8Array } | { ok: false; detail: string }
+export type ConverterRequest = { dwg: Uint8Array };
+export type ConverterReply = { ok: true; dxf: Uint8Array } | { ok: false; detail: string };
 
 type LibreDwgModule = {
   LibreDwg: {
-    create(wasmDir: string): Promise<{ dwg_write_dxf(bytes: Uint8Array): Uint8Array | null }>
-  }
-}
+    create(wasmDir: string): Promise<{ dwg_write_dxf(bytes: Uint8Array): Uint8Array | null }>;
+  };
+};
 
 async function convert(dwg: Uint8Array): Promise<ConverterReply> {
-  const lib = (await import('@mlightcad/libredwg-web')) as unknown as LibreDwgModule
+  const lib = (await import("@mlightcad/libredwg-web")) as unknown as LibreDwgModule;
   // The package's exports name only its JS; its wasm sits in `wasm/` beside `dist/`.
-  const wasmDir = fileURLToPath(new URL('../wasm', import.meta.resolve('@mlightcad/libredwg-web')))
-  const libredwg = await lib.LibreDwg.create(wasmDir)
-  const dxf = libredwg.dwg_write_dxf(dwg)
-  if (!dxf) return { ok: false, detail: 'LibreDWG returned no DXF' }
-  return { ok: true, dxf: gzipSync(dxf) }
+  const wasmDir = fileURLToPath(new URL("../wasm", import.meta.resolve("@mlightcad/libredwg-web")));
+  const libredwg = await lib.LibreDwg.create(wasmDir);
+  const dxf = libredwg.dwg_write_dxf(dwg);
+  if (!dxf) return { ok: false, detail: "LibreDWG returned no DXF" };
+  return { ok: true, dxf: gzipSync(dxf) };
 }
 
-process.once('message', (msg: ConverterRequest) => {
+process.once("message", (msg: ConverterRequest) => {
   convert(msg.dwg).then(
     (reply) => process.send!(reply, () => process.exit(0)),
     (err: unknown) =>
-      process.send!({ ok: false, detail: String(err).slice(0, 300) } satisfies ConverterReply, () =>
-        process.exit(0)
-      )
-  )
-})
+      process.send!({ ok: false, detail: String(err).slice(0, 300) } satisfies ConverterReply, () => process.exit(0)),
+  );
+});

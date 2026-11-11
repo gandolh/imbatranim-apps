@@ -1,3 +1,3 @@
 export function Main() {
-  return null
+  return null;
 }

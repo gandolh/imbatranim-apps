@@ -1,6 +1,6 @@
-import type { KitAppProps } from '@imbatranim/ui'
-import { Bookmarks } from './Bookmarks'
-import { bookmarksSource } from './commandSource'
+import type { KitAppProps } from "@imbatranim/ui";
+import { Bookmarks } from "./Bookmarks";
+import { bookmarksSource } from "./commandSource";
 
 /**
  * The module the desktop imports for `bookmarks`. The built-in's manifest
@@ -31,8 +31,8 @@ import { bookmarksSource } from './commandSource'
  * for the same reason (`netscape.ts`).
  */
 export function App({ windowId }: KitAppProps) {
-  return <Bookmarks windowId={windowId} />
+  return <Bookmarks windowId={windowId} />;
 }
 
 /** Bookmarks in the command palette and Start's search, with no window open. */
-export const commandSources = [bookmarksSource]
+export const commandSources = [bookmarksSource];

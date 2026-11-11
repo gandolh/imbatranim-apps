@@ -1,14 +1,14 @@
-import { Button, FileConflictError, useSystem } from '@imbatranim/ui'
-import { AlertTriangle } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { RequestBuilder } from './components/RequestBuilder'
-import { ResponseViewer } from './components/ResponseViewer'
-import { Sidebar } from './components/Sidebar'
-import { EnvironmentDialog } from './components/EnvironmentDialog'
-import { CurlDialog } from './components/CurlDialog'
-import { AuthDialog } from './components/AuthDialog'
-import { sendProxyRequest } from './api/httpProxyApi'
-import { EMPTY_DATA, LEGACY_FILE, loadData, saveData, type LoadResult } from './api/collectionsApi'
+import { Button, FileConflictError, useSystem } from "@imbatranim/ui";
+import { AlertTriangle } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { RequestBuilder } from "./components/RequestBuilder";
+import { ResponseViewer } from "./components/ResponseViewer";
+import { Sidebar } from "./components/Sidebar";
+import { EnvironmentDialog } from "./components/EnvironmentDialog";
+import { CurlDialog } from "./components/CurlDialog";
+import { AuthDialog } from "./components/AuthDialog";
+import { sendProxyRequest } from "./api/httpProxyApi";
+import { EMPTY_DATA, LEGACY_FILE, loadData, saveData, type LoadResult } from "./api/collectionsApi";
 import type {
   BodyMode,
   FormField,
@@ -18,54 +18,54 @@ import type {
   ProxyResponse,
   RestClientData,
   SavedRequest,
-} from './types'
-import { emptyHeaderRow, newId } from './lib/ui'
-import { activeEnvironment, toVariables } from './lib/environments'
-import { blocksSend, describeIssues, interpolateRequest, referencedVars } from './lib/interpolate'
-import { activeFields, buildMultipart, bytesToBase64, contentTypeFor } from './lib/multipart'
+} from "./types";
+import { emptyHeaderRow, newId } from "./lib/ui";
+import { activeEnvironment, toVariables } from "./lib/environments";
+import { blocksSend, describeIssues, interpolateRequest, referencedVars } from "./lib/interpolate";
+import { activeFields, buildMultipart, bytesToBase64, contentTypeFor } from "./lib/multipart";
 
-type BuilderTab = 'headers' | 'body'
-type OpenDialog = 'env' | 'curl-import' | 'curl-export' | 'auth' | null
+type BuilderTab = "headers" | "body";
+type OpenDialog = "env" | "curl-import" | "curl-export" | "auth" | null;
 /**
  * `conflict`: another window saved the doc since this one read it, so nothing
  * more is saved until a reload.
  */
-type LoadState = { status: 'loading' } | { status: 'conflict' } | LoadResult
+type LoadState = { status: "loading" } | { status: "conflict" } | LoadResult;
 
 /** Whether a whole-file save may replace what is on disk: only what was read, or nothing. */
-const canWrite = (load: LoadState) => load.status === 'ok' || load.status === 'missing'
+const canWrite = (load: LoadState) => load.status === "ok" || load.status === "missing";
 
 /** Pull a readable message out of an axios-style error without importing axios. */
 function extractError(err: unknown): string {
-  const e = err as { response?: { data?: { message?: unknown } }; message?: string }
-  const apiMsg = e?.response?.data?.message
-  if (typeof apiMsg === 'string') return apiMsg
-  if (Array.isArray(apiMsg)) return apiMsg.join(', ')
-  return e?.message ?? 'Request failed'
+  const e = err as { response?: { data?: { message?: unknown } }; message?: string };
+  const apiMsg = e?.response?.data?.message;
+  if (typeof apiMsg === "string") return apiMsg;
+  if (Array.isArray(apiMsg)) return apiMsg.join(", ");
+  return e?.message ?? "Request failed";
 }
 
 export function RestApiClient(_props: { windowId: string }) {
-  const system = useSystem()
-  const [method, setMethod] = useState<HttpMethod>('GET')
-  const [url, setUrl] = useState('')
-  const [headers, setHeaders] = useState<HeaderRow[]>([emptyHeaderRow()])
-  const [body, setBody] = useState('')
-  const [bodyMode, setBodyMode] = useState<BodyMode>('text')
-  const [form, setForm] = useState<FormField[]>([])
-  const [filePath, setFilePath] = useState('')
-  const [builderTab, setBuilderTab] = useState<BuilderTab>('headers')
+  const system = useSystem();
+  const [method, setMethod] = useState<HttpMethod>("GET");
+  const [url, setUrl] = useState("");
+  const [headers, setHeaders] = useState<HeaderRow[]>([emptyHeaderRow()]);
+  const [body, setBody] = useState("");
+  const [bodyMode, setBodyMode] = useState<BodyMode>("text");
+  const [form, setForm] = useState<FormField[]>([]);
+  const [filePath, setFilePath] = useState("");
+  const [builderTab, setBuilderTab] = useState<BuilderTab>("headers");
 
-  const [response, setResponse] = useState<ProxyResponse | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [dialog, setDialog] = useState<OpenDialog>(null)
+  const [response, setResponse] = useState<ProxyResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [dialog, setDialog] = useState<OpenDialog>(null);
 
-  const [data, setData] = useState<RestClientData>(EMPTY_DATA)
+  const [data, setData] = useState<RestClientData>(EMPTY_DATA);
   // Latest data ref so callbacks read the current snapshot without re-binding.
-  const dataRef = useRef(data)
+  const dataRef = useRef(data);
   useEffect(() => {
-    dataRef.current = data
-  }, [data])
+    dataRef.current = data;
+  }, [data]);
 
   /*
    * Every write saves the whole doc, so nothing may be written until the doc has
@@ -73,69 +73,69 @@ export function RestApiClient(_props: { windowId: string }) {
    * next Send replaced every saved request with one history entry. Send itself
    * still works while this is anything but writable: it is a proxy call.
    */
-  const [load, setLoad] = useState<LoadState>({ status: 'loading' })
-  const loadRef = useRef(load)
+  const [load, setLoad] = useState<LoadState>({ status: "loading" });
+  const loadRef = useRef(load);
   useEffect(() => {
-    loadRef.current = load
-  }, [load])
-  const loadSeq = useRef(0)
+    loadRef.current = load;
+  }, [load]);
+  const loadSeq = useRef(0);
   /** The doc's version as last read or saved, null for none yet: each save sends it. */
-  const versionRef = useRef<string | null>(null)
+  const versionRef = useRef<string | null>(null);
   /** Saves go one after another, each over the version the one before left. */
-  const savingRef = useRef<Promise<void>>(Promise.resolve())
+  const savingRef = useRef<Promise<void>>(Promise.resolve());
 
   /** Read the doc; only its answer touches state, and only if it is still the latest. */
   const fetchLoad = useCallback(() => {
-    const seq = ++loadSeq.current
+    const seq = ++loadSeq.current;
     void loadData(system).then((result) => {
-      if (seq !== loadSeq.current) return
-      if (result.status === 'ok') {
-        setData(result.data)
-        versionRef.current = result.version
-      } else if (result.status === 'missing') {
-        versionRef.current = null
+      if (seq !== loadSeq.current) return;
+      if (result.status === "ok") {
+        setData(result.data);
+        versionRef.current = result.version;
+      } else if (result.status === "missing") {
+        versionRef.current = null;
       }
-      loadRef.current = result
-      setLoad(result)
-    })
-  }, [system])
+      loadRef.current = result;
+      setLoad(result);
+    });
+  }, [system]);
 
   useEffect(() => {
-    fetchLoad()
-    const seqRef = loadSeq
+    fetchLoad();
+    const seqRef = loadSeq;
     return () => {
       // Drop an answer that lands after unmount.
-      seqRef.current++
-    }
-  }, [fetchLoad])
+      seqRef.current++;
+    };
+  }, [fetchLoad]);
 
   const retryLoad = useCallback(() => {
-    setLoad({ status: 'loading' })
-    fetchLoad()
-  }, [fetchLoad])
+    setLoad({ status: "loading" });
+    fetchLoad();
+  }, [fetchLoad]);
 
-  const [earlierDismissed, setEarlierDismissed] = useState(false)
+  const [earlierDismissed, setEarlierDismissed] = useState(false);
   /**
    * Pick the doc kept before the data folder: the pick gives this window the
    * file, and loading again moves it into the folder as a first run does.
    */
   const bringInEarlier = useCallback(async () => {
     const choice = await system.fs.pickOpen({
-      title: 'Bring in saved requests',
-      extensions: ['json'],
+      title: "Bring in saved requests",
+      extensions: ["json"],
       startIn: LEGACY_FILE,
-    })
-    if (!choice) return
+    });
+    if (!choice) return;
     if (choice.root !== LEGACY_FILE.root || choice.path !== LEGACY_FILE.path) {
       system.notify({
-        level: 'error',
-        title: 'That isn’t the earlier saved requests',
+        level: "error",
+        title: "That isn’t the earlier saved requests",
         body: `Pick ~/${LEGACY_FILE.path}.`,
-      })
-      return
+      });
+      return;
     }
-    retryLoad()
-  }, [system, retryLoad])
+    retryLoad();
+  }, [system, retryLoad]);
 
   /**
    * Save `next`, or refuse and return false while the doc has not been read.
@@ -147,28 +147,28 @@ export function RestApiClient(_props: { windowId: string }) {
    */
   const persist = useCallback(
     (next: RestClientData): boolean => {
-      if (!canWrite(loadRef.current)) return false
-      setData(next)
+      if (!canWrite(loadRef.current)) return false;
+      setData(next);
       savingRef.current = savingRef.current.then(async () => {
-        if (!canWrite(loadRef.current)) return
+        if (!canWrite(loadRef.current)) return;
         try {
-          versionRef.current = await saveData(system, next, versionRef.current)
+          versionRef.current = await saveData(system, next, versionRef.current);
         } catch (err) {
           if (err instanceof FileConflictError) {
-            loadRef.current = { status: 'conflict' }
-            setLoad(loadRef.current)
-            return
+            loadRef.current = { status: "conflict" };
+            setLoad(loadRef.current);
+            return;
           }
-          system.notify({ level: 'error', title: 'Save failed', body: extractError(err) })
+          system.notify({ level: "error", title: "Save failed", body: extractError(err) });
         }
-      })
-      return true
+      });
+      return true;
     },
-    [system]
-  )
+    [system],
+  );
 
-  const env = activeEnvironment(data)
-  const vars = useMemo(() => toVariables(env), [env])
+  const env = activeEnvironment(data);
+  const vars = useMemo(() => toVariables(env), [env]);
 
   /**
    * What will actually be sent, recomputed as the user types.
@@ -177,11 +177,11 @@ export function RestApiClient(_props: { windowId: string }) {
    * stays portable, which is the whole point of environments.
    */
   const preview = useMemo(
-    () => interpolateRequest({ url, headers, body: bodyMode === 'text' ? body : '' }, vars),
-    [url, headers, body, bodyMode, vars]
-  )
-  const issueText = describeIssues(preview.issues)
-  const sendBlocked = blocksSend(preview.issues)
+    () => interpolateRequest({ url, headers, body: bodyMode === "text" ? body : "" }, vars),
+    [url, headers, body, bodyMode, vars],
+  );
+  const issueText = describeIssues(preview.issues);
+  const sendBlocked = blocksSend(preview.issues);
 
   /** Variables the request mentions that this environment has no value for. */
   const missingVars = useMemo(() => {
@@ -189,9 +189,9 @@ export function RestApiClient(_props: { windowId: string }) {
       ...referencedVars(url),
       ...headers.flatMap((h) => [...referencedVars(h.name), ...referencedVars(h.value)]),
       ...referencedVars(body),
-    ])
-    return [...referenced].filter((name) => !(name in vars))
-  }, [url, headers, body, vars])
+    ]);
+    return [...referenced].filter((name) => !(name in vars));
+  }, [url, headers, body, vars]);
 
   // Prepend a bounded history entry (persistence flows through `persist`).
   const recordHistory = useCallback(
@@ -207,14 +207,14 @@ export function RestApiClient(_props: { windowId: string }) {
         headers,
         body,
         elapsedMs,
-      }
+      };
       persist({
         ...dataRef.current,
         history: [entry, ...dataRef.current.history].slice(0, 50),
-      })
+      });
     },
-    [method, url, headers, body, persist]
-  )
+    [method, url, headers, body, persist],
+  );
 
   /** Compose the request body according to the chosen mode. */
 
@@ -223,18 +223,18 @@ export function RestApiClient(_props: { windowId: string }) {
   const chooseFile = useCallback(
     async (current?: string): Promise<string | null> => {
       const choice = await system.fs.pickOpen({
-        title: 'Choose a file to send',
-        startIn: current ? { root: 'home', path: current } : undefined,
-      })
-      if (!choice) return null
-      if (choice.root !== 'home') {
-        system.notify({ level: 'error', title: 'Choose a file under your home folder' })
-        return null
+        title: "Choose a file to send",
+        startIn: current ? { root: "home", path: current } : undefined,
+      });
+      if (!choice) return null;
+      if (choice.root !== "home") {
+        system.notify({ level: "error", title: "Choose a file under your home folder" });
+        return null;
       }
-      return choice.path
+      return choice.path;
     },
-    [system]
-  )
+    [system],
+  );
   /**
    * The bytes of a file to send. A saved request names a file a later window
    * wasn't given (grants last for the window that picked it): the backend
@@ -243,74 +243,70 @@ export function RestApiClient(_props: { windowId: string }) {
   const readToSend = useCallback(
     async (path: string): Promise<{ bytes: Uint8Array; path: string }> => {
       try {
-        return { bytes: new Uint8Array(await system.fs.read('home', path)), path }
+        return { bytes: new Uint8Array(await system.fs.read("home", path)), path };
       } catch (err) {
-        if ((err as { response?: { status?: unknown } })?.response?.status !== 403) throw err
-        const again = await chooseFile(path)
-        if (!again)
-          throw new Error(`Choose ${path.split('/').pop()} again to send it`, { cause: err })
-        return { bytes: new Uint8Array(await system.fs.read('home', again)), path: again }
+        if ((err as { response?: { status?: unknown } })?.response?.status !== 403) throw err;
+        const again = await chooseFile(path);
+        if (!again) throw new Error(`Choose ${path.split("/").pop()} again to send it`, { cause: err });
+        return { bytes: new Uint8Array(await system.fs.read("home", again)), path: again };
       }
     },
-    [system, chooseFile]
-  )
+    [system, chooseFile],
+  );
   const composeBody = useCallback(async (): Promise<{
-    body?: string
-    bodyBase64?: string
-    contentType?: string
+    body?: string;
+    bodyBase64?: string;
+    contentType?: string;
   }> => {
-    if (method === 'GET' || method === 'HEAD') return {}
-    if (bodyMode === 'text') {
-      return { body: preview.body || undefined }
+    if (method === "GET" || method === "HEAD") return {};
+    if (bodyMode === "text") {
+      return { body: preview.body || undefined };
     }
-    if (bodyMode === 'file') {
-      if (!filePath.trim()) throw new Error('Choose a file to send as the body')
+    if (bodyMode === "file") {
+      if (!filePath.trim()) throw new Error("Choose a file to send as the body");
       // fs.read yields an ArrayBuffer; the multipart helpers work in views.
-      const sent = await readToSend(filePath.trim())
-      if (sent.path !== filePath.trim()) setFilePath(sent.path)
-      return { bodyBase64: bytesToBase64(sent.bytes), contentType: contentTypeFor(sent.path) }
+      const sent = await readToSend(filePath.trim());
+      if (sent.path !== filePath.trim()) setFilePath(sent.path);
+      return { bodyBase64: bytesToBase64(sent.bytes), contentType: contentTypeFor(sent.path) };
     }
     // multipart
-    const fields = activeFields(form)
-    if (fields.length === 0) throw new Error('Add at least one form field')
+    const fields = activeFields(form);
+    if (fields.length === 0) throw new Error("Add at least one form field");
     const parts = await Promise.all(
       fields.map(async (field) => {
         if (!field.filePath) {
           // Variables work inside a form value too.
-          return { name: field.name.trim(), value: interpolateOne(field.value, vars) }
+          return { name: field.name.trim(), value: interpolateOne(field.value, vars) };
         }
-        const sent = await readToSend(field.filePath)
+        const sent = await readToSend(field.filePath);
         return {
           name: field.name.trim(),
           bytes: sent.bytes,
-          fileName: sent.path.split('/').pop() ?? 'file',
+          fileName: sent.path.split("/").pop() ?? "file",
           contentType: contentTypeFor(sent.path),
-        }
-      })
-    )
-    const { bytes, contentType } = buildMultipart(parts)
-    return { bodyBase64: bytesToBase64(bytes), contentType }
-  }, [method, bodyMode, preview.body, filePath, form, vars, readToSend])
+        };
+      }),
+    );
+    const { bytes, contentType } = buildMultipart(parts);
+    return { bodyBase64: bytesToBase64(bytes), contentType };
+  }, [method, bodyMode, preview.body, filePath, form, vars, readToSend]);
 
   const handleSend = useCallback(async () => {
-    if (!url.trim() || loading) return
+    if (!url.trim() || loading) return;
     if (sendBlocked) {
-      system.notify({ level: 'error', title: 'Cannot send that', body: issueText })
-      return
+      system.notify({ level: "error", title: "Cannot send that", body: issueText });
+      return;
     }
-    setLoading(true)
-    setError(null)
-    setResponse(null)
+    setLoading(true);
+    setError(null);
+    setResponse(null);
     try {
-      const composed = await composeBody()
-      const outHeaders: Record<string, string> = {}
-      for (const header of preview.headers) outHeaders[header.name] = header.value
+      const composed = await composeBody();
+      const outHeaders: Record<string, string> = {};
+      for (const header of preview.headers) outHeaders[header.name] = header.value;
       // A composed body knows its own content type; a hand-written header wins.
-      if (
-        composed.contentType &&
-        !Object.keys(outHeaders).some((k) => k.toLowerCase() === 'content-type')
-      ) {
-        outHeaders['Content-Type'] = composed.contentType
+      if (composed.contentType && !Object.keys(outHeaders).some((k) => k.toLowerCase() === "content-type")) {
+        outHeaders["Content-Type"] = composed.contentType;
       }
 
       const res = await sendProxyRequest(system.http, {
@@ -319,19 +315,19 @@ export function RestApiClient(_props: { windowId: string }) {
         headers: outHeaders,
         body: composed.body,
         bodyBase64: composed.bodyBase64,
-      })
-      setResponse(res)
-      recordHistory(res.status, res.elapsedMs)
+      });
+      setResponse(res);
+      recordHistory(res.status, res.elapsedMs);
     } catch (err) {
-      setError(extractError(err))
-      recordHistory(0)
+      setError(extractError(err));
+      recordHistory(0);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [url, loading, sendBlocked, issueText, composeBody, preview, method, recordHistory, system])
+  }, [url, loading, sendBlocked, issueText, composeBody, preview, method, recordHistory, system]);
 
   const handleSave = useCallback(() => {
-    if (!url.trim()) return
+    if (!url.trim()) return;
     const saved: SavedRequest = {
       id: newId(),
       name: url.trim(),
@@ -342,58 +338,58 @@ export function RestApiClient(_props: { windowId: string }) {
       bodyMode,
       form,
       filePath: filePath || undefined,
-    }
+    };
     if (persist({ ...dataRef.current, collections: [...dataRef.current.collections, saved] })) {
-      system.notify({ level: 'success', title: 'Saved to collection' })
+      system.notify({ level: "success", title: "Saved to collection" });
     } else {
       system.notify({
-        level: 'warning',
-        title: 'Not saved',
+        level: "warning",
+        title: "Not saved",
         body:
-          loadRef.current.status === 'loading'
-            ? 'Saved requests are still loading. Try again in a moment.'
-            : loadRef.current.status === 'conflict'
-              ? 'Saved requests changed in another window. Reload them first.'
-              : 'Saved requests are unavailable, so nothing can be added to them.',
-      })
+          loadRef.current.status === "loading"
+            ? "Saved requests are still loading. Try again in a moment."
+            : loadRef.current.status === "conflict"
+              ? "Saved requests changed in another window. Reload them first."
+              : "Saved requests are unavailable, so nothing can be added to them.",
+      });
     }
-  }, [method, url, headers, body, bodyMode, form, filePath, persist, system])
+  }, [method, url, headers, body, bodyMode, form, filePath, persist, system]);
 
   /** Load a request into the builder — every field, so nothing is left over. */
   const loadRequest = useCallback(
     (req: {
-      method: HttpMethod
-      url: string
-      headers?: HeaderRow[]
-      body?: string
-      bodyMode?: BodyMode
-      form?: FormField[]
-      filePath?: string
+      method: HttpMethod;
+      url: string;
+      headers?: HeaderRow[];
+      body?: string;
+      bodyMode?: BodyMode;
+      form?: FormField[];
+      filePath?: string;
     }) => {
-      setMethod(req.method)
-      setUrl(req.url)
-      setHeaders(req.headers?.length ? req.headers : [emptyHeaderRow()])
-      setBody(req.body ?? '')
-      setBodyMode(req.bodyMode ?? 'text')
-      setForm(req.form ?? [])
-      setFilePath(req.filePath ?? '')
-      setResponse(null)
-      setError(null)
+      setMethod(req.method);
+      setUrl(req.url);
+      setHeaders(req.headers?.length ? req.headers : [emptyHeaderRow()]);
+      setBody(req.body ?? "");
+      setBodyMode(req.bodyMode ?? "text");
+      setForm(req.form ?? []);
+      setFilePath(req.filePath ?? "");
+      setResponse(null);
+      setError(null);
     },
-    []
-  )
+    [],
+  );
 
-  const openSaved = useCallback((req: SavedRequest) => loadRequest(req), [loadRequest])
+  const openSaved = useCallback((req: SavedRequest) => loadRequest(req), [loadRequest]);
 
   const deleteSaved = useCallback(
     (id: string) => {
       persist({
         ...dataRef.current,
         collections: dataRef.current.collections.filter((c) => c.id !== id),
-      })
+      });
     },
-    [persist]
-  )
+    [persist],
+  );
 
   /**
    * Replay a past request.
@@ -411,39 +407,37 @@ export function RestApiClient(_props: { windowId: string }) {
         url: entry.url,
         headers: entry.headers,
         body: entry.body,
-      })
+      });
     },
-    [loadRequest]
-  )
+    [loadRequest],
+  );
 
   const clearHistory = useCallback(() => {
-    persist({ ...dataRef.current, history: [] })
-  }, [persist])
+    persist({ ...dataRef.current, history: [] });
+  }, [persist]);
 
   const applyAuthHeader = useCallback((header: { name: string; value: string }) => {
     setHeaders((prev) => {
-      const existing = prev.findIndex(
-        (h) => h.name.trim().toLowerCase() === header.name.toLowerCase()
-      )
+      const existing = prev.findIndex((h) => h.name.trim().toLowerCase() === header.name.toLowerCase());
       if (existing >= 0) {
-        const next = [...prev]
-        next[existing] = { ...next[existing], value: header.value, enabled: true }
-        return next
+        const next = [...prev];
+        next[existing] = { ...next[existing], value: header.value, enabled: true };
+        return next;
       }
       // Drop a trailing blank row so the new header does not land under an empty one.
-      const trimmed = prev.filter((h) => h.name.trim() !== '' || h.value.trim() !== '')
-      return [...trimmed, { id: newId(), name: header.name, value: header.value, enabled: true }]
-    })
-  }, [])
+      const trimmed = prev.filter((h) => h.name.trim() !== "" || h.value.trim() !== "");
+      return [...trimmed, { id: newId(), name: header.name, value: header.value, enabled: true }];
+    });
+  }, []);
 
   /** The doc that would not parse, old or moved, for Notepad to repair. */
-  const repairFile = load.status === 'failed' && load.malformed ? load.file : undefined
+  const repairFile = load.status === "failed" && load.malformed ? load.file : undefined;
   /** Where saved requests from before may be, unread: this app holds only what it is given. */
-  const earlier = load.status === 'missing' && !earlierDismissed ? load.earlier : undefined
+  const earlier = load.status === "missing" && !earlierDismissed ? load.earlier : undefined;
 
   return (
     <div className="bg-surface text-on-surface font-content flex h-full min-h-0 w-full flex-col">
-      {load.status === 'failed' && (
+      {load.status === "failed" && (
         <div
           role="alert"
           className="bg-error-container text-on-error-container flex shrink-0 items-center gap-2 px-3 py-1.5 text-[12px]"
@@ -454,7 +448,7 @@ export function RestApiClient(_props: { windowId: string }) {
             <Button
               size="sm"
               onClick={() =>
-                system.intents.openApp('notepad', {
+                system.intents.openApp("notepad", {
                   openPath: repairFile.path,
                   root: repairFile.root,
                 })
@@ -484,15 +478,14 @@ export function RestApiClient(_props: { windowId: string }) {
           </Button>
         </div>
       )}
-      {load.status === 'conflict' && (
+      {load.status === "conflict" && (
         <div
           role="alert"
           className="bg-error-container text-on-error-container flex shrink-0 items-center gap-2 px-3 py-1.5 text-[12px]"
         >
           <AlertTriangle size={13} className="shrink-0" />
           <span className="min-w-0 flex-1">
-            Saved requests changed in another window, so your last change wasn't saved. Reload to
-            see theirs.
+            Saved requests changed in another window, so your last change wasn't saved. Reload to see theirs.
           </span>
           <Button size="sm" onClick={retryLoad}>
             Reload
@@ -536,66 +529,62 @@ export function RestApiClient(_props: { windowId: string }) {
             onSend={() => void handleSend()}
             onSave={handleSave}
             onSelectEnv={(id) => persist({ ...dataRef.current, activeEnvId: id })}
-            onEditEnvs={() => setDialog('env')}
-            onImportCurl={() => setDialog('curl-import')}
-            onExportCurl={() => setDialog('curl-export')}
-            onAddAuth={() => setDialog('auth')}
+            onEditEnvs={() => setDialog("env")}
+            onImportCurl={() => setDialog("curl-import")}
+            onExportCurl={() => setDialog("curl-export")}
+            onAddAuth={() => setDialog("auth")}
             onAddMissingVars={() => {
-              const target = activeEnvironment(dataRef.current)
+              const target = activeEnvironment(dataRef.current);
               if (!target) {
-                setDialog('env')
-                return
+                setDialog("env");
+                return;
               }
-              const known = new Set(target.vars.map((v) => v.name.trim()))
+              const known = new Set(target.vars.map((v) => v.name.trim()));
               const additions = missingVars
                 .filter((n) => !known.has(n))
                 .map((n) => ({
                   id: newId(),
                   name: n,
-                  value: '',
+                  value: "",
                   secret: /token|secret|key|password/i.test(n),
-                }))
+                }));
               persist({
                 ...dataRef.current,
                 environments: dataRef.current.environments.map((e) =>
-                  e.id === target.id ? { ...e, vars: [...e.vars, ...additions] } : e
+                  e.id === target.id ? { ...e, vars: [...e.vars, ...additions] } : e,
                 ),
-              })
-              setDialog('env')
+              });
+              setDialog("env");
             }}
           />
           <ResponseViewer response={response} error={error} loading={loading} />
         </div>
 
-        {dialog === 'env' && (
+        {dialog === "env" && (
           <EnvironmentDialog
             environments={data.environments}
             activeEnvId={data.activeEnvId}
-            onChange={(environments, activeEnvId) =>
-              persist({ ...dataRef.current, environments, activeEnvId })
-            }
+            onChange={(environments, activeEnvId) => persist({ ...dataRef.current, environments, activeEnvId })}
             onClose={() => setDialog(null)}
           />
         )}
-        {(dialog === 'curl-import' || dialog === 'curl-export') && (
+        {(dialog === "curl-import" || dialog === "curl-export") && (
           <CurlDialog
-            mode={dialog === 'curl-import' ? 'import' : 'export'}
+            mode={dialog === "curl-import" ? "import" : "export"}
             request={{ method, url, headers, body }}
             onImport={(parsed) => loadRequest(parsed)}
             onClose={() => setDialog(null)}
           />
         )}
-        {dialog === 'auth' && (
+        {dialog === "auth" && (
           <AuthDialog environment={env} onApply={applyAuthHeader} onClose={() => setDialog(null)} />
         )}
       </div>
     </div>
-  )
+  );
 }
 
 /** Substitute into one string. Kept local — the whole-request path lives in the hook. */
 function interpolateOne(text: string, vars: Record<string, string>): string {
-  return text.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (match, name: string) =>
-    name in vars ? vars[name] : match
-  )
+  return text.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (match, name: string) => (name in vars ? vars[name] : match));
 }

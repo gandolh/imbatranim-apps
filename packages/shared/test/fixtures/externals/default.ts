@@ -1,4 +1,4 @@
 // A default import of a CommonJS module: the whole module.
-import React from 'react'
+import React from "react";
 
-export const defaultReact = React
+export const defaultReact = React;

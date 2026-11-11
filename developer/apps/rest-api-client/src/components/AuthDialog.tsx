@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Button, Dialog, Input, Select } from '@imbatranim/ui'
-import type { Environment } from '../types'
-import { basicHeader, bearerHeader, looksSecret, toVariables } from '../lib/environments'
+import { useState } from "react";
+import { Button, Dialog, Input, Select } from "@imbatranim/ui";
+import type { Environment } from "../types";
+import { basicHeader, bearerHeader, looksSecret, toVariables } from "../lib/environments";
 
 /**
  * The auth helper — writes the `Authorization` header so nobody has to remember
@@ -16,39 +16,39 @@ export function AuthDialog({
   onApply,
   onClose,
 }: {
-  environment: Environment | null
-  onApply: (header: { name: string; value: string }) => void
-  onClose: () => void
+  environment: Environment | null;
+  onApply: (header: { name: string; value: string }) => void;
+  onClose: () => void;
 }) {
-  const varNames = Object.keys(toVariables(environment))
-  const [kind, setKind] = useState<'bearer' | 'basic'>('bearer')
+  const varNames = Object.keys(toVariables(environment));
+  const [kind, setKind] = useState<"bearer" | "basic">("bearer");
   // Default to a token-looking variable, not simply the first one. Picking
   // `varNames[0]` produced `Bearer {{base}}` — a header built from the base URL,
   // which is wrong in a way that still looks plausible in the field.
-  const [varName, setVarName] = useState(varNames.find(looksSecret) ?? varNames[0] ?? 'token')
-  const [user, setUser] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [varName, setVarName] = useState(varNames.find(looksSecret) ?? varNames[0] ?? "token");
+  const [user, setUser] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const apply = () => {
-    if (kind === 'bearer') {
-      const name = varName.trim()
-      if (name === '') {
-        setError('Name the variable that holds the token.')
-        return
+    if (kind === "bearer") {
+      const name = varName.trim();
+      if (name === "") {
+        setError("Name the variable that holds the token.");
+        return;
       }
-      onApply(bearerHeader(name))
-      onClose()
-      return
+      onApply(bearerHeader(name));
+      onClose();
+      return;
     }
-    const result = basicHeader(user, password)
-    if ('error' in result) {
-      setError(result.error)
-      return
+    const result = basicHeader(user, password);
+    if ("error" in result) {
+      setError(result.error);
+      return;
     }
-    onApply(result)
-    onClose()
-  }
+    onApply(result);
+    onClose();
+  };
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()} title="Authorization">
@@ -56,25 +56,23 @@ export function AuthDialog({
         <Select
           label="Type"
           options={[
-            { value: 'bearer', label: 'Bearer token' },
-            { value: 'basic', label: 'Basic (username + password)' },
+            { value: "bearer", label: "Bearer token" },
+            { value: "basic", label: "Basic (username + password)" },
           ]}
           value={kind}
           onValueChange={(v) => {
-            setKind(v === 'basic' ? 'basic' : 'bearer')
-            setError(null)
+            setKind(v === "basic" ? "basic" : "bearer");
+            setError(null);
           }}
         />
 
-        {kind === 'bearer' ? (
+        {kind === "bearer" ? (
           <>
             {varNames.length > 0 ? (
               <Select
                 label="Token variable"
                 options={varNames.map((n) => ({ value: n, label: n }))}
-                value={
-                  varNames.includes(varName) ? varName : (varNames.find(looksSecret) ?? varNames[0])
-                }
+                value={varNames.includes(varName) ? varName : (varNames.find(looksSecret) ?? varNames[0])}
                 onValueChange={(v) => setVarName(String(v))}
               />
             ) : (
@@ -86,23 +84,17 @@ export function AuthDialog({
               />
             )}
             <p className="text-on-surface-variant text-[11px]">
-              Adds{' '}
-              <code className="font-mono">Authorization: Bearer {`{{${varName || 'token'}}}`}</code>
-              . The token itself stays in the environment, so the saved request is safe to share.
+              Adds <code className="font-mono">Authorization: Bearer {`{{${varName || "token"}}}`}</code>. The token
+              itself stays in the environment, so the saved request is safe to share.
             </p>
           </>
         ) : (
           <>
             <Input label="Username" value={user} onChange={(e) => setUser(e.target.value)} />
-            <Input
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             <p className="text-on-surface-variant text-[11px]">
-              Basic has to be base64-encoded, so the encoded value is written into the header
-              directly — it cannot reference a variable.
+              Basic has to be base64-encoded, so the encoded value is written into the header directly — it cannot
+              reference a variable.
             </p>
           </>
         )}
@@ -119,5 +111,5 @@ export function AuthDialog({
         </div>
       </div>
     </Dialog>
-  )
+  );
 }

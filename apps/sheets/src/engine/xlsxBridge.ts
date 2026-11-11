@@ -18,9 +18,9 @@
  * cell fills. The mapping code itself lives in the worker (moved verbatim, not
  * rewritten) so fidelity is unchanged — this module only owns the threading.
  */
-import type { IWorkbookData } from '@univerjs/presets'
-import type { ParseResult } from './xlsxMapping'
-import type { WorkerReply, WorkerRequest } from './xlsxWorker'
+import type { IWorkbookData } from "@univerjs/presets";
+import type { ParseResult } from "./xlsxMapping";
+import type { WorkerReply, WorkerRequest } from "./xlsxWorker";
 
 /**
  * A request that never gets an answer must still end.
@@ -32,21 +32,21 @@ import type { WorkerReply, WorkerRequest } from './xlsxWorker'
  * into a message. Generous, because a genuinely large workbook takes time and a
  * timeout that fires on real work is worse than none.
  */
-const REQUEST_TIMEOUT_MS = 120_000
+const REQUEST_TIMEOUT_MS = 120_000;
 
 // One worker instance, created lazily on first use and cached like pdf.js's
 // `pdfjsPromise`: repeated opens/saves reuse the same worker. Each request gets
 // an incrementing id so parse and serialize replies can't cross wires.
-let worker: Worker | null = null
-let nextId = 0
+let worker: Worker | null = null;
+let nextId = 0;
 const pending = new Map<
   number,
   {
-    resolve: (value: unknown) => void
-    reject: (reason: Error) => void
-    timer: ReturnType<typeof setTimeout>
+    resolve: (value: unknown) => void;
+    reject: (reason: Error) => void;
+    timer: ReturnType<typeof setTimeout>;
   }
->()
+>();
 
 /**
  * Fail every in-flight request and drop — and, when it may still be alive,
@@ -60,12 +60,12 @@ const pending = new Map<
  */
 function killWorker(message: string): void {
   for (const entry of pending.values()) {
-    clearTimeout(entry.timer)
-    entry.reject(new Error(message))
+    clearTimeout(entry.timer);
+    entry.reject(new Error(message));
   }
-  pending.clear()
-  worker?.terminate()
-  worker = null
+  pending.clear();
+  worker?.terminate();
+  worker = null;
 }
 
 // Windows share this module, so the worker is counted, not owned by one window:
@@ -74,77 +74,74 @@ function killWorker(message: string): void {
 // cleanup; the built-in kept its worker for the life of the page). A request in
 // flight when the last window closes still gets its answer: a save started
 // before the close finishes writing, as it did in the built-in.
-let holders = 0
+let holders = 0;
 
 /** Terminate the worker when no window holds it and nothing waits on it. */
 function stopIfIdle(): void {
-  if (holders > 0 || pending.size > 0 || !worker) return
-  worker.terminate()
-  worker = null
+  if (holders > 0 || pending.size > 0 || !worker) return;
+  worker.terminate();
+  worker = null;
 }
 
 /** Keep the worker alive for one window. Call the returned function when it closes. */
 export function retainXlsxWorker(): () => void {
-  holders++
-  let released = false
+  holders++;
+  let released = false;
   return () => {
-    if (released) return
-    released = true
-    holders--
-    stopIfIdle()
-  }
+    if (released) return;
+    released = true;
+    holders--;
+    stopIfIdle();
+  };
 }
 
 function getWorker(): Worker {
   if (!worker) {
-    worker = new Worker(new URL('./xlsxWorker.ts', import.meta.url), { type: 'module' })
+    worker = new Worker(new URL("./xlsxWorker.ts", import.meta.url), { type: "module" });
     worker.onmessage = (ev: MessageEvent<WorkerReply>) => {
-      const reply = ev.data
-      const entry = pending.get(reply.id)
-      if (!entry) return
-      clearTimeout(entry.timer)
-      pending.delete(reply.id)
-      if ('error' in reply) {
+      const reply = ev.data;
+      const entry = pending.get(reply.id);
+      if (!entry) return;
+      clearTimeout(entry.timer);
+      pending.delete(reply.id);
+      if ("error" in reply) {
         // Reject with a real Error so Sheets.tsx's catch fires on a corrupt or
         // unsupported file instead of the promise hanging forever.
-        entry.reject(new Error(reply.error))
+        entry.reject(new Error(reply.error));
       } else {
-        entry.resolve(reply.result)
+        entry.resolve(reply.result);
       }
-      stopIfIdle()
-    }
+      stopIfIdle();
+    };
     // A worker-level failure (module load error, uncaught crash) sends no
     // id-tagged reply, so fail every in-flight request rather than hang, and
     // drop the instance so the next call spawns a fresh worker.
-    worker.onerror = (ev) => killWorker(ev.message || 'xlsx worker crashed')
-    worker.onmessageerror = () => killWorker('xlsx worker received an uncloneable message')
+    worker.onerror = (ev) => killWorker(ev.message || "xlsx worker crashed");
+    worker.onmessageerror = () => killWorker("xlsx worker received an uncloneable message");
   }
-  return worker
+  return worker;
 }
 
 // Distributive Omit so `bytes`/`snapshot` survive the union (a plain
 // `Omit<WorkerRequest, 'id'>` collapses to the members' common keys).
-type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never
+type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never;
 
 // Post a request and await the reply correlated by id. `transfer` neuters the
 // listed buffers, so callers must not touch them again after handing them over.
-function request<T>(
-  msg: DistributiveOmit<WorkerRequest, 'id'>,
-  transfer: Transferable[] = []
-): Promise<T> {
-  const w = getWorker()
-  const id = nextId++
+function request<T>(msg: DistributiveOmit<WorkerRequest, "id">, transfer: Transferable[] = []): Promise<T> {
+  const w = getWorker();
+  const id = nextId++;
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
       // The worker is alive but silent. Terminate the whole instance (not just
       // this entry) so a wedged worker cannot strand every future open/save —
       // `killWorker` rejects this and any other in-flight request and nulls the
       // singleton, so the next call re-spawns a clean worker.
-      killWorker('The spreadsheet engine stopped responding.')
-    }, REQUEST_TIMEOUT_MS)
-    pending.set(id, { resolve: resolve as (value: unknown) => void, reject, timer })
-    w.postMessage({ ...msg, id }, transfer)
-  })
+      killWorker("The spreadsheet engine stopped responding.");
+    }, REQUEST_TIMEOUT_MS);
+    pending.set(id, { resolve: resolve as (value: unknown) => void, reject, timer });
+    w.postMessage({ ...msg, id }, transfer);
+  });
 }
 
 /**
@@ -154,12 +151,12 @@ function request<T>(
 export function xlsxToUniver(bytes: ArrayBuffer): Promise<ParseResult> {
   // Transfer the input buffer into the worker (neuters `bytes` here — the caller
   // does not read it again after this call).
-  return request<ParseResult>({ kind: 'parse', bytes }, [bytes])
+  return request<ParseResult>({ kind: "parse", bytes }, [bytes]);
 }
 
 /** Serialize a Univer workbook snapshot back to xlsx bytes. */
 export function univerToXlsx(snapshot: IWorkbookData): Promise<ArrayBuffer> {
   // The snapshot is a plain structured-cloneable object — post it as-is; the
   // worker transfers the freshly-written buffer back to us.
-  return request<ArrayBuffer>({ kind: 'serialize', snapshot })
+  return request<ArrayBuffer>({ kind: "serialize", snapshot });
 }

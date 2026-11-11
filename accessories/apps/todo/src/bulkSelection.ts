@@ -10,20 +10,14 @@
  */
 
 /** The selection with every id that is not currently visible removed. */
-export function pruneSelection(
-  selected: ReadonlySet<number>,
-  visibleIds: ReadonlySet<number>
-): Set<number> {
-  const next = new Set<number>()
-  for (const id of selected) if (visibleIds.has(id)) next.add(id)
-  return next
+export function pruneSelection(selected: ReadonlySet<number>, visibleIds: ReadonlySet<number>): Set<number> {
+  const next = new Set<number>();
+  for (const id of selected) if (visibleIds.has(id)) next.add(id);
+  return next;
 }
 
 /** True when the selection holds at least one id that is no longer visible. */
-export function hasHiddenSelection(
-  selected: ReadonlySet<number>,
-  visibleIds: ReadonlySet<number>
-): boolean {
-  for (const id of selected) if (!visibleIds.has(id)) return true
-  return false
+export function hasHiddenSelection(selected: ReadonlySet<number>, visibleIds: ReadonlySet<number>): boolean {
+  for (const id of selected) if (!visibleIds.has(id)) return true;
+  return false;
 }

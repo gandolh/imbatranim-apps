@@ -12,35 +12,35 @@
 
 /** Formats a user might reasonably expect a word processor to open. */
 const KNOWN_WORD_FORMATS: Record<string, string> = {
-  doc: 'Word 97-2003 (.doc)',
-  dot: 'Word 97-2003 template (.dot)',
-  odt: 'OpenDocument Text (.odt)',
-  ott: 'OpenDocument template (.ott)',
-  rtf: 'Rich Text Format (.rtf)',
-  pages: 'Apple Pages (.pages)',
-  wpd: 'WordPerfect (.wpd)',
-}
+  doc: "Word 97-2003 (.doc)",
+  dot: "Word 97-2003 template (.dot)",
+  odt: "OpenDocument Text (.odt)",
+  ott: "OpenDocument template (.ott)",
+  rtf: "Rich Text Format (.rtf)",
+  pages: "Apple Pages (.pages)",
+  wpd: "WordPerfect (.wpd)",
+};
 
 /** Formats another app in the OS owns — point at it rather than just refusing. */
 const OTHER_APPS: Record<string, string> = {
-  txt: 'Notepad',
-  log: 'Notepad',
-  md: 'Markdown Editor',
-  markdown: 'Markdown Editor',
-  pdf: 'PDF',
-  xlsx: 'Sheets',
-  xls: 'Sheets',
-  csv: 'Sheets',
-  pptx: 'Slides',
-  ppt: 'Slides',
-}
+  txt: "Notepad",
+  log: "Notepad",
+  md: "Markdown Editor",
+  markdown: "Markdown Editor",
+  pdf: "PDF",
+  xlsx: "Sheets",
+  xls: "Sheets",
+  csv: "Sheets",
+  pptx: "Slides",
+  ppt: "Slides",
+};
 
 /** Lowercase extension of a path, without the dot (empty when there is none). */
 export function extensionOf(path: string): string {
-  const base = path.split('/').pop() ?? path
-  const dot = base.lastIndexOf('.')
-  if (dot <= 0) return ''
-  return base.slice(dot + 1).toLowerCase()
+  const base = path.split("/").pop() ?? path;
+  const dot = base.lastIndexOf(".");
+  if (dot <= 0) return "";
+  return base.slice(dot + 1).toLowerCase();
 }
 
 /**
@@ -50,15 +50,15 @@ export function extensionOf(path: string): string {
  * a refusal that does not say that is just a dead end with better manners.
  */
 export function unsupportedReason(path: string): string | null {
-  const ext = extensionOf(path)
-  if (ext === 'docx') return null
+  const ext = extensionOf(path);
+  if (ext === "docx") return null;
 
-  const known = KNOWN_WORD_FORMATS[ext]
-  if (known) return `${known} is not supported. Docs reads .docx files.`
+  const known = KNOWN_WORD_FORMATS[ext];
+  if (known) return `${known} is not supported. Docs reads .docx files.`;
 
-  const other = OTHER_APPS[ext]
-  if (other) return `.${ext} files open in ${other}. Docs reads .docx files.`
+  const other = OTHER_APPS[ext];
+  if (other) return `.${ext} files open in ${other}. Docs reads .docx files.`;
 
-  if (!ext) return 'This file has no extension. Docs reads .docx files.'
-  return `.${ext} is not supported. Docs reads .docx files.`
+  if (!ext) return "This file has no extension. Docs reads .docx files.";
+  return `.${ext} is not supported. Docs reads .docx files.`;
 }

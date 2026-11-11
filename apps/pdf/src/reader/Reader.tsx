@@ -18,20 +18,20 @@
  * A native `overflow-auto` element (not the OS ScrollArea) backs the scroll —
  * the virtual window reads `scrollTop`/`clientHeight` off this node directly.
  */
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import type { JSX } from 'react'
-import type { Rect, TextHit } from '@pdfcore/engine'
-import { useTopWindowKeydown } from '@imbatranim/ui'
-import { useReader } from '../app/context'
-import { MAX_SCALE, MIN_SCALE } from '../app/useReaderController'
-import { PageView } from './PageView'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { JSX } from "react";
+import type { Rect, TextHit } from "@pdfcore/engine";
+import { useTopWindowKeydown } from "@imbatranim/ui";
+import { useReader } from "../app/context";
+import { MAX_SCALE, MIN_SCALE } from "../app/useReaderController";
+import { PageView } from "./PageView";
 
-const GAP = 24 // px between pages
-const PAD_Y = 32
-const PAD_X = 32
-const CURRENT_LINE = 0.38 // fraction of viewport height marking "current page"
+const GAP = 24; // px between pages
+const PAD_Y = 32;
+const PAD_X = 32;
+const CURRENT_LINE = 0.38; // fraction of viewport height marking "current page"
 
-const clampScale = (s: number): number => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s))
+const clampScale = (s: number): number => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
 export function Reader(): JSX.Element {
   const {
@@ -54,22 +54,22 @@ export function Reader(): JSX.Element {
     zoomOut,
     setFitMode,
     search,
-  } = useReader()
+  } = useReader();
 
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [viewport, setViewport] = useState({ w: 0, h: 0 })
-  const [scrollTop, setScrollTop] = useState(0)
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [viewport, setViewport] = useState({ w: 0, h: 0 });
+  const [scrollTop, setScrollTop] = useState(0);
 
   /* ── Track the scroll container's size ─────────────────────────────────── */
   useLayoutEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    const measure = () => setViewport({ w: el.clientWidth, h: el.clientHeight })
-    measure()
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
+    const el = scrollRef.current;
+    if (!el) return;
+    const measure = () => setViewport({ w: el.clientWidth, h: el.clientHeight });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   /* ── Fit scale for width/page modes, during render → reported for the label ─ */
   // Fit width fits the page in view when the fit is chosen (or the window is
@@ -79,100 +79,97 @@ export function Reader(): JSX.Element {
   // page of the document, which put NIST SP 800-218 (1224 pt spreads on pages
   // 14-28 among 612 pt pages) at half size, and would move the first page after
   // it is drawn now that page sizes are measured after the first paint.
-  const [fitAnchor, setFitAnchor] = useState({ mode: fitMode, w: viewport.w, render, page: 1 })
+  const [fitAnchor, setFitAnchor] = useState({ mode: fitMode, w: viewport.w, render, page: 1 });
   if (fitAnchor.mode !== fitMode || fitAnchor.w !== viewport.w || fitAnchor.render !== render) {
     // A new document comes with currentPage already back at 1.
-    setFitAnchor({ mode: fitMode, w: viewport.w, render, page: currentPage })
+    setFitAnchor({ mode: fitMode, w: viewport.w, render, page: currentPage });
   }
-  const anchorW = pageDims[fitAnchor.page - 1]?.w ?? pageDims[0]?.w ?? 612
+  const anchorW = pageDims[fitAnchor.page - 1]?.w ?? pageDims[0]?.w ?? 612;
   const fitScale = useMemo(() => {
-    if (!viewport.w) return null
-    const availW = viewport.w - PAD_X * 2
-    if (fitMode === 'width') return clampScale(availW / anchorW)
-    if (fitMode === 'page') {
-      const cur = pageDims[currentPage - 1]
-      if (!cur) return null
-      const availH = viewport.h - PAD_Y * 2
-      return clampScale(Math.min(availW / cur.w, availH / cur.h))
+    if (!viewport.w) return null;
+    const availW = viewport.w - PAD_X * 2;
+    if (fitMode === "width") return clampScale(availW / anchorW);
+    if (fitMode === "page") {
+      const cur = pageDims[currentPage - 1];
+      if (!cur) return null;
+      const availH = viewport.h - PAD_Y * 2;
+      return clampScale(Math.min(availW / cur.w, availH / cur.h));
     }
-    return null
-  }, [fitMode, viewport.w, viewport.h, anchorW, pageDims, currentPage])
-  const effectiveScale = fitScale ?? scale
+    return null;
+  }, [fitMode, viewport.w, viewport.h, anchorW, pageDims, currentPage]);
+  const effectiveScale = fitScale ?? scale;
   useEffect(() => {
-    if (fitScale !== null) reportFitScale(fitScale)
-  }, [fitScale, reportFitScale])
+    if (fitScale !== null) reportFitScale(fitScale);
+  }, [fitScale, reportFitScale]);
 
   /* ── Layout: page boxes + cumulative offsets ───────────────────────────── */
   const layout = useMemo(() => {
-    const tops: number[] = []
-    const sizes: Array<{ w: number; h: number }> = []
-    let y = PAD_Y
+    const tops: number[] = [];
+    const sizes: Array<{ w: number; h: number }> = [];
+    let y = PAD_Y;
     for (let i = 0; i < pageCount; i++) {
-      const d = pageDims[i] ?? { w: 612, h: 792, measured: false }
-      const w = d.w * effectiveScale
-      const h = d.h * effectiveScale
-      tops.push(y)
-      sizes.push({ w, h })
-      y += h + GAP
+      const d = pageDims[i] ?? { w: 612, h: 792, measured: false };
+      const w = d.w * effectiveScale;
+      const h = d.h * effectiveScale;
+      tops.push(y);
+      sizes.push({ w, h });
+      y += h + GAP;
     }
-    const total = pageCount ? y - GAP + PAD_Y : 0
-    return { tops, sizes, total }
-  }, [pageCount, pageDims, effectiveScale])
+    const total = pageCount ? y - GAP + PAD_Y : 0;
+    return { tops, sizes, total };
+  }, [pageCount, pageDims, effectiveScale]);
 
-  const contentWidth = useMemo(
-    () => layout.sizes.reduce((m, s) => Math.max(m, s.w), 0) + PAD_X * 2,
-    [layout]
-  )
+  const contentWidth = useMemo(() => layout.sizes.reduce((m, s) => Math.max(m, s.w), 0) + PAD_X * 2, [layout]);
 
   // Pages are centred in a strip as wide as the widest page. When that is
   // wider than the window (a landscape spread among portrait pages), keep the
   // strip centred, so the page in view is too, whenever the width changes.
-  const stripW = Math.max(contentWidth, viewport.w)
+  const stripW = Math.max(contentWidth, viewport.w);
   useLayoutEffect(() => {
-    const el = scrollRef.current
-    if (!el || !viewport.w) return
-    el.scrollLeft = Math.max(0, (stripW - viewport.w) / 2)
-  }, [stripW, viewport.w])
+    const el = scrollRef.current;
+    if (!el || !viewport.w) return;
+    el.scrollLeft = Math.max(0, (stripW - viewport.w) / 2);
+  }, [stripW, viewport.w]);
 
   /* ── Scroll handling: current page + repaint on scroll ─────────────────── */
-  const raf = useRef(0)
+  const raf = useRef(0);
   const onScroll = useCallback(() => {
-    const el = scrollRef.current
-    if (!el) return
-    if (raf.current) return
+    const el = scrollRef.current;
+    if (!el) return;
+    if (raf.current) return;
     raf.current = requestAnimationFrame(() => {
-      raf.current = 0
-      setScrollTop(el.scrollTop)
+      raf.current = 0;
+      setScrollTop(el.scrollTop);
       // current page = the one crossing the "current line"
-      const probe = el.scrollTop + el.clientHeight * CURRENT_LINE
-      let page = 1
+      const probe = el.scrollTop + el.clientHeight * CURRENT_LINE;
+      let page = 1;
       for (let i = 0; i < layout.tops.length; i++) {
-        const top = layout.tops[i] ?? 0
-        if (top <= probe) page = i + 1
-        else break
+        const top = layout.tops[i] ?? 0;
+        if (top <= probe) page = i + 1;
+        else break;
       }
-      if (page !== currentPage) setCurrentPage(page)
-    })
-  }, [layout, currentPage, setCurrentPage])
+      if (page !== currentPage) setCurrentPage(page);
+    });
+  }, [layout, currentPage, setCurrentPage]);
 
   useEffect(
     () => () => {
-      if (raf.current) cancelAnimationFrame(raf.current)
+      if (raf.current) cancelAnimationFrame(raf.current);
     },
-    []
-  )
+    [],
+  );
 
   /* ── Scroll to a requested page ────────────────────────────────────────── */
   useEffect(() => {
-    if (!scrollRequest) return
-    const el = scrollRef.current
-    if (!el) return
-    const top = layout.tops[scrollRequest.page - 1]
-    if (top == null) return
-    el.scrollTo({ top: Math.max(0, top - PAD_Y + 2), behavior: 'auto' })
+    if (!scrollRequest) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const top = layout.tops[scrollRequest.page - 1];
+    if (top == null) return;
+    el.scrollTo({ top: Math.max(0, top - PAD_Y + 2), behavior: "auto" });
     // reflect immediately
-    setScrollTop(el.scrollTop)
-  }, [scrollRequest, layout])
+    setScrollTop(el.scrollTop);
+  }, [scrollRequest, layout]);
 
   /* ── Keyboard navigation ───────────────────────────────────────────────── */
   // Transport keys (arrows / PageUp-Down / Space / Home / End / +/-/0) via the
@@ -180,100 +177,99 @@ export function Reader(): JSX.Element {
   // the user is typing (the default `ignoreTextEntry`), so a background reader
   // no longer scrolls and Space no longer steals from another app's text field.
   useTopWindowKeydown((e) => {
-    const el = scrollRef.current
-    if (!el) return
+    const el = scrollRef.current;
+    if (!el) return;
     // Shortcuts with Ctrl/Alt/Meta belong to the desktop or the browser.
-    if (e.ctrlKey || e.altKey || e.metaKey) return
-    const page = el.clientHeight * 0.92
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    const page = el.clientHeight * 0.92;
     // While the page in view fits the width there is nothing of it to scroll
     // sideways, so ←/→ page, as PDF Viewer's buttons did; on a page wider
     // than the window they scroll it, as the browser would.
-    const shown = layout.sizes[currentPage - 1]
-    const fitsWidth = !shown || shown.w + PAD_X * 2 <= el.clientWidth + 1
+    const shown = layout.sizes[currentPage - 1];
+    const fitsWidth = !shown || shown.w + PAD_X * 2 <= el.clientWidth + 1;
     switch (e.key) {
-      case 'ArrowLeft':
-        if (!fitsWidth) break
-        goToPage(currentPage - 1)
-        e.preventDefault()
-        break
-      case 'ArrowRight':
-        if (!fitsWidth) break
-        goToPage(currentPage + 1)
-        e.preventDefault()
-        break
-      case 'ArrowDown':
-        el.scrollBy({ top: 90 })
-        e.preventDefault()
-        break
-      case 'ArrowUp':
-        el.scrollBy({ top: -90 })
-        e.preventDefault()
-        break
-      case 'PageDown':
-        el.scrollBy({ top: page })
-        e.preventDefault()
-        break
-      case 'PageUp':
-        el.scrollBy({ top: -page })
-        e.preventDefault()
-        break
-      case ' ':
-        el.scrollBy({ top: e.shiftKey ? -page : page })
-        e.preventDefault()
-        break
-      case 'Home':
-        el.scrollTo({ top: 0 })
-        e.preventDefault()
-        break
-      case 'End':
-        el.scrollTo({ top: el.scrollHeight })
-        e.preventDefault()
-        break
-      case '+':
-      case '=':
-        zoomIn()
-        e.preventDefault()
-        break
-      case '-':
-        zoomOut()
-        e.preventDefault()
-        break
-      case '0':
-        setFitMode('actual')
-        e.preventDefault()
-        break
+      case "ArrowLeft":
+        if (!fitsWidth) break;
+        goToPage(currentPage - 1);
+        e.preventDefault();
+        break;
+      case "ArrowRight":
+        if (!fitsWidth) break;
+        goToPage(currentPage + 1);
+        e.preventDefault();
+        break;
+      case "ArrowDown":
+        el.scrollBy({ top: 90 });
+        e.preventDefault();
+        break;
+      case "ArrowUp":
+        el.scrollBy({ top: -90 });
+        e.preventDefault();
+        break;
+      case "PageDown":
+        el.scrollBy({ top: page });
+        e.preventDefault();
+        break;
+      case "PageUp":
+        el.scrollBy({ top: -page });
+        e.preventDefault();
+        break;
+      case " ":
+        el.scrollBy({ top: e.shiftKey ? -page : page });
+        e.preventDefault();
+        break;
+      case "Home":
+        el.scrollTo({ top: 0 });
+        e.preventDefault();
+        break;
+      case "End":
+        el.scrollTo({ top: el.scrollHeight });
+        e.preventDefault();
+        break;
+      case "+":
+      case "=":
+        zoomIn();
+        e.preventDefault();
+        break;
+      case "-":
+        zoomOut();
+        e.preventDefault();
+        break;
+      case "0":
+        setFitMode("actual");
+        e.preventDefault();
+        break;
       default:
     }
-  })
+  });
 
   /* ── Search hit indexing per page ──────────────────────────────────────── */
   const hitsByPage = useMemo(() => {
-    const map = new Map<number, TextHit[]>()
+    const map = new Map<number, TextHit[]>();
     for (const h of search.hits) {
-      const arr = map.get(h.page)
-      if (arr) arr.push(h)
-      else map.set(h.page, [h])
+      const arr = map.get(h.page);
+      if (arr) arr.push(h);
+      else map.set(h.page, [h]);
     }
-    return map
-  }, [search.hits])
+    return map;
+  }, [search.hits]);
 
-  const activeHit = search.activeIndex >= 0 ? search.hits[search.activeIndex] : undefined
+  const activeHit = search.activeIndex >= 0 ? search.hits[search.activeIndex] : undefined;
 
   /* ── Which pages to mount (virtual window) ─────────────────────────────── */
-  const overscan = viewport.h || 800
-  const windowTop = scrollTop - overscan
-  const windowBottom = scrollTop + (viewport.h || 800) + overscan
+  const overscan = viewport.h || 800;
+  const windowTop = scrollTop - overscan;
+  const windowBottom = scrollTop + (viewport.h || 800) + overscan;
 
-  const pages: JSX.Element[] = []
+  const pages: JSX.Element[] = [];
   if (render && viewport.w > 0) {
     for (let i = 0; i < pageCount; i++) {
-      const top = layout.tops[i] ?? 0
-      const size = layout.sizes[i] ?? { w: 0, h: 0 }
-      if (top + size.h < windowTop || top > windowBottom) continue
-      const pageNo = i + 1
-      const pageHits = hitsByPage.get(pageNo) ?? []
-      const activeRects: Rect[] | null =
-        activeHit && activeHit.page === pageNo ? activeHit.rects : null
+      const top = layout.tops[i] ?? 0;
+      const size = layout.sizes[i] ?? { w: 0, h: 0 };
+      if (top + size.h < windowTop || top > windowBottom) continue;
+      const pageNo = i + 1;
+      const pageHits = hitsByPage.get(pageNo) ?? [];
+      const activeRects: Rect[] | null = activeHit && activeHit.page === pageNo ? activeHit.rects : null;
       pages.push(
         <div
           key={`${pageNo}-${renderEpoch}`}
@@ -294,8 +290,8 @@ export function Reader(): JSX.Element {
             onMeasured={reportPageDim}
             onPainted={reportPainted}
           />
-        </div>
-      )
+        </div>,
+      );
     }
   }
 
@@ -318,5 +314,5 @@ export function Reader(): JSX.Element {
         {pages}
       </div>
     </div>
-  )
+  );
 }

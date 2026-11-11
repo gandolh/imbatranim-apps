@@ -1,5 +1,5 @@
-import type { KitAppProps } from '@imbatranim-office/shared'
-import { Pdf } from './Pdf'
+import type { KitAppProps } from "@imbatranim-office/shared";
+import { Pdf } from "./Pdf";
 
 /**
  * The module the desktop renders: the built-ins' manifests
@@ -15,5 +15,5 @@ import { Pdf } from './Pdf'
  * has no server.
  */
 export function App({ windowId }: KitAppProps) {
-  return <Pdf windowId={windowId} />
+  return <Pdf windowId={windowId} />;
 }

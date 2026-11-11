@@ -23,53 +23,50 @@
  * and so does this module — same reasoning.
  */
 
-export type Variables = Record<string, string>
+export type Variables = Record<string, string>;
 
 /** What the proxy will accept. Kept in step with its allowlist deliberately. */
-const ALLOWED_SCHEMES = ['http:', 'https:']
+const ALLOWED_SCHEMES = ["http:", "https:"];
 
-const VAR_RE = /\{\{\s*([\w.-]+)\s*\}\}/g
+const VAR_RE = /\{\{\s*([\w.-]+)\s*\}\}/g;
 
 export type InterpolationIssue =
-  | { kind: 'missing'; name: string }
-  | { kind: 'scheme'; scheme: string }
-  | { kind: 'crlf'; where: string }
-  | { kind: 'empty'; name: string }
+  | { kind: "missing"; name: string }
+  | { kind: "scheme"; scheme: string }
+  | { kind: "crlf"; where: string }
+  | { kind: "empty"; name: string };
 
 export type Interpolated = {
-  url: string
-  headers: { name: string; value: string }[]
-  body: string
+  url: string;
+  headers: { name: string; value: string }[];
+  body: string;
   /** Anything the user should see before sending. Empty means clean. */
-  issues: InterpolationIssue[]
-}
+  issues: InterpolationIssue[];
+};
 
 /** Substitute `{{name}}`, collecting names that had no value. */
-export function substitute(
-  text: string,
-  vars: Variables
-): { text: string; missing: string[]; empty: string[] } {
-  const missing: string[] = []
-  const empty: string[] = []
+export function substitute(text: string, vars: Variables): { text: string; missing: string[]; empty: string[] } {
+  const missing: string[] = [];
+  const empty: string[] = [];
   const out = text.replace(VAR_RE, (_match, name: string) => {
     if (!(name in vars)) {
-      missing.push(name)
+      missing.push(name);
       // Left as-is rather than blanked: a URL with a visible `{{host}}` in it is a
       // legible mistake, while a URL that silently became `/users` is a confusing one.
-      return `{{${name}}}`
+      return `{{${name}}}`;
     }
-    const value = vars[name]
-    if (value === '') empty.push(name)
-    return value
-  })
-  return { text: out, missing, empty }
+    const value = vars[name];
+    if (value === "") empty.push(name);
+    return value;
+  });
+  return { text: out, missing, empty };
 }
 
 /** Every `{{name}}` referenced by a piece of text. */
 export function referencedVars(text: string): string[] {
-  const names = new Set<string>()
-  for (const match of text.matchAll(VAR_RE)) names.add(match[1])
-  return [...names]
+  const names = new Set<string>();
+  for (const match of text.matchAll(VAR_RE)) names.add(match[1]);
+  return [...names];
 }
 
 /**
@@ -81,59 +78,56 @@ export function referencedVars(text: string): string[] {
  */
 export function interpolateRequest(
   request: {
-    url: string
-    headers: { name: string; value: string; enabled?: boolean }[]
-    body: string
+    url: string;
+    headers: { name: string; value: string; enabled?: boolean }[];
+    body: string;
   },
-  vars: Variables
+  vars: Variables,
 ): Interpolated {
-  const issues: InterpolationIssue[] = []
-  const seenMissing = new Set<string>()
+  const issues: InterpolationIssue[] = [];
+  const seenMissing = new Set<string>();
   const noteMissing = (names: string[], empties: string[]) => {
     for (const name of names) {
-      if (seenMissing.has(name)) continue
-      seenMissing.add(name)
-      issues.push({ kind: 'missing', name })
+      if (seenMissing.has(name)) continue;
+      seenMissing.add(name);
+      issues.push({ kind: "missing", name });
     }
     for (const name of empties) {
-      if (seenMissing.has(name)) continue
-      seenMissing.add(name)
-      issues.push({ kind: 'empty', name })
+      if (seenMissing.has(name)) continue;
+      seenMissing.add(name);
+      issues.push({ kind: "empty", name });
     }
-  }
+  };
 
-  const urlResult = substitute(request.url, vars)
-  noteMissing(urlResult.missing, urlResult.empty)
-  const url = urlResult.text
+  const urlResult = substitute(request.url, vars);
+  noteMissing(urlResult.missing, urlResult.empty);
+  const url = urlResult.text;
 
   // The scheme check runs on the RESULT, which is the only thing that matters: the
   // template may be innocent and the value may not be.
-  const scheme = schemeOf(url)
+  const scheme = schemeOf(url);
   if (scheme !== null && !ALLOWED_SCHEMES.includes(scheme)) {
-    issues.push({ kind: 'scheme', scheme })
+    issues.push({ kind: "scheme", scheme });
   }
 
-  const headers: { name: string; value: string }[] = []
+  const headers: { name: string; value: string }[] = [];
   for (const header of request.headers) {
-    if (header.enabled === false) continue
-    if (header.name.trim() === '') continue
-    const nameResult = substitute(header.name, vars)
-    const valueResult = substitute(header.value, vars)
-    noteMissing(
-      [...nameResult.missing, ...valueResult.missing],
-      [...nameResult.empty, ...valueResult.empty]
-    )
+    if (header.enabled === false) continue;
+    if (header.name.trim() === "") continue;
+    const nameResult = substitute(header.name, vars);
+    const valueResult = substitute(header.value, vars);
+    noteMissing([...nameResult.missing, ...valueResult.missing], [...nameResult.empty, ...valueResult.empty]);
     if (hasCrlf(nameResult.text) || hasCrlf(valueResult.text)) {
-      issues.push({ kind: 'crlf', where: nameResult.text.trim() || 'a header' })
-      continue
+      issues.push({ kind: "crlf", where: nameResult.text.trim() || "a header" });
+      continue;
     }
-    headers.push({ name: nameResult.text.trim(), value: valueResult.text })
+    headers.push({ name: nameResult.text.trim(), value: valueResult.text });
   }
 
-  const bodyResult = substitute(request.body, vars)
-  noteMissing(bodyResult.missing, bodyResult.empty)
+  const bodyResult = substitute(request.body, vars);
+  noteMissing(bodyResult.missing, bodyResult.empty);
 
-  return { url, headers, body: bodyResult.text, issues }
+  return { url, headers, body: bodyResult.text, issues };
 }
 
 /**
@@ -145,12 +139,12 @@ export function interpolateRequest(
  * accept.
  */
 export function schemeOf(url: string): string | null {
-  const match = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url.trim())
-  return match ? `${match[1].toLowerCase()}:` : null
+  const match = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url.trim());
+  return match ? `${match[1].toLowerCase()}:` : null;
 }
 
 function hasCrlf(text: string): boolean {
-  return /[\r\n]/.test(text)
+  return /[\r\n]/.test(text);
 }
 
 /** True when there is anything the user must resolve before a send can be honest. */
@@ -158,32 +152,30 @@ export function blocksSend(issues: InterpolationIssue[]): boolean {
   // A missing or empty variable is a warning — sending is still the user's call, and
   // sometimes an empty value is the intent. A smuggled scheme or an injected CRLF is
   // never the intent, and the proxy would refuse it anyway.
-  return issues.some((issue) => issue.kind === 'scheme' || issue.kind === 'crlf')
+  return issues.some((issue) => issue.kind === "scheme" || issue.kind === "crlf");
 }
 
 /** One human sentence for the warning strip. */
 export function describeIssues(issues: InterpolationIssue[]): string {
-  const parts: string[] = []
-  const missing = issues.filter((i) => i.kind === 'missing').map((i) => i.name)
-  const empty = issues.filter((i) => i.kind === 'empty').map((i) => i.name)
-  const scheme = issues.find((i) => i.kind === 'scheme')
-  const crlf = issues.find((i) => i.kind === 'crlf')
+  const parts: string[] = [];
+  const missing = issues.filter((i) => i.kind === "missing").map((i) => i.name);
+  const empty = issues.filter((i) => i.kind === "empty").map((i) => i.name);
+  const scheme = issues.find((i) => i.kind === "scheme");
+  const crlf = issues.find((i) => i.kind === "crlf");
 
-  if (scheme && scheme.kind === 'scheme') {
-    parts.push(
-      `A variable turned this into a ${scheme.scheme} URL — only http and https can be sent.`
-    )
+  if (scheme && scheme.kind === "scheme") {
+    parts.push(`A variable turned this into a ${scheme.scheme} URL — only http and https can be sent.`);
   }
-  if (crlf && crlf.kind === 'crlf') {
-    parts.push(`A variable put a line break into the header “${crlf.where}”, which is not allowed.`)
+  if (crlf && crlf.kind === "crlf") {
+    parts.push(`A variable put a line break into the header “${crlf.where}”, which is not allowed.`);
   }
   if (missing.length > 0) {
     parts.push(
-      `${missing.length === 1 ? 'Variable' : 'Variables'} with no value in this environment: ${missing.join(', ')}.`
-    )
+      `${missing.length === 1 ? "Variable" : "Variables"} with no value in this environment: ${missing.join(", ")}.`,
+    );
   }
   if (empty.length > 0) {
-    parts.push(`Set but empty: ${empty.join(', ')}.`)
+    parts.push(`Set but empty: ${empty.join(", ")}.`);
   }
-  return parts.join(' ')
+  return parts.join(" ");
 }

@@ -1,3 +1,3 @@
-import './style.css'
+import "./style.css";
 
-export const App = () => null
+export const App = () => null;

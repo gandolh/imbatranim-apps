@@ -1,5 +1,5 @@
-import type { ICellData, IWorkbookData, IWorksheetData } from '@univerjs/presets'
-import { sheetSize } from './extent'
+import type { ICellData, IWorkbookData, IWorksheetData } from "@univerjs/presets";
+import { sheetSize } from "./extent";
 
 /**
  * CSV in and out, without a dependency.
@@ -27,61 +27,61 @@ import { sheetSize } from './extent'
  * visibly wrong rather than subtly wrong.
  */
 export function parseCsv(text: string): string[][] {
-  const rows: string[][] = []
-  let row: string[] = []
-  let field = ''
-  let quoted = false
-  let i = 0
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let quoted = false;
+  let i = 0;
 
   // Strip a UTF-8 BOM: Excel writes one, and left in place it becomes part of
   // the first header cell's name.
-  if (text.charCodeAt(0) === 0xfeff) i = 1
+  if (text.charCodeAt(0) === 0xfeff) i = 1;
 
   const endField = () => {
-    row.push(field)
-    field = ''
-  }
+    row.push(field);
+    field = "";
+  };
   const endRow = () => {
-    endField()
-    rows.push(row)
-    row = []
-  }
+    endField();
+    rows.push(row);
+    row = [];
+  };
 
   for (; i < text.length; i++) {
-    const ch = text[i]
+    const ch = text[i];
     if (quoted) {
       if (ch === '"') {
         if (text[i + 1] === '"') {
-          field += '"'
-          i++
+          field += '"';
+          i++;
         } else {
-          quoted = false
+          quoted = false;
         }
       } else {
-        field += ch
+        field += ch;
       }
-      continue
+      continue;
     }
-    if (ch === '"' && field === '') {
-      quoted = true
-    } else if (ch === ',') {
-      endField()
-    } else if (ch === '\n') {
-      endRow()
-    } else if (ch === '\r') {
+    if (ch === '"' && field === "") {
+      quoted = true;
+    } else if (ch === ",") {
+      endField();
+    } else if (ch === "\n") {
+      endRow();
+    } else if (ch === "\r") {
       // Swallow CR; the LF that follows ends the row. A lone CR (old Mac) also
       // ends it.
-      if (text[i + 1] !== '\n') endRow()
+      if (text[i + 1] !== "\n") endRow();
     } else {
-      field += ch
+      field += ch;
     }
   }
   // A trailing newline is a terminator, not an empty final row.
-  if (field !== '' || row.length > 0 || quoted) endRow()
-  return rows
+  if (field !== "" || row.length > 0 || quoted) endRow();
+  return rows;
 }
 
-const NUMERIC = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/
+const NUMERIC = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
 
 /**
  * A number if the whole field is unambiguously one, otherwise the text
@@ -101,55 +101,55 @@ const NUMERIC = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/
  *   corruption of exactly the long identifiers people put in spreadsheets.
  */
 function coerce(value: string): string | number {
-  if (value === '') return value
-  if (!NUMERIC.test(value)) return value
+  if (value === "") return value;
+  if (!NUMERIC.test(value)) return value;
 
-  const unsigned = value.replace(/^[+-]/, '')
+  const unsigned = value.replace(/^[+-]/, "");
   // `0`, `0.5` and `0e3` are fine; `01`, `007` are identifiers.
-  if (/^0\d/.test(unsigned)) return value
-  const digits = unsigned.replace(/[.eE+-].*$/, '').replace(/^0+/, '')
-  if (digits.length > 15) return value
+  if (/^0\d/.test(unsigned)) return value;
+  const digits = unsigned.replace(/[.eE+-].*$/, "").replace(/^0+/, "");
+  if (digits.length > 15) return value;
 
-  const n = Number(value)
-  return Number.isFinite(n) ? n : value
+  const n = Number(value);
+  return Number.isFinite(n) ? n : value;
 }
 
 /** Build a single-sheet Univer workbook from CSV text. */
-export function csvToUniver(text: string, sheetName = 'Sheet1'): Partial<IWorkbookData> {
-  const rows = parseCsv(text)
-  const cellData: Record<number, Record<number, ICellData>> = {}
-  let maxRow = 0
-  let maxCol = 0
+export function csvToUniver(text: string, sheetName = "Sheet1"): Partial<IWorkbookData> {
+  const rows = parseCsv(text);
+  const cellData: Record<number, Record<number, ICellData>> = {};
+  let maxRow = 0;
+  let maxCol = 0;
 
   rows.forEach((cols, r) => {
     cols.forEach((raw, c) => {
-      if (raw === '') return
-      ;(cellData[r] ||= {})[c] = { v: coerce(raw) }
-      if (r > maxRow) maxRow = r
-      if (c > maxCol) maxCol = c
-    })
-  })
+      if (raw === "") return;
+      (cellData[r] ||= {})[c] = { v: coerce(raw) };
+      if (r > maxRow) maxRow = r;
+      if (c > maxCol) maxCol = c;
+    });
+  });
 
   // Univer shows 1,000 rows unless told otherwise; a longer file needs room
   // for all of them.
   const sheet: Partial<IWorksheetData> = {
-    id: 'sheet-1',
+    id: "sheet-1",
     name: sheetName,
     cellData,
     ...sheetSize(maxRow, maxCol),
-  }
+  };
   return {
-    id: 'imbatranim-sheets',
+    id: "imbatranim-sheets",
     name: sheetName,
-    sheetOrder: ['sheet-1'],
-    sheets: { 'sheet-1': sheet },
-  }
+    sheetOrder: ["sheet-1"],
+    sheets: { "sheet-1": sheet },
+  };
 }
 
 /** Quote a field only when it has to be quoted. */
 function quote(value: string): string {
-  if (!/[",\n\r]/.test(value)) return value
-  return `"${value.replace(/"/g, '""')}"`
+  if (!/[",\n\r]/.test(value)) return value;
+  return `"${value.replace(/"/g, '""')}"`;
 }
 
 /**
@@ -161,37 +161,37 @@ function quote(value: string): string {
  * than one — see `Sheets.tsx`.
  */
 export function univerToCsv(snapshot: IWorkbookData): string {
-  const sheetId = snapshot.sheetOrder?.[0]
-  const sheet = sheetId ? snapshot.sheets?.[sheetId] : undefined
-  const cellData = (sheet?.cellData ?? {}) as Record<number, Record<number, ICellData>>
+  const sheetId = snapshot.sheetOrder?.[0];
+  const sheet = sheetId ? snapshot.sheets?.[sheetId] : undefined;
+  const cellData = (sheet?.cellData ?? {}) as Record<number, Record<number, ICellData>>;
 
   const rowIndexes = Object.keys(cellData)
     .map(Number)
-    .filter((n) => Number.isFinite(n))
-  if (rowIndexes.length === 0) return ''
-  const lastRow = Math.max(...rowIndexes)
+    .filter((n) => Number.isFinite(n));
+  if (rowIndexes.length === 0) return "";
+  const lastRow = Math.max(...rowIndexes);
 
-  let lastCol = 0
+  let lastCol = 0;
   for (const r of rowIndexes) {
     for (const c of Object.keys(cellData[r]).map(Number)) {
-      if (c > lastCol) lastCol = c
+      if (c > lastCol) lastCol = c;
     }
   }
 
-  const lines: string[] = []
+  const lines: string[] = [];
   for (let r = 0; r <= lastRow; r++) {
-    const row = cellData[r] ?? {}
-    const cols: string[] = []
+    const row = cellData[r] ?? {};
+    const cols: string[] = [];
     for (let c = 0; c <= lastCol; c++) {
-      const cell = row[c]
+      const cell = row[c];
       // The cached value, not the formula: CSV has no formulas, and writing
       // `=B2+C2` as text is not the number the recipient asked for.
-      const v = cell?.v
-      cols.push(v === undefined || v === null ? '' : quote(String(v)))
+      const v = cell?.v;
+      cols.push(v === undefined || v === null ? "" : quote(String(v)));
     }
-    lines.push(cols.join(','))
+    lines.push(cols.join(","));
   }
   // Trailing newline: every tool that reads CSV expects one, and `wc -l` on a
   // file without it is off by one.
-  return lines.join('\r\n') + '\r\n'
+  return lines.join("\r\n") + "\r\n";
 }

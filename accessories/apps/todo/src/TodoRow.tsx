@@ -1,94 +1,77 @@
-import { useEffect, useRef, useState } from 'react'
-import { CalendarClock, FolderInput, GripVertical, Star, X } from 'lucide-react'
-import { useDrag } from '@use-gesture/react'
-import { cn } from '@imbatranim/ui'
-import {
-  dateInputValue,
-  dueAtFromInput,
-  dueLabel,
-  isDueToday,
-  isOverdue,
-  timeInputValue,
-} from './due'
-import type { Todo, TodoList, TodoPatch } from './types'
+import { useEffect, useRef, useState } from "react";
+import { CalendarClock, FolderInput, GripVertical, Star, X } from "lucide-react";
+import { useDrag } from "@use-gesture/react";
+import { cn } from "@imbatranim/ui";
+import { dateInputValue, dueAtFromInput, dueLabel, isDueToday, isOverdue, timeInputValue } from "./due";
+import type { Todo, TodoList, TodoPatch } from "./types";
 
 /** Row height, and the step the drag gesture snaps to. */
-const ROW_H = 36
+const ROW_H = 36;
 
 type TodoRowProps = {
-  todo: Todo
-  index: number
-  total: number
+  todo: Todo;
+  index: number;
+  total: number;
   /** Null when the current sort is derived — see `canReorder`. */
-  onDragEnd: ((fromIndex: number, toIndex: number) => void) | null
-  onPatch: (id: number, patch: TodoPatch) => void
-  onDelete: (id: number) => void
+  onDragEnd: ((fromIndex: number, toIndex: number) => void) | null;
+  onPatch: (id: number, patch: TodoPatch) => void;
+  onDelete: (id: number) => void;
   /** Non-null puts the row in select mode. */
-  selection: { selected: boolean; onToggle: (id: number) => void } | null
+  selection: { selected: boolean; onToggle: (id: number) => void } | null;
   /** Every list this task could be filed under. */
-  lists: TodoList[]
-  now: number
-}
+  lists: TodoList[];
+  now: number;
+};
 
-export function TodoRow({
-  todo,
-  index,
-  total,
-  onDragEnd,
-  onPatch,
-  onDelete,
-  selection,
-  lists,
-  now,
-}: TodoRowProps) {
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState(todo.text)
-  const [dueOpen, setDueOpen] = useState(false)
-  const [listOpen, setListOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [dragOffset, setDragOffset] = useState(0)
-  const [dragging, setDragging] = useState(false)
+export function TodoRow({ todo, index, total, onDragEnd, onPatch, onDelete, selection, lists, now }: TodoRowProps) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(todo.text);
+  const [dueOpen, setDueOpen] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [dragging, setDragging] = useState(false);
 
-  const { completed } = todo
-  const overdue = isOverdue(todo, now)
-  const dueToday = isDueToday(todo, now)
+  const { completed } = todo;
+  const overdue = isOverdue(todo, now);
+  const dueToday = isDueToday(todo, now);
 
   const bind = useDrag(
     ({ movement: [, my], active, last }) => {
-      if (!onDragEnd) return
-      setDragging(active)
-      setDragOffset(active ? my : 0)
+      if (!onDragEnd) return;
+      setDragging(active);
+      setDragOffset(active ? my : 0);
       if (last) {
-        const toIndex = Math.max(0, Math.min(total - 1, index + Math.round(my / ROW_H)))
-        if (toIndex !== index) onDragEnd(index, toIndex)
-        setDragOffset(0)
+        const toIndex = Math.max(0, Math.min(total - 1, index + Math.round(my / ROW_H)));
+        if (toIndex !== index) onDragEnd(index, toIndex);
+        setDragOffset(0);
       }
     },
-    { filterTaps: true }
-  )
+    { filterTaps: true },
+  );
 
   function commitEdit() {
-    const trimmed = draft.trim()
-    if (trimmed && trimmed !== todo.text) onPatch(todo.id, { text: trimmed })
-    else setDraft(todo.text)
-    setEditing(false)
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== todo.text) onPatch(todo.id, { text: trimmed });
+    else setDraft(todo.text);
+    setEditing(false);
   }
 
   function cancelEdit() {
-    setDraft(todo.text)
-    setEditing(false)
+    setDraft(todo.text);
+    setEditing(false);
   }
 
   useEffect(() => {
-    if (editing) inputRef.current?.focus()
-  }, [editing])
+    if (editing) inputRef.current?.focus();
+  }, [editing]);
 
   return (
     <div
       className={cn(
-        'group border-outline-variant relative flex flex-col border-b',
-        dragging && 'bg-surface-container-low z-10 opacity-90',
-        selection?.selected && 'bg-surface-container'
+        "group border-outline-variant relative flex flex-col border-b",
+        dragging && "bg-surface-container-low z-10 opacity-90",
+        selection?.selected && "bg-surface-container",
       )}
       style={{ transform: dragging ? `translateY(${dragOffset}px)` : undefined }}
     >
@@ -108,12 +91,10 @@ export function TodoRow({
             {...(onDragEnd ? bind() : {})}
             aria-hidden="true"
             className={cn(
-              'flex items-center opacity-0',
-              onDragEnd
-                ? 'cursor-grab group-hover:opacity-100 active:cursor-grabbing'
-                : 'cursor-default'
+              "flex items-center opacity-0",
+              onDragEnd ? "cursor-grab group-hover:opacity-100 active:cursor-grabbing" : "cursor-default",
             )}
-            style={{ touchAction: 'none' }}
+            style={{ touchAction: "none" }}
           >
             <GripVertical size={14} className="text-on-surface-variant" />
           </span>
@@ -123,21 +104,14 @@ export function TodoRow({
           type="button"
           onClick={() => onPatch(todo.id, { completed: !completed })}
           className={cn(
-            'focus-visible:ring-primary rounded-small flex h-4 w-4 shrink-0 items-center justify-center border outline-none focus-visible:ring-2 focus-visible:ring-inset',
-            completed
-              ? 'border-primary-container bg-primary-container'
-              : 'border-outline-variant bg-transparent'
+            "focus-visible:ring-primary rounded-small flex h-4 w-4 shrink-0 items-center justify-center border outline-none focus-visible:ring-2 focus-visible:ring-inset",
+            completed ? "border-primary-container bg-primary-container" : "border-outline-variant bg-transparent",
           )}
-          aria-label={completed ? 'Mark incomplete' : 'Mark complete'}
+          aria-label={completed ? "Mark incomplete" : "Mark complete"}
         >
           {completed && (
             <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-              <path
-                d="M1 4L3.5 6.5L9 1"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="square"
-              />
+              <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
             </svg>
           )}
         </button>
@@ -150,15 +124,15 @@ export function TodoRow({
             onChange={(e) => setDraft(e.target.value)}
             onBlur={commitEdit}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') commitEdit()
-              if (e.key === 'Escape') cancelEdit()
+              if (e.key === "Enter") commitEdit();
+              if (e.key === "Escape") cancelEdit();
             }}
           />
         ) : (
           <span
             className={cn(
-              'font-content text-on-surface min-w-0 flex-1 cursor-text truncate text-[13px]',
-              completed && 'line-through opacity-50'
+              "font-content text-on-surface min-w-0 flex-1 cursor-text truncate text-[13px]",
+              completed && "line-through opacity-50",
             )}
             onClick={() => setEditing(true)}
           >
@@ -174,14 +148,14 @@ export function TodoRow({
             onClick={() => setDueOpen((open) => !open)}
             title="Change the due date"
             className={cn(
-              'focus-visible:ring-primary rounded-small font-ui shrink-0 border px-1 text-[10px] tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-inset',
+              "focus-visible:ring-primary rounded-small font-ui shrink-0 border px-1 text-[10px] tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-inset",
               completed
-                ? 'border-outline-variant text-on-surface-variant opacity-50'
+                ? "border-outline-variant text-on-surface-variant opacity-50"
                 : overdue
-                  ? 'border-error text-error'
+                  ? "border-error text-error"
                   : dueToday
-                    ? 'border-outline text-on-surface font-semibold'
-                    : 'border-outline-variant text-on-surface-variant'
+                    ? "border-outline text-on-surface font-semibold"
+                    : "border-outline-variant text-on-surface-variant",
             )}
           >
             {dueLabel(todo.dueAt, now)}
@@ -192,16 +166,16 @@ export function TodoRow({
           type="button"
           onClick={() => onPatch(todo.id, { priority: !todo.priority })}
           aria-pressed={todo.priority}
-          aria-label={todo.priority ? 'Remove importance' : 'Mark important'}
-          title={todo.priority ? 'Important' : 'Mark important'}
+          aria-label={todo.priority ? "Remove importance" : "Mark important"}
+          title={todo.priority ? "Important" : "Mark important"}
           className={cn(
-            'shrink-0 p-0.5',
+            "shrink-0 p-0.5",
             todo.priority
-              ? 'text-primary'
-              : 'text-on-surface-variant hover:text-on-surface opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
+              ? "text-primary"
+              : "text-on-surface-variant hover:text-on-surface opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
           )}
         >
-          <Star size={12} fill={todo.priority ? 'currentColor' : 'none'} />
+          <Star size={12} fill={todo.priority ? "currentColor" : "none"} />
         </button>
 
         {lists.length > 0 && (
@@ -245,8 +219,8 @@ export function TodoRow({
           current={todo.listId}
           onPick={(listId) => {
             // A no-op pick still closes: the user answered the question.
-            if (listId !== todo.listId) onPatch(todo.id, { listId })
-            setListOpen(false)
+            if (listId !== todo.listId) onPatch(todo.id, { listId });
+            setListOpen(false);
           }}
           onClose={() => setListOpen(false)}
         />
@@ -256,14 +230,14 @@ export function TodoRow({
         <DueEditor
           dueAt={todo.dueAt}
           onChange={(dueAt) => {
-            onPatch(todo.id, { dueAt })
-            setDueOpen(false)
+            onPatch(todo.id, { dueAt });
+            setDueOpen(false);
           }}
           onClose={() => setDueOpen(false)}
         />
       )}
     </div>
-  )
+  );
 }
 
 /**
@@ -291,22 +265,17 @@ function ListPicker({
   onPick,
   onClose,
 }: {
-  lists: TodoList[]
-  current: number | null
-  onPick: (listId: number | null) => void
-  onClose: () => void
+  lists: TodoList[];
+  current: number | null;
+  onPick: (listId: number | null) => void;
+  onClose: () => void;
 }) {
   return (
     <div className="border-outline-variant bg-surface-container-low flex flex-wrap items-center gap-1.5 border-t px-2 py-1.5">
       <span className="font-ui text-on-surface-variant text-[11px]">Move to</span>
       <PickerChip label="No list" active={current === null} onClick={() => onPick(null)} />
       {lists.map((l) => (
-        <PickerChip
-          key={l.id}
-          label={l.name}
-          active={current === l.id}
-          onClick={() => onPick(l.id)}
-        />
+        <PickerChip key={l.id} label={l.name} active={current === l.id} onClick={() => onPick(l.id)} />
       ))}
       <div className="flex-1" />
       <button
@@ -317,33 +286,25 @@ function ListPicker({
         Cancel
       </button>
     </div>
-  )
+  );
 }
 
-function PickerChip({
-  label,
-  active,
-  onClick,
-}: {
-  label: string
-  active: boolean
-  onClick: () => void
-}) {
+function PickerChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset',
+        "focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
         active
-          ? 'border-primary bg-primary-container text-on-primary-container'
-          : 'border-outline-variant text-on-surface hover:bg-surface-container'
+          ? "border-primary bg-primary-container text-on-primary-container"
+          : "border-outline-variant text-on-surface hover:bg-surface-container",
       )}
     >
       {label}
     </button>
-  )
+  );
 }
 
 function DueEditor({
@@ -351,12 +312,12 @@ function DueEditor({
   onChange,
   onClose,
 }: {
-  dueAt: number | null
-  onChange: (dueAt: number | null) => void
-  onClose: () => void
+  dueAt: number | null;
+  onChange: (dueAt: number | null) => void;
+  onClose: () => void;
 }) {
-  const [date, setDate] = useState(dueAt === null ? '' : dateInputValue(dueAt))
-  const [time, setTime] = useState(dueAt === null ? '' : timeInputValue(dueAt))
+  const [date, setDate] = useState(dueAt === null ? "" : dateInputValue(dueAt));
+  const [time, setTime] = useState(dueAt === null ? "" : timeInputValue(dueAt));
 
   return (
     <div className="border-outline-variant bg-surface-container-low flex flex-wrap items-center gap-1.5 border-t px-2 py-1.5">
@@ -401,5 +362,5 @@ function DueEditor({
         Cancel
       </button>
     </div>
-  )
+  );
 }

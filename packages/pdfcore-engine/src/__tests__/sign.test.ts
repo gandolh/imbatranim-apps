@@ -105,8 +105,7 @@ describe("Sign capability (composes Annotate + Forms)", () => {
 
     // The staged ink is visible immediately via list() (before save).
     const ink = byType(doc.annotate.list(1), "ink") as
-      | { paths: Point[][]; width?: number }
-      | undefined;
+      { paths: Point[][]; width?: number } | undefined;
     expect(ink).toBeDefined();
     expect(ink!.width).toBe(2);
     expect(ink!.paths).toHaveLength(1);
@@ -195,8 +194,7 @@ describe("Sign capability (composes Annotate + Forms)", () => {
       width: 3,
     });
     const ink = byType(doc.annotate.list(), "ink") as
-      | { paths: Point[][] }
-      | undefined;
+      { paths: Point[][] } | undefined;
     expect(ink).toBeDefined();
     const pts = ink!.paths[0]!;
     expect(Math.min(...pts.map((p) => p.x))).toBeCloseTo(40);

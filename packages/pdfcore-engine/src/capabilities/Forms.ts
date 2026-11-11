@@ -2,12 +2,7 @@ import type { Rect } from "../api/types.js";
 
 /** The AcroForm field types the engine understands (DEC-38). */
 export type FieldType =
-  | "text"
-  | "checkbox"
-  | "radio"
-  | "dropdown"
-  | "listbox"
-  | "signature";
+  "text" | "checkbox" | "radio" | "dropdown" | "listbox" | "signature";
 
 /** A value settable on a field: string (text/choice), boolean (checkbox),
  *  or string[] (multi-select listbox). */

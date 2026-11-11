@@ -14,71 +14,71 @@ import {
   dwgRelease,
   type DwgFailure,
   type DwgFailureKind,
-} from '@imbatranim-office/shared/dwg'
+} from "@imbatranim-office/shared/dwg";
 
 /**
  * The server's kinds, plus the ones only the window can see: the desktop has
  * no way to start the server (`no-server`), it tried and couldn't
  * (`not-started`, with the desktop's reason), or the server didn't answer.
  */
-export type DwgOpenFailure = DwgFailureKind | 'no-server' | 'not-started' | 'unreachable'
+export type DwgOpenFailure = DwgFailureKind | "no-server" | "not-started" | "unreachable";
 
 export class DwgOpenError extends Error {
-  readonly kind: DwgOpenFailure
+  readonly kind: DwgOpenFailure;
   /** The DWG's size in bytes. */
-  readonly size: number
+  readonly size: number;
   /** Its version code (`AC1032`), when the server read that far. */
-  readonly version: string | undefined
+  readonly version: string | undefined;
   /** The desktop's sentence for a server that didn't start. */
-  readonly reason: string | undefined
+  readonly reason: string | undefined;
   constructor(kind: DwgOpenFailure, size: number, version?: string, reason?: string) {
-    super(`DWG conversion failed: ${kind}`)
-    this.kind = kind
-    this.size = size
-    this.version = version
-    this.reason = reason
+    super(`DWG conversion failed: ${kind}`);
+    this.kind = kind;
+    this.size = size;
+    this.version = version;
+    this.reason = reason;
   }
 }
 
-export const isDwgPath = (path: string) => /\.dwg$/i.test(path)
+export const isDwgPath = (path: string) => /\.dwg$/i.test(path);
 
 /** The DXF a DWG drawing is saved as: same folder, same name. */
-export const dxfBeside = (path: string) => path.replace(/\.dwg$/i, '.dxf')
+export const dxfBeside = (path: string) => path.replace(/\.dwg$/i, ".dxf");
 
-const mb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`
+const mb = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`;
 
 /** The sentence CAD shows for a failed DWG open. */
 export function dwgFailureSentence(err: DwgOpenError, name: string): string {
   switch (err.kind) {
-    case 'no-server':
-      return `This desktop can't start the Office server, so ${name} could not be converted. DXF drawings still open.`
-    case 'not-started': {
-      const reason = err.reason?.trim()
-      const why = reason ? ` ${/[.!?]$/.test(reason) ? reason : `${reason}.`}` : ''
-      return `The DWG converter didn't start, so ${name} could not be opened.${why} DXF drawings still open.`
+    case "no-server":
+      return `This desktop can't start the Office server, so ${name} could not be converted. DXF drawings still open.`;
+    case "not-started": {
+      const reason = err.reason?.trim();
+      const why = reason ? ` ${/[.!?]$/.test(reason) ? reason : `${reason}.`}` : "";
+      return `The DWG converter didn't start, so ${name} could not be opened.${why} DXF drawings still open.`;
     }
-    case 'unreachable':
-      return `The Office server is not answering, so ${name} could not be converted. DXF drawings still open.`
-    case 'too-large':
-      return `${name} is ${mb(err.size)}; CAD converts DWG drawings up to ${mb(MAX_DWG_BYTES)}.`
-    case 'not-dwg':
-      return `${name} is not a DWG drawing.`
-    case 'unreadable':
+    case "unreachable":
+      return `The Office server is not answering, so ${name} could not be converted. DXF drawings still open.`;
+    case "too-large":
+      return `${name} is ${mb(err.size)}; CAD converts DWG drawings up to ${mb(MAX_DWG_BYTES)}.`;
+    case "not-dwg":
+      return `${name} is not a DWG drawing.`;
+    case "unreadable":
       return err.version
         ? `LibreDWG could not read ${name} (${dwgRelease(err.version)} format).`
-        : `LibreDWG could not read ${name}.`
-    case 'timeout':
-      return `Converting ${name} took longer than ${CONVERT_TIMEOUT_MS / 1000} s and was stopped.`
-    case 'busy':
-      return `The Office server is converting other drawings. Try ${name} again in a moment.`
-    case 'failed':
-      return `The Office server could not convert ${name}.`
+        : `LibreDWG could not read ${name}.`;
+    case "timeout":
+      return `Converting ${name} took longer than ${CONVERT_TIMEOUT_MS / 1000} s and was stopped.`;
+    case "busy":
+      return `The Office server is converting other drawings. Try ${name} again in a moment.`;
+    case "failed":
+      return `The Office server could not convert ${name}.`;
   }
 }
 
 async function gunzip(gz: ArrayBuffer): Promise<Uint8Array> {
-  const stream = new Response(gz).body!.pipeThrough(new DecompressionStream('gzip'))
-  return new Uint8Array(await new Response(stream).arrayBuffer())
+  const stream = new Response(gz).body!.pipeThrough(new DecompressionStream("gzip"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
 /**
@@ -86,50 +86,48 @@ async function gunzip(gz: ArrayBuffer): Promise<Uint8Array> {
  * server's WebSocket address, from `system.server.request()`.
  */
 export function convertDwg(serverWs: string, dwg: ArrayBuffer): Promise<Uint8Array> {
-  const size = dwg.byteLength
-  if (size > MAX_DWG_BYTES) return Promise.reject(new DwgOpenError('too-large', size))
+  const size = dwg.byteLength;
+  if (size > MAX_DWG_BYTES) return Promise.reject(new DwgOpenError("too-large", size));
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket(serverWs.replace(/\/$/, '') + DWG_TO_DXF_PATH)
-    ws.binaryType = 'arraybuffer'
-    let dxf: ArrayBuffer | null = null
-    let failure: DwgFailure | null = null
-    let done = false
+    const ws = new WebSocket(serverWs.replace(/\/$/, "") + DWG_TO_DXF_PATH);
+    ws.binaryType = "arraybuffer";
+    let dxf: ArrayBuffer | null = null;
+    let failure: DwgFailure | null = null;
+    let done = false;
     const finish = (fn: () => void) => {
-      if (done) return
-      done = true
-      clearTimeout(timer)
-      fn()
-    }
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      fn();
+    };
     // The server stops a conversion at CONVERT_TIMEOUT_MS; this covers the upload around it.
     const timer = setTimeout(() => {
-      ws.close()
-      finish(() => reject(new DwgOpenError('timeout', size)))
-    }, CONVERT_TIMEOUT_MS + 30_000)
-    ws.onopen = () => ws.send(dwg)
+      ws.close();
+      finish(() => reject(new DwgOpenError("timeout", size)));
+    }, CONVERT_TIMEOUT_MS + 30_000);
+    ws.onopen = () => ws.send(dwg);
     ws.onmessage = (e: MessageEvent) => {
-      if (typeof e.data !== 'string') {
-        dxf = e.data as ArrayBuffer
-        return
+      if (typeof e.data !== "string") {
+        dxf = e.data as ArrayBuffer;
+        return;
       }
       try {
-        failure = JSON.parse(e.data) as DwgFailure
+        failure = JSON.parse(e.data) as DwgFailure;
       } catch {
-        failure = { error: 'failed' }
+        failure = { error: "failed" };
       }
-    }
+    };
     ws.onclose = (e: CloseEvent) => {
-      const gz = dxf
+      const gz = dxf;
       if (gz) {
-        return finish(() =>
-          gunzip(gz).then(resolve, () => reject(new DwgOpenError('failed', size)))
-        )
+        return finish(() => gunzip(gz).then(resolve, () => reject(new DwgOpenError("failed", size))));
       }
       if (failure) {
-        const { error, version } = failure
-        return finish(() => reject(new DwgOpenError(error ?? 'failed', size, version)))
+        const { error, version } = failure;
+        return finish(() => reject(new DwgOpenError(error ?? "failed", size, version)));
       }
       // 1009: the message was over the server's limit.
-      finish(() => reject(new DwgOpenError(e.code === 1009 ? 'too-large' : 'unreachable', size)))
-    }
-  })
+      finish(() => reject(new DwgOpenError(e.code === 1009 ? "too-large" : "unreachable", size)));
+    };
+  });
 }

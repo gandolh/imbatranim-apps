@@ -5,8 +5,7 @@ import type { PdfBytes } from "../api/types.js";
  * `[[1,3],[4,4]]`), or a chunk size to split every N pages.
  */
 export type SplitSpec =
-  | { ranges: [start: number, end: number][] }
-  | { every: number };
+  { ranges: [start: number, end: number][] } | { every: number };
 
 /**
  * Assemble — combine and divide documents (the "Assemble" half of Organize &

@@ -69,16 +69,7 @@
       "id": "office-slides",
       "name": "Slides",
       "description": "Open, edit and present PowerPoint presentations",
-      "meta": [
-        "slides",
-        "powerpoint",
-        "pptx",
-        "presentation",
-        "deck",
-        "present",
-        "notes",
-        "office"
-      ],
+      "meta": ["slides", "powerpoint", "pptx", "presentation", "deck", "present", "notes", "office"],
       "entry": "slides/app.mjs",
       "window": {
         "defaultSize": {

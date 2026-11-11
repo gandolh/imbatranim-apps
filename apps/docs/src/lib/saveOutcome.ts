@@ -18,12 +18,12 @@
  */
 export function shouldClearDirty(outcome: {
   /** True only when the upload promise resolved. */
-  uploaded: boolean
+  uploaded: boolean;
   /** Engine edit counter sampled before the export. */
-  editCountBefore: number
+  editCountBefore: number;
   /** Engine edit counter sampled after the upload resolved. */
-  editCountAfter: number
+  editCountAfter: number;
 }): boolean {
-  if (!outcome.uploaded) return false
-  return outcome.editCountAfter === outcome.editCountBefore
+  if (!outcome.uploaded) return false;
+  return outcome.editCountAfter === outcome.editCountBefore;
 }

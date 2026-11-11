@@ -20,28 +20,28 @@
  */
 
 export type Counts = {
-  words: number
+  words: number;
   /** Every character, including spaces. */
-  characters: number
+  characters: number;
   /** Characters excluding whitespace — the figure a style guide usually means. */
-  charactersNoSpaces: number
-}
+  charactersNoSpaces: number;
+};
 
 /**
  * A token counts as a word if it contains at least one letter, digit, or any
  * non-ASCII character that is not punctuation or a symbol. The `\p{…}` classes
  * do the work so this holds for scripts without Latin letters.
  */
-const WORDISH = /[\p{L}\p{N}]/u
+const WORDISH = /[\p{L}\p{N}]/u;
 
 export function countText(text: string): Counts {
-  const normalized = text ?? ''
-  const tokens = normalized.split(/\s+/).filter((t) => t !== '')
+  const normalized = text ?? "";
+  const tokens = normalized.split(/\s+/).filter((t) => t !== "");
   return {
     words: tokens.filter((t) => WORDISH.test(t)).length,
     characters: [...normalized].length,
-    charactersNoSpaces: [...normalized.replace(/\s/g, '')].length,
-  }
+    charactersNoSpaces: [...normalized.replace(/\s/g, "")].length,
+  };
 }
 
 /**
@@ -53,20 +53,20 @@ export function countText(text: string): Counts {
  * mangles an attribute containing `>` would silently change the count.
  */
 export function htmlToText(html: string): string {
-  if (typeof DOMParser === 'undefined') {
+  if (typeof DOMParser === "undefined") {
     // Node (tests): a conservative fallback that still separates blocks.
     return html
-      .replace(/<\/(p|div|h[1-6]|li|tr|br)>/gi, '\n')
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
+      .replace(/<\/(p|div|h[1-6]|li|tr|br)>/gi, "\n")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">");
   }
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  for (const el of doc.body.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, li, tr, br')) {
-    el.after(doc.createTextNode('\n'))
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  for (const el of doc.body.querySelectorAll("p, div, h1, h2, h3, h4, h5, h6, li, tr, br")) {
+    el.after(doc.createTextNode("\n"));
   }
-  return doc.body.textContent ?? ''
+  return doc.body.textContent ?? "";
 }

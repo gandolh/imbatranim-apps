@@ -1,16 +1,16 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import { cn } from '@imbatranim/ui'
-import type { Editor, EditorState } from '../engine/editor'
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { cn } from "@imbatranim/ui";
+import type { Editor, EditorState } from "../engine/editor";
 
-export type CommandLineHandle = { focus(): void }
+export type CommandLineHandle = { focus(): void };
 
 type Props = {
-  editor: Editor
-  state: EditorState
+  editor: Editor;
+  state: EditorState;
   /** Show more history lines (F2). */
-  expanded: boolean
-  onToggleExpanded: () => void
-}
+  expanded: boolean;
+  onToggleExpanded: () => void;
+};
 
 /**
  * The command line: recent history, the current prompt with its options as
@@ -21,105 +21,94 @@ type Props = {
  */
 export const CommandLine = forwardRef<CommandLineHandle, Props>(function CommandLine(
   { editor, state, expanded, onToggleExpanded },
-  ref
+  ref,
 ) {
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [value, setValue] = useState('')
-  const recall = useRef<{ list: string[]; at: number }>({ list: [], at: -1 })
-  useImperativeHandle(
-    ref,
-    () => ({ focus: () => inputRef.current?.focus({ preventScroll: true }) }),
-    []
-  )
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [value, setValue] = useState("");
+  const recall = useRef<{ list: string[]; at: number }>({ list: [], at: -1 });
+  useImperativeHandle(ref, () => ({ focus: () => inputRef.current?.focus({ preventScroll: true }) }), []);
 
   const send = (text: string) => {
-    if (text.trim() !== '') {
-      const r = recall.current
-      r.list = [...r.list.filter((t) => t !== text), text].slice(-50)
-      r.at = -1
+    if (text.trim() !== "") {
+      const r = recall.current;
+      r.list = [...r.list.filter((t) => t !== text), text].slice(-50);
+      r.at = -1;
     }
-    setValue('')
-    editor.submit(text)
-  }
+    setValue("");
+    editor.submit(text);
+  };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const mod = e.ctrlKey || e.metaKey
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      send(value)
-      return
+    const mod = e.ctrlKey || e.metaKey;
+    if (e.key === "Enter") {
+      e.preventDefault();
+      send(value);
+      return;
     }
-    if (e.key === ' ' && !state.wantsText) {
-      e.preventDefault()
-      send(value)
-      return
+    if (e.key === " " && !state.wantsText) {
+      e.preventDefault();
+      send(value);
+      return;
     }
-    if (e.key === 'Escape') {
-      e.preventDefault()
-      setValue('')
-      editor.cancel()
-      return
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setValue("");
+      editor.cancel();
+      return;
     }
-    if (e.key === 'F2') {
-      e.preventDefault()
-      onToggleExpanded()
-      return
+    if (e.key === "F2") {
+      e.preventDefault();
+      onToggleExpanded();
+      return;
     }
-    if (e.key === 'F3') {
-      e.preventDefault()
-      editor.setToggles({ osnap: !state.toggles.osnap })
-      return
+    if (e.key === "F3") {
+      e.preventDefault();
+      editor.setToggles({ osnap: !state.toggles.osnap });
+      return;
     }
-    if (e.key === 'F8') {
-      e.preventDefault()
-      editor.setToggles({ ortho: !state.toggles.ortho })
-      return
+    if (e.key === "F8") {
+      e.preventDefault();
+      editor.setToggles({ ortho: !state.toggles.ortho });
+      return;
     }
-    if (e.key === 'F10') {
-      e.preventDefault()
-      editor.setToggles({ polar: !state.toggles.polar })
-      return
+    if (e.key === "F10") {
+      e.preventDefault();
+      editor.setToggles({ polar: !state.toggles.polar });
+      return;
     }
-    if (value === '') {
-      if (e.key === 'Delete') {
-        e.preventDefault()
-        editor.eraseSelection()
-        return
+    if (value === "") {
+      if (e.key === "Delete") {
+        e.preventDefault();
+        editor.eraseSelection();
+        return;
       }
-      if (mod && e.key.toLowerCase() === 'z') {
-        e.preventDefault()
-        editor.undo()
-        return
+      if (mod && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        editor.undo();
+        return;
       }
-      if (mod && e.key.toLowerCase() === 'y') {
-        e.preventDefault()
-        editor.redo()
-        return
+      if (mod && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        editor.redo();
+        return;
       }
-      if (mod && e.key.toLowerCase() === 'a') {
-        e.preventDefault()
-        editor.selectAll()
-        return
+      if (mod && e.key.toLowerCase() === "a") {
+        e.preventDefault();
+        editor.selectAll();
+        return;
       }
     }
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-      const r = recall.current
-      if (r.list.length === 0) return
-      e.preventDefault()
-      r.at =
-        e.key === 'ArrowUp'
-          ? r.at < 0
-            ? r.list.length - 1
-            : Math.max(0, r.at - 1)
-          : r.at < 0
-            ? -1
-            : r.at + 1
-      if (r.at >= r.list.length) r.at = -1
-      setValue(r.at < 0 ? '' : r.list[r.at])
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      const r = recall.current;
+      if (r.list.length === 0) return;
+      e.preventDefault();
+      r.at = e.key === "ArrowUp" ? (r.at < 0 ? r.list.length - 1 : Math.max(0, r.at - 1)) : r.at < 0 ? -1 : r.at + 1;
+      if (r.at >= r.list.length) r.at = -1;
+      setValue(r.at < 0 ? "" : r.list[r.at]);
     }
-  }
+  };
 
-  const lines = state.history.slice(expanded ? -12 : -3)
+  const lines = state.history.slice(expanded ? -12 : -3);
   return (
     <div
       className="border-outline-variant bg-surface-container-low font-ui shrink-0 border-t text-[12px]"
@@ -127,18 +116,15 @@ export const CommandLine = forwardRef<CommandLineHandle, Props>(function Command
     >
       <div
         className={cn(
-          'text-on-surface-variant flex flex-col justify-end overflow-hidden px-2 pt-0.5',
-          expanded ? 'h-[186px]' : 'h-[48px]'
+          "text-on-surface-variant flex flex-col justify-end overflow-hidden px-2 pt-0.5",
+          expanded ? "h-[186px]" : "h-[48px]",
         )}
         role="log"
         aria-label="Command history"
         aria-live="polite"
       >
         {lines.map((l, i) => (
-          <div
-            key={`${state.history.length - lines.length + i}`}
-            className="truncate leading-[15px]"
-          >
+          <div key={`${state.history.length - lines.length + i}`} className="truncate leading-[15px]">
             {l}
           </div>
         ))}
@@ -170,5 +156,5 @@ export const CommandLine = forwardRef<CommandLineHandle, Props>(function Command
         />
       </div>
     </div>
-  )
-})
+  );
+});

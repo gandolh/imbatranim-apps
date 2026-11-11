@@ -1,5 +1,5 @@
-import { greet } from '../../../lib/greet'
+import { greet } from "../../../lib/greet";
 
 export function App() {
-  return <p className="text-primary underline">{greet('beta')}</p>
+  return <p className="text-primary underline">{greet("beta")}</p>;
 }

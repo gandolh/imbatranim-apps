@@ -23,22 +23,15 @@
  * dynamic imports, kept off the window's first module (see eslint.config.js).
  * `@pdfcore/engine/worker` is the engine's worker file and nothing else.
  */
-import { installMapGetOrInsert } from '@imbatranim/ui'
-import { setPdfjsWasmUrl, sharedPdfWorker, startPdfjsWorker } from '@pdfcore/engine/worker'
-import pdfjsWasmDir from 'virtual:pdfjs-wasm-dir'
-import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist'
-import type {
-  PageViewport,
-  Platform,
-  Render,
-  RenderOptions,
-  RenderResult,
-  RenderTarget,
-} from '@pdfcore/engine'
+import { installMapGetOrInsert } from "@imbatranim/ui";
+import { setPdfjsWasmUrl, sharedPdfWorker, startPdfjsWorker } from "@pdfcore/engine/worker";
+import pdfjsWasmDir from "virtual:pdfjs-wasm-dir";
+import type { PDFDocumentLoadingTask, PDFDocumentProxy } from "pdfjs-dist";
+import type { PageViewport, Platform, Render, RenderOptions, RenderResult, RenderTarget } from "@pdfcore/engine";
 
-type Pdfjs = typeof import('pdfjs-dist')
+type Pdfjs = typeof import("pdfjs-dist");
 
-let pdfjsPromise: Promise<Pdfjs> | null = null
+let pdfjsPromise: Promise<Pdfjs> | null = null;
 
 /**
  * Start pdf.js and its worker. Idempotent: the first call starts both, later
@@ -49,27 +42,27 @@ export function warmUpPdfjs(): Promise<Pdfjs> {
     // The worker script is the largest file on the way to the first page, so
     // it starts loading before the library does. Messages pdf.js posts to it
     // before its module has run wait in the worker's queue.
-    startPdfjsWorker()
+    startPdfjsWorker();
     // The decoders for JPEG2000 and JBIG2 images sit beside the build; every
     // document, this reader's and the engine's, is opened with their location.
-    setPdfjsWasmUrl(pdfjsWasmDir)
+    setPdfjsWasmUrl(pdfjsWasmDir);
     // pdf.js 6.1 calls Map.prototype.getOrInsertComputed on every render; on
     // Chrome 141 and earlier every page is blank without it.
-    installMapGetOrInsert()
-    const loading = import('pdfjs-dist')
-    pdfjsPromise = loading
+    installMapGetOrInsert();
+    const loading = import("pdfjs-dist");
+    pdfjsPromise = loading;
     loading.catch(() => {
       // A failed chunk load (the window's suite was updated under it) may work
       // on the next try.
-      if (pdfjsPromise === loading) pdfjsPromise = null
-    })
+      if (pdfjsPromise === loading) pdfjsPromise = null;
+    });
   }
-  return pdfjsPromise
+  return pdfjsPromise;
 }
 
 /** A pdf.js parse of some bytes, opened through the shared worker. */
 async function loadTask(bytes: Uint8Array): Promise<PDFDocumentLoadingTask> {
-  const lib = await warmUpPdfjs()
+  const lib = await warmUpPdfjs();
   // getDocument transfers its buffer to the worker; the caller keeps its bytes
   // (the engine parses them again with pdf-lib). The shared worker is passed,
   // not owned: destroying this document leaves it running for the others.
@@ -77,7 +70,7 @@ async function loadTask(bytes: Uint8Array): Promise<PDFDocumentLoadingTask> {
     data: bytes.slice(),
     worker: sharedPdfWorker(lib),
     wasmUrl: pdfjsWasmDir,
-  })
+  });
 }
 
 /**
@@ -86,40 +79,40 @@ async function loadTask(bytes: Uint8Array): Promise<PDFDocumentLoadingTask> {
  * so {@link readerPlatform} can hand the same instance to the engine.
  */
 export class PageRender implements Render {
-  readonly bytes: Uint8Array
-  #task: PDFDocumentLoadingTask | undefined
+  readonly bytes: Uint8Array;
+  #task: PDFDocumentLoadingTask | undefined;
 
   constructor(bytes: Uint8Array, task?: PDFDocumentLoadingTask) {
-    this.bytes = bytes
-    this.#task = task
+    this.bytes = bytes;
+    this.#task = task;
   }
 
   async pageCount(): Promise<number> {
-    return (await this.#document()).numPages
+    return (await this.#document()).numPages;
   }
 
   async page(page: number, target: RenderTarget, opts?: RenderOptions): Promise<RenderResult> {
-    const doc = await this.#document()
-    const pdfPage = await doc.getPage(checkPage(doc, page, 'Render.page'))
-    const viewport = pdfPage.getViewport({ scale: opts?.scale ?? 1, rotation: opts?.rotation })
-    const ctx = target.getContext('2d')
-    if (!ctx) throw new Error('Render.page: target has no 2d context.')
-    target.width = Math.ceil(viewport.width)
-    target.height = Math.ceil(viewport.height)
+    const doc = await this.#document();
+    const pdfPage = await doc.getPage(checkPage(doc, page, "Render.page"));
+    const viewport = pdfPage.getViewport({ scale: opts?.scale ?? 1, rotation: opts?.rotation });
+    const ctx = target.getContext("2d");
+    if (!ctx) throw new Error("Render.page: target has no 2d context.");
+    target.width = Math.ceil(viewport.width);
+    target.height = Math.ceil(viewport.height);
     await pdfPage.render({
       canvas: target as never,
       canvasContext: ctx as never,
       viewport,
-    }).promise
-    return { width: target.width, height: target.height }
+    }).promise;
+    return { width: target.width, height: target.height };
   }
 
   async viewport(page: number, opts?: RenderOptions): Promise<PageViewport> {
-    const doc = await this.#document()
-    const pdfPage = await doc.getPage(checkPage(doc, page, 'Render.viewport'))
-    const scale = opts?.scale ?? 1
-    const vp = pdfPage.getViewport({ scale, rotation: opts?.rotation })
-    const base = pdfPage.getViewport({ scale: 1, rotation: 0 })
+    const doc = await this.#document();
+    const pdfPage = await doc.getPage(checkPage(doc, page, "Render.viewport"));
+    const scale = opts?.scale ?? 1;
+    const vp = pdfPage.getViewport({ scale, rotation: opts?.rotation });
+    const base = pdfPage.getViewport({ scale: 1, rotation: 0 });
     return {
       width: vp.width,
       height: vp.height,
@@ -127,7 +120,7 @@ export class PageRender implements Render {
       pageHeight: base.height,
       scale,
       rotation: vp.rotation,
-    }
+    };
   }
 
   /**
@@ -136,58 +129,56 @@ export class PageRender implements Render {
    * are the unrotated media box.
    */
   async pageSizes(): Promise<{ w: number; h: number }[]> {
-    const doc = await this.#document()
-    const pages = await Promise.all(
-      Array.from({ length: doc.numPages }, (_, i) => doc.getPage(i + 1))
-    )
+    const doc = await this.#document();
+    const pages = await Promise.all(Array.from({ length: doc.numPages }, (_, i) => doc.getPage(i + 1)));
     return pages.map((p) => {
-      const vp = p.getViewport({ scale: 1 })
-      return { w: vp.width, h: vp.height }
-    })
+      const vp = p.getViewport({ scale: 1 });
+      return { w: vp.width, h: vp.height };
+    });
   }
 
   /** Release the pdf.js document and its worker-side memory. Re-parses if used again. */
   dispose(): void {
-    void this.#task?.destroy()
-    this.#task = undefined
+    void this.#task?.destroy();
+    this.#task = undefined;
   }
 
   async #document(): Promise<PDFDocumentProxy> {
-    if (!this.#task) this.#task = await loadTask(this.bytes)
-    return this.#task.promise
+    if (!this.#task) this.#task = await loadTask(this.bytes);
+    return this.#task.promise;
   }
 }
 
 function checkPage(doc: PDFDocumentProxy, page: number, what: string): number {
   if (page < 1 || page > doc.numPages) {
-    throw new Error(`${what}: page ${page} out of range (document has ${doc.numPages} page(s)).`)
+    throw new Error(`${what}: page ${page} out of range (document has ${doc.numPages} page(s)).`);
   }
-  return page
+  return page;
 }
 
 /** What the reader needs before anything else: a render, the page count, page 1's size. */
 export type FirstPage = {
-  render: PageRender
-  pageCount: number
+  render: PageRender;
+  pageCount: number;
   /** Page 1's size in points, rotation applied: the estimate for every page until each is drawn. */
-  size: { w: number; h: number }
-}
+  size: { w: number; h: number };
+};
 
 /** Parse the bytes with pdf.js only and measure page 1. Throws what pdf.js throws. */
 export async function openFirstPage(bytes: Uint8Array): Promise<FirstPage> {
-  const task = await loadTask(bytes)
+  const task = await loadTask(bytes);
   try {
-    const doc = await task.promise
-    const page = await doc.getPage(1)
-    const vp = page.getViewport({ scale: 1 })
+    const doc = await task.promise;
+    const page = await doc.getPage(1);
+    const vp = page.getViewport({ scale: 1 });
     return {
       render: new PageRender(bytes, task),
       pageCount: doc.numPages,
       size: { w: vp.width, h: vp.height },
-    }
+    };
   } catch (err) {
-    void task.destroy()
-    throw err
+    void task.destroy();
+    throw err;
   }
 }
 
@@ -199,7 +190,7 @@ export async function openFirstPage(bytes: Uint8Array): Promise<FirstPage> {
  */
 export function readerPlatform(first: PageRender): Platform {
   return {
-    name: 'browser',
+    name: "browser",
     createRender: (bytes) => (bytes === first.bytes ? first : new PageRender(bytes)),
-  }
+  };
 }

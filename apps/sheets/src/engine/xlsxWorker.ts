@@ -17,43 +17,43 @@
  * never hangs). The mapping itself lives in `./xlsxMapping.ts` so it can be
  * tested directly.
  */
-import type { IWorkbookData } from '@univerjs/presets'
-import { parse, serialize, type ParseResult } from './xlsxMapping'
+import type { IWorkbookData } from "@univerjs/presets";
+import { parse, serialize, type ParseResult } from "./xlsxMapping";
 
 // ── Worker message protocol ─────────────────────────────────────────────────
-export type ParseRequest = { id: number; kind: 'parse'; bytes: ArrayBuffer }
-export type SerializeRequest = { id: number; kind: 'serialize'; snapshot: IWorkbookData }
-export type WorkerRequest = ParseRequest | SerializeRequest
+export type ParseRequest = { id: number; kind: "parse"; bytes: ArrayBuffer };
+export type SerializeRequest = { id: number; kind: "serialize"; snapshot: IWorkbookData };
+export type WorkerRequest = ParseRequest | SerializeRequest;
 
-export type ParseReply = { id: number; result: ParseResult }
-export type SerializeReply = { id: number; result: ArrayBuffer }
-export type ErrorReply = { id: number; error: string }
-export type WorkerReply = ParseReply | SerializeReply | ErrorReply
+export type ParseReply = { id: number; result: ParseResult };
+export type SerializeReply = { id: number; result: ArrayBuffer };
+export type ErrorReply = { id: number; error: string };
+export type WorkerReply = ParseReply | SerializeReply | ErrorReply;
 
 // ── Worker entry ─────────────────────────────────────────────────────────────
 // tsconfig ships the DOM lib (not WebWorker), so type the dedicated-worker
 // global through a minimal local interface rather than DedicatedWorkerGlobalScope.
 interface WorkerContext {
-  onmessage: ((ev: MessageEvent<WorkerRequest>) => void) | null
-  postMessage(message: WorkerReply, transfer?: Transferable[]): void
+  onmessage: ((ev: MessageEvent<WorkerRequest>) => void) | null;
+  postMessage(message: WorkerReply, transfer?: Transferable[]): void;
 }
-const ctx = self as unknown as WorkerContext
+const ctx = self as unknown as WorkerContext;
 
 ctx.onmessage = (ev: MessageEvent<WorkerRequest>) => {
-  const msg = ev.data
+  const msg = ev.data;
   void (async () => {
     try {
-      if (msg.kind === 'parse') {
-        const result = await parse(msg.bytes)
-        ctx.postMessage({ id: msg.id, result })
+      if (msg.kind === "parse") {
+        const result = await parse(msg.bytes);
+        ctx.postMessage({ id: msg.id, result });
       } else {
-        const result = await serialize(msg.snapshot)
+        const result = await serialize(msg.snapshot);
         // Transfer the freshly-written buffer back to the main thread.
-        ctx.postMessage({ id: msg.id, result }, [result])
+        ctx.postMessage({ id: msg.id, result }, [result]);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err)
-      ctx.postMessage({ id: msg.id, error: message })
+      const message = err instanceof Error ? err.message : String(err);
+      ctx.postMessage({ id: msg.id, error: message });
     }
-  })()
-}
+  })();
+};

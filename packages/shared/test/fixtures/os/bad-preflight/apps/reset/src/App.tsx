@@ -1,1 +1,1 @@
-export const App = () => <div className="flex" />
+export const App = () => <div className="flex" />;

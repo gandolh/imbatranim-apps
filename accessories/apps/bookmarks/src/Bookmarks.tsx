@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -13,7 +13,7 @@ import {
   Trash2,
   Upload,
   X,
-} from 'lucide-react'
+} from "lucide-react";
 import {
   Button,
   Dialog,
@@ -24,7 +24,7 @@ import {
   useFileDialog,
   usePrompt,
   useSystem,
-} from '@imbatranim/ui'
+} from "@imbatranim/ui";
 import {
   useBookmarkGroupsQuery,
   useBrowserAvailable,
@@ -35,7 +35,7 @@ import {
   useImportMutation,
   useUpdateGroupMutation,
   useUpdateLinkMutation,
-} from './queries/bookmarksQueries'
+} from "./queries/bookmarksQueries";
 import {
   allFolderIds,
   buildTree,
@@ -48,10 +48,10 @@ import {
   toParsedTree,
   toRows,
   type Row,
-} from './tree'
-import { describeImport, parseNetscape, toNetscape } from './netscape'
-import { completeUrl, normaliseUrl } from './urlNormalise'
-import type { BookmarkGroup, BookmarkLink } from './types'
+} from "./tree";
+import { describeImport, parseNetscape, toNetscape } from "./netscape";
+import { completeUrl, normaliseUrl } from "./urlNormalise";
+import type { BookmarkGroup, BookmarkLink } from "./types";
 
 /**
  * Bookmarks: a folder tree, not a flat list.
@@ -68,10 +68,10 @@ import type { BookmarkGroup, BookmarkLink } from './types'
  */
 
 /** Each nesting level indents by this much. Small: depth 6 must still fit 320px. */
-const INDENT = 12
+const INDENT = 12;
 
 function rowKey(row: Row): string {
-  return row.kind === 'folder' ? `f${row.group.id}` : `l${row.link.id}`
+  return row.kind === "folder" ? `f${row.group.id}` : `l${row.link.id}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -88,15 +88,15 @@ function FolderRow({
   onAddFolder,
   onDelete,
 }: {
-  group: BookmarkGroup
-  depth: number
-  childCount: number
-  open: boolean
-  onToggle: () => void
-  onRename: () => void
-  onAddLink: () => void
-  onAddFolder: () => void
-  onDelete: () => void
+  group: BookmarkGroup;
+  depth: number;
+  childCount: number;
+  open: boolean;
+  onToggle: () => void;
+  onRename: () => void;
+  onAddLink: () => void;
+  onAddFolder: () => void;
+  onDelete: () => void;
 }) {
   return (
     <div className="group/row border-outline-variant hover:bg-surface-container-low flex h-7 items-center gap-1 border-b pr-1">
@@ -114,9 +114,7 @@ function FolderRow({
           <ChevronRight size={12} className="text-on-surface-variant shrink-0" />
         )}
         <Folder size={13} strokeWidth={1.75} className="text-on-surface-variant shrink-0" />
-        <span className="font-ui text-on-surface truncate text-[12px] font-semibold">
-          {group.name}
-        </span>
+        <span className="font-ui text-on-surface truncate text-[12px] font-semibold">{group.name}</span>
         <span className="font-ui text-on-surface-variant shrink-0 text-[11px]">{childCount}</span>
       </button>
       <div className="flex shrink-0 items-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-within:opacity-100">
@@ -138,13 +136,7 @@ function FolderRow({
         >
           <FolderPlus size={12} strokeWidth={2} />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onRename}
-          aria-label={`Rename ${group.name}`}
-          title="Rename"
-        >
+        <Button variant="ghost" size="sm" onClick={onRename} aria-label={`Rename ${group.name}`} title="Rename">
           <Edit2 size={12} strokeWidth={2} />
         </Button>
         <Button
@@ -159,7 +151,7 @@ function FolderRow({
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
 function LinkRow({
@@ -170,12 +162,12 @@ function LinkRow({
   onMove,
   onDelete,
 }: {
-  link: BookmarkLink
-  depth: number
-  onOpen: () => void
-  onEdit: () => void
-  onMove: () => void
-  onDelete: () => void
+  link: BookmarkLink;
+  depth: number;
+  onOpen: () => void;
+  onEdit: () => void;
+  onMove: () => void;
+  onDelete: () => void;
 }) {
   return (
     <div className="group/row border-outline-variant hover:bg-surface-container-low flex h-7 items-center gap-1 border-b pr-1">
@@ -195,17 +187,11 @@ function LinkRow({
         <Link2 size={12} strokeWidth={1.75} className="text-on-surface-variant shrink-0" />
         <span className="font-content text-on-surface truncate text-[12px]">{link.title}</span>
         <span className="font-ui text-on-surface-variant min-w-0 flex-1 truncate text-[11px]">
-          {link.url.replace(/^https?:\/\//, '')}
+          {link.url.replace(/^https?:\/\//, "")}
         </span>
       </button>
       <div className="flex shrink-0 items-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-within:opacity-100">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onEdit}
-          aria-label={`Edit ${link.title}`}
-          title="Edit"
-        >
+        <Button variant="ghost" size="sm" onClick={onEdit} aria-label={`Edit ${link.title}`} title="Edit">
           <Edit2 size={12} strokeWidth={2} />
         </Button>
         <Button
@@ -239,108 +225,108 @@ function LinkRow({
         <ExternalLink size={12} strokeWidth={2} />
       </a>
     </div>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
 // Root
 // ---------------------------------------------------------------------------
 export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
-  const system = useSystem()
-  const { data: groups, isPending } = useBookmarkGroupsQuery()
-  const browserAvailable = useBrowserAvailable()
+  const system = useSystem();
+  const { data: groups, isPending } = useBookmarkGroupsQuery();
+  const browserAvailable = useBrowserAvailable();
   // In the OS's own Browser when this machine has one, else a tab
   // of the browser viewing the desktop.
   const openLink = (url: string) => {
-    if (!browserAvailable || !system.intents.openApp('browser', { url })) {
-      window.open(url, '_blank', 'noopener,noreferrer')
+    if (!browserAvailable || !system.intents.openApp("browser", { url })) {
+      window.open(url, "_blank", "noopener,noreferrer");
     }
-  }
-  const createGroup = useCreateGroupMutation()
-  const updateGroup = useUpdateGroupMutation()
-  const removeGroup = useDeleteGroupMutation()
-  const createLink = useCreateLinkMutation()
-  const updateLink = useUpdateLinkMutation()
-  const removeLink = useDeleteLinkMutation()
-  const runImport = useImportMutation()
-  const { confirm, confirmDialog } = useConfirm()
-  const { prompt, promptDialog } = usePrompt()
-  const { openFile, saveFile } = useFileDialog()
+  };
+  const createGroup = useCreateGroupMutation();
+  const updateGroup = useUpdateGroupMutation();
+  const removeGroup = useDeleteGroupMutation();
+  const createLink = useCreateLinkMutation();
+  const updateLink = useUpdateLinkMutation();
+  const removeLink = useDeleteLinkMutation();
+  const runImport = useImportMutation();
+  const { confirm, confirmDialog } = useConfirm();
+  const { prompt, promptDialog } = usePrompt();
+  const { openFile, saveFile } = useFileDialog();
 
-  const [query, setQuery] = useState('')
-  const [collapsed, setCollapsed] = useState<ReadonlySet<number>>(new Set())
-  const [busy, setBusy] = useState(false)
-  const [moving, setMoving] = useState<BookmarkLink | null>(null)
+  const [query, setQuery] = useState("");
+  const [collapsed, setCollapsed] = useState<ReadonlySet<number>>(new Set());
+  const [busy, setBusy] = useState(false);
+  const [moving, setMoving] = useState<BookmarkLink | null>(null);
 
   // `groups ?? []` inline would be a fresh array on every render, so every memo below
   // it would recompute the whole tree on every keystroke.
-  const all = useMemo(() => groups ?? [], [groups])
-  const tree = useMemo(() => buildTree(all), [all])
-  const search = useMemo(() => searchTree(tree, query), [tree, query])
+  const all = useMemo(() => groups ?? [], [groups]);
+  const tree = useMemo(() => buildTree(all), [all]);
+  const search = useMemo(() => searchTree(tree, query), [tree, query]);
 
   // Folders are open by default and the state tracks what the user CLOSED. That way
   // a newly created or imported folder appears open, instead of a fresh id being
   // absent from an "expanded" set and silently hiding its contents.
   const expanded = useMemo(() => {
-    const ids = new Set(allFolderIds(search.nodes))
-    for (const id of collapsed) if (!search.expand.has(id)) ids.delete(id)
-    return ids
-  }, [search.nodes, search.expand, collapsed])
+    const ids = new Set(allFolderIds(search.nodes));
+    for (const id of collapsed) if (!search.expand.has(id)) ids.delete(id);
+    return ids;
+  }, [search.nodes, search.expand, collapsed]);
 
-  const rows = useMemo(() => toRows(search.nodes, expanded), [search.nodes, expanded])
-  const linkCount = all.reduce((n, group) => n + group.links.length, 0)
+  const rows = useMemo(() => toRows(search.nodes, expanded), [search.nodes, expanded]);
+  const linkCount = all.reduce((n, group) => n + group.links.length, 0);
 
   const toggle = useCallback((id: number) => {
     setCollapsed((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }, [])
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
 
   // -------------------------------------------------------------------------
   // folders
   // -------------------------------------------------------------------------
   async function addFolder(parentId: number | null) {
     const name = await prompt({
-      title: parentId === null ? 'New folder' : 'New subfolder',
-      message: 'Folder name',
-      confirmLabel: 'Create',
-    })
-    if (name === null) return
-    createGroup.mutate({ name, parentId })
+      title: parentId === null ? "New folder" : "New subfolder",
+      message: "Folder name",
+      confirmLabel: "Create",
+    });
+    if (name === null) return;
+    createGroup.mutate({ name, parentId });
   }
 
   async function renameFolder(group: BookmarkGroup) {
     const name = await prompt({
-      title: 'Rename folder',
-      message: 'Folder name',
+      title: "Rename folder",
+      message: "Folder name",
       initialValue: group.name,
-      confirmLabel: 'Rename',
-    })
-    if (name === null || name === group.name) return
-    updateGroup.mutate({ id: group.id, data: { name } })
+      confirmLabel: "Rename",
+    });
+    if (name === null || name === group.name) return;
+    updateGroup.mutate({ id: group.id, data: { name } });
   }
 
   async function deleteFolder(group: BookmarkGroup) {
     // Say what is actually about to be lost. This app used to ask "Delete group and
     // all its links?" while the server orphaned the links instead of deleting them —
     // the confirm was telling the truth and the code was not.
-    const subtree = subtreeOf(buildTree(all), group.id)
-    const links = subtree.reduce((n, g) => n + g.links.length, 0)
-    const folders = subtree.length - 1
-    const parts = [`${links} bookmark${links === 1 ? '' : 's'}`]
-    if (folders > 0) parts.push(`${folders} subfolder${folders === 1 ? '' : 's'}`)
+    const subtree = subtreeOf(buildTree(all), group.id);
+    const links = subtree.reduce((n, g) => n + g.links.length, 0);
+    const folders = subtree.length - 1;
+    const parts = [`${links} bookmark${links === 1 ? "" : "s"}`];
+    if (folders > 0) parts.push(`${folders} subfolder${folders === 1 ? "" : "s"}`);
     const ok = await confirm({
-      title: 'Delete folder',
+      title: "Delete folder",
       message:
         links === 0 && folders === 0
           ? `Delete the empty folder “${group.name}”?`
-          : `Delete “${group.name}” and everything in it — ${parts.join(' and ')}? This cannot be undone.`,
+          : `Delete “${group.name}” and everything in it — ${parts.join(" and ")}? This cannot be undone.`,
       destructive: true,
-    })
-    if (ok) removeGroup.mutate(group.id)
+    });
+    if (ok) removeGroup.mutate(group.id);
   }
 
   // -------------------------------------------------------------------------
@@ -348,55 +334,55 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
   // -------------------------------------------------------------------------
   async function addLink(groupId: number) {
     const raw = await prompt({
-      title: 'Add a bookmark',
-      message: 'Web address',
-      confirmLabel: 'Next',
-    })
-    if (raw === null) return
+      title: "Add a bookmark",
+      message: "Web address",
+      confirmLabel: "Next",
+    });
+    if (raw === null) return;
     // `example.com` is what a person types; the backend requires a scheme, so
     // complete it here rather than rejecting the input as malformed.
-    const url = completeUrl(raw)
+    const url = completeUrl(raw);
 
-    const duplicate = findDuplicate(all, url)
+    const duplicate = findDuplicate(all, url);
     if (duplicate) {
       const ok = await confirm({
-        title: 'Already bookmarked',
+        title: "Already bookmarked",
         message: `“${duplicate.link.title}” already points at this address${
-          duplicate.path ? ` in ${duplicate.path}` : ''
+          duplicate.path ? ` in ${duplicate.path}` : ""
         }. Add it again anyway?`,
-        confirmLabel: 'Add anyway',
-      })
-      if (!ok) return
+        confirmLabel: "Add anyway",
+      });
+      if (!ok) return;
     }
 
     const title = await prompt({
-      title: 'Add a bookmark',
-      message: 'Title',
+      title: "Add a bookmark",
+      message: "Title",
       initialValue: titleFromUrl(url),
-      confirmLabel: 'Add',
-    })
-    if (title === null) return
-    createLink.mutate({ groupId, title, url })
+      confirmLabel: "Add",
+    });
+    if (title === null) return;
+    createLink.mutate({ groupId, title, url });
   }
 
   async function editLink(link: BookmarkLink) {
     const title = await prompt({
-      title: 'Edit bookmark',
-      message: 'Title',
+      title: "Edit bookmark",
+      message: "Title",
       initialValue: link.title,
-      confirmLabel: 'Next',
-    })
-    if (title === null) return
+      confirmLabel: "Next",
+    });
+    if (title === null) return;
     const raw = await prompt({
-      title: 'Edit bookmark',
-      message: 'Web address',
+      title: "Edit bookmark",
+      message: "Web address",
       initialValue: link.url,
-      confirmLabel: 'Save',
-    })
-    if (raw === null) return
-    const url = completeUrl(raw)
-    if (title === link.title && normaliseUrl(url) === normaliseUrl(link.url)) return
-    updateLink.mutate({ id: link.id, data: { title, url } })
+      confirmLabel: "Save",
+    });
+    if (raw === null) return;
+    const url = completeUrl(raw);
+    if (title === link.title && normaliseUrl(url) === normaliseUrl(link.url)) return;
+    updateLink.mutate({ id: link.id, data: { title, url } });
   }
 
   function moveLink(link: BookmarkLink) {
@@ -405,111 +391,111 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
     // spelling test. The dialog is rendered at the bottom of this component.
     if (all.length < 2) {
       system.notify({
-        title: 'Nowhere to move it',
-        body: 'Create another folder first.',
-        level: 'info',
-      })
-      return
+        title: "Nowhere to move it",
+        body: "Create another folder first.",
+        level: "info",
+      });
+      return;
     }
-    setMoving(link)
+    setMoving(link);
   }
 
   async function deleteBookmark(link: BookmarkLink) {
     const ok = await confirm({
-      title: 'Delete bookmark',
+      title: "Delete bookmark",
       message: `Delete “${link.title}”?`,
       destructive: true,
-    })
-    if (ok) removeLink.mutate(link.id)
+    });
+    if (ok) removeLink.mutate(link.id);
   }
 
   // -------------------------------------------------------------------------
   // import / export
   // -------------------------------------------------------------------------
   async function handleImport() {
-    const choice = await openFile({ title: 'Import bookmarks', extensions: ['html', 'htm'] })
-    if (!choice) return
-    setBusy(true)
+    const choice = await openFile({ title: "Import bookmarks", extensions: ["html", "htm"] });
+    if (!choice) return;
+    setBusy(true);
     try {
-      const bytes = await system.fs.read(choice.root, choice.path)
-      const parsed = parseNetscape(new TextDecoder().decode(bytes))
+      const bytes = await system.fs.read(choice.root, choice.path);
+      const parsed = parseNetscape(new TextDecoder().decode(bytes));
       // Loose top-level bookmarks need somewhere to live; a browser export always
       // has folders, but a hand-written file may not.
-      const folders = [...parsed.folders]
+      const folders = [...parsed.folders];
       if (parsed.looseLinks.length > 0) {
-        folders.push({ name: 'Imported', links: parsed.looseLinks, folders: [] })
+        folders.push({ name: "Imported", links: parsed.looseLinks, folders: [] });
       }
 
-      const { folders: fresh, duplicates } = dedupeImport(folders, all)
-      const counts = countTree(fresh)
+      const { folders: fresh, duplicates } = dedupeImport(folders, all);
+      const counts = countTree(fresh);
       if (counts.links === 0 && counts.folders === 0) {
         system.notify({
-          title: 'Nothing to import',
+          title: "Nothing to import",
           body:
             duplicates > 0
               ? `All ${duplicates} bookmarks in that file are already here.`
-              : 'That file contained no web bookmarks.',
-          level: 'info',
-        })
-        return
+              : "That file contained no web bookmarks.",
+          level: "info",
+        });
+        return;
       }
 
-      const result = await runImport.mutateAsync({ folders: fresh })
+      const result = await runImport.mutateAsync({ folders: fresh });
       system.notify({
-        title: 'Bookmarks imported',
+        title: "Bookmarks imported",
         body:
           describeImport({ ...result, skipped: parsed.skipped, flattened: parsed.flattened }) +
-          (duplicates > 0 ? ` ${duplicates} already here.` : ''),
-        level: 'success',
-      })
+          (duplicates > 0 ? ` ${duplicates} already here.` : ""),
+        level: "success",
+      });
     } catch (error) {
       if (error instanceof UploadTooLargeError) {
-        system.notify({ title: 'That file is too large', level: 'error' })
+        system.notify({ title: "That file is too large", level: "error" });
       } else {
         system.notify({
-          title: 'Could not read that file',
-          body: 'It does not look like a bookmarks export.',
-          level: 'error',
-        })
+          title: "Could not read that file",
+          body: "It does not look like a bookmarks export.",
+          level: "error",
+        });
       }
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
   }
 
   async function handleExport() {
     if (all.length === 0) {
-      system.notify({ title: 'Nothing to export', level: 'info' })
-      return
+      system.notify({ title: "Nothing to export", level: "info" });
+      return;
     }
     const choice = await saveFile({
-      title: 'Export bookmarks',
-      suggestedName: 'bookmarks.html',
-      extensions: ['html'],
-    })
-    if (!choice) return
-    setBusy(true)
+      title: "Export bookmarks",
+      suggestedName: "bookmarks.html",
+      extensions: ["html"],
+    });
+    if (!choice) return;
+    setBusy(true);
     try {
-      const html = toNetscape(toParsedTree(buildTree(all)))
+      const html = toNetscape(toParsedTree(buildTree(all)));
       await system.fs.upload(
         choice.root,
         choice.path,
         new TextEncoder().encode(html),
-        choice.path.split('/').pop() ?? 'bookmarks.html'
-      )
+        choice.path.split("/").pop() ?? "bookmarks.html",
+      );
       system.notify({
-        title: 'Bookmarks exported',
-        body: `${linkCount} bookmark${linkCount === 1 ? '' : 's'} written. Any browser can import this file.`,
-        level: 'success',
-      })
+        title: "Bookmarks exported",
+        body: `${linkCount} bookmark${linkCount === 1 ? "" : "s"} written. Any browser can import this file.`,
+        level: "success",
+      });
     } catch (error) {
       system.notify({
-        title: 'Export failed',
-        body: error instanceof UploadTooLargeError ? error.message : 'The file was not written.',
-        level: 'error',
-      })
+        title: "Export failed",
+        body: error instanceof UploadTooLargeError ? error.message : "The file was not written.",
+        level: "error",
+      });
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
   }
 
@@ -551,19 +537,14 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Escape') setQuery('')
+              if (e.key === "Escape") setQuery("");
             }}
             placeholder="Search bookmarks…"
             aria-label="Search bookmarks"
             className="font-content text-on-surface placeholder:text-on-surface-variant focus-visible:ring-primary min-w-0 flex-1 bg-transparent py-1 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
           />
-          {query !== '' && (
-            <Button
-              variant="ghost"
-              size="sm"
-              aria-label="Clear search"
-              onClick={() => setQuery('')}
-            >
+          {query !== "" && (
+            <Button variant="ghost" size="sm" aria-label="Clear search" onClick={() => setQuery("")}>
               <X size={11} />
             </Button>
           )}
@@ -578,9 +559,9 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
         <div className="text-on-surface-variant flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
           <Folder size={32} strokeWidth={1} />
           <span className="font-ui text-[12px]">
-            {query !== '' ? `Nothing matches “${query.trim()}”` : 'No bookmarks yet'}
+            {query !== "" ? `Nothing matches “${query.trim()}”` : "No bookmarks yet"}
           </span>
-          {query === '' && (
+          {query === "" && (
             <Button variant="ghost" size="sm" onClick={() => void handleImport()}>
               Import from a browser
             </Button>
@@ -589,7 +570,7 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
       ) : (
         <ScrollArea className="min-h-0 flex-1">
           {rows.map((row) =>
-            row.kind === 'folder' ? (
+            row.kind === "folder" ? (
               <FolderRow
                 key={rowKey(row)}
                 group={row.group}
@@ -612,15 +593,15 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
                 onMove={() => void moveLink(row.link)}
                 onDelete={() => void deleteBookmark(row.link)}
               />
-            )
+            ),
           )}
         </ScrollArea>
       )}
 
       <div className="border-outline-variant bg-surface-container-low text-on-surface-variant flex h-5 shrink-0 items-center gap-1 border-t px-2 text-[10px]">
-        {query === ''
-          ? `${linkCount} bookmark${linkCount === 1 ? '' : 's'} · ${all.length} folder${all.length === 1 ? '' : 's'}`
-          : `${search.matches} match${search.matches === 1 ? '' : 'es'}`}
+        {query === ""
+          ? `${linkCount} bookmark${linkCount === 1 ? "" : "s"} · ${all.length} folder${all.length === 1 ? "" : "s"}`
+          : `${search.matches} match${search.matches === 1 ? "" : "es"}`}
       </div>
 
       {moving && (
@@ -629,15 +610,15 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
           groups={all}
           onClose={() => setMoving(null)}
           onMove={(groupId) => {
-            updateLink.mutate({ id: moving.id, data: { groupId } })
-            setMoving(null)
+            updateLink.mutate({ id: moving.id, data: { groupId } });
+            setMoving(null);
           }}
         />
       )}
       {confirmDialog}
       {promptDialog}
     </div>
-  )
+  );
 }
 
 /** Pick a destination folder for a bookmark, by full path so depth is unambiguous. */
@@ -647,16 +628,16 @@ function MoveDialog({
   onClose,
   onMove,
 }: {
-  link: BookmarkLink
-  groups: BookmarkGroup[]
-  onClose: () => void
-  onMove: (groupId: number) => void
+  link: BookmarkLink;
+  groups: BookmarkGroup[];
+  onClose: () => void;
+  onMove: (groupId: number) => void;
 }) {
   const options = groups
     .filter((group) => group.id !== link.groupId)
     .map((group) => ({ value: String(group.id), label: folderPath(groups, group.id) }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-  const [value, setValue] = useState(options[0]?.value ?? '')
+    .sort((a, b) => a.label.localeCompare(b.label));
+  const [value, setValue] = useState(options[0]?.value ?? "");
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()} title="Move bookmark">
@@ -673,28 +654,21 @@ function MoveDialog({
         <Button variant="default" size="sm" onClick={onClose}>
           Cancel
         </Button>
-        <Button
-          variant="primary"
-          size="sm"
-          disabled={value === ''}
-          onClick={() => onMove(Number(value))}
-        >
+        <Button variant="primary" size="sm" disabled={value === ""} onClick={() => onMove(Number(value))}>
           Move
         </Button>
       </div>
     </Dialog>
-  )
+  );
 }
 
 /** A sensible default title so the user does not have to invent one. */
 function titleFromUrl(url: string): string {
   try {
-    const parsed = new URL(url)
-    const last = parsed.pathname.split('/').filter(Boolean).pop()
-    return last
-      ? `${parsed.hostname.replace(/^www\./, '')} — ${last}`
-      : parsed.hostname.replace(/^www\./, '')
+    const parsed = new URL(url);
+    const last = parsed.pathname.split("/").filter(Boolean).pop();
+    return last ? `${parsed.hostname.replace(/^www\./, "")} — ${last}` : parsed.hostname.replace(/^www\./, "");
   } catch {
-    return url
+    return url;
   }
 }

@@ -1,7 +1,7 @@
-import type { SystemData } from '@imbatranim/ui'
-import type { DataStoreFiles, Loaded } from '../../../../../packages/shared/src/dataStore'
-import type { BookmarkGroup, BookmarkLink } from '../types'
-import { isBookmarkUrl } from './bookmarkUrl'
+import type { SystemData } from "@imbatranim/ui";
+import type { DataStoreFiles, Loaded } from "../../../../../packages/shared/src/dataStore";
+import type { BookmarkGroup, BookmarkLink } from "../types";
+import { isBookmarkUrl } from "./bookmarkUrl";
 
 /**
  * Bookmarks' one file, `bookmarks.json` in its data folder
@@ -11,64 +11,63 @@ import { isBookmarkUrl } from './bookmarkUrl'
  * once from those rows when Bookmarks became installable.
  */
 
-export const BOOKMARKS_FILE = 'bookmarks.json'
+export const BOOKMARKS_FILE = "bookmarks.json";
 
 /** A link as the file holds it: its folder is the one it is listed in. */
-type StoredLink = Omit<BookmarkLink, 'groupId'>
-type StoredGroup = Omit<BookmarkGroup, 'links'> & { links: StoredLink[] }
-type BookmarksFile = { groups: StoredGroup[] }
+type StoredLink = Omit<BookmarkLink, "groupId">;
+type StoredGroup = Omit<BookmarkGroup, "links"> & { links: StoredLink[] };
+type BookmarksFile = { groups: StoredGroup[] };
 
-const text = (doc: BookmarksFile) => `${JSON.stringify(doc, null, 2)}\n`
-const nullableString = (v: unknown) => (typeof v === 'string' ? v : null)
+const text = (doc: BookmarksFile) => `${JSON.stringify(doc, null, 2)}\n`;
+const nullableString = (v: unknown) => (typeof v === "string" ? v : null);
 
 /** The folders a file holds, checked: a hand-edited file may hold anything. */
 export function readGroups(content: string): BookmarkGroup[] {
-  let doc: unknown
+  let doc: unknown;
   try {
-    doc = JSON.parse(content)
+    doc = JSON.parse(content);
   } catch (err) {
-    throw new Error(
-      `${BOOKMARKS_FILE} is not valid JSON: ${err instanceof Error ? err.message : String(err)}`,
-      { cause: err }
-    )
+    throw new Error(`${BOOKMARKS_FILE} is not valid JSON: ${err instanceof Error ? err.message : String(err)}`, {
+      cause: err,
+    });
   }
-  const groups = (doc as { groups?: unknown } | null)?.groups
-  if (!Array.isArray(groups)) throw new Error(`${BOOKMARKS_FILE} has no list of folders`)
+  const groups = (doc as { groups?: unknown } | null)?.groups;
+  if (!Array.isArray(groups)) throw new Error(`${BOOKMARKS_FILE} has no list of folders`);
   return groups.map((g: Partial<StoredGroup>) => {
-    if (typeof g?.id !== 'number' || typeof g.name !== 'string') {
-      throw new Error(`${BOOKMARKS_FILE} holds a folder with no id or name`)
+    if (typeof g?.id !== "number" || typeof g.name !== "string") {
+      throw new Error(`${BOOKMARKS_FILE} holds a folder with no id or name`);
     }
-    const links = Array.isArray(g.links) ? g.links : []
+    const links = Array.isArray(g.links) ? g.links : [];
     return {
       id: g.id,
       name: g.name,
       icon: nullableString(g.icon),
-      parentId: typeof g.parentId === 'number' ? g.parentId : null,
-      position: typeof g.position === 'number' ? g.position : 0,
+      parentId: typeof g.parentId === "number" ? g.parentId : null,
+      position: typeof g.position === "number" ? g.position : 0,
       links: links
         // Only a URL the app could have stored: the file is rendered as links.
-        .filter((l) => typeof l?.id === 'number' && isBookmarkUrl(l.url))
+        .filter((l) => typeof l?.id === "number" && isBookmarkUrl(l.url))
         .map((l) => ({
           id: l.id,
           groupId: g.id as number,
-          title: typeof l.title === 'string' ? l.title : l.url,
+          title: typeof l.title === "string" ? l.title : l.url,
           url: l.url as string,
           icon: nullableString(l.icon),
-          position: typeof l.position === 'number' ? l.position : 0,
+          position: typeof l.position === "number" ? l.position : 0,
         })),
-    }
-  })
+    };
+  });
 }
 
 export const bookmarkFiles: DataStoreFiles<BookmarkGroup[]> = {
   async load(data: SystemData): Promise<Loaded<BookmarkGroup[]>> {
-    const file = await data.read(BOOKMARKS_FILE)
-    const content = file?.content ?? text({ groups: [] })
+    const file = await data.read(BOOKMARKS_FILE);
+    const content = file?.content ?? text({ groups: [] });
     return {
       state: file ? readGroups(content) : [],
       contents: new Map([[BOOKMARKS_FILE, content]]),
       versions: new Map([[BOOKMARKS_FILE, file?.version ?? null]]),
-    }
+    };
   },
 
   serialize(groups) {
@@ -87,9 +86,9 @@ export const bookmarkFiles: DataStoreFiles<BookmarkGroup[]> = {
           position: l.position,
         })),
       })),
-    }
-    return new Map([[BOOKMARKS_FILE, text(doc)]])
+    };
+    return new Map([[BOOKMARKS_FILE, text(doc)]]);
   },
 
   keep: new Set([BOOKMARKS_FILE]),
-}
+};

@@ -1,23 +1,17 @@
-import { ScrollArea, cn } from '@imbatranim/ui'
-import { Clock, Folder, Trash2 } from 'lucide-react'
-import type { HistoryEntry, RestClientData, SavedRequest } from '../types'
-import { statusToken } from '../lib/ui'
+import { ScrollArea, cn } from "@imbatranim/ui";
+import { Clock, Folder, Trash2 } from "lucide-react";
+import type { HistoryEntry, RestClientData, SavedRequest } from "../types";
+import { statusToken } from "../lib/ui";
 
 interface SidebarProps {
-  data: RestClientData
-  onOpenSaved: (req: SavedRequest) => void
-  onDeleteSaved: (id: string) => void
-  onOpenHistory: (entry: HistoryEntry) => void
-  onClearHistory: () => void
+  data: RestClientData;
+  onOpenSaved: (req: SavedRequest) => void;
+  onDeleteSaved: (id: string) => void;
+  onOpenHistory: (entry: HistoryEntry) => void;
+  onClearHistory: () => void;
 }
 
-export function Sidebar({
-  data,
-  onOpenSaved,
-  onDeleteSaved,
-  onOpenHistory,
-  onClearHistory,
-}: SidebarProps) {
+export function Sidebar({ data, onOpenSaved, onDeleteSaved, onOpenHistory, onClearHistory }: SidebarProps) {
   return (
     <aside className="border-outline-variant bg-surface-container-low flex w-56 shrink-0 flex-col border-r">
       <ScrollArea className="min-h-0 flex-1">
@@ -32,12 +26,8 @@ export function Sidebar({
                   onClick={() => onOpenSaved(req)}
                   className="hover:bg-surface-container focus-visible:ring-primary flex min-w-0 flex-1 items-center gap-1.5 px-2 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset"
                 >
-                  <span className="text-secondary shrink-0 font-mono text-[10px] font-semibold">
-                    {req.method}
-                  </span>
-                  <span className="text-on-surface truncate text-[12px]">
-                    {req.name || req.url}
-                  </span>
+                  <span className="text-secondary shrink-0 font-mono text-[10px] font-semibold">{req.method}</span>
+                  <span className="text-on-surface truncate text-[12px]">{req.name || req.url}</span>
                 </button>
                 <button
                   type="button"
@@ -78,24 +68,13 @@ export function Sidebar({
                 onClick={() => onOpenHistory(entry)}
                 className="hover:bg-surface-container focus-visible:ring-primary flex w-full items-center gap-1.5 px-2 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset"
               >
-                <span
-                  className={cn(
-                    'shrink-0 font-mono text-[10px] font-semibold',
-                    statusToken(entry.status)
-                  )}
-                >
-                  {entry.status || '—'}
+                <span className={cn("shrink-0 font-mono text-[10px] font-semibold", statusToken(entry.status))}>
+                  {entry.status || "—"}
                 </span>
-                <span className="text-secondary shrink-0 font-mono text-[10px]">
-                  {entry.method}
-                </span>
-                <span className="text-on-surface-variant min-w-0 flex-1 truncate text-[11px]">
-                  {entry.url}
-                </span>
+                <span className="text-secondary shrink-0 font-mono text-[10px]">{entry.method}</span>
+                <span className="text-on-surface-variant min-w-0 flex-1 truncate text-[11px]">{entry.url}</span>
                 {entry.elapsedMs !== undefined && (
-                  <span className="text-on-surface-variant shrink-0 font-mono text-[10px]">
-                    {entry.elapsedMs}ms
-                  </span>
+                  <span className="text-on-surface-variant shrink-0 font-mono text-[10px]">{entry.elapsedMs}ms</span>
                 )}
               </button>
             ))
@@ -103,7 +82,7 @@ export function Sidebar({
         </Section>
       </ScrollArea>
     </aside>
-  )
+  );
 }
 
 function Section({
@@ -112,24 +91,24 @@ function Section({
   action,
   children,
 }: {
-  icon: 'folder' | 'clock'
-  label: string
-  action?: React.ReactNode
-  children: React.ReactNode
+  icon: "folder" | "clock";
+  label: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col">
       <div className="text-on-surface-variant font-ui flex items-center gap-1.5 px-2 py-1.5 text-[11px] font-semibold tracking-wider uppercase">
-        {icon === 'folder' ? <Folder size={12} /> : <Clock size={12} />}
+        {icon === "folder" ? <Folder size={12} /> : <Clock size={12} />}
         {label}
         <span className="flex-1" />
         {action}
       </div>
       {children}
     </div>
-  )
+  );
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <p className="text-on-surface-variant px-2 py-1 text-[11px] italic">{children}</p>
+  return <p className="text-on-surface-variant px-2 py-1 text-[11px] italic">{children}</p>;
 }

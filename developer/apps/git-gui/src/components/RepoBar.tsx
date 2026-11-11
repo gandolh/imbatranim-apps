@@ -1,6 +1,6 @@
-import { Archive, ArchiveRestore, GitBranch, Plus, RefreshCw, X } from 'lucide-react'
-import { Button, Select, cn } from '@imbatranim/ui'
-import type { BranchesResponse, RecentRepo, StashEntry } from '../types'
+import { Archive, ArchiveRestore, GitBranch, Plus, RefreshCw, X } from "lucide-react";
+import { Button, Select, cn } from "@imbatranim/ui";
+import type { BranchesResponse, RecentRepo, StashEntry } from "../types";
 
 /**
  * The toolbar: which repo, which branch, and the stash.
@@ -21,29 +21,21 @@ export function RepoBar({
   repoLabel,
   onCloseRepo,
 }: {
-  branches: BranchesResponse | null
-  stashes: StashEntry[]
-  busy: boolean
-  onSwitch: (name: string) => void
-  onCreateBranch: () => void
-  onStash: () => void
-  onStashPop: () => void
-  onRefresh: () => void
-  repoLabel: string
-  onCloseRepo: () => void
+  branches: BranchesResponse | null;
+  stashes: StashEntry[];
+  busy: boolean;
+  onSwitch: (name: string) => void;
+  onCreateBranch: () => void;
+  onStash: () => void;
+  onStashPop: () => void;
+  onRefresh: () => void;
+  repoLabel: string;
+  onCloseRepo: () => void;
 }) {
   return (
     <div className="border-outline-variant bg-surface-container-low flex shrink-0 flex-wrap items-center gap-1.5 border-b px-2 py-1">
-      <span className="font-ui text-on-surface max-w-[30%] truncate text-[12px] font-semibold">
-        {repoLabel}
-      </span>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onCloseRepo}
-        aria-label="Close repository"
-        title="Close repository"
-      >
+      <span className="font-ui text-on-surface max-w-[30%] truncate text-[12px] font-semibold">{repoLabel}</span>
+      <Button variant="ghost" size="sm" onClick={onCloseRepo} aria-label="Close repository" title="Close repository">
         <X size={11} strokeWidth={2} />
       </Button>
 
@@ -61,10 +53,10 @@ export function RepoBar({
         <div className="min-w-[9rem]">
           <Select
             options={branches.branches.map((b) => ({ value: b.name, label: b.name }))}
-            value={branches.current ?? ''}
+            value={branches.current ?? ""}
             onValueChange={(v) => {
-              const name = String(v)
-              if (name && name !== branches.current) onSwitch(name)
+              const name = String(v);
+              if (name && name !== branches.current) onSwitch(name);
             }}
             placeholder="branch"
           />
@@ -81,10 +73,7 @@ export function RepoBar({
         <Plus size={12} strokeWidth={2} />
       </Button>
       {branches?.dirty && (
-        <span
-          className="font-ui text-on-surface-variant text-[11px]"
-          title="There are uncommitted changes"
-        >
+        <span className="font-ui text-on-surface-variant text-[11px]" title="There are uncommitted changes">
           uncommitted changes
         </span>
       )}
@@ -97,7 +86,7 @@ export function RepoBar({
         className="gap-1"
         onClick={onStash}
         disabled={busy || !branches?.dirty}
-        title={branches?.dirty ? 'Stash all changes' : 'Nothing to stash'}
+        title={branches?.dirty ? "Stash all changes" : "Nothing to stash"}
       >
         <Archive size={12} strokeWidth={2} />
         Stash
@@ -108,25 +97,18 @@ export function RepoBar({
         className="gap-1"
         onClick={onStashPop}
         disabled={busy || stashes.length === 0}
-        title={stashes.length > 0 ? `Pop “${stashes[0].label}”` : 'No stashes'}
+        title={stashes.length > 0 ? `Pop “${stashes[0].label}”` : "No stashes"}
       >
         <ArchiveRestore size={12} strokeWidth={2} />
-        Pop{stashes.length > 0 ? ` (${stashes.length})` : ''}
+        Pop{stashes.length > 0 ? ` (${stashes.length})` : ""}
       </Button>
 
       <span className="flex-1" />
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onRefresh}
-        disabled={busy}
-        aria-label="Refresh"
-        title="Refresh"
-      >
-        <RefreshCw size={12} strokeWidth={2} className={cn(busy && 'animate-spin')} />
+      <Button variant="ghost" size="sm" onClick={onRefresh} disabled={busy} aria-label="Refresh" title="Refresh">
+        <RefreshCw size={12} strokeWidth={2} className={cn(busy && "animate-spin")} />
       </Button>
     </div>
-  )
+  );
 }
 
 /** The recents list on the open screen — the brief's repo picker. */
@@ -135,11 +117,11 @@ export function RecentRepos({
   onOpen,
   onForget,
 }: {
-  repos: RecentRepo[]
-  onOpen: (repo: RecentRepo) => void
-  onForget: (repo: RecentRepo) => void
+  repos: RecentRepo[];
+  onOpen: (repo: RecentRepo) => void;
+  onForget: (repo: RecentRepo) => void;
 }) {
-  if (repos.length === 0) return null
+  if (repos.length === 0) return null;
   return (
     <div className="w-full max-w-md">
       <div className="font-ui text-on-surface-variant mb-1 text-[11px] font-semibold tracking-wider uppercase">
@@ -156,12 +138,8 @@ export function RecentRepos({
               onClick={() => onOpen(repo)}
               className="focus-visible:ring-primary flex min-w-0 flex-1 items-center gap-2 px-2 py-1.5 text-left focus-visible:ring-2 focus-visible:outline-none"
             >
-              <span className="font-content text-on-surface truncate text-[12px]">
-                {repo.path || '(root)'}
-              </span>
-              <span className="font-ui text-on-surface-variant shrink-0 text-[11px]">
-                {repo.root}
-              </span>
+              <span className="font-content text-on-surface truncate text-[12px]">{repo.path || "(root)"}</span>
+              <span className="font-ui text-on-surface-variant shrink-0 text-[11px]">{repo.root}</span>
             </button>
             <Button
               variant="ghost"
@@ -177,5 +155,5 @@ export function RecentRepos({
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -3,4 +3,4 @@
 // only types from '@pdfcore/engine' (eslint.config.js holds them to it).
 // The browser entry by name: the text layer exists only there, and a test
 // (Vitest resolves the `node` condition) must not get the Node entry.
-export { PdfDoc, buildTextLayer, layoutHighlightRects } from '@pdfcore/engine/browser'
+export { PdfDoc, buildTextLayer, layoutHighlightRects } from "@pdfcore/engine/browser";

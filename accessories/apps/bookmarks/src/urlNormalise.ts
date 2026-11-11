@@ -26,30 +26,29 @@
  * only ever a duplicate of an identical string.
  */
 export function normaliseUrl(raw: string): string {
-  const trimmed = raw.trim()
-  let parsed: URL
+  const trimmed = raw.trim();
+  let parsed: URL;
   try {
-    parsed = new URL(trimmed)
+    parsed = new URL(trimmed);
   } catch {
-    return trimmed
+    return trimmed;
   }
 
-  const scheme = parsed.protocol.toLowerCase()
-  let host = parsed.hostname.toLowerCase()
-  if (host.startsWith('www.') && host.length > 4) host = host.slice(4)
+  const scheme = parsed.protocol.toLowerCase();
+  let host = parsed.hostname.toLowerCase();
+  if (host.startsWith("www.") && host.length > 4) host = host.slice(4);
 
-  const defaultPort =
-    (scheme === 'http:' && parsed.port === '80') || (scheme === 'https:' && parsed.port === '443')
-  const port = parsed.port === '' || defaultPort ? '' : `:${parsed.port}`
+  const defaultPort = (scheme === "http:" && parsed.port === "80") || (scheme === "https:" && parsed.port === "443");
+  const port = parsed.port === "" || defaultPort ? "" : `:${parsed.port}`;
 
-  const path = parsed.pathname === '/' ? '' : parsed.pathname
+  const path = parsed.pathname === "/" ? "" : parsed.pathname;
 
-  return `${scheme}//${host}${port}${path}${parsed.search}`
+  return `${scheme}//${host}${port}${path}${parsed.search}`;
 }
 
 /** True when two URLs would be the same bookmark. */
 export function sameUrl(a: string, b: string): boolean {
-  return normaliseUrl(a) === normaliseUrl(b)
+  return normaliseUrl(a) === normaliseUrl(b);
 }
 
 /**
@@ -62,9 +61,9 @@ export function sameUrl(a: string, b: string): boolean {
  * never turn a `javascript:` URL into an accepted one.
  */
 export function completeUrl(raw: string): string {
-  const trimmed = raw.trim()
-  if (trimmed === '') return trimmed
-  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed)) return trimmed
-  if (trimmed.startsWith('//')) return `https:${trimmed}`
-  return `https://${trimmed}`
+  const trimmed = raw.trim();
+  if (trimmed === "") return trimmed;
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed)) return trimmed;
+  if (trimmed.startsWith("//")) return `https:${trimmed}`;
+  return `https://${trimmed}`;
 }

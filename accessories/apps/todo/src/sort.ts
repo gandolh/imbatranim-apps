@@ -1,4 +1,4 @@
-import type { SortMode, Todo } from './types'
+import type { SortMode, Todo } from "./types";
 
 /**
  * The three orders a list can be in.
@@ -16,20 +16,20 @@ import type { SortMode, Todo } from './types'
 
 /** Todos with no due date sort after those that have one, in every mode. */
 function compareDue(a: Todo, b: Todo): number {
-  if (a.dueAt === null && b.dueAt === null) return 0
-  if (a.dueAt === null) return 1
-  if (b.dueAt === null) return -1
-  return a.dueAt - b.dueAt
+  if (a.dueAt === null && b.dueAt === null) return 0;
+  if (a.dueAt === null) return 1;
+  if (b.dueAt === null) return -1;
+  return a.dueAt - b.dueAt;
 }
 
 /** Priority first, used as the leading key in the derived orders. */
 function comparePriority(a: Todo, b: Todo): number {
-  return Number(b.priority) - Number(a.priority)
+  return Number(b.priority) - Number(a.priority);
 }
 
 /** Stable final tie-break, so a sort never shuffles equal rows between renders. */
 function compareStable(a: Todo, b: Todo): number {
-  return a.position - b.position || a.id - b.id
+  return a.position - b.position || a.id - b.id;
 }
 
 /**
@@ -37,31 +37,31 @@ function compareStable(a: Todo, b: Todo): number {
  * react-query cache, and sorting that in place would reorder the cache itself.
  */
 export function sortTodos(todos: Todo[], mode: SortMode): Todo[] {
-  const copy = [...todos]
+  const copy = [...todos];
   switch (mode) {
-    case 'manual':
-      return copy.sort(compareStable)
-    case 'due':
-      return copy.sort((a, b) => comparePriority(a, b) || compareDue(a, b) || compareStable(a, b))
-    case 'created':
+    case "manual":
+      return copy.sort(compareStable);
+    case "due":
+      return copy.sort((a, b) => comparePriority(a, b) || compareDue(a, b) || compareStable(a, b));
+    case "created":
       return copy.sort(
         (a, b) =>
           comparePriority(a, b) ||
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime() ||
-          compareStable(a, b)
-      )
+          compareStable(a, b),
+      );
   }
 }
 
 /** Dragging is only meaningful when the visible order is the one being stored. */
 export function canReorder(mode: SortMode): boolean {
-  return mode === 'manual'
+  return mode === "manual";
 }
 
 export const SORT_LABELS: Record<SortMode, string> = {
-  manual: 'My order',
-  due: 'Due date',
-  created: 'Oldest first',
-}
+  manual: "My order",
+  due: "Due date",
+  created: "Oldest first",
+};
 
-export const SORT_MODES: SortMode[] = ['manual', 'due', 'created']
+export const SORT_MODES: SortMode[] = ["manual", "due", "created"];

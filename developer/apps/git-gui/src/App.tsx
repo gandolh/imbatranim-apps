@@ -1,5 +1,5 @@
-import type { KitAppProps } from '@imbatranim/ui'
-import { GitGui } from './GitGui'
+import type { KitAppProps } from "@imbatranim/ui";
+import { GitGui } from "./GitGui";
 
 /**
  * The module the desktop imports for `git-gui`. The built-in's manifest
@@ -14,5 +14,5 @@ import { GitGui } from './GitGui'
  * (`recents.ts`).
  */
 export function App({ windowId }: KitAppProps) {
-  return <GitGui windowId={windowId} />
+  return <GitGui windowId={windowId} />;
 }

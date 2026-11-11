@@ -1,6 +1,6 @@
-import type { KitAppProps, KitBackgroundProps } from '@imbatranim/ui'
-import { Todo } from './Todo'
-import { TodoBackground } from './TodoBackground'
+import type { KitAppProps, KitBackgroundProps } from "@imbatranim/ui";
+import { Todo } from "./Todo";
+import { TodoBackground } from "./TodoBackground";
 
 /**
  * The module the desktop imports for `todo`. The built-in's manifest became
@@ -11,7 +11,7 @@ import { TodoBackground } from './TodoBackground'
  * Todo's data folder.
  */
 export function App({ windowId }: KitAppProps) {
-  return <Todo windowId={windowId} />
+  return <Todo windowId={windowId} />;
 }
 
 /**
@@ -19,5 +19,5 @@ export function App({ windowId }: KitAppProps) {
  * on, with no window: it keeps the tasks read and announces due ones.
  */
 export function Background(_props: KitBackgroundProps) {
-  return <TodoBackground />
+  return <TodoBackground />;
 }

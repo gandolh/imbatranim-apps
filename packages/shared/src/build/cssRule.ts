@@ -24,17 +24,17 @@ export type CssRuleProblem = {
    * `global`, `external` and `unsupported` from the vendor rule (vendorCss.ts),
    * which reports `token` too.
    */
-  kind: 'preflight' | 'token' | 'not-utilities' | 'global' | 'external' | 'unsupported'
-  detail: string
-}
+  kind: "preflight" | "token" | "not-utilities" | "global" | "external" | "unsupported";
+  detail: string;
+};
 
 export type CssNode =
-  | { type: 'at'; name: string; prelude: string; children: CssNode[] | null }
-  | { type: 'rule'; selector: string; children: CssNode[] }
-  | { type: 'decl'; property: string; value: string }
+  | { type: "at"; name: string; prelude: string; children: CssNode[] | null }
+  | { type: "rule"; selector: string; children: CssNode[] }
+  | { type: "decl"; property: string; value: string };
 
-const ESCAPE = /\\(?:[0-9a-fA-F]{1,6}(?:\r\n|[ \t\n\r\f])?|[\s\S])?/y
-const ESCAPES = /\\(?:([0-9a-fA-F]{1,6})(?:\r\n|[ \t\n\r\f])?|([\s\S]))/g
+const ESCAPE = /\\(?:[0-9a-fA-F]{1,6}(?:\r\n|[ \t\n\r\f])?|[\s\S])?/y;
+const ESCAPES = /\\(?:([0-9a-fA-F]{1,6})(?:\r\n|[ \t\n\r\f])?|([\s\S]))/g;
 
 /**
  * The length of the CSS escape that starts at `text[i]`, a backslash: `\` and
@@ -45,24 +45,22 @@ const ESCAPES = /\\(?:([0-9a-fA-F]{1,6})(?:\r\n|[ \t\n\r\f])?|([\s\S]))/g
  * full of these.
  */
 export function cssEscapeLength(text: string, i: number): number {
-  ESCAPE.lastIndex = i
-  return ESCAPE.exec(text)?.[0].length ?? 1
+  ESCAPE.lastIndex = i;
+  return ESCAPE.exec(text)?.[0].length ?? 1;
 }
 
 /** `text` with its CSS escapes decoded: `--colo\72-x` is `--color-x`. */
 export function cssUnescape(text: string): string {
   return text.replace(ESCAPES, (_match, hex: string | undefined, ch: string | undefined) => {
-    if (hex === undefined) return ch ?? ''
-    const code = parseInt(hex, 16)
-    return code === 0 || code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff)
-      ? '\uFFFD'
-      : String.fromCodePoint(code)
-  })
+    if (hex === undefined) return ch ?? "";
+    const code = parseInt(hex, 16);
+    return code === 0 || code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff) ? "\uFFFD" : String.fromCodePoint(code);
+  });
 }
 
 /** Parse well-formed CSS into at-rules, style rules and declarations (nesting allowed). */
 export function parseCss(css: string): CssNode[] {
-  return parseCssTopLevel(css).map((t) => t.node)
+  return parseCssTopLevel(css).map((t) => t.node);
 }
 
 /**
@@ -71,24 +69,24 @@ export function parseCss(css: string): CssNode[] {
  * closing `}` (or `;`), without the whitespace and comments around it.
  */
 export function parseCssTopLevel(css: string): { node: CssNode; start: number; end: number }[] {
-  const spans: { start: number; end: number }[] = []
-  const nodes = parseNodes(css, spans)
-  return nodes.map((node, k) => ({ node, ...spans[k] }))
+  const spans: { start: number; end: number }[] = [];
+  const nodes = parseNodes(css, spans);
+  return nodes.map((node, k) => ({ node, ...spans[k] }));
 }
 
 function parseNodes(css: string, topSpans: { start: number; end: number }[]): CssNode[] {
-  let i = 0
-  const n = css.length
+  let i = 0;
+  const n = css.length;
 
   const skipComment = () => {
-    const close = css.indexOf('*/', i + 2)
-    i = close < 0 ? n : close + 2
-  }
+    const close = css.indexOf("*/", i + 2);
+    i = close < 0 ? n : close + 2;
+  };
   const skipString = (quote: string) => {
-    i++
-    while (i < n && css[i] !== quote) i += css[i] === '\\' ? 2 : 1
-    i++
-  }
+    i++;
+    while (i < n && css[i] !== quote) i += css[i] === "\\" ? 2 : 1;
+    i++;
+  };
 
   /**
    * Read up to (not including) the first `{`, `;` or `}` outside strings,
@@ -96,191 +94,186 @@ function parseNodes(css: string, topSpans: { start: number; end: number }[]): Cs
    * character of a name, not the start of a string, a group or a block).
    */
   const readPrelude = (): { text: string; stop: string } => {
-    let text = ''
-    let parens = 0
+    let text = "";
+    let parens = 0;
     while (i < n) {
-      if (css.startsWith('/*', i)) {
-        skipComment()
-        continue
+      if (css.startsWith("/*", i)) {
+        skipComment();
+        continue;
       }
-      const ch = css[i]
-      if (ch === '\\') {
-        const length = cssEscapeLength(css, i)
-        text += css.slice(i, i + length)
-        i += length
-        continue
+      const ch = css[i];
+      if (ch === "\\") {
+        const length = cssEscapeLength(css, i);
+        text += css.slice(i, i + length);
+        i += length;
+        continue;
       }
       if (ch === '"' || ch === "'") {
-        const start = i
-        skipString(ch)
-        text += css.slice(start, i)
-        continue
+        const start = i;
+        skipString(ch);
+        text += css.slice(start, i);
+        continue;
       }
-      if (ch === '(') parens++
-      if (ch === ')') parens--
-      if (parens === 0 && (ch === '{' || ch === ';' || ch === '}'))
-        return { text: text.trim(), stop: ch }
-      text += ch
-      i++
+      if (ch === "(") parens++;
+      if (ch === ")") parens--;
+      if (parens === 0 && (ch === "{" || ch === ";" || ch === "}")) return { text: text.trim(), stop: ch };
+      text += ch;
+      i++;
     }
-    return { text: text.trim(), stop: '' }
-  }
+    return { text: text.trim(), stop: "" };
+  };
 
   /** `spans`, given at the top level only, gets each node's source range. */
   const parseBlock = (spans?: { start: number; end: number }[]): CssNode[] => {
-    const nodes: CssNode[] = []
+    const nodes: CssNode[] = [];
     const push = (node: CssNode, start: number) => {
-      nodes.push(node)
-      spans?.push({ start, end: i })
-    }
+      nodes.push(node);
+      spans?.push({ start, end: i });
+    };
     for (;;) {
-      while (i < n && /\s/.test(css[i])) i++
-      if (css.startsWith('/*', i)) {
-        skipComment()
-        continue
+      while (i < n && /\s/.test(css[i])) i++;
+      if (css.startsWith("/*", i)) {
+        skipComment();
+        continue;
       }
-      if (i >= n) return nodes
-      if (css[i] === '}') {
-        i++
-        return nodes
+      if (i >= n) return nodes;
+      if (css[i] === "}") {
+        i++;
+        return nodes;
       }
-      const start = i
-      const { text, stop } = readPrelude()
-      if (stop === '{') {
-        i++
-        const children = parseBlock()
-        if (text.startsWith('@')) {
-          const m = /^@([\w-]+)\s*([\s\S]*)$/.exec(text)
+      const start = i;
+      const { text, stop } = readPrelude();
+      if (stop === "{") {
+        i++;
+        const children = parseBlock();
+        if (text.startsWith("@")) {
+          const m = /^@([\w-]+)\s*([\s\S]*)$/.exec(text);
           push(
             {
-              type: 'at',
-              name: (m?.[1] ?? '').toLowerCase(),
-              prelude: (m?.[2] ?? '').trim(),
+              type: "at",
+              name: (m?.[1] ?? "").toLowerCase(),
+              prelude: (m?.[2] ?? "").trim(),
               children,
             },
-            start
-          )
+            start,
+          );
         } else {
-          push({ type: 'rule', selector: text, children }, start)
+          push({ type: "rule", selector: text, children }, start);
         }
-        continue
+        continue;
       }
-      if (stop === ';') i++
-      if (text === '') continue
-      if (text.startsWith('@')) {
-        const m = /^@([\w-]+)\s*([\s\S]*)$/.exec(text)
+      if (stop === ";") i++;
+      if (text === "") continue;
+      if (text.startsWith("@")) {
+        const m = /^@([\w-]+)\s*([\s\S]*)$/.exec(text);
         push(
           {
-            type: 'at',
-            name: (m?.[1] ?? '').toLowerCase(),
-            prelude: (m?.[2] ?? '').trim(),
+            type: "at",
+            name: (m?.[1] ?? "").toLowerCase(),
+            prelude: (m?.[2] ?? "").trim(),
             children: null,
           },
-          start
-        )
+          start,
+        );
       } else {
         // The first colon that is not escaped (`--a\:b: 1` is the property `--a:b`).
-        let colon = -1
+        let colon = -1;
         for (let j = 0; j < text.length && colon < 0; j++) {
-          if (text[j] === '\\') j += cssEscapeLength(text, j) - 1
-          else if (text[j] === ':') colon = j
+          if (text[j] === "\\") j += cssEscapeLength(text, j) - 1;
+          else if (text[j] === ":") colon = j;
         }
         push(
           {
-            type: 'decl',
+            type: "decl",
             property: (colon < 0 ? text : text.slice(0, colon)).trim(),
-            value: colon < 0 ? '' : text.slice(colon + 1).trim(),
+            value: colon < 0 ? "" : text.slice(colon + 1).trim(),
           },
-          start
-        )
+          start,
+        );
       }
     }
-  }
+  };
 
-  return parseBlock(topSpans)
+  return parseBlock(topSpans);
 }
 
-const PREFLIGHT_SELECTOR =
-  /(^|[\s,>+~(])(html|body|:root|:host|::file-selector-button|::placeholder)\b|(^|,)\s*\*/
+const PREFLIGHT_SELECTOR = /(^|[\s,>+~(])(html|body|:root|:host|::file-selector-button|::placeholder)\b|(^|,)\s*\*/;
 
 function declarations(nodes: CssNode[] | null, out: { property: string; value: string }[] = []) {
   for (const node of nodes ?? []) {
-    if (node.type === 'decl') out.push(node)
-    else declarations(node.children, out)
+    if (node.type === "decl") out.push(node);
+    else declarations(node.children, out);
   }
-  return out
+  return out;
 }
 
 /** Every way `css` breaks the rule; empty when it is utilities only. */
 export function checkUtilitiesOnly(css: string): CssRuleProblem[] {
-  const problems: CssRuleProblem[] = []
-  const nodes = parseCss(css)
+  const problems: CssRuleProblem[] = [];
+  const nodes = parseCss(css);
 
   for (const decl of declarations(nodes)) {
     if (/^--color-/.test(decl.property)) {
-      problems.push({ kind: 'token', detail: `defines the token ${decl.property}` })
+      problems.push({ kind: "token", detail: `defines the token ${decl.property}` });
     }
   }
 
   const visitTop = (list: CssNode[]) => {
     for (const node of list) {
-      if (node.type === 'decl') {
+      if (node.type === "decl") {
         problems.push({
-          kind: 'not-utilities',
+          kind: "not-utilities",
           detail: `a declaration outside any rule: ${node.property}`,
-        })
-        continue
+        });
+        continue;
       }
-      if (node.type === 'rule') {
-        const preflight = PREFLIGHT_SELECTOR.test(node.selector)
+      if (node.type === "rule") {
+        const preflight = PREFLIGHT_SELECTOR.test(node.selector);
         problems.push({
-          kind: preflight ? 'preflight' : 'not-utilities',
-          detail: `an unlayered rule "${node.selector}"${preflight ? ' (a preflight/base rule)' : ''}`,
-        })
-        continue
+          kind: preflight ? "preflight" : "not-utilities",
+          detail: `an unlayered rule "${node.selector}"${preflight ? " (a preflight/base rule)" : ""}`,
+        });
+        continue;
       }
-      const prelude = node.prelude
+      const prelude = node.prelude;
       switch (node.name) {
-        case 'layer': {
-          if (node.children === null) continue // `@layer theme, base, utilities;` only orders layers
-          if (prelude === 'utilities') continue
-          if (prelude === 'properties') {
+        case "layer": {
+          if (node.children === null) continue; // `@layer theme, base, utilities;` only orders layers
+          if (prelude === "utilities") continue;
+          if (prelude === "properties") {
             for (const d of declarations(node.children)) {
-              if (!d.property.startsWith('--tw-')) {
+              if (!d.property.startsWith("--tw-")) {
                 problems.push({
-                  kind: 'not-utilities',
+                  kind: "not-utilities",
                   detail: `@layer properties sets ${d.property}`,
-                })
+                });
               }
             }
-            continue
+            continue;
           }
-          if (prelude === 'base')
-            problems.push({ kind: 'preflight', detail: '@layer base (preflight lives there)' })
-          else if (prelude === 'theme')
-            problems.push({ kind: 'token', detail: '@layer theme (token values)' })
-          else
-            problems.push({ kind: 'not-utilities', detail: `@layer ${prelude || '(anonymous)'}` })
-          continue
+          if (prelude === "base") problems.push({ kind: "preflight", detail: "@layer base (preflight lives there)" });
+          else if (prelude === "theme") problems.push({ kind: "token", detail: "@layer theme (token values)" });
+          else problems.push({ kind: "not-utilities", detail: `@layer ${prelude || "(anonymous)"}` });
+          continue;
         }
-        case 'property':
-          if (!prelude.startsWith('--tw-')) {
-            problems.push({ kind: 'not-utilities', detail: `@property ${prelude}` })
+        case "property":
+          if (!prelude.startsWith("--tw-")) {
+            problems.push({ kind: "not-utilities", detail: `@property ${prelude}` });
           }
-          continue
-        case 'keyframes':
-        case '-webkit-keyframes':
-          continue
-        case 'media':
-        case 'supports':
-        case 'container':
-          visitTop(node.children ?? [])
-          continue
+          continue;
+        case "keyframes":
+        case "-webkit-keyframes":
+          continue;
+        case "media":
+        case "supports":
+        case "container":
+          visitTop(node.children ?? []);
+          continue;
         default:
-          problems.push({ kind: 'not-utilities', detail: `@${node.name} ${prelude}`.trim() })
+          problems.push({ kind: "not-utilities", detail: `@${node.name} ${prelude}`.trim() });
       }
     }
-  }
-  visitTop(nodes)
-  return problems
+  };
+  visitTop(nodes);
+  return problems;
 }

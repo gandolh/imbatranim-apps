@@ -1,6 +1,6 @@
-import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vitest/config'
-import { pdfjsWasm } from './packages/shared/src/build/pdfjsWasm.ts'
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vitest/config";
+import { pdfjsWasm } from "./packages/shared/src/build/pdfjsWasm.ts";
 
 // Tests run against the real React and the kit snapshot (the build keeps both
 // external; see packages/shared/src/build/sharedKit.ts). Node by default; a test
@@ -12,23 +12,23 @@ export default defineConfig({
     alias: [
       {
         find: /^@imbatranim\/ui$/,
-        replacement: fileURLToPath(new URL('./vendor/imbatranim-ui/src/index.ts', import.meta.url)),
+        replacement: fileURLToPath(new URL("./vendor/imbatranim-ui/src/index.ts", import.meta.url)),
       },
     ],
   },
   test: {
-    environment: 'node',
+    environment: "node",
     include: [
-      'apps/*/src/**/*.test.{ts,tsx}',
-      'packages/*/src/**/*.test.{ts,tsx}',
-      'server/src/**/*.test.ts',
-      'games/apps/*/src/**/*.test.{ts,tsx}',
-      'games/shared/src/**/*.test.{ts,tsx}',
-      'accessories/apps/*/src/**/*.test.{ts,tsx}',
-      'accessories/shared/src/**/*.test.{ts,tsx}',
-      'developer/apps/*/src/**/*.test.{ts,tsx}',
-      'developer/shared/src/**/*.test.{ts,tsx}',
-      'tools/*.test.ts',
+      "apps/*/src/**/*.test.{ts,tsx}",
+      "packages/*/src/**/*.test.{ts,tsx}",
+      "server/src/**/*.test.ts",
+      "games/apps/*/src/**/*.test.{ts,tsx}",
+      "games/shared/src/**/*.test.{ts,tsx}",
+      "accessories/apps/*/src/**/*.test.{ts,tsx}",
+      "accessories/shared/src/**/*.test.{ts,tsx}",
+      "developer/apps/*/src/**/*.test.{ts,tsx}",
+      "developer/shared/src/**/*.test.{ts,tsx}",
+      "tools/*.test.ts",
     ],
   },
-})
+});

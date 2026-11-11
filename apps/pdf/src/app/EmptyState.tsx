@@ -1,12 +1,12 @@
 /** The welcome screen shown before a document is open. */
-import type { JSX } from 'react'
-import { FilePen, FolderOpen, Search, List, TextCursorInput, Loader2 } from 'lucide-react'
-import { Button } from '@imbatranim/ui'
+import type { JSX } from "react";
+import { FilePen, FolderOpen, Search, List, TextCursorInput, Loader2 } from "lucide-react";
+import { Button } from "@imbatranim/ui";
 
 export interface EmptyStateProps {
-  onOpenClick: () => void
-  error: string | null
-  loading: boolean
+  onOpenClick: () => void;
+  error: string | null;
+  loading: boolean;
 }
 
 export function EmptyState({ onOpenClick, error, loading }: EmptyStateProps): JSX.Element {
@@ -29,11 +29,9 @@ export function EmptyState({ onOpenClick, error, loading }: EmptyStateProps): JS
           disabled={loading}
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <FolderOpen size={14} />}
-          {loading ? 'Opening…' : 'Open a PDF'}
+          {loading ? "Opening…" : "Open a PDF"}
         </Button>
-        <p className="text-on-surface-variant text-[11px]">
-          or drop a file anywhere on this window
-        </p>
+        <p className="text-on-surface-variant text-[11px]">or drop a file anywhere on this window</p>
 
         {error && <p className="text-error font-ui max-w-sm text-[12px]">{error}</p>}
 
@@ -53,5 +51,5 @@ export function EmptyState({ onOpenClick, error, loading }: EmptyStateProps): JS
         </ul>
       </div>
     </div>
-  )
+  );
 }
