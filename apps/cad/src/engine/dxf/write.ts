@@ -166,7 +166,7 @@ class RawEntity extends Point {
     this.rawType = type
     this.body = body
   }
-  dxfy(dx: Dxfier): void {
+  override dxfy(dx: Dxfier): void {
     dx.type(this.rawType)
     dx.handle(this.handle)
     dx.push(330, this.ownerBlockRecord)

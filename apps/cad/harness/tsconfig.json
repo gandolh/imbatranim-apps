@@ -1,0 +1,8 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node"],
+    "tsBuildInfoFile": "../../../node_modules/.tmp/tsconfig.cad-harness.tsbuildinfo"
+  },
+  "include": ["main.tsx", "perf.ts", "vite.config.ts", "../src/**/*.d.ts"]
+}
