@@ -1,5 +1,11 @@
+# Markdown stays out of Prettier (decided 2026-11-10).
+*.md
+
 # The kit snapshot is the OS's bytes; formatting it would break kit:sync --check.
+# The house-style copy is generated.
 vendor
+
+# Build output, the corpus and the lockfile.
 dist
 corpus
 package-lock.json
