@@ -1,6 +1,6 @@
 ---
 summary: How imbatranim-apps is laid out and built: npm workspaces with one package per app, packages/shared (externals plugin, CSS rule, vendor stylesheets, OS build, fake system for tests), the kit snapshot and kit:sync, what `npm run build:os` writes to dist/os, the suite's server (server/, Fastify, run from source, the /dwg-to-dxf WebSocket), the OS descriptor template and the test that keeps it in step with the build, and how a window gets from the OS's catalog to an app component.
-updated: 2026-11-05
+updated: 2026-11-12
 ---
 
 # Architecture
@@ -29,9 +29,14 @@ os/
   descriptor.template.json    the OS's catalog entry for the suite, without its pin
   README.md                   how the pinned copy is made; installing from a local checkout
 server/                       @imbatranim-office/server: the suite's one server (2026-10-28)
-  src/index.ts                what the desktop runs: `node server/src/index.ts`, types stripped
-  src/app.ts, convert.ts      Fastify: /health and the /dwg-to-dxf WebSocket; one child per DWG
-  src/converter.ts            the child: LibreDWG (wasm) writes the DXF, gzipped back
+  src/server.ts               what the desktop runs: `node server/src/server.ts`, types stripped; the only file that listens
+  src/config.ts               PORT, HOST, LOG_LEVEL: the only reader of the environment
+  src/app.ts                  buildApp: error plugin, websocket plugin, then the features
+  src/plugins/                errors (the one error handler, the 404), websocket
+  src/features/health/        GET /health, typed with the zod provider
+  src/features/dwg/           the /dwg-to-dxf WebSocket and convert.ts: one child per DWG
+  src/features/dwg/converter.ts  the child: LibreDWG (wasm) writes the DXF, gzipped back
+  src/testing/                buildTestApp for the tests
 tools/kit-sync.ts             npm run kit:sync
 vite.config.ts                npm run build:os (calls osBuildConfig)
 vitest.config.ts              tests; maps @imbatranim/ui to the snapshot
@@ -45,11 +50,12 @@ still prove workers and shared chunks.
 ## The server
 
 `server/` arrived on 2026-10-28, for CAD's DWG files, and is the descriptor's
-`server` (`node server/src/index.ts`, `PORT`, `/health`), so the suite is a
+`server` (`node server/src/server.ts`, `PORT`, `/health`), so the suite is a
 `service` descriptor. It runs from source: Node 24 strips the types, the
 build emits nothing for it, and its dependencies are the root `node_modules`
 that `npm ci` installs (Fastify 5.12.7, @fastify/websocket 11.3.4,
-@mlightcad/libredwg-web 0.8.2). `/health` answers without loading LibreDWG,
+@mlightcad/libredwg-web 0.8.2, zod 4.6.7 with @fastify/type-provider-zod 1.0.3, fastify-plugin 6.0.1 and
+close-with-grace 2.5.0). `/health` answers without loading LibreDWG,
 because the window that asked for the server waits on it. Since 2026-11-05
 only CAD asks, on a window's first DWG (`system.server.request()`); the other
 apps never start it. `/dwg-to-dxf` is a WebSocket: one

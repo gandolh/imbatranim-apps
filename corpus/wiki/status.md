@@ -1,6 +1,6 @@
 ---
 summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Three more groups beside Office: Games (2026-11-06), Accessories, Todo and Bookmarks with their data in system.data files, and Developer, Git GUI and the REST API Client (both 2026-11-09). Owner steps. Since 2026-11-11 the repo is formatted at width 120 and gated by `npm run check` (the house-style harness).
-updated: 2026-11-11
+updated: 2026-11-12
 ---
 
 # Status — 2026-11-05
@@ -24,6 +24,10 @@ are not pushed; brief numbering restarted at 01 on 2026-11-02 (see
   renderer; TRIM and EXTEND take the short stub at a corner; `.dwg` opens
   through the suite's server; Save on it offers the `.dxf` in its folder, and
   Save as opens in the drawing's folder (2026-11-05) ([cad.md](cad.md)).
+- **The server** (2026-11-12). In the house code structure: `server.ts`,
+  `config.ts`, `features/health` and `features/dwg`, one error handler, the zod
+  provider on `/health`; the start command is now `node server/src/server.ts`,
+  so the OS's catalog copy needs a re-pin to this commit with the new command.
 - **Slides** (2026-10-22, walked 2026-10-27). Edits patch the package in
   place; untouched parts stay byte identical ([slides.md](slides.md)).
 - **Sheets** (2026-10-22, walked 2026-10-27). Formulas in a worker and sheets

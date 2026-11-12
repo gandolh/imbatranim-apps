@@ -528,3 +528,18 @@ the Presenter took `z-dialog`, and the CAD dev page's 13 px moved to `body`.
 `check-base-ui` ran strict with 0 findings before and after; exceptions are in
 `tools/conventions.json`. Screenshots (Apricot light and Classic dark, 1280 and
 390) show the same layouts; two looks changed (below).
+
+## [2026-11-12] done | Brief 10: the server in the house code structure
+
+[Brief 10](briefs/done/10-the-server-in-the-code-structure.md) built in `707e300` to
+`61024e7`. `server/src` is `server.ts` (listens, `close-with-grace`), `config.ts`
+(`PORT`, `HOST`, `LOG_LEVEL`, zod; `PORT=abc` stops the start naming `PORT`), `app.ts`
+(registers), `plugins/errors.ts` and `plugins/websocket.ts`, `features/health` (typed with
+the zod provider) and `features/dwg` (the WebSocket route and the converter), and
+`testing/buildTestApp.ts`. `/health` is byte for byte what it was. A held WebSocket
+closes with 1001 on SIGTERM and the process exits 0 in about a second. The entry
+rename changed the descriptor template's `command`, `server/package.json`'s `main` and
+`osBuild.test.ts`; imbatranimOS's catalog copy (`marketplace/imbatranim-office.json`)
+carries its own copy of the command and needs it changed with the next re-pin. The
+structure gate is strict and `n/no-process-env` an error. Todo: kill the converter
+child on close.

@@ -31,8 +31,8 @@ Accessories, Developer), and the small server some of them use. Read
 - `npm test` runs on a quiet machine. `apps/pdf/src/App.test.tsx` waits about
   two seconds for the engine and can time out when the suite runs under load;
   run it alone with `npx vitest run apps/pdf/src/App.test.tsx`.
-- The structure checker (`check:conventions`) runs `--warn-only` until the
-  server is restructured.
+- The desktop starts the server with `node server/src/server.ts`; that path is
+  in `os/descriptor.template.json`, `server/package.json` and `osBuild.test.ts`.
 
 ## Hard rules
 
