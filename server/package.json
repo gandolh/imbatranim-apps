@@ -7,9 +7,15 @@
   "description": "The suite's server: converts DWG to DXF for CAD with LibreDWG's WebAssembly build. The desktop starts it; it runs from source with Node's type stripping.",
   "main": "src/index.ts",
   "dependencies": {
+    "@fastify/swagger": "9.9.3",
+    "@fastify/type-provider-zod": "1.0.3",
     "@fastify/websocket": "11.3.4",
     "@imbatranim-office/shared": "0.0.0",
     "@mlightcad/libredwg-web": "0.8.2",
-    "fastify": "5.12.7"
+    "close-with-grace": "2.5.0",
+    "fastify": "5.12.7",
+    "fastify-plugin": "6.0.1",
+    "openapi-types": "12.1.3",
+    "zod": "4.6.7"
   }
 }
