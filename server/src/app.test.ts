@@ -44,19 +44,6 @@ const dwg = (rest = "") => new TextEncoder().encode(`AC1032${rest}`);
 const echo: Converter = async (bytes) => ({ ok: true, dxf: bytes });
 
 describe("the suite server", () => {
-  it("answers its health check without loading LibreDWG", async () => {
-    let converted = 0;
-    const app = await buildApp(config, {
-      convert: async () => (converted++, { ok: false, error: "failed" }),
-      server: { logger: false },
-    });
-    servers.push(app);
-    const res = await app.inject({ method: "GET", url: "/health" });
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ ok: true });
-    expect(converted).toBe(0);
-  });
-
   it("takes a DWG as one binary message and answers the DXF as one, then closes", async () => {
     const url = await start(echo);
     const answer = await exchange(url, dwg(" drawing"));

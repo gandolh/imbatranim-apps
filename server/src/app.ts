@@ -13,6 +13,7 @@ import Fastify, { type FastifyInstance, type FastifyServerOptions } from "fastif
 import websocket from "@fastify/websocket";
 import { DWG_TO_DXF_PATH, MAX_DWG_BYTES, dwgVersion, type DwgFailure } from "@imbatranim-office/shared/dwg";
 import type { Config } from "./config.ts";
+import { healthRoutes } from "./features/health/routes.ts";
 import { errors } from "./plugins/errors.ts";
 import { createConverter, type Converter } from "./convert.ts";
 
@@ -36,7 +37,7 @@ export async function buildApp(config: Config, options: BuildAppOptions = {}): P
   // ws closes a socket whose message is larger with 1009.
   await app.register(websocket, { options: { maxPayload: MAX_DWG_BYTES + 1 } });
 
-  app.get("/health", async () => ({ ok: true }));
+  await app.register(healthRoutes);
 
   app.get(DWG_TO_DXF_PATH, { websocket: true }, (socket) => {
     const fail = (failure: DwgFailure) => {
