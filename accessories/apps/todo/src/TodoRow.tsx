@@ -256,7 +256,7 @@ const NO_LIST = "none";
  * its due date, its importance and its position. The update mutation has
  * always accepted `listId`; only this control was missing.
  *
- * A row of buttons rather than a `<select>`: the same shape the due editor
+ * A row of buttons rather than a native select: the same shape the due editor
  * uses, it shows which list the task is in right now without opening anything,
  * and there are rarely more than a handful of lists.
  */
