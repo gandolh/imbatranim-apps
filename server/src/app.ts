@@ -20,7 +20,7 @@ import { errors } from "./plugins/errors.ts";
 import { websocketSupport } from "./plugins/websocket.ts";
 
 /** Fastify's options a caller may override: a test turns the logger off or lowers a timeout. */
-export type ServerOptions = Pick<FastifyServerOptions, "logger" | "requestTimeout" | "connectionTimeout">;
+type ServerOptions = Pick<FastifyServerOptions, "logger" | "requestTimeout" | "connectionTimeout">;
 
 export type BuildAppOptions = {
   server?: ServerOptions;

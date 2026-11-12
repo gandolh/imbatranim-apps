@@ -33,8 +33,6 @@ export default [
     server: "server/src",
     // Run by hand: the kit sync prints its result.
     scripts: ["tools"],
-    // The server entry prints where it listens before anything else is up.
-    console: ["server/src/index.ts"],
     // The CAD tests check a geometry result through helpers that hold the `expect` calls.
     assertFunctionNames: ["expect", "expectTypeOf", "expectPoint", "expectLine", "expectSameDrawing"],
     // vendor/ is the OS's kit, byte for byte: never linted or rewritten here.
@@ -44,13 +42,6 @@ export default [
     name: "imbatranim-apps/react-refresh",
     files: ["**/*.{ts,tsx}"],
     ...reactRefresh.configs.vite,
-  },
-  {
-    name: "imbatranim-apps/process-env-warns",
-    // A warning for now (2026-11-11): the server entry still reads PORT and HOST itself. When the
-    // server takes its settings from config.ts, this block goes and the rule is an error again.
-    files: ["server/src/index.ts"],
-    rules: { "n/no-process-env": "warn" },
   },
   {
     // Build code passes the environment on to child processes on purpose.

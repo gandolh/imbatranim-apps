@@ -11,7 +11,7 @@ import { fork } from "node:child_process";
 import { CONVERT_TIMEOUT_MS, type DwgFailureKind } from "@imbatranim-office/shared/dwg";
 import type { ConverterReply, ConverterRequest } from "./converter.ts";
 
-export type ConvertResult = { ok: true; dxf: Uint8Array } | { ok: false; error: DwgFailureKind };
+type ConvertResult = { ok: true; dxf: Uint8Array } | { ok: false; error: DwgFailureKind };
 
 export type Converter = (dwg: Uint8Array) => Promise<ConvertResult>;
 

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const LOG_LEVELS = ["fatal", "error", "warn", "info", "debug", "trace", "silent"] as const;
-export type LogLevel = (typeof LOG_LEVELS)[number];
+const LOG_LEVELS = ["fatal", "error", "warn", "info", "debug", "trace", "silent"] as const;
+type LogLevel = (typeof LOG_LEVELS)[number];
 
 /** The server's settings, parsed once at start. No other file reads the environment. */
 export interface Config {

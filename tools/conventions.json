@@ -5,6 +5,12 @@
   "shared": ["games/shared/src", "accessories/shared/src", "developer/shared/src", "packages/pdfcore-engine/src"],
   "exceptions": [
     {
+      "check": "structure",
+      "rule": 6,
+      "path": "server/src/features/dwg",
+      "reason": "The DWG route is a WebSocket: its frames are a protocol in @imbatranim-office/shared/dwg (a binary file in, a binary file or a failure kind out), not a JSON reply, so there is no response schema to declare (Q53)."
+    },
+    {
       "check": "base-ui",
       "rule": 5,
       "path": "**",
