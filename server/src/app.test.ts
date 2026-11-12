@@ -1,16 +1,18 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { FastifyInstance } from "fastify";
 import { DWG_TO_DXF_PATH, MAX_DWG_BYTES } from "@imbatranim-office/shared/dwg";
-import { buildServer } from "./app.ts";
+import { buildApp } from "./app.ts";
+import { loadConfig } from "./config.ts";
 import type { Converter } from "./convert.ts";
 
+const config = loadConfig({});
 const servers: FastifyInstance[] = [];
 afterEach(async () => {
   await Promise.all(servers.splice(0).map((s) => s.close()));
 });
 
 async function start(convert: Converter, idleMs?: number): Promise<string> {
-  const app = await buildServer({ convert, idleMs });
+  const app = await buildApp(config, { convert, idleMs, server: { logger: false } });
   servers.push(app);
   await app.listen({ port: 0, host: "127.0.0.1" });
   const { port } = app.server.address() as { port: number };
@@ -44,8 +46,9 @@ const echo: Converter = async (bytes) => ({ ok: true, dxf: bytes });
 describe("the suite server", () => {
   it("answers its health check without loading LibreDWG", async () => {
     let converted = 0;
-    const app = await buildServer({
+    const app = await buildApp(config, {
       convert: async () => (converted++, { ok: false, error: "failed" }),
+      server: { logger: false },
     });
     servers.push(app);
     const res = await app.inject({ method: "GET", url: "/health" });

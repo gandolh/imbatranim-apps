@@ -16,7 +16,7 @@
     "output": "dist/os"
   },
   "server": {
-    "command": ["node", "server/src/index.ts"],
+    "command": ["node", "server/src/server.ts"],
     "portEnv": "PORT",
     "health": "/health"
   },

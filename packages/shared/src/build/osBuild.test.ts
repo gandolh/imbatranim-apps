@@ -251,7 +251,7 @@ describe("this repo's own build", () => {
     // PDF's decoders are the one WebAssembly the build ships.
     expect(template.type).toBe("service");
     expect(template.server).toEqual({
-      command: ["node", "server/src/index.ts"],
+      command: ["node", "server/src/server.ts"],
       portEnv: "PORT",
       health: "/health",
     });

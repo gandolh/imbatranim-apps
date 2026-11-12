@@ -9,21 +9,26 @@
  *   for GET and HEAD only, and its WebSockets both ways. The protocol is in
  *   `@imbatranim-office/shared/dwg`.
  */
-import Fastify, { type FastifyInstance } from "fastify";
+import Fastify, { type FastifyInstance, type FastifyServerOptions } from "fastify";
 import websocket from "@fastify/websocket";
 import { DWG_TO_DXF_PATH, MAX_DWG_BYTES, dwgVersion, type DwgFailure } from "@imbatranim-office/shared/dwg";
+import type { Config } from "./config.ts";
 import { createConverter, type Converter } from "./convert.ts";
 
-export type ServerOptions = {
+/** Fastify's options a caller may override: a test turns the logger off. */
+export type ServerOptions = Pick<FastifyServerOptions, "logger">;
+
+export type BuildAppOptions = {
+  server?: ServerOptions;
   convert?: Converter;
   /** How long a socket may stay open without sending its file. */
   idleMs?: number;
 };
 
-export async function buildServer(options: ServerOptions = {}): Promise<FastifyInstance> {
+export async function buildApp(config: Config, options: BuildAppOptions = {}): Promise<FastifyInstance> {
   const convert = options.convert ?? createConverter();
   const idleMs = options.idleMs ?? 30_000;
-  const app = Fastify({ logger: false });
+  const app = Fastify({ logger: { level: config.logLevel }, ...options.server });
   // One byte over the cap is enough to tell "too large" from "at the cap";
   // ws closes a socket whose message is larger with 1009.
   await app.register(websocket, { options: { maxPayload: MAX_DWG_BYTES + 1 } });
