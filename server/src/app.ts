@@ -10,6 +10,7 @@
  * `buildApp` registers in a fixed order: the error plugin, the other plugins, then the features by
  * name. It never listens; server.ts does.
  */
+import { serializerCompiler, validatorCompiler } from "@fastify/type-provider-zod";
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from "fastify";
 import type { Config } from "./config.ts";
 import { createConverter, type Converter } from "./features/dwg/convert.ts";
@@ -31,6 +32,10 @@ export type BuildAppOptions = {
 export async function buildApp(config: Config, options: BuildAppOptions = {}): Promise<FastifyInstance> {
   const app = Fastify({ logger: { level: config.logLevel }, ...options.server });
   const convert = options.convert ?? createConverter({ log: (line) => app.log.warn(line) });
+
+  // Zod checks every request and encodes every reply, in every plugin registered below.
+  app.setValidatorCompiler(validatorCompiler);
+  app.setSerializerCompiler(serializerCompiler);
 
   // First, so every route registered below answers through it.
   await app.register(errors);
