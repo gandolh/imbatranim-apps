@@ -22,9 +22,9 @@ import {
   Signature,
   Grid3x3,
 } from "lucide-react";
-import { Button, Separator } from "@imbatranim/ui";
+import { Button, Radio, RadioGroup, Separator } from "@imbatranim/ui";
 import { useReader } from "../app/context";
-import { ToolButton } from "../shell/ToolButton";
+import { ToolRadio } from "../shell/ToolButton";
 import { useEditor } from "./context";
 import type { AnnotateTool, Swatch } from "./types";
 import { colorToHex, hexToColor } from "./util";
@@ -69,18 +69,23 @@ export function AnnotateToolbar(): JSX.Element {
   return (
     <div className="flex w-full flex-wrap items-center gap-1">
       {/* Tools */}
-      <div className="flex items-center gap-0.5" role="group" aria-label="Annotation tools">
+      <RadioGroup<AnnotateTool>
+        className="flex items-center gap-0.5"
+        aria-label="Annotation tools"
+        value={tool}
+        onValueChange={setTool}
+      >
         {TOOLS.map((td) => (
-          <ToolButton
+          <ToolRadio
             key={td.tool}
             icon={td.icon}
             iconSize={16}
             label={td.label}
-            active={tool === td.tool}
-            onClick={() => setTool(td.tool)}
+            value={td.tool}
+            checked={tool === td.tool}
           />
         ))}
-      </div>
+      </RadioGroup>
 
       <Separator orientation="vertical" className="mx-1 h-5" />
 
@@ -99,22 +104,30 @@ export function AnnotateToolbar(): JSX.Element {
       <Separator orientation="vertical" className="mx-1 h-5" />
 
       {/* Colour */}
-      <div className="flex items-center gap-1" role="group" aria-label="Mark colour">
-        {SWATCHES.map((s) => (
-          <button
-            key={s.name}
-            type="button"
-            className={
-              "h-5 w-5 border-2 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.25)] transition-transform hover:scale-110 " +
-              (sameColor(color, s.color) ? "border-on-surface ring-primary ring-2" : "border-transparent")
-            }
-            style={{ background: `rgb(${s.color.r * 255} ${s.color.g * 255} ${s.color.b * 255})` }}
-            title={s.name}
-            aria-label={s.name}
-            aria-pressed={sameColor(color, s.color)}
-            onClick={() => setColor(s.color)}
-          />
-        ))}
+      <div className="flex items-center gap-1">
+        <RadioGroup
+          className="contents"
+          aria-label="Mark colour"
+          value={SWATCHES.find((s) => sameColor(color, s.color))?.name ?? ""}
+          onValueChange={(name) => {
+            const swatch = SWATCHES.find((s) => s.name === name);
+            if (swatch) setColor(swatch.color);
+          }}
+        >
+          {SWATCHES.map((s) => (
+            <Radio
+              key={s.name}
+              value={s.name}
+              className={({ checked }) =>
+                "block h-5 w-5 border-2 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.25)] transition-transform hover:scale-110 " +
+                (checked ? "border-on-surface ring-primary ring-2" : "border-transparent")
+              }
+              style={{ background: `rgb(${s.color.r * 255} ${s.color.g * 255} ${s.color.b * 255})` }}
+              title={s.name}
+              aria-label={s.name}
+            />
+          ))}
+        </RadioGroup>
         <label
           className="border-outline-variant relative inline-flex h-[22px] w-[22px] cursor-pointer overflow-hidden border"
           title="Custom colour"
@@ -132,33 +145,33 @@ export function AnnotateToolbar(): JSX.Element {
       <Separator orientation="vertical" className="mx-1 h-5" />
 
       {/* Stroke width */}
-      <div className="flex items-center gap-1" role="group" aria-label="Stroke width">
-        {WIDTHS.map((wv) => {
-          const on = strokeWidth === wv;
-          return (
-            <button
-              key={wv}
-              type="button"
-              className={
-                "inline-flex h-6 w-[30px] items-center justify-center border " +
-                (on
-                  ? "border-primary bg-primary-container text-primary"
-                  : "border-outline-variant text-on-surface-variant hover:bg-surface-container-high")
-              }
-              title={`${wv} pt`}
-              aria-label={`${wv} point stroke`}
-              aria-pressed={on}
-              onClick={() => setStrokeWidth(wv)}
-            >
-              <span className="block w-[18px] bg-current" style={{ height: Math.max(2, wv) }} />
-            </button>
-          );
-        })}
-      </div>
+      <RadioGroup
+        className="flex items-center gap-1"
+        aria-label="Stroke width"
+        value={String(strokeWidth)}
+        onValueChange={(next) => setStrokeWidth(Number(next))}
+      >
+        {WIDTHS.map((wv) => (
+          <Radio
+            key={wv}
+            value={String(wv)}
+            className={({ checked }) =>
+              "flex h-6 w-[30px] items-center justify-center border " +
+              (checked
+                ? "border-primary bg-primary-container text-primary"
+                : "border-outline-variant text-on-surface-variant hover:bg-surface-container-high")
+            }
+            title={`${wv} pt`}
+            aria-label={`${wv} point stroke`}
+          >
+            <span className="block w-[18px] bg-current" style={{ height: Math.max(2, wv) }} />
+          </Radio>
+        ))}
+      </RadioGroup>
 
       <div className="flex-1" />
 
-      {busy && <span className="text-primary font-ui text-[11px]">Saving…</span>}
+      {busy && <span className="text-primary font-ui text-label">Saving…</span>}
 
       {/* Organize toggle */}
       <Button

@@ -37,11 +37,11 @@ function CardFace({ card, selected }: { card: Card; selected: boolean }) {
         selected && "ring-primary ring-2 ring-inset",
       )}
     >
-      <div className="font-ui flex items-start justify-between text-[11px] leading-none font-semibold">
+      <div className="font-ui text-label flex items-start justify-between leading-none font-semibold">
         <span>{RANK_LABEL[card.rank]}</span>
         <span>{SUIT_GLYPH[card.suit]}</span>
       </div>
-      <div className="flex h-8 items-center justify-center text-[18px]">{SUIT_GLYPH[card.suit]}</div>
+      <div className="text-title flex h-8 items-center justify-center">{SUIT_GLYPH[card.suit]}</div>
     </div>
   );
 }
@@ -56,7 +56,7 @@ function CardBack() {
 
 function EmptySlot({ label }: { label?: string }) {
   return (
-    <div className="rounded-control border-outline-variant text-on-surface-variant/50 flex h-16 w-12 items-center justify-center border border-dashed text-[14px] select-none">
+    <div className="rounded-control border-outline-variant text-on-surface-variant/50 text-subhead flex h-16 w-12 items-center justify-center border border-dashed select-none">
       {label ?? ""}
     </div>
   );
@@ -238,7 +238,7 @@ export function Solitaire() {
           </Button>
         )}
         <div className="flex-1" />
-        <span className="font-ui text-on-surface-variant text-[11px]">
+        <span className="font-ui text-on-surface-variant text-label">
           {game.moves} moves · {stats.wins}W {stats.losses}L
         </span>
       </div>
@@ -328,7 +328,7 @@ export function Solitaire() {
         </div>
       </ScrollArea>
 
-      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant flex h-6 flex-none items-center gap-2 border-t px-2 text-[10px]">
+      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant text-tiny flex h-6 flex-none items-center gap-2 border-t px-2">
         {won ? (
           <span className="text-primary font-semibold">You won in {game.moves} moves — F2 deals again.</span>
         ) : (

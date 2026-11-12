@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Columns2, FileDiff, FolderGit2, GitCommitVertical, History, Pencil, Undo2 } from "lucide-react";
-import { Button, ScrollArea, cn, useConfirm, useFileDialog, useOpenIntent, usePrompt, useSystem } from "@imbatranim/ui";
+import {
+  Button,
+  Checkbox,
+  ScrollArea,
+  cn,
+  useConfirm,
+  useFileDialog,
+  useOpenIntent,
+  usePrompt,
+  useSystem,
+} from "@imbatranim/ui";
 import { useDataStore, inFolder } from "../../../../packages/shared/src/dataStore";
 import {
   amendCommit,
@@ -426,7 +436,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
         {error && <ErrorBanner message={error} />}
         <div className="text-on-surface-variant flex flex-1 flex-col items-center justify-center gap-4 px-6">
           <FolderGit2 size={40} strokeWidth={1} />
-          <p className="font-ui text-center text-[12px]">Open a repository to see its status, branches and history.</p>
+          <p className="font-ui text-control text-center">Open a repository to see its status, branches and history.</p>
           <RecentRepos
             repos={recents}
             onOpen={(r) =>
@@ -526,7 +536,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
             <textarea
               className={cn(
                 "rounded-control border-outline-variant bg-surface-container-lowest text-on-surface min-h-[48px] w-full resize-none border px-2 py-1.5",
-                "font-content text-[13px] outline-none",
+                "font-content text-body outline-none",
                 "placeholder:text-on-surface-variant",
                 "focus:border-primary focus:ring-primary/40 focus:ring-2",
               )}
@@ -586,13 +596,13 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
           {tab === "history" ? (
             <LogPane commits={commits} />
           ) : selection === null ? (
-            <div className="text-on-surface-variant flex flex-1 items-center justify-center text-[12px]">
+            <div className="text-on-surface-variant text-control flex flex-1 items-center justify-center">
               Select a file to view its diff
             </div>
           ) : diffError !== null ? (
             <div className="text-on-surface-variant flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
               <AlertTriangle size={24} strokeWidth={1.5} />
-              <span className="font-ui text-[12px]">{diffError}</span>
+              <span className="font-ui text-control">{diffError}</span>
             </div>
           ) : (
             <DiffView
@@ -615,7 +625,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
 
 function ErrorBanner({ message }: { message: string }) {
   return (
-    <div className="bg-error-container text-on-error-container flex shrink-0 items-center gap-2 px-3 py-1.5 text-[12px]">
+    <div className="bg-error-container text-on-error-container text-control flex shrink-0 items-center gap-2 px-3 py-1.5">
       <AlertTriangle size={13} className="shrink-0" /> {message}
     </div>
   );
@@ -642,12 +652,12 @@ function ChangeSection({
 }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="text-on-surface-variant font-ui bg-surface-container-low shrink-0 px-2 py-1 text-[11px] font-semibold tracking-wider uppercase">
+      <div className="text-on-surface-variant font-ui bg-surface-container-low text-label shrink-0 px-2 py-1 font-semibold tracking-wider uppercase">
         {title} ({entries.length})
       </div>
       <ScrollArea className="min-h-0 flex-1">
         {entries.length === 0 ? (
-          <div className="text-on-surface-variant px-2 py-2 text-[12px]">Nothing here</div>
+          <div className="text-on-surface-variant text-control px-2 py-2">Nothing here</div>
         ) : (
           <ul className="px-(--k-list-inset)">
             {entries.map((e) => {
@@ -663,12 +673,11 @@ function ChangeSection({
                     active && "bg-primary-container text-on-primary-container",
                   )}
                 >
-                  <input
-                    type="checkbox"
-                    className="accent-primary focus-visible:outline-primary shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2"
+                  <Checkbox
                     checked={checked.has(key)}
                     aria-label={`Select ${e.path}`}
-                    onChange={() => onToggle(key)}
+                    onCheckedChange={() => onToggle(key)}
+                    labelClassName="shrink-0"
                   />
                   <button
                     type="button"
@@ -676,13 +685,13 @@ function ChangeSection({
                     onClick={() => onSelect(e.path)}
                   >
                     <span
-                      className={cn("w-4 shrink-0 text-center font-mono text-[12px] font-bold", codeColor(code))}
+                      className={cn("text-control w-4 shrink-0 text-center font-mono font-bold", codeColor(code))}
                       title={codeLabel(code)}
                     >
                       {code}
                     </span>
-                    <span className="font-content truncate text-[13px]">{e.path}</span>
-                    {e.origPath && <span className="text-on-surface-variant truncate text-[11px]">← {e.origPath}</span>}
+                    <span className="font-content text-body truncate">{e.path}</span>
+                    {e.origPath && <span className="text-on-surface-variant text-label truncate">← {e.origPath}</span>}
                   </button>
                 </li>
               );
@@ -700,7 +709,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
       type="button"
       onClick={onClick}
       className={cn(
-        "font-ui flex items-center gap-1.5 px-3 py-1.5 text-[12px]",
+        "font-ui text-control flex items-center gap-1.5 px-3 py-1.5",
         "cursor-pointer border-b-2 transition-colors",
         "focus-visible:ring-primary focus-visible:ring-2 focus-visible:outline-none",
         active ? "border-primary text-on-surface" : "text-on-surface-variant hover:text-on-surface border-transparent",
@@ -714,7 +723,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
 function LogPane({ commits }: { commits: GitCommit[] }) {
   if (commits.length === 0) {
     return (
-      <div className="text-on-surface-variant flex flex-1 items-center justify-center text-[12px]">No commits yet</div>
+      <div className="text-on-surface-variant text-control flex flex-1 items-center justify-center">No commits yet</div>
     );
   }
   return (
@@ -722,8 +731,8 @@ function LogPane({ commits }: { commits: GitCommit[] }) {
       <ul className="divide-outline-variant/50 divide-y">
         {commits.map((c) => (
           <li key={c.hash} className="px-3 py-2">
-            <div className="font-content text-on-surface text-[13px]">{c.subject}</div>
-            <div className="text-on-surface-variant font-ui mt-0.5 flex items-center gap-2 text-[11px]">
+            <div className="font-content text-on-surface text-body">{c.subject}</div>
+            <div className="text-on-surface-variant font-ui text-label mt-0.5 flex items-center gap-2">
               <span className="font-mono">{c.hash.slice(0, 7)}</span>
               <span>{c.authorName}</span>
               <span>{formatDate(c.date)}</span>

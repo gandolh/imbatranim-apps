@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CalendarClock, FolderInput, GripVertical, Star, X } from "lucide-react";
 import { useDrag } from "@use-gesture/react";
-import { cn } from "@imbatranim/ui";
+import { Checkbox, Toggle, ToggleGroup, cn } from "@imbatranim/ui";
 import { dateInputValue, dueAtFromInput, dueLabel, isDueToday, isOverdue, timeInputValue } from "./due";
 import type { Todo, TodoList, TodoPatch } from "./types";
 
@@ -77,12 +77,11 @@ export function TodoRow({ todo, index, total, onDragEnd, onPatch, onDelete, sele
     >
       <div className="flex h-9 items-center gap-1.5 px-2">
         {selection ? (
-          <input
-            type="checkbox"
+          <Checkbox
             checked={selection.selected}
-            onChange={() => selection.onToggle(todo.id)}
+            onCheckedChange={() => selection.onToggle(todo.id)}
             aria-label={`Select ${todo.text}`}
-            className="accent-primary focus-visible:outline-primary shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2"
+            labelClassName="shrink-0"
           />
         ) : (
           // Hidden from assistive tech: dragging is a mouse affordance, and the
@@ -119,7 +118,7 @@ export function TodoRow({ todo, index, total, onDragEnd, onPatch, onDelete, sele
         {editing ? (
           <input
             ref={inputRef}
-            className="font-content text-on-surface focus-visible:ring-primary min-w-0 flex-1 bg-transparent text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            className="font-content text-on-surface focus-visible:ring-primary text-body min-w-0 flex-1 bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-inset"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onBlur={commitEdit}
@@ -131,7 +130,7 @@ export function TodoRow({ todo, index, total, onDragEnd, onPatch, onDelete, sele
         ) : (
           <span
             className={cn(
-              "font-content text-on-surface min-w-0 flex-1 cursor-text truncate text-[13px]",
+              "font-content text-on-surface text-body min-w-0 flex-1 cursor-text truncate",
               completed && "line-through opacity-50",
             )}
             onClick={() => setEditing(true)}
@@ -148,7 +147,7 @@ export function TodoRow({ todo, index, total, onDragEnd, onPatch, onDelete, sele
             onClick={() => setDueOpen((open) => !open)}
             title="Change the due date"
             className={cn(
-              "focus-visible:ring-primary rounded-small font-ui shrink-0 border px-1 text-[10px] tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-inset",
+              "focus-visible:ring-primary rounded-small font-ui text-tiny shrink-0 border px-1 tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-inset",
               completed
                 ? "border-outline-variant text-on-surface-variant opacity-50"
                 : overdue
@@ -162,21 +161,20 @@ export function TodoRow({ todo, index, total, onDragEnd, onPatch, onDelete, sele
           </button>
         )}
 
-        <button
-          type="button"
-          onClick={() => onPatch(todo.id, { priority: !todo.priority })}
-          aria-pressed={todo.priority}
+        <Toggle
+          pressed={todo.priority}
+          onPressedChange={(pressed) => onPatch(todo.id, { priority: pressed })}
           aria-label={todo.priority ? "Remove importance" : "Mark important"}
           title={todo.priority ? "Important" : "Mark important"}
           className={cn(
-            "shrink-0 p-0.5",
+            "focus-visible:ring-primary shrink-0 p-0.5 focus-visible:ring-2 focus-visible:ring-inset",
             todo.priority
               ? "text-primary"
               : "text-on-surface-variant hover:text-on-surface opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
           )}
         >
           <Star size={12} fill={todo.priority ? "currentColor" : "none"} />
-        </button>
+        </Toggle>
 
         {lists.length > 0 && (
           <button
@@ -240,6 +238,9 @@ export function TodoRow({ todo, index, total, onDragEnd, onPatch, onDelete, sele
   );
 }
 
+/** The "No list" choice's value in the picker (a list id is a number string). */
+const NO_LIST = "none";
+
 /**
  * The inline due-date editor.
  *
@@ -272,16 +273,27 @@ function ListPicker({
 }) {
   return (
     <div className="border-outline-variant bg-surface-container-low flex flex-wrap items-center gap-1.5 border-t px-2 py-1.5">
-      <span className="font-ui text-on-surface-variant text-[11px]">Move to</span>
-      <PickerChip label="No list" active={current === null} onClick={() => onPick(null)} />
-      {lists.map((l) => (
-        <PickerChip key={l.id} label={l.name} active={current === l.id} onClick={() => onPick(l.id)} />
-      ))}
+      <span className="font-ui text-on-surface-variant text-label">Move to</span>
+      {/* Not guarded (no `keepOne`): pressing the chosen list again is a pick that closes the row. */}
+      <ToggleGroup
+        className="contents"
+        aria-label="Move to"
+        value={[current === null ? NO_LIST : String(current)]}
+        onValueChange={(next) => {
+          const picked = next[0] ?? (current === null ? NO_LIST : String(current));
+          onPick(picked === NO_LIST ? null : Number(picked));
+        }}
+      >
+        <PickerChip label="No list" value={NO_LIST} />
+        {lists.map((l) => (
+          <PickerChip key={l.id} label={l.name} value={String(l.id)} />
+        ))}
+      </ToggleGroup>
       <div className="flex-1" />
       <button
         type="button"
         onClick={onClose}
-        className="text-on-surface-variant hover:text-on-surface font-ui focus-visible:ring-primary text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+        className="text-on-surface-variant hover:text-on-surface font-ui focus-visible:ring-primary text-label outline-none focus-visible:ring-2 focus-visible:ring-inset"
       >
         Cancel
       </button>
@@ -289,21 +301,21 @@ function ListPicker({
   );
 }
 
-function PickerChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+function PickerChip({ label, value }: { label: string; value: string }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={cn(
-        "focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
-        active
-          ? "border-primary bg-primary-container text-on-primary-container"
-          : "border-outline-variant text-on-surface hover:bg-surface-container",
-      )}
+    <Toggle
+      value={value}
+      className={({ pressed }) =>
+        cn(
+          "focus-visible:ring-primary font-ui rounded-control text-label border px-1.5 py-0.5 focus-visible:ring-2 focus-visible:ring-inset",
+          pressed
+            ? "border-primary bg-primary-container text-on-primary-container"
+            : "border-outline-variant text-on-surface hover:bg-surface-container",
+        )
+      }
     >
       {label}
-    </button>
+    </Toggle>
   );
 }
 
@@ -327,7 +339,7 @@ function DueEditor({
         autoFocus
         aria-label="Due date"
         onChange={(e) => setDate(e.target.value)}
-        className="rounded-control border-outline-variant bg-surface-container-lowest font-content text-on-surface focus-visible:ring-primary border px-1.5 py-0.5 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+        className="rounded-control border-outline-variant bg-surface-container-lowest font-content text-on-surface focus-visible:ring-primary text-control border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset"
       />
       <input
         type="time"
@@ -335,13 +347,13 @@ function DueEditor({
         aria-label="Due time (optional)"
         onChange={(e) => setTime(e.target.value)}
         disabled={!date}
-        className="rounded-control border-outline-variant bg-surface-container-lowest font-content text-on-surface focus-visible:ring-primary border px-1.5 py-0.5 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
+        className="rounded-control border-outline-variant bg-surface-container-lowest font-content text-on-surface focus-visible:ring-primary text-control border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
       />
       <button
         type="button"
         onClick={() => onChange(dueAtFromInput(date, time || undefined))}
         disabled={!date}
-        className="rounded-control border-primary bg-primary text-on-primary font-ui focus-visible:ring-primary border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
+        className="rounded-control border-primary bg-primary text-on-primary font-ui focus-visible:ring-primary text-label border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
       >
         Set
       </button>
@@ -349,7 +361,7 @@ function DueEditor({
         <button
           type="button"
           onClick={() => onChange(null)}
-          className="rounded-control border-outline-variant text-on-surface font-ui focus-visible:ring-primary border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+          className="rounded-control border-outline-variant text-on-surface font-ui focus-visible:ring-primary text-label border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset"
         >
           Clear
         </button>
@@ -357,7 +369,7 @@ function DueEditor({
       <button
         type="button"
         onClick={onClose}
-        className="text-on-surface-variant font-ui focus-visible:ring-primary px-1 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+        className="text-on-surface-variant font-ui focus-visible:ring-primary text-label px-1 outline-none focus-visible:ring-2 focus-visible:ring-inset"
       >
         Cancel
       </button>

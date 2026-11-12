@@ -42,7 +42,7 @@ describe("Todo as a kit app", () => {
     const fake = createFakeSystem({ appId: "todo" });
     const { container } = renderWithSystem(<App windowId="window-1" host={host} />, fencedSystem(fake.system, "todo"));
     await settle();
-    const input = container.querySelector('input[type="text"], input:not([type])') as HTMLInputElement;
+    const input = container.querySelector('input[placeholder^="Add a task"]') as HTMLInputElement;
     act(() => {
       const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
       setValue?.call(input, "Buy milk");

@@ -63,6 +63,10 @@ body,
   background-color: var(--k-surface);
   color: var(--k-on-surface);
   font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+/* The desktop's 13 px sits on body and the root keeps the browser's 16 px, so a rem
+   (a Tailwind max-w, say) measures the same here as in the desktop. */
+body {
   font-size: 13px;
 }
 .harness-window {

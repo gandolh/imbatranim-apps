@@ -20,6 +20,7 @@
 import { Suspense } from "react";
 import type { ComponentType, JSX, ReactNode } from "react";
 import { LayoutGrid, List } from "lucide-react";
+import { Tab, Tabs, TabsList, TabsPanel } from "@imbatranim/ui";
 import { useReader } from "../app/context";
 import type { PanelTab } from "../app/types";
 import { OutlinePanel, ThumbnailsPanel } from "../lazy";
@@ -62,33 +63,35 @@ export function SidePanel({ extraTabs = [] }: SidePanelProps): JSX.Element {
       className="border-outline-variant bg-surface-container-low flex w-[224px] shrink-0 flex-col border-r"
       aria-label="Document navigation"
     >
-      <div className="border-outline-variant flex border-b" role="tablist">
-        {tabs.map((tab) => {
-          const isActive = tab.id === active?.id;
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              className={
-                "font-ui flex min-w-0 flex-1 items-center justify-center gap-1 px-1 py-2 text-[11px] " +
-                (isActive
-                  ? "text-on-surface border-primary border-b-2"
-                  : "text-on-surface-variant hover:bg-surface-container-high border-b-2 border-transparent")
-              }
-              onClick={() => setPanelTab(tab.id)}
-            >
-              <Icon size={14} />
-              <span className="truncate">{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
-      <div className="min-h-0 flex-1 overflow-auto" role="tabpanel" data-panel-scroll>
-        {painted && <Suspense fallback={null}>{active?.render()}</Suspense>}
-      </div>
+      <Tabs
+        className="flex min-h-0 flex-1 flex-col"
+        value={active?.id}
+        onValueChange={(next) => setPanelTab(next as PanelTab)}
+      >
+        <TabsList className="border-outline-variant flex border-b">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <Tab
+                key={tab.id}
+                value={tab.id}
+                className={({ active: isActive }) =>
+                  "font-ui text-label flex min-w-0 flex-1 items-center justify-center gap-1 px-1 py-2 " +
+                  (isActive
+                    ? "text-on-surface border-primary border-b-2"
+                    : "text-on-surface-variant hover:bg-surface-container-high border-b-2 border-transparent")
+                }
+              >
+                <Icon size={14} />
+                <span className="truncate">{tab.label}</span>
+              </Tab>
+            );
+          })}
+        </TabsList>
+        <TabsPanel value={active?.id} className="min-h-0 flex-1 overflow-auto" data-panel-scroll>
+          {painted && <Suspense fallback={null}>{active?.render()}</Suspense>}
+        </TabsPanel>
+      </Tabs>
     </aside>
   );
 }

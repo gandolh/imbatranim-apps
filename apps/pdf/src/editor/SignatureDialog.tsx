@@ -15,13 +15,13 @@
 import { useRef, useState } from "react";
 import type { JSX } from "react";
 import type { Point, SignatureMark } from "@pdfcore/engine";
-import { Button, Dialog, Input } from "@imbatranim/ui";
+import { Button, Dialog, Input, Tab, Tabs, TabsList, TabsPanel } from "@imbatranim/ui";
 import { useEditor } from "./context";
 
 const PAD_W = 460;
 const PAD_H = 180;
 
-type Tab = "draw" | "type";
+type TabId = "draw" | "type";
 
 export function SignatureDialog(): JSX.Element {
   const { signDialogOpen, closeSignDialog, applySignatureMark } = useEditor();
@@ -33,6 +33,7 @@ export function SignatureDialog(): JSX.Element {
         if (!o) closeSignDialog();
       }}
       title="Add your signature"
+      disablePointerDismissal
       className="w-[min(520px,92vw)]"
     >
       {signDialogOpen && <SignaturePad onCancel={closeSignDialog} onApply={applySignatureMark} />}
@@ -47,7 +48,7 @@ function SignaturePad({
   onCancel: () => void;
   onApply: (mark: SignatureMark) => void;
 }): JSX.Element {
-  const [tab, setTab] = useState<Tab>("draw");
+  const [tab, setTab] = useState<TabId>("draw");
   const [typed, setTyped] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const strokes = useRef<Point[][]>([]);
@@ -130,63 +131,47 @@ function SignaturePad({
   };
 
   const tabClass = (on: boolean) =>
-    "font-ui px-3 py-1.5 text-[12px] font-medium border-b-2 -mb-px " +
+    "font-ui px-3 py-1.5 text-control font-medium border-b-2 -mb-px " +
     (on ? "text-on-surface border-primary" : "text-on-surface-variant border-transparent hover:text-on-surface");
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Tabs */}
-      <div className="border-outline-variant flex gap-1 border-b" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "draw"}
-          className={tabClass(tab === "draw")}
-          onClick={() => setTab("draw")}
-        >
+    <Tabs className="flex flex-col gap-3" value={tab} onValueChange={(next) => setTab(next as TabId)}>
+      <TabsList className="border-outline-variant flex gap-1 border-b">
+        <Tab value="draw" className={({ active }) => tabClass(active)}>
           Draw
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "type"}
-          className={tabClass(tab === "type")}
-          onClick={() => setTab("type")}
-        >
+        </Tab>
+        <Tab value="type" className={({ active }) => tabClass(active)}>
           Type
-        </button>
-      </div>
+        </Tab>
+      </TabsList>
 
-      {tab === "draw" ? (
-        <div className="flex flex-col items-center gap-2">
-          <canvas
-            ref={canvasRef}
-            className="border-outline-variant w-full cursor-crosshair touch-none border border-dashed bg-white"
-            width={PAD_W}
-            height={PAD_H}
-            style={{ width: "100%", aspectRatio: `${PAD_W} / ${PAD_H}` }}
-            onPointerDown={onDown}
-            onPointerMove={onMove}
-            onPointerUp={onUp}
-          />
-          <p className="text-on-surface-variant font-ui text-[11px]">Draw your signature, then place it on the page.</p>
+      <TabsPanel value="draw" className="flex flex-col items-center gap-2">
+        <canvas
+          ref={canvasRef}
+          className="border-outline-variant w-full cursor-crosshair touch-none border border-dashed bg-white"
+          width={PAD_W}
+          height={PAD_H}
+          style={{ width: "100%", aspectRatio: `${PAD_W} / ${PAD_H}` }}
+          onPointerDown={onDown}
+          onPointerMove={onMove}
+          onPointerUp={onUp}
+        />
+        <p className="text-on-surface-variant font-ui text-label">Draw your signature, then place it on the page.</p>
+      </TabsPanel>
+      <TabsPanel value="type" className="flex flex-col gap-2">
+        <Input value={typed} placeholder="Type your name" autoFocus onChange={(e) => setTyped(e.target.value)} />
+        <div
+          // Deliberately literal, not a semantic token: this is a preview of
+          // ink on paper, and it has to look the same in dark mode as the mark
+          // that will land in the PDF. A theme-aware colour here would show
+          // the user white ink for a signature that saves as black.
+          className="border-outline-variant text-display-sm grid min-h-[90px] place-items-center border border-dashed bg-white font-semibold text-black"
+          style={{ fontFamily: '"Iowan Old Style", Palatino, Georgia, serif' }}
+          aria-hidden="true"
+        >
+          {typed || "Signature"}
         </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          <Input value={typed} placeholder="Type your name" autoFocus onChange={(e) => setTyped(e.target.value)} />
-          <div
-            // Deliberately literal, not a semantic token: this is a preview of
-            // ink on paper, and it has to look the same in dark mode as the mark
-            // that will land in the PDF. A theme-aware colour here would show
-            // the user white ink for a signature that saves as black.
-            className="border-outline-variant grid min-h-[90px] place-items-center border border-dashed bg-white text-[2.2rem] font-semibold text-black"
-            style={{ fontFamily: '"Iowan Old Style", Palatino, Georgia, serif' }}
-            aria-hidden="true"
-          >
-            {typed || "Signature"}
-          </div>
-        </div>
-      )}
+      </TabsPanel>
 
       {/* Footer */}
       <div className="flex items-center gap-2 pt-1">
@@ -203,6 +188,6 @@ function SignaturePad({
           Use signature
         </Button>
       </div>
-    </div>
+    </Tabs>
   );
 }

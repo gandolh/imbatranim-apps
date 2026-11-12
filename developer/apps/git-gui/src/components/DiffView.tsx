@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Columns2, Minus, Plus, Rows3 } from "lucide-react";
-import { Button, ScrollArea, cn } from "@imbatranim/ui";
+import { Button, ScrollArea, Toggle, cn } from "@imbatranim/ui";
 import {
   hunkStats,
   parseDiff,
@@ -37,7 +37,7 @@ export function DiffView({ diff, staged, sideBySide, onToggleLayout, onApplyHunk
 
   if (diff.trim().length === 0) {
     return (
-      <div className="text-on-surface-variant flex flex-1 items-center justify-center text-[12px]">
+      <div className="text-on-surface-variant text-control flex flex-1 items-center justify-center">
         No changes to show
       </div>
     );
@@ -48,34 +48,32 @@ export function DiffView({ diff, staged, sideBySide, onToggleLayout, onApplyHunk
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="border-outline-variant bg-surface-container-low flex shrink-0 items-center gap-2 border-b px-2 py-1">
-        <span className="font-ui text-on-surface-variant text-[11px]">
+        <span className="font-ui text-on-surface-variant text-label">
           {totalHunks} hunk{totalHunks === 1 ? "" : "s"}
         </span>
         <span className="flex-1" />
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1"
-          onClick={onToggleLayout}
-          aria-pressed={sideBySide}
+        <Toggle
+          pressed={sideBySide}
+          onPressedChange={() => onToggleLayout()}
           title={sideBySide ? "Switch to a single column" : "Switch to side by side"}
+          render={<Button variant="ghost" size="sm" className="gap-1" />}
         >
           {sideBySide ? <Rows3 size={12} strokeWidth={2} /> : <Columns2 size={12} strokeWidth={2} />}
           {sideBySide ? "Unified" : "Side by side"}
-        </Button>
+        </Toggle>
       </div>
 
       <ScrollArea className="min-h-0 flex-1" orientation="both">
         {files.map((file) => (
           <div key={`${file.oldPath}->${file.newPath}`}>
-            <div className="bg-surface-container text-on-surface font-ui sticky top-0 z-10 px-2 py-1 text-[11px] font-semibold">
+            <div className="bg-surface-container text-on-surface font-ui text-label sticky top-0 z-10 px-2 py-1 font-semibold">
               {file.path}
               {file.oldPath && file.newPath && file.oldPath !== file.newPath && (
                 <span className="text-on-surface-variant font-normal"> ← {file.oldPath}</span>
               )}
             </div>
             {file.binary ? (
-              <div className="text-on-surface-variant px-2 py-2 text-[12px]">Binary file — nothing to show</div>
+              <div className="text-on-surface-variant text-control px-2 py-2">Binary file — nothing to show</div>
             ) : (
               file.hunks.map((hunk, i) => (
                 <HunkBlock
@@ -115,9 +113,9 @@ function HunkBlock({
   return (
     <div className="border-outline-variant border-b last:border-b-0">
       <div className="bg-surface-container-low flex items-center gap-2 px-2 py-0.5">
-        <span className="text-on-surface-variant font-mono text-[11px]">{hunk.header}</span>
-        <span className="text-primary font-ui text-[11px]">+{stats.added}</span>
-        <span className="text-error font-ui text-[11px]">−{stats.removed}</span>
+        <span className="text-on-surface-variant text-label font-mono">{hunk.header}</span>
+        <span className="text-primary font-ui text-label">+{stats.added}</span>
+        <span className="text-error font-ui text-label">−{stats.removed}</span>
         <span className="flex-1" />
         <Button
           variant="ghost"
@@ -138,11 +136,11 @@ function HunkBlock({
   );
 }
 
-const GUTTER = "text-on-surface-variant w-10 shrink-0 select-none px-1 text-right font-mono text-[11px]";
+const GUTTER = "text-on-surface-variant w-10 shrink-0 select-none px-1 text-right font-mono text-label";
 
 function Unified({ hunk }: { hunk: Hunk }) {
   return (
-    <div className="font-mono text-[11px] leading-snug">
+    <div className="text-label font-mono leading-snug">
       {hunk.lines.map((line, i) => (
         <div key={i} className={cn("flex", bgFor(line.kind))}>
           <span className={GUTTER}>{line.oldNo ?? ""}</span>
@@ -160,7 +158,7 @@ function Unified({ hunk }: { hunk: Hunk }) {
 function SideBySide({ hunk }: { hunk: Hunk }) {
   const rows = useMemo(() => toSideBySide(hunk), [hunk]);
   return (
-    <div className="font-mono text-[11px] leading-snug">
+    <div className="text-label font-mono leading-snug">
       {rows.map((row, i) => {
         // Word highlight only for a real replacement pair; highlighting a lone
         // insertion against nothing would mark the whole line for no information.

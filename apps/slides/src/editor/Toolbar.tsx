@@ -34,7 +34,7 @@ import {
   Underline,
   Undo2,
 } from "lucide-react";
-import { Button, Tooltip } from "@imbatranim/ui";
+import { Button, Toggle, Tooltip } from "@imbatranim/ui";
 
 /** Every control a toolbar button can open a menu from: its bottom-left corner. */
 export type MenuAnchor = { x: number; y: number };
@@ -124,22 +124,41 @@ function Icon({
   menu?: boolean;
   keep?: boolean;
 }) {
+  const className = menu ? "h-6 gap-0.5 px-1" : "h-6 w-6 justify-center p-0";
+  const body = (
+    <>
+      {children}
+      {menu && <span className="text-nano leading-none">▾</span>}
+    </>
+  );
   return (
     <Tooltip content={shortcut ? `${label} (${shortcut})` : label}>
-      <Button
-        variant={pressed ? "primary" : "ghost"}
-        size="sm"
-        className={menu ? "h-6 gap-0.5 px-1" : "h-6 w-6 justify-center p-0"}
-        aria-label={label}
-        aria-pressed={pressed}
-        aria-haspopup={menu ? "menu" : undefined}
-        disabled={disabled}
-        onMouseDown={keep ? keepFocus : undefined}
-        onClick={onClick}
-      >
-        {children}
-        {menu && <span className="text-[8px] leading-none">▾</span>}
-      </Button>
+      {pressed === undefined ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          className={className}
+          aria-label={label}
+          aria-haspopup={menu ? "menu" : undefined}
+          disabled={disabled}
+          onMouseDown={keep ? keepFocus : undefined}
+          onClick={onClick}
+        >
+          {body}
+        </Button>
+      ) : (
+        <Toggle
+          pressed={pressed}
+          aria-label={label}
+          aria-haspopup={menu ? "menu" : undefined}
+          disabled={disabled}
+          onMouseDown={keep ? keepFocus : undefined}
+          onClick={onClick}
+          render={<Button variant={pressed ? "primary" : "ghost"} size="sm" className={className} />}
+        >
+          {body}
+        </Toggle>
+      )}
     </Tooltip>
   );
 }
@@ -200,7 +219,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         <Icon label="Previous slide" shortcut="Page Up" onClick={a.prev} disabled={!canNavigate || s.current === 0}>
           <ChevronLeft size={13} />
         </Icon>
-        <span className="font-ui text-on-surface-variant min-w-[52px] text-center text-[11px] tabular-nums">
+        <span className="font-ui text-on-surface-variant text-label min-w-[52px] text-center tabular-nums">
           {s.slideCount === 0 ? "—" : `${s.current + 1} / ${s.slideCount}`}
         </span>
         <Icon
@@ -218,7 +237,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         <button
           type="button"
           onClick={a.toggleFit}
-          className="font-ui text-on-surface-variant hover:text-on-surface min-w-[62px] text-center text-[11px] tabular-nums"
+          className="font-ui text-on-surface-variant hover:text-on-surface text-label min-w-[62px] text-center tabular-nums"
           title="Switch between fit width and fit page"
         >
           {s.zoomLabel}
@@ -240,7 +259,7 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
         <Tooltip content="Drawn by this app — layout may differ from PowerPoint">
           <Info size={12} className="text-on-surface-variant shrink-0" />
         </Tooltip>
-        <span className="font-ui text-on-surface-variant max-w-[160px] min-w-0 truncate text-[11px]">
+        <span className="font-ui text-on-surface-variant text-label max-w-[160px] min-w-0 truncate">
           {s.name}
           {s.dirty ? " •" : ""}
         </span>
@@ -321,14 +340,14 @@ export function Toolbar({ state, actions }: { state: ToolbarState; actions: Tool
             onClick={(e) => a.sizeMenu(anchorOf(e))}
           >
             {s.sizeLabel}
-            <span className="text-[8px] leading-none">▾</span>
+            <span className="text-nano leading-none">▾</span>
           </Button>
         </Tooltip>
         <Icon label="Increase font size" shortcut="Ctrl+]" keep disabled={!s.hasText} onClick={() => a.sizeStep(1)}>
-          <span className="font-ui text-[11px] leading-none font-semibold">A+</span>
+          <span className="font-ui text-label leading-none font-semibold">A+</span>
         </Icon>
         <Icon label="Decrease font size" shortcut="Ctrl+[" keep disabled={!s.hasText} onClick={() => a.sizeStep(-1)}>
-          <span className="font-ui text-[10px] leading-none font-semibold">A-</span>
+          <span className="font-ui text-tiny leading-none font-semibold">A-</span>
         </Icon>
         <Icon label="Font colour" menu keep disabled={!s.hasText} onClick={(e) => a.colorMenu(anchorOf(e))}>
           <Baseline size={12} />

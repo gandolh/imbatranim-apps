@@ -1,4 +1,4 @@
-import { Button, Input, Select, cn } from "@imbatranim/ui";
+import { Button, Checkbox, Input, Select, Toggle, cn } from "@imbatranim/ui";
 import { AlertTriangle, Download, KeyRound, Plus, Save, Send, Settings2, Trash2, Upload } from "lucide-react";
 import type { BodyMode, Environment, FormField, HeaderRow, HttpMethod } from "../types";
 import { METHOD_OPTIONS, emptyHeaderRow, newId } from "../lib/ui";
@@ -54,7 +54,7 @@ function FileChooser({ path, label, onChoose }: { path: string; label: string; o
     <div className="flex min-w-0 flex-1 items-center gap-1.5">
       <span
         className={cn(
-          "min-w-0 flex-1 truncate font-mono text-[12px]",
+          "text-control min-w-0 flex-1 truncate font-mono",
           path ? "text-on-surface" : "text-on-surface-variant",
         )}
         title={path || undefined}
@@ -187,7 +187,7 @@ export function RequestBuilder({
       </form>
 
       {showPreview && (
-        <div className="text-on-surface-variant truncate font-mono text-[11px]" title={previewUrl}>
+        <div className="text-on-surface-variant text-label truncate font-mono" title={previewUrl}>
           → {previewUrl}
         </div>
       )}
@@ -195,7 +195,7 @@ export function RequestBuilder({
       {issueText && (
         <div
           className={cn(
-            "flex items-start gap-1.5 px-2 py-1 text-[11px]",
+            "text-label flex items-start gap-1.5 px-2 py-1",
             sendBlocked
               ? "bg-error-container text-on-error-container"
               : "bg-surface-container-high text-on-surface-variant",
@@ -229,12 +229,11 @@ export function RequestBuilder({
         <div className="flex flex-col gap-1">
           {headers.map((row) => (
             <div key={row.id} className="flex items-center gap-1.5">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={row.enabled}
-                onChange={(e) => updateRow(row.id, { enabled: e.target.checked })}
-                className="accent-primary focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2"
+                onCheckedChange={(checked) => updateRow(row.id, { enabled: checked })}
                 aria-label={`Enable ${row.name || "header"}`}
+                labelClassName="shrink-0"
               />
               <Input
                 className="flex-1"
@@ -282,16 +281,14 @@ export function RequestBuilder({
                 onValueChange={(v) => onBodyModeChange(v as BodyMode)}
               />
             </div>
-            {bodyDisabled && (
-              <span className="text-on-surface-variant text-[11px]">{method} requests have no body</span>
-            )}
+            {bodyDisabled && <span className="text-on-surface-variant text-label">{method} requests have no body</span>}
           </div>
 
           {!bodyDisabled && bodyMode === "text" && (
             <textarea
               className={cn(
                 "rounded-control border-outline-variant bg-surface-container-lowest min-h-[7rem] w-full resize-y border px-2.5 py-1.5",
-                "text-on-surface font-mono text-[12px] outline-none",
+                "text-on-surface text-control font-mono outline-none",
                 "placeholder:text-on-surface-variant focus:border-primary",
               )}
               placeholder={'{ "key": "{{value}}" }'}
@@ -304,7 +301,7 @@ export function RequestBuilder({
 
           {!bodyDisabled && bodyMode === "file" && (
             <div className="flex flex-col gap-1">
-              <span className="text-on-surface-variant text-[12px]">File to send</span>
+              <span className="text-on-surface-variant text-control">File to send</span>
               <FileChooser
                 path={filePath}
                 label="Choose the file to send"
@@ -321,14 +318,13 @@ export function RequestBuilder({
             <div className="flex flex-col gap-1">
               {form.map((field) => (
                 <div key={field.id} className="flex items-center gap-1.5">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={field.enabled}
-                    onChange={(e) =>
-                      onFormChange(form.map((f) => (f.id === field.id ? { ...f, enabled: e.target.checked } : f)))
+                    onCheckedChange={(checked) =>
+                      onFormChange(form.map((f) => (f.id === field.id ? { ...f, enabled: checked } : f)))
                     }
-                    className="accent-primary focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2"
                     aria-label={`Enable ${field.name || "field"}`}
+                    labelClassName="shrink-0"
                   />
                   <Input
                     className="w-40"
@@ -361,26 +357,20 @@ export function RequestBuilder({
                       }}
                     />
                   )}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    aria-pressed={field.filePath !== undefined}
+                  <Toggle
+                    pressed={field.filePath !== undefined}
                     title={field.filePath === undefined ? "Send a file instead" : "Send a text value instead"}
-                    onClick={() =>
+                    onPressedChange={(asFile) =>
                       onFormChange(
                         form.map((f) =>
-                          f.id === field.id
-                            ? f.filePath === undefined
-                              ? { ...f, filePath: "" }
-                              : { ...f, filePath: undefined }
-                            : f,
+                          f.id === field.id ? (asFile ? { ...f, filePath: "" } : { ...f, filePath: undefined }) : f,
                         ),
                       )
                     }
+                    render={<Button type="button" variant="ghost" size="sm" />}
                   >
                     {field.filePath === undefined ? "Text" : "File"}
-                  </Button>
+                  </Toggle>
                   <Button
                     type="button"
                     variant="ghost"
@@ -416,7 +406,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
       type="button"
       onClick={onClick}
       className={cn(
-        "font-ui cursor-pointer px-3 py-1.5 text-[12px] outline-none",
+        "font-ui text-control cursor-pointer px-3 py-1.5 outline-none",
         "-mb-px border-b-2",
         "focus-visible:ring-primary focus-visible:ring-2",
         active ? "border-primary text-primary" : "text-on-surface-variant hover:text-on-surface border-transparent",

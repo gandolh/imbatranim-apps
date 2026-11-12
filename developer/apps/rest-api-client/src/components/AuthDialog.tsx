@@ -51,7 +51,7 @@ export function AuthDialog({
   };
 
   return (
-    <Dialog open onOpenChange={(next) => !next && onClose()} title="Authorization">
+    <Dialog open onOpenChange={(next) => !next && onClose()} title="Authorization" disablePointerDismissal>
       <div className="flex w-[26rem] max-w-full flex-col gap-2">
         <Select
           label="Type"
@@ -83,7 +83,7 @@ export function AuthDialog({
                 onChange={(e) => setVarName(e.target.value)}
               />
             )}
-            <p className="text-on-surface-variant text-[11px]">
+            <p className="text-on-surface-variant text-label">
               Adds <code className="font-mono">Authorization: Bearer {`{{${varName || "token"}}}`}</code>. The token
               itself stays in the environment, so the saved request is safe to share.
             </p>
@@ -92,14 +92,14 @@ export function AuthDialog({
           <>
             <Input label="Username" value={user} onChange={(e) => setUser(e.target.value)} />
             <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <p className="text-on-surface-variant text-[11px]">
+            <p className="text-on-surface-variant text-label">
               Basic has to be base64-encoded, so the encoded value is written into the header directly — it cannot
               reference a variable.
             </p>
           </>
         )}
 
-        {error && <p className="text-error text-[12px]">{error}</p>}
+        {error && <p className="text-error text-control">{error}</p>}
 
         <div className="mt-1 flex justify-end gap-2">
           <Button variant="default" size="sm" onClick={onClose}>

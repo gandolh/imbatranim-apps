@@ -440,7 +440,7 @@ export function RestApiClient(_props: { windowId: string }) {
       {load.status === "failed" && (
         <div
           role="alert"
-          className="bg-error-container text-on-error-container flex shrink-0 items-center gap-2 px-3 py-1.5 text-[12px]"
+          className="bg-error-container text-on-error-container text-control flex shrink-0 items-center gap-2 px-3 py-1.5"
         >
           <AlertTriangle size={13} className="shrink-0" />
           <span className="min-w-0 flex-1">Saved requests are unavailable: {load.error}</span>
@@ -465,7 +465,7 @@ export function RestApiClient(_props: { windowId: string }) {
       {earlier && (
         <div
           role="status"
-          className="bg-surface-container-high text-on-surface flex shrink-0 items-center gap-2 px-3 py-1.5 text-[12px]"
+          className="bg-surface-container-high text-on-surface text-control flex shrink-0 items-center gap-2 px-3 py-1.5"
         >
           <span className="min-w-0 flex-1">
             Saved requests from before may be in ~/{earlier.path}. Pick that file to bring them in.
@@ -481,7 +481,7 @@ export function RestApiClient(_props: { windowId: string }) {
       {load.status === "conflict" && (
         <div
           role="alert"
-          className="bg-error-container text-on-error-container flex shrink-0 items-center gap-2 px-3 py-1.5 text-[12px]"
+          className="bg-error-container text-on-error-container text-control flex shrink-0 items-center gap-2 px-3 py-1.5"
         >
           <AlertTriangle size={13} className="shrink-0" />
           <span className="min-w-0 flex-1">

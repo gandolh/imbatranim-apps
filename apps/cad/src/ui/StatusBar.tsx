@@ -1,6 +1,6 @@
 import { useState, useSyncExternalStore } from "react";
 import { ChevronUp } from "lucide-react";
-import { ContextMenu, Select, cn } from "@imbatranim/ui";
+import { ContextMenu, Select, Toggle, cn } from "@imbatranim/ui";
 import type { Editor, EditorState } from "../engine/editor";
 import { SNAP_LABEL, SNAP_MODES } from "../engine/input/snap";
 import type { UnitSystem } from "../engine/model/types";
@@ -11,23 +11,34 @@ const UNIT_OPTIONS: { value: UnitSystem; label: string }[] = [
   { value: "metric", label: "Metric" },
 ];
 
-function Toggle({ label, title, on, onClick }: { label: string; title: string; on: boolean; onClick: () => void }) {
+function StatusToggle({
+  label,
+  title,
+  on,
+  onClick,
+}: {
+  label: string;
+  title: string;
+  on: boolean;
+  onClick: () => void;
+}) {
   return (
-    <button
-      type="button"
-      aria-pressed={on}
+    <Toggle
+      pressed={on}
+      onPressedChange={() => onClick()}
       title={title}
       onMouseDown={(e) => e.preventDefault()}
-      onClick={onClick}
-      className={cn(
-        "border px-1.5 text-[11px] font-semibold tracking-wider outline-none focus-visible:ring-2 focus-visible:ring-inset",
-        on
-          ? "bg-primary border-primary text-on-primary focus-visible:ring-on-primary"
-          : "border-outline-variant text-on-surface-variant hover:bg-surface-container-high focus-visible:ring-primary",
-      )}
+      className={({ pressed }) =>
+        cn(
+          "text-label border px-1.5 font-semibold tracking-wider focus-visible:ring-2 focus-visible:ring-inset",
+          pressed
+            ? "bg-primary border-primary text-on-primary focus-visible:ring-on-primary"
+            : "border-outline-variant text-on-surface-variant hover:bg-surface-container-high focus-visible:ring-primary",
+        )
+      }
     >
       {label}
-    </button>
+    </Toggle>
   );
 }
 
@@ -39,18 +50,23 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const t = state.toggles;
   return (
-    <div className="border-outline-variant bg-surface-container-low font-ui text-on-surface-variant flex shrink-0 items-center gap-1 border-t px-2 py-0.5 text-[11px]">
+    <div className="border-outline-variant bg-surface-container-low font-ui text-on-surface-variant text-label flex shrink-0 items-center gap-1 border-t px-2 py-0.5">
       <span className="text-on-surface w-[220px] shrink-0 truncate tabular-nums" data-testid="cad-coordinates">
         {coords}
       </span>
-      <Toggle label="ORTHO" title="Ortho (F8)" on={t.ortho} onClick={() => editor.setToggles({ ortho: !t.ortho })} />
-      <Toggle
+      <StatusToggle
+        label="ORTHO"
+        title="Ortho (F8)"
+        on={t.ortho}
+        onClick={() => editor.setToggles({ ortho: !t.ortho })}
+      />
+      <StatusToggle
         label="POLAR"
         title={`Polar tracking every ${t.polarIncrement}° (F10)`}
         on={t.polar}
         onClick={() => editor.setToggles({ polar: !t.polar })}
       />
-      <Toggle
+      <StatusToggle
         label="OSNAP"
         title="Object snaps (F3)"
         on={t.osnap}
@@ -103,7 +119,7 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
           onValueChange={(v) => {
             if (typeof v === "string") editor.doc.setUnits({ ...state.units, system: v as UnitSystem });
           }}
-          className="py-0 text-[11px]"
+          className="text-label py-0"
           aria-label="Units"
         />
       </div>

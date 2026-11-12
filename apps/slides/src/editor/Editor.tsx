@@ -909,7 +909,7 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
             empty={
               <div className="text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 py-12">
                 <Presentation size={40} strokeWidth={1} />
-                <span className="font-ui text-[12px]">This presentation has no slides</span>
+                <span className="font-ui text-control">This presentation has no slides</span>
                 <Button size="sm" variant="primary" className="flex items-center gap-1" onClick={() => newSlide()}>
                   <Plus size={12} />
                   New slide

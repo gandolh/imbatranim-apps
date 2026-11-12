@@ -105,7 +105,7 @@ export function Minesweeper() {
   return (
     <div className="bg-surface flex h-full flex-col">
       <div className="border-outline-variant bg-surface-container-low flex flex-none flex-wrap items-center gap-2 border-b px-2 py-1">
-        <span className="text-on-surface w-10 font-mono text-[13px] tabular-nums">
+        <span className="text-on-surface text-body w-10 font-mono tabular-nums">
           {String(Math.max(-99, minesRemaining(board))).padStart(3, "0")}
         </span>
         <Button
@@ -113,12 +113,12 @@ export function Minesweeper() {
           variant="default"
           aria-label="New game"
           title="New game (F2)"
-          className="h-6 w-8 p-0 text-[13px]"
+          className="text-body h-6 w-8 p-0"
           onClick={() => newGame()}
         >
           {face}
         </Button>
-        <span className="text-on-surface w-10 font-mono text-[13px] tabular-nums">
+        <span className="text-on-surface text-body w-10 font-mono tabular-nums">
           {String(seconds).padStart(3, "0")}
         </span>
         <div className="flex-1" />
@@ -170,7 +170,7 @@ export function Minesweeper() {
                     e.preventDefault();
                   }}
                   className={cn(
-                    "flex h-6 w-6 items-center justify-center font-mono text-[12px] font-bold select-none",
+                    "text-control flex h-6 w-6 items-center justify-center font-mono font-bold select-none",
                     "focus-visible:ring-primary outline-none focus-visible:ring-2 focus-visible:ring-inset",
                     cell.revealed
                       ? lostHere
@@ -203,7 +203,7 @@ export function Minesweeper() {
         </div>
       </ScrollArea>
 
-      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant flex h-6 flex-none items-center gap-2 border-t px-2 text-[10px]">
+      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant text-tiny flex h-6 flex-none items-center gap-2 border-t px-2">
         {board.state === "won" && <span className="text-primary font-semibold">Cleared!</span>}
         {board.state === "lost" && <span>Boom. F2 for a new game.</span>}
         {board.state === "playing" && <span>Right-click or F to flag · click a number to chord</span>}

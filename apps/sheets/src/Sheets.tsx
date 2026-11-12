@@ -252,8 +252,8 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
     return (
       <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
         <FileWarning size={40} strokeWidth={1} className="text-error" />
-        <span className="font-ui text-on-surface text-[12px] font-semibold">{name}</span>
-        <span className="font-ui max-w-[340px] text-[12px]">{refused}</span>
+        <span className="font-ui text-on-surface text-control font-semibold">{name}</span>
+        <span className="font-ui text-control max-w-[340px]">{refused}</span>
         <Button size="sm" variant="primary" onClick={pickFile}>
           Open a spreadsheet instead
         </Button>
@@ -265,7 +265,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
     return (
       <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 text-center">
         <SheetIcon size={40} strokeWidth={1} />
-        <span className="font-ui text-[12px]">Nothing open</span>
+        <span className="font-ui text-control">Nothing open</span>
         <Button size="sm" variant="primary" onClick={pickFile}>
           Open a spreadsheet
         </Button>
@@ -291,15 +291,15 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
         </Tooltip>
 
         {waitingForFormulas && (
-          <span className="font-ui text-on-surface-variant ml-1 text-[11px]" role="status">
+          <span className="font-ui text-on-surface-variant text-label ml-1" role="status">
             Saving once the formulas finish calculating…
           </span>
         )}
 
         <div className="flex-1" />
 
-        {error && <span className="text-error font-ui mr-2 max-w-[280px] truncate text-[11px]">{error}</span>}
-        <span className="font-ui text-on-surface-variant max-w-[200px] truncate text-[11px]">
+        {error && <span className="text-error font-ui text-label mr-2 max-w-[280px] truncate">{error}</span>}
+        <span className="font-ui text-on-surface-variant text-label max-w-[200px] truncate">
           {name}
           {dirty ? " •" : ""}
         </span>
@@ -309,7 +309,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
           it matters is the moment the user reaches for Save, which can be an
           hour after a toast has gone. */}
       {lossyNote && (
-        <div className="border-outline-variant bg-surface-container text-on-surface font-ui flex items-start gap-2 border-b px-2 py-1.5 text-[11px]">
+        <div className="border-outline-variant bg-surface-container text-on-surface font-ui text-label flex items-start gap-2 border-b px-2 py-1.5">
           <AlertTriangle size={13} className="text-error mt-[1px] shrink-0" />
           <span className="min-w-0 flex-1">{lossyNote}</span>
           <button
@@ -327,7 +327,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
       <div className="relative min-h-0 flex-1">
         <div ref={containerRef} className="absolute inset-0" />
         {loading && (
-          <div className="bg-surface-container-lowest text-on-surface-variant font-ui absolute inset-0 flex items-center justify-center gap-2 text-[12px]">
+          <div className="bg-surface-container-lowest text-on-surface-variant font-ui text-control absolute inset-0 flex items-center justify-center gap-2">
             <Loader2 size={16} className="animate-spin" />
             Loading spreadsheet…
           </div>

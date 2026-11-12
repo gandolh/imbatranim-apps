@@ -73,7 +73,7 @@ export function CadApp() {
 
   return (
     <div
-      className="bg-surface-container-lowest text-on-surface font-ui flex h-full min-h-0 flex-col text-[13px]"
+      className="bg-surface-container-lowest text-on-surface font-ui text-body flex h-full min-h-0 flex-col"
       onKeyDown={(e) => {
         // Keys pressed with focus elsewhere in the window (a toolbar button) still reach the command line.
         const target = e.target as HTMLElement;
@@ -109,7 +109,7 @@ export function CadApp() {
       />
       {file.error && (
         <div
-          className="border-outline-variant bg-error-container text-on-error-container shrink-0 border-b px-2 py-1 text-[12px]"
+          className="border-outline-variant bg-error-container text-on-error-container text-control shrink-0 border-b px-2 py-1"
           role="alert"
         >
           {file.error}
@@ -118,7 +118,7 @@ export function CadApp() {
       <div className="relative flex min-h-0 flex-1">
         <Viewport editor={editor} onFocusCommandLine={focusCommandLine} />
         {file.loading && (
-          <div className="bg-surface-container-lowest text-on-surface-variant absolute inset-0 flex items-center justify-center gap-2 text-[12px]">
+          <div className="bg-surface-container-lowest text-on-surface-variant text-control absolute inset-0 flex items-center justify-center gap-2">
             <Loader2 size={16} className="animate-spin" />
             {file.startingServer ? "Starting the DWG converter…" : file.converting ? "Converting…" : "Opening drawing…"}
           </div>

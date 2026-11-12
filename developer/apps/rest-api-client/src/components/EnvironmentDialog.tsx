@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, Plus, Trash2 } from "lucide-react";
-import { Button, Dialog, Input, ScrollArea, Select, cn } from "@imbatranim/ui";
+import { Button, Checkbox, Dialog, Input, ScrollArea, Select, cn } from "@imbatranim/ui";
 import type { Environment } from "../types";
 import { MAX_ENVIRONMENTS, MAX_VARS_PER_ENV, looksSecret, maskValue, newVar } from "../lib/environments";
 import { newId } from "../lib/ui";
@@ -62,9 +62,9 @@ export function EnvironmentDialog({
     });
 
   return (
-    <Dialog open onOpenChange={(next) => !next && onClose()} title="Environments">
+    <Dialog open onOpenChange={(next) => !next && onClose()} title="Environments" disablePointerDismissal>
       <div className="flex w-[34rem] max-w-full flex-col gap-2">
-        <p className="text-on-surface-variant text-[11px]">
+        <p className="text-on-surface-variant text-label">
           Values are stored <strong>unencrypted</strong> in{" "}
           <code className="font-mono">~/.config/rest-client/collections.json</code>. Marking one secret masks it here
           and leaves its value out of an export — it does not encrypt it.
@@ -103,19 +103,19 @@ export function EnvironmentDialog({
         </div>
 
         {selected === null ? (
-          <div className="text-on-surface-variant py-8 text-center text-[12px]">
+          <div className="text-on-surface-variant text-control py-8 text-center">
             No environments yet. Create one to use <code className="font-mono">{"{{variables}}"}</code> in a request.
           </div>
         ) : (
           <>
             <Input label="Name" value={selected.name} onChange={(e) => update({ ...selected, name: e.target.value })} />
 
-            <div className="font-ui text-on-surface-variant mt-1 text-[11px] font-semibold tracking-wider uppercase">
+            <div className="font-ui text-on-surface-variant text-label mt-1 font-semibold tracking-wider uppercase">
               Variables
             </div>
             <ScrollArea className="rounded-control border-outline-variant max-h-64 min-h-0 border">
               {selected.vars.length === 0 ? (
-                <div className="text-on-surface-variant px-2 py-3 text-[12px]">No variables yet</div>
+                <div className="text-on-surface-variant text-control px-2 py-3">No variables yet</div>
               ) : (
                 selected.vars.map((entry) => {
                   const show = revealed.has(entry.id) || !entry.secret;
@@ -125,7 +125,7 @@ export function EnvironmentDialog({
                       className="border-outline-variant flex items-center gap-1 border-b px-1 py-1 last:border-b-0"
                     >
                       <input
-                        className="rounded-control border-outline-variant bg-surface-container-lowest text-on-surface focus-visible:ring-primary w-40 shrink-0 border px-1.5 py-1 font-mono text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                        className="rounded-control border-outline-variant bg-surface-container-lowest text-on-surface focus-visible:ring-primary text-control w-40 shrink-0 border px-1.5 py-1 font-mono outline-none focus-visible:ring-2 focus-visible:ring-inset"
                         placeholder="name"
                         value={entry.name}
                         spellCheck={false}
@@ -148,7 +148,7 @@ export function EnvironmentDialog({
                       />
                       <input
                         className={cn(
-                          "focus-visible:ring-primary rounded-control border-outline-variant bg-surface-container-lowest text-on-surface min-w-0 flex-1 border px-1.5 py-1 font-mono text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
+                          "focus-visible:ring-primary rounded-control border-outline-variant bg-surface-container-lowest text-on-surface text-control min-w-0 flex-1 border px-1.5 py-1 font-mono outline-none focus-visible:ring-2 focus-visible:ring-inset",
                         )}
                         placeholder="value"
                         value={show ? entry.value : maskValue(entry.value)}
@@ -173,22 +173,17 @@ export function EnvironmentDialog({
                           {show ? <EyeOff size={12} /> : <Eye size={12} />}
                         </Button>
                       )}
-                      <label className="font-ui text-on-surface-variant flex shrink-0 items-center gap-1 px-1 text-[11px]">
-                        <input
-                          type="checkbox"
-                          className="accent-primary focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2"
-                          checked={entry.secret}
-                          onChange={(e) =>
-                            update({
-                              ...selected,
-                              vars: selected.vars.map((v) =>
-                                v.id === entry.id ? { ...v, secret: e.target.checked } : v,
-                              ),
-                            })
-                          }
-                        />
-                        secret
-                      </label>
+                      <Checkbox
+                        label="secret"
+                        labelClassName="font-ui text-on-surface-variant shrink-0 gap-1 px-1 text-label"
+                        checked={entry.secret}
+                        onCheckedChange={(checked) =>
+                          update({
+                            ...selected,
+                            vars: selected.vars.map((v) => (v.id === entry.id ? { ...v, secret: checked } : v)),
+                          })
+                        }
+                      />
                       <Button
                         variant="ghost"
                         size="sm"

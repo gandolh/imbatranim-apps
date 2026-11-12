@@ -58,7 +58,7 @@ export function NotesPane({ slideNumber, text, onCommit, flushRef }: Props) {
     <div className="border-outline-variant bg-surface-container-low flex h-[28%] min-h-[80px] shrink-0 flex-col border-t px-3 py-2">
       <label
         htmlFor={`notes-${slideNumber}`}
-        className="font-ui text-on-surface-variant mb-1 text-[10px] font-semibold tracking-wider uppercase"
+        className="font-ui text-on-surface-variant text-tiny mb-1 font-semibold tracking-wider uppercase"
       >
         Notes — slide {slideNumber}
       </label>
@@ -73,7 +73,7 @@ export function NotesPane({ slideNumber, text, onCommit, flushRef }: Props) {
           timer.current = setTimeout(flush, 800);
         }}
         onBlur={flush}
-        className="font-content text-on-surface placeholder:text-on-surface-variant min-h-0 flex-1 resize-none bg-transparent text-[12px] outline-none"
+        className="font-content text-on-surface placeholder:text-on-surface-variant text-control min-h-0 flex-1 resize-none bg-transparent outline-none"
       />
     </div>
   );

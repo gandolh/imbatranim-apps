@@ -34,7 +34,7 @@ export function RepoBar({
 }) {
   return (
     <div className="border-outline-variant bg-surface-container-low flex shrink-0 flex-wrap items-center gap-1.5 border-b px-2 py-1">
-      <span className="font-ui text-on-surface max-w-[30%] truncate text-[12px] font-semibold">{repoLabel}</span>
+      <span className="font-ui text-on-surface text-control max-w-[30%] truncate font-semibold">{repoLabel}</span>
       <Button variant="ghost" size="sm" onClick={onCloseRepo} aria-label="Close repository" title="Close repository">
         <X size={11} strokeWidth={2} />
       </Button>
@@ -43,10 +43,10 @@ export function RepoBar({
 
       <GitBranch size={12} strokeWidth={2} className="text-on-surface-variant shrink-0" />
       {branches === null ? (
-        <span className="font-ui text-on-surface-variant text-[11px]">…</span>
+        <span className="font-ui text-on-surface-variant text-label">…</span>
       ) : branches.detached ? (
         // A detached HEAD is a real state and must not be shown as a branch.
-        <span className="font-ui text-on-surface-variant text-[11px]" title="HEAD is detached">
+        <span className="font-ui text-on-surface-variant text-label" title="HEAD is detached">
           detached HEAD
         </span>
       ) : (
@@ -73,7 +73,7 @@ export function RepoBar({
         <Plus size={12} strokeWidth={2} />
       </Button>
       {branches?.dirty && (
-        <span className="font-ui text-on-surface-variant text-[11px]" title="There are uncommitted changes">
+        <span className="font-ui text-on-surface-variant text-label" title="There are uncommitted changes">
           uncommitted changes
         </span>
       )}
@@ -123,8 +123,8 @@ export function RecentRepos({
 }) {
   if (repos.length === 0) return null;
   return (
-    <div className="w-full max-w-md">
-      <div className="font-ui text-on-surface-variant mb-1 text-[11px] font-semibold tracking-wider uppercase">
+    <div className="w-full max-w-[364px]">
+      <div className="font-ui text-on-surface-variant text-label mb-1 font-semibold tracking-wider uppercase">
         Recent
       </div>
       <div className="rounded-control border-outline-variant border">
@@ -138,8 +138,8 @@ export function RecentRepos({
               onClick={() => onOpen(repo)}
               className="focus-visible:ring-primary flex min-w-0 flex-1 items-center gap-2 px-2 py-1.5 text-left focus-visible:ring-2 focus-visible:outline-none"
             >
-              <span className="font-content text-on-surface truncate text-[12px]">{repo.path || "(root)"}</span>
-              <span className="font-ui text-on-surface-variant shrink-0 text-[11px]">{repo.root}</span>
+              <span className="font-content text-on-surface text-control truncate">{repo.path || "(root)"}</span>
+              <span className="font-ui text-on-surface-variant text-label shrink-0">{repo.root}</span>
             </button>
             <Button
               variant="ghost"

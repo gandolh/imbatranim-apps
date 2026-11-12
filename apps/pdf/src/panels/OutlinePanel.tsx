@@ -43,7 +43,7 @@ function OutlineItem({ node, depth, currentPage, onGo }: NodeProps) {
         <button
           type="button"
           className={
-            "flex min-w-0 flex-1 items-center justify-between gap-2 py-1 pr-2 text-left text-[12px] " +
+            "text-control flex min-w-0 flex-1 items-center justify-between gap-2 py-1 pr-2 text-left " +
             (page1 == null ? "cursor-default" : "cursor-pointer") +
             (active ? " text-on-primary-container" : " text-on-surface")
           }
@@ -52,7 +52,7 @@ function OutlineItem({ node, depth, currentPage, onGo }: NodeProps) {
           title={node.title}
         >
           <span className="truncate">{node.title || "Untitled"}</span>
-          {page1 != null && <span className="text-on-surface-variant shrink-0 text-[10px] tabular-nums">{page1}</span>}
+          {page1 != null && <span className="text-on-surface-variant text-tiny shrink-0 tabular-nums">{page1}</span>}
         </button>
       </div>
       {hasChildren && open && (
@@ -69,10 +69,10 @@ function OutlineItem({ node, depth, currentPage, onGo }: NodeProps) {
 export function OutlinePanel(): JSX.Element {
   const { doc, outline, currentPage, goToPage } = useReader();
 
-  if (!doc) return <div className="text-on-surface-variant p-3 text-center text-[11px]">Loading…</div>;
+  if (!doc) return <div className="text-on-surface-variant text-label p-3 text-center">Loading…</div>;
   if (!outline.length) {
     return (
-      <div className="text-on-surface-variant p-3 text-center text-[11px]">
+      <div className="text-on-surface-variant text-label p-3 text-center">
         This document has no outline (bookmarks).
       </div>
     );

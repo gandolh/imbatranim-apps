@@ -26,8 +26,8 @@ export function Sidebar({ data, onOpenSaved, onDeleteSaved, onOpenHistory, onCle
                   onClick={() => onOpenSaved(req)}
                   className="hover:bg-surface-container focus-visible:ring-primary flex min-w-0 flex-1 items-center gap-1.5 px-2 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset"
                 >
-                  <span className="text-secondary shrink-0 font-mono text-[10px] font-semibold">{req.method}</span>
-                  <span className="text-on-surface truncate text-[12px]">{req.name || req.url}</span>
+                  <span className="text-secondary text-tiny shrink-0 font-mono font-semibold">{req.method}</span>
+                  <span className="text-on-surface text-control truncate">{req.name || req.url}</span>
                 </button>
                 <button
                   type="button"
@@ -50,7 +50,7 @@ export function Sidebar({ data, onOpenSaved, onDeleteSaved, onOpenHistory, onCle
               <button
                 type="button"
                 onClick={onClearHistory}
-                className="text-on-surface-variant hover:text-error font-ui focus-visible:ring-primary text-[10px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                className="text-on-surface-variant hover:text-error font-ui focus-visible:ring-primary text-tiny outline-none focus-visible:ring-2 focus-visible:ring-inset"
                 title="Clear history"
               >
                 Clear
@@ -68,13 +68,13 @@ export function Sidebar({ data, onOpenSaved, onDeleteSaved, onOpenHistory, onCle
                 onClick={() => onOpenHistory(entry)}
                 className="hover:bg-surface-container focus-visible:ring-primary flex w-full items-center gap-1.5 px-2 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset"
               >
-                <span className={cn("shrink-0 font-mono text-[10px] font-semibold", statusToken(entry.status))}>
+                <span className={cn("text-tiny shrink-0 font-mono font-semibold", statusToken(entry.status))}>
                   {entry.status || "—"}
                 </span>
-                <span className="text-secondary shrink-0 font-mono text-[10px]">{entry.method}</span>
-                <span className="text-on-surface-variant min-w-0 flex-1 truncate text-[11px]">{entry.url}</span>
+                <span className="text-secondary text-tiny shrink-0 font-mono">{entry.method}</span>
+                <span className="text-on-surface-variant text-label min-w-0 flex-1 truncate">{entry.url}</span>
                 {entry.elapsedMs !== undefined && (
-                  <span className="text-on-surface-variant shrink-0 font-mono text-[10px]">{entry.elapsedMs}ms</span>
+                  <span className="text-on-surface-variant text-tiny shrink-0 font-mono">{entry.elapsedMs}ms</span>
                 )}
               </button>
             ))
@@ -98,7 +98,7 @@ function Section({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="text-on-surface-variant font-ui flex items-center gap-1.5 px-2 py-1.5 text-[11px] font-semibold tracking-wider uppercase">
+      <div className="text-on-surface-variant font-ui text-label flex items-center gap-1.5 px-2 py-1.5 font-semibold tracking-wider uppercase">
         {icon === "folder" ? <Folder size={12} /> : <Clock size={12} />}
         {label}
         <span className="flex-1" />
@@ -110,5 +110,5 @@ function Section({
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <p className="text-on-surface-variant px-2 py-1 text-[11px] italic">{children}</p>;
+  return <p className="text-on-surface-variant text-label px-2 py-1 italic">{children}</p>;
 }

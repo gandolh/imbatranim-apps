@@ -35,7 +35,7 @@ export function App(_props: KitAppProps) {
     body = (
       <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 text-center">
         <Presentation size={40} strokeWidth={1} />
-        <span className="font-ui text-[12px]">Nothing open</span>
+        <span className="font-ui text-control">Nothing open</span>
         <div className="flex gap-2">
           <Button size="sm" variant="primary" onClick={() => void doc.open()}>
             Open a presentation
@@ -49,7 +49,7 @@ export function App(_props: KitAppProps) {
     );
   } else if (state.kind === "loading") {
     body = (
-      <div className="bg-surface-container-lowest text-on-surface-variant font-ui flex h-full items-center justify-center gap-2 text-[12px]">
+      <div className="bg-surface-container-lowest text-on-surface-variant font-ui text-control flex h-full items-center justify-center gap-2">
         <Loader2 size={16} className="animate-spin" />
         Opening {state.name}…
       </div>
@@ -58,8 +58,8 @@ export function App(_props: KitAppProps) {
     body = (
       <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
         <FileWarning size={40} strokeWidth={1} className="text-error" />
-        <span className="font-ui text-on-surface text-[12px] font-semibold">{state.name}</span>
-        <span className="font-ui max-w-[360px] text-[12px]">{state.message}</span>
+        <span className="font-ui text-on-surface text-control font-semibold">{state.name}</span>
+        <span className="font-ui text-control max-w-[360px]">{state.message}</span>
         <div className="flex gap-2">
           <Button size="sm" variant="primary" onClick={() => void doc.open()}>
             Open a .pptx instead
@@ -76,7 +76,7 @@ export function App(_props: KitAppProps) {
   }
 
   return (
-    <div className="bg-surface-container-lowest font-ui text-on-surface flex h-full min-h-0 flex-col text-[13px]">
+    <div className="bg-surface-container-lowest font-ui text-on-surface text-body flex h-full min-h-0 flex-col">
       {body}
       {doc.dialogs}
     </div>

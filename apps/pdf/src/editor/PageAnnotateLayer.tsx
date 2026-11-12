@@ -283,7 +283,7 @@ export function PageAnnotateLayer({ page, vp }: PageAnnotateLayerProps): JSX.Ele
           return (
             <button
               type="button"
-              className="bg-error text-on-error absolute z-[6] grid h-5 w-5 -translate-x-[40%] -translate-y-[60%] place-items-center border-none text-[14px] leading-none shadow-md hover:brightness-110"
+              className="bg-error text-on-error text-subhead absolute z-[6] grid h-5 w-5 -translate-x-[40%] -translate-y-[60%] place-items-center border-none leading-none shadow-md hover:brightness-110"
               style={{ left: anchor.x, top: anchor.y }}
               title="Delete annotation"
               onClick={() => void deleteAnnotation(selectedId)}
@@ -306,7 +306,7 @@ export function PageAnnotateLayer({ page, vp }: PageAnnotateLayerProps): JSX.Ele
         >
           <textarea
             ref={entryRef}
-            className="border-outline-variant bg-surface-container-lowest text-on-surface font-ui focus:border-primary min-h-[46px] resize-y border px-1.5 py-1 text-[12px] outline-none"
+            className="border-outline-variant bg-surface-container-lowest text-on-surface font-ui focus:border-primary text-control min-h-[46px] resize-y border px-1.5 py-1 outline-none"
             value={entryText}
             placeholder={entry.kind === "note" ? "Note…" : "Text…"}
             onChange={(ev) => setEntryText(ev.target.value)}
@@ -324,14 +324,14 @@ export function PageAnnotateLayer({ page, vp }: PageAnnotateLayerProps): JSX.Ele
           <div className="flex justify-end gap-1">
             <button
               type="button"
-              className="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-ui px-2 py-0.5 text-[11px]"
+              className="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-ui text-label px-2 py-0.5"
               onClick={() => setEntry(null)}
             >
               Cancel
             </button>
             <button
               type="button"
-              className="bg-primary text-on-primary font-ui px-2 py-0.5 text-[11px] font-semibold hover:brightness-110"
+              className="bg-primary text-on-primary font-ui text-label px-2 py-0.5 font-semibold hover:brightness-110"
               onClick={commitEntry}
             >
               Add

@@ -30,7 +30,7 @@ import {
   Undo2,
   Waypoints,
 } from "lucide-react";
-import { Button, Select } from "@imbatranim/ui";
+import { Button, Select, Toggle } from "@imbatranim/ui";
 import type { EditorState } from "../engine/editor";
 import type { ExportKind } from "../engine/export/job";
 
@@ -89,20 +89,36 @@ function ToolButton({
   disabled?: boolean;
   pressed?: boolean;
 }) {
+  const look = { size: "sm", className: "h-6 w-6 justify-center p-0" } as const;
+  const icon = <I size={13} strokeWidth={2} />;
+  const keepFocus = (e: React.MouseEvent) => e.preventDefault();
+  if (pressed === undefined) {
+    return (
+      <Button
+        variant="ghost"
+        {...look}
+        aria-label={label}
+        title={label}
+        disabled={disabled}
+        onMouseDown={keepFocus}
+        onClick={onClick}
+      >
+        {icon}
+      </Button>
+    );
+  }
   return (
-    <Button
-      variant={pressed ? "primary" : "ghost"}
-      size="sm"
-      className="h-6 w-6 justify-center p-0"
+    <Toggle
+      pressed={pressed}
+      onPressedChange={() => onClick()}
       aria-label={label}
       title={label}
-      aria-pressed={pressed}
       disabled={disabled}
-      onMouseDown={(e: React.MouseEvent) => e.preventDefault()}
-      onClick={onClick}
+      onMouseDown={keepFocus}
+      render={<Button variant={pressed ? "primary" : "ghost"} {...look} />}
     >
-      <I size={13} strokeWidth={2} />
-    </Button>
+      {icon}
+    </Toggle>
   );
 }
 
@@ -173,12 +189,12 @@ export function Toolbar(p: Props) {
           onValueChange={(v) => {
             if (typeof v === "string") p.onLayer(v);
           }}
-          className="py-0.5 text-[11px]"
+          className="text-label py-0.5"
           aria-label="Layer"
         />
       </div>
       <div className="flex-1" />
-      <span className="font-ui text-on-surface-variant max-w-[220px] truncate text-[11px]" data-testid="cad-file-name">
+      <span className="font-ui text-on-surface-variant text-label max-w-[220px] truncate" data-testid="cad-file-name">
         {p.name}
         {p.dirty ? " •" : ""}
       </span>

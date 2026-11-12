@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarClock, CheckCheck, FolderInput, ListPlus, Plus, Trash2, X } from "lucide-react";
-import { ScrollArea, cn, useConfirm, usePrompt, useSystem } from "@imbatranim/ui";
+import { ScrollArea, Select, Toggle, cn, useConfirm, usePrompt, useSystem } from "@imbatranim/ui";
 import { TodoRow } from "./TodoRow";
 import { hasHiddenSelection, pruneSelection } from "./bulkSelection";
 import { dueAtFromInput, isOverdue } from "./due";
@@ -265,7 +265,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
   }
 
   const tab =
-    "font-ui flex h-full items-center px-2.5 text-[12px] capitalize whitespace-nowrap outline-none focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset";
+    "font-ui flex h-full items-center px-2.5 text-control capitalize whitespace-nowrap outline-none focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset";
 
   return (
     <div className="bg-surface-container-lowest flex h-full flex-col">
@@ -275,7 +275,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
           type="button"
           onClick={() => setListId(null)}
           className={cn(
-            "focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
+            "focus-visible:ring-primary font-ui rounded-control text-label border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset",
             listId === null
               ? "border-primary bg-primary-container text-on-primary-container"
               : "border-outline-variant text-on-surface-variant hover:text-on-surface",
@@ -289,7 +289,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             type="button"
             onClick={() => setListId(l.id)}
             className={cn(
-              "focus-visible:ring-primary font-ui rounded-control max-w-28 truncate border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
+              "focus-visible:ring-primary font-ui rounded-control text-label max-w-28 truncate border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset",
               listId === l.id
                 ? "border-primary bg-primary-container text-on-primary-container"
                 : "border-outline-variant text-on-surface-variant hover:text-on-surface",
@@ -339,53 +339,49 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
         <div className="ml-auto flex items-center gap-1 pr-1.5">
           {overdueCount > 0 && (
             <span
-              className="rounded-small border-error text-error font-ui border px-1 text-[10px]"
+              className="rounded-small border-error text-error font-ui text-tiny border px-1"
               title={`${overdueCount} overdue`}
             >
               {overdueCount} late
             </span>
           )}
-          <select
+          <Select
             value={sort}
-            onChange={(e) => setSort(e.target.value as SortMode)}
+            onValueChange={(next) => setSort(next as SortMode)}
             aria-label="Sort order"
-            className="rounded-control border-outline-variant bg-surface-container-lowest font-ui text-on-surface focus-visible:ring-primary border px-1 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
-          >
-            {SORT_MODES.map((mode) => (
-              <option key={mode} value={mode}>
-                {SORT_LABELS[mode]}
-              </option>
-            ))}
-          </select>
+            options={SORT_MODES.map((mode) => ({ value: mode, label: SORT_LABELS[mode] }))}
+            className="bg-surface-container-lowest text-label w-auto gap-1 px-1 py-0.5"
+          />
         </div>
       </div>
 
       {/* Bulk actions */}
       <div className="border-outline-variant bg-surface-container-low flex min-h-7 shrink-0 flex-wrap items-center gap-1.5 border-b px-1.5 py-1">
-        <button
-          type="button"
-          onClick={() => {
+        <Toggle
+          pressed={selectMode}
+          onPressedChange={() => {
             setSelectMode((on) => !on);
             setSelected(new Set());
           }}
-          aria-pressed={selectMode}
-          className={cn(
-            "focus-visible:ring-primary font-ui rounded-control border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
-            selectMode
-              ? "border-primary bg-primary-container text-on-primary-container"
-              : "border-outline-variant text-on-surface-variant hover:text-on-surface",
-          )}
+          className={({ pressed }) =>
+            cn(
+              "focus-visible:ring-primary font-ui rounded-control text-label border px-1.5 py-0.5 focus-visible:ring-2 focus-visible:ring-inset",
+              pressed
+                ? "border-primary bg-primary-container text-on-primary-container"
+                : "border-outline-variant text-on-surface-variant hover:text-on-surface",
+            )
+          }
         >
           {selectMode ? "Done selecting" : "Select"}
-        </button>
+        </Toggle>
         {selectMode ? (
           <>
-            <span className="font-ui text-on-surface-variant text-[11px]">{selected.size} selected</span>
+            <span className="font-ui text-on-surface-variant text-label">{selected.size} selected</span>
             <button
               type="button"
               onClick={handleBulkComplete}
               disabled={selected.size === 0}
-              className="rounded-control border-outline-variant text-on-surface font-ui focus-visible:ring-primary flex items-center gap-1 border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
+              className="rounded-control border-outline-variant text-on-surface font-ui focus-visible:ring-primary text-label flex items-center gap-1 border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
             >
               <CheckCheck size={11} />
               Complete
@@ -394,7 +390,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
               type="button"
               onClick={() => void handleBulkMove()}
               disabled={selected.size === 0}
-              className="rounded-control border-outline-variant text-on-surface font-ui focus-visible:ring-primary flex items-center gap-1 border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
+              className="rounded-control border-outline-variant text-on-surface font-ui focus-visible:ring-primary text-label flex items-center gap-1 border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
             >
               <FolderInput size={11} />
               Move
@@ -403,7 +399,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
               type="button"
               onClick={() => void handleBulkDelete()}
               disabled={selected.size === 0}
-              className="rounded-control border-outline-variant text-error font-ui focus-visible:ring-primary flex items-center gap-1 border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
+              className="rounded-control border-outline-variant text-error font-ui focus-visible:ring-primary text-label flex items-center gap-1 border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
             >
               <Trash2 size={11} />
               Delete
@@ -414,14 +410,14 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             type="button"
             onClick={() => void handleClearCompleted()}
             disabled={knowsCompletedCount && completedCount === 0}
-            className="rounded-control border-outline-variant text-on-surface-variant hover:text-on-surface font-ui focus-visible:ring-primary border px-1.5 py-0.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
+            className="rounded-control border-outline-variant text-on-surface-variant hover:text-on-surface font-ui focus-visible:ring-primary text-label border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-50"
           >
             Clear completed{knowsCompletedCount && completedCount > 0 ? ` (${completedCount})` : ""}
           </button>
         )}
         {!reorderable && (
           <span
-            className="font-ui text-on-surface-variant ml-auto text-[10px]"
+            className="font-ui text-on-surface-variant text-tiny ml-auto"
             title="Switch to My order to drag tasks around"
           >
             drag needs “{SORT_LABELS.manual}”
@@ -432,11 +428,11 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
       {/* The list. min-h-0 so this is the element that shrinks, never the add row. */}
       <ScrollArea className="min-h-0 flex-1">
         {isPending ? (
-          <div className="font-ui text-on-surface-variant flex h-20 items-center justify-center text-[12px]">
+          <div className="font-ui text-on-surface-variant text-control flex h-20 items-center justify-center">
             Loading…
           </div>
         ) : visible.length === 0 ? (
-          <div className="font-ui text-on-surface-variant flex h-20 items-center justify-center text-[12px]">
+          <div className="font-ui text-on-surface-variant text-control flex h-20 items-center justify-center">
             {EMPTY_MESSAGES[filter]}
           </div>
         ) : (
@@ -465,7 +461,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             // Focused on open: the brief asks for keyboard-first adding, and this is
             // the field you always want.
             autoFocus
-            className="font-content text-on-surface placeholder:text-on-surface-variant focus-visible:ring-primary min-w-0 flex-1 bg-transparent text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            className="font-content text-on-surface placeholder:text-on-surface-variant focus-visible:ring-primary text-body min-w-0 flex-1 bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-inset"
             placeholder={
               listId === null ? "Add a task…" : `Add to ${lists?.find((l) => l.id === listId)?.name ?? "list"}…`
             }
@@ -482,19 +478,18 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
               }
             }}
           />
-          <button
-            type="button"
-            onClick={() => setAddDueOpen((open) => !open)}
-            aria-pressed={addDueOpen}
+          <Toggle
+            pressed={addDueOpen}
+            onPressedChange={setAddDueOpen}
             aria-label="Set a due date for new tasks"
             title="Set a due date for new tasks"
             className={cn(
-              "focus-visible:ring-primary shrink-0 p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset",
+              "focus-visible:ring-primary shrink-0 p-0.5 focus-visible:ring-2 focus-visible:ring-inset",
               addDue ? "text-primary" : "text-on-surface-variant",
             )}
           >
             <CalendarClock size={13} />
-          </button>
+          </Toggle>
           <button
             type="button"
             onClick={handleAdd}
@@ -507,13 +502,13 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
         </div>
         {addDueOpen && (
           <div className="border-outline-variant flex items-center gap-1.5 border-t px-2 py-1.5">
-            <span className="font-ui text-on-surface-variant text-[10px] tracking-wider uppercase">Due</span>
+            <span className="font-ui text-on-surface-variant text-tiny tracking-wider uppercase">Due</span>
             <input
               type="date"
               value={addDue}
               aria-label="Due date for new tasks"
               onChange={(e) => setAddDue(e.target.value)}
-              className="rounded-control border-outline-variant bg-surface-container-lowest font-content text-on-surface focus-visible:ring-primary border px-1.5 py-0.5 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+              className="rounded-control border-outline-variant bg-surface-container-lowest font-content text-on-surface focus-visible:ring-primary text-control border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset"
             />
             {addDue && (
               <button
@@ -530,7 +525,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
       </div>
 
       {/* The same note Clock and Calendar carry since the reminder scheduler. */}
-      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant flex h-5 shrink-0 items-center gap-1 border-t px-2 text-[10px]">
+      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant text-tiny flex h-5 shrink-0 items-center gap-1 border-t px-2">
         Due reminders appear while the desktop is open — this window can be closed.
       </div>
 

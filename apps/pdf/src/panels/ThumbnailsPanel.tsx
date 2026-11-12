@@ -100,9 +100,7 @@ function Thumb({ render, pageNumber, aspect, active, epoch, onClick }: ThumbProp
           <span className="bg-surface-container-high block h-full w-full animate-pulse" />
         )}
       </span>
-      <span
-        className={"text-[10px] tabular-nums " + (active ? "text-on-primary-container" : "text-on-surface-variant")}
-      >
+      <span className={"text-tiny tabular-nums " + (active ? "text-on-primary-container" : "text-on-surface-variant")}>
         {pageNumber}
       </span>
     </button>
@@ -112,7 +110,7 @@ function Thumb({ render, pageNumber, aspect, active, epoch, onClick }: ThumbProp
 export function ThumbnailsPanel(): JSX.Element {
   const { render, pageCount, pageDims, currentPage, goToPage, renderEpoch } = useReader();
 
-  if (!render) return <div className="text-on-surface-variant p-3 text-center text-[11px]">No document.</div>;
+  if (!render) return <div className="text-on-surface-variant text-label p-3 text-center">No document.</div>;
 
   return (
     <div className="flex flex-col items-center gap-1.5 p-2">

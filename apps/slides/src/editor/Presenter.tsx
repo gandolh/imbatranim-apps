@@ -125,7 +125,7 @@ export function Presenter({ count, start, model, onExit }: Props) {
       ref={attach}
       role="dialog"
       aria-label="Slide show"
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
+      className="z-dialog fixed inset-0 flex items-center justify-center bg-black"
       onClick={() => go(1)}
     >
       {m && fit > 0 && !black && (
@@ -143,7 +143,7 @@ export function Presenter({ count, start, model, onExit }: Props) {
           </div>
         </div>
       )}
-      <span className="font-ui pointer-events-none fixed right-4 bottom-3 text-[12px] text-white/70 tabular-nums">
+      <span className="font-ui text-control pointer-events-none fixed right-4 bottom-3 text-white/70 tabular-nums">
         {index + 1} / {count}
       </span>
       <button
@@ -153,7 +153,7 @@ export function Presenter({ count, start, model, onExit }: Props) {
           e.stopPropagation();
           exit();
         }}
-        className="font-ui fixed top-3 right-4 border border-white/30 px-2 py-0.5 text-[12px] text-white/70 hover:bg-white/10 hover:text-white"
+        className="font-ui text-control fixed top-3 right-4 border border-white/30 px-2 py-0.5 text-white/70 hover:bg-white/10 hover:text-white"
       >
         Exit (Esc)
       </button>

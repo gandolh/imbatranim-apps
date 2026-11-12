@@ -33,11 +33,12 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Button, Separator, Tooltip, useSaveHotkey, useTopWindowKeydown } from "@imbatranim/ui";
+import { Button, RadioGroup, Separator, Tooltip, useSaveHotkey, useTopWindowKeydown } from "@imbatranim/ui";
 import { useReader } from "../app/context";
 import { ACTUAL } from "../app/useReaderController";
+import type { FitMode } from "../app/types";
 import { useEditor } from "../editor/context";
-import { ToolButton } from "./ToolButton";
+import { ToolButton, ToolRadio, ToolToggle } from "./ToolButton";
 
 export interface TopBarProps {
   onOpenClick: () => void;
@@ -115,14 +116,14 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
     <header className="border-outline-variant bg-surface-container-low border-b">
       <div className="flex flex-wrap items-center gap-1 px-2 py-1">
         {/* Identity + panel toggle */}
-        <ToolButton
+        <ToolToggle
           icon={PanelLeft}
           label={panelOpen ? "Hide side panel" : "Show side panel"}
-          active={panelOpen}
-          onClick={togglePanel}
+          pressed={panelOpen}
+          onPressedChange={() => togglePanel()}
           disabled={!opened}
         />
-        <span className="text-on-surface font-ui mr-1 ml-0.5 flex items-center gap-1.5 text-[12px] font-semibold">
+        <span className="text-on-surface font-ui text-control mr-1 ml-0.5 flex items-center gap-1.5 font-semibold">
           <FilePen size={15} className="text-primary" />
           PDF
         </span>
@@ -133,14 +134,14 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
         <div className="flex min-w-0 items-center gap-1.5" title={docName}>
           {opened ? (
             <>
-              <span className="text-on-surface-variant font-ui max-w-[180px] truncate text-[11px]">{docName}</span>
+              <span className="text-on-surface-variant font-ui text-label max-w-[180px] truncate">{docName}</span>
               <ToolButton
                 icon={ChevronLeft}
                 label="Previous page"
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage <= 1}
               />
-              <span className="text-on-surface-variant flex items-center gap-1 text-[11px] tabular-nums">
+              <span className="text-on-surface-variant text-label flex items-center gap-1 tabular-nums">
                 <input
                   className="border-outline-variant bg-surface-container-lowest text-on-surface focus:border-primary w-9 border px-1 py-0.5 text-center outline-none"
                   value={pageInput}
@@ -166,7 +167,7 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
               />
             </>
           ) : (
-            <span className="text-on-surface-variant font-ui text-[11px] italic">No document open</span>
+            <span className="text-on-surface-variant font-ui text-label italic">No document open</span>
           )}
         </div>
 
@@ -177,7 +178,7 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
           <Search size={13} className="text-on-surface-variant shrink-0" />
           <input
             ref={searchRef}
-            className="text-on-surface placeholder:text-on-surface-variant font-ui w-36 bg-transparent py-1 text-[12px] outline-none"
+            className="text-on-surface placeholder:text-on-surface-variant font-ui text-control w-36 bg-transparent py-1 outline-none"
             type="search"
             placeholder="Search document…"
             value={query}
@@ -192,9 +193,9 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
               }
             }}
           />
-          {search.busy && <span className="text-on-surface-variant text-[10px]">…</span>}
+          {search.busy && <span className="text-on-surface-variant text-tiny">…</span>}
           {!search.busy && search.ran && (
-            <span className="text-on-surface-variant text-[10px] tabular-nums">
+            <span className="text-on-surface-variant text-tiny tabular-nums">
               {hasHits ? `${search.activeIndex + 1}/${search.hits.length}` : "0"}
             </span>
           )}
@@ -210,24 +211,20 @@ export function TopBar({ onOpenClick, toolbarSlot }: TopBarProps): JSX.Element {
 
         {/* Zoom / fit */}
         <ToolButton icon={ZoomOut} label="Zoom out (−)" onClick={zoomOut} disabled={!opened} />
-        <span className="text-on-surface-variant min-w-[38px] text-center text-[11px] tabular-nums" aria-live="polite">
+        <span className="text-on-surface-variant text-label min-w-[38px] text-center tabular-nums" aria-live="polite">
           {opened ? `${pct}%` : "—"}
         </span>
         <ToolButton icon={ZoomIn} label="Zoom in (+)" onClick={zoomIn} disabled={!opened} />
-        <ToolButton
-          icon={MoveHorizontal}
-          label="Fit width"
-          active={fitMode === "width"}
-          onClick={() => setFitMode("width")}
-          disabled={!opened}
-        />
-        <ToolButton
-          icon={Maximize}
-          label="Fit page"
-          active={fitMode === "page"}
-          onClick={() => setFitMode("page")}
-          disabled={!opened}
-        />
+        <RadioGroup<FitMode> className="contents" aria-label="Fit" value={fitMode} onValueChange={setFitMode}>
+          <ToolRadio
+            icon={MoveHorizontal}
+            label="Fit width"
+            value="width"
+            checked={fitMode === "width"}
+            disabled={!opened}
+          />
+          <ToolRadio icon={Maximize} label="Fit page" value="page" checked={fitMode === "page"} disabled={!opened} />
+        </RadioGroup>
 
         <Separator orientation="vertical" className="mx-1 h-5" />
 

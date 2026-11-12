@@ -12,6 +12,7 @@ import {
   useOpenIntent,
   useSaveHotkey,
   useSystem,
+  Toggle,
   useTopWindowKeydown,
   useUnsavedGuard,
 } from "@imbatranim/ui";
@@ -292,8 +293,8 @@ export function Docs({ windowId }: { windowId: string }) {
     return (
       <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
         <FileWarning size={40} strokeWidth={1} className="text-error" />
-        <span className="font-ui text-on-surface text-[12px] font-semibold">{docName}</span>
-        <span className="font-ui max-w-[340px] text-[12px]">{refusal}</span>
+        <span className="font-ui text-on-surface text-control font-semibold">{docName}</span>
+        <span className="font-ui text-control max-w-[340px]">{refusal}</span>
         <Button size="sm" variant="primary" onClick={pickFile}>
           Open a .docx instead
         </Button>
@@ -305,7 +306,7 @@ export function Docs({ windowId }: { windowId: string }) {
     return (
       <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 text-center">
         <FileText size={40} strokeWidth={1} />
-        <span className="font-ui text-[12px]">Nothing open</span>
+        <span className="font-ui text-control">Nothing open</span>
         <Button size="sm" variant="primary" onClick={pickFile}>
           Open a document
         </Button>
@@ -331,22 +332,20 @@ export function Docs({ windowId }: { windowId: string }) {
         </Tooltip>
 
         <Tooltip content="Find (Ctrl+F)">
-          <Button
-            variant={findOpen ? "primary" : "ghost"}
-            size="sm"
-            className="h-6 w-6 p-0"
+          <Toggle
+            pressed={findOpen}
             aria-label="Find in document"
-            aria-pressed={findOpen}
             onClick={openFind}
+            render={<Button variant={findOpen ? "primary" : "ghost"} size="sm" className="h-6 w-6 p-0" />}
           >
             <Search size={12} />
-          </Button>
+          </Toggle>
         </Tooltip>
         <Tooltip content="Word count">
           <button
             type="button"
             onClick={refreshCounts}
-            className="font-ui text-on-surface-variant hover:text-on-surface text-[11px] tabular-nums"
+            className="font-ui text-on-surface-variant hover:text-on-surface text-label tabular-nums"
           >
             {counts.words} words
           </button>
@@ -354,8 +353,8 @@ export function Docs({ windowId }: { windowId: string }) {
 
         <div className="flex-1" />
 
-        {error && <span className="text-error font-ui mr-2 max-w-[280px] truncate text-[11px]">{error}</span>}
-        <span className="font-ui text-on-surface-variant max-w-[200px] truncate text-[11px]">
+        {error && <span className="text-error font-ui text-label mr-2 max-w-[280px] truncate">{error}</span>}
+        <span className="font-ui text-on-surface-variant text-label max-w-[200px] truncate">
           {docName}
           {dirty ? " •" : ""}
         </span>
@@ -381,9 +380,9 @@ export function Docs({ windowId }: { windowId: string }) {
               if (e.key === "Enter") stepMatch(e.shiftKey ? -1 : 1);
               if (e.key === "Escape") setFindOpen(false);
             }}
-            className="border-outline-variant bg-surface-container-lowest font-ui text-on-surface w-[220px] border px-1.5 py-0.5 text-[12px] outline-none"
+            className="border-outline-variant bg-surface-container-lowest font-ui text-on-surface text-control w-[220px] border px-1.5 py-0.5 outline-none"
           />
-          <span className="font-ui text-on-surface-variant min-w-[64px] text-[11px] tabular-nums">
+          <span className="font-ui text-on-surface-variant text-label min-w-[64px] tabular-nums">
             {findText.trim() === "" ? "" : matchCount === 0 ? "No matches" : `${matchIndex} of ${matchCount}`}
           </span>
           <Button
@@ -407,7 +406,7 @@ export function Docs({ windowId }: { windowId: string }) {
             <ChevronDown size={12} />
           </Button>
           <div className="flex-1" />
-          <span className="font-ui text-on-surface-variant text-[11px] tabular-nums">
+          <span className="font-ui text-on-surface-variant text-label tabular-nums">
             {counts.words} words · {counts.charactersNoSpaces} characters
           </span>
           <Button
@@ -429,7 +428,7 @@ export function Docs({ windowId }: { windowId: string }) {
       <div className="relative min-h-0 flex-1 overflow-auto">
         <div ref={editorWrapRef} className="min-h-full" />
         {loading && (
-          <div className="bg-surface-container-lowest text-on-surface-variant font-ui absolute inset-0 flex items-center justify-center gap-2 text-[12px]">
+          <div className="bg-surface-container-lowest text-on-surface-variant font-ui text-control absolute inset-0 flex items-center justify-center gap-2">
             <Loader2 size={16} className="animate-spin" />
             Loading document…
           </div>

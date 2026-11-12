@@ -114,8 +114,8 @@ function FolderRow({
           <ChevronRight size={12} className="text-on-surface-variant shrink-0" />
         )}
         <Folder size={13} strokeWidth={1.75} className="text-on-surface-variant shrink-0" />
-        <span className="font-ui text-on-surface truncate text-[12px] font-semibold">{group.name}</span>
-        <span className="font-ui text-on-surface-variant shrink-0 text-[11px]">{childCount}</span>
+        <span className="font-ui text-on-surface text-control truncate font-semibold">{group.name}</span>
+        <span className="font-ui text-on-surface-variant text-label shrink-0">{childCount}</span>
       </button>
       <div className="flex shrink-0 items-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-within:opacity-100">
         <Button
@@ -185,8 +185,8 @@ function LinkRow({
         title={link.url}
       >
         <Link2 size={12} strokeWidth={1.75} className="text-on-surface-variant shrink-0" />
-        <span className="font-content text-on-surface truncate text-[12px]">{link.title}</span>
-        <span className="font-ui text-on-surface-variant min-w-0 flex-1 truncate text-[11px]">
+        <span className="font-content text-on-surface text-control truncate">{link.title}</span>
+        <span className="font-ui text-on-surface-variant text-label min-w-0 flex-1 truncate">
           {link.url.replace(/^https?:\/\//, "")}
         </span>
       </button>
@@ -541,7 +541,7 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
             }}
             placeholder="Search bookmarks…"
             aria-label="Search bookmarks"
-            className="font-content text-on-surface placeholder:text-on-surface-variant focus-visible:ring-primary min-w-0 flex-1 bg-transparent py-1 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            className="font-content text-on-surface placeholder:text-on-surface-variant focus-visible:ring-primary text-control min-w-0 flex-1 bg-transparent py-1 outline-none focus-visible:ring-2 focus-visible:ring-inset"
           />
           {query !== "" && (
             <Button variant="ghost" size="sm" aria-label="Clear search" onClick={() => setQuery("")}>
@@ -552,13 +552,13 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
       </div>
 
       {isPending ? (
-        <div className="font-ui text-on-surface-variant flex flex-1 items-center justify-center text-[12px]">
+        <div className="font-ui text-on-surface-variant text-control flex flex-1 items-center justify-center">
           Loading…
         </div>
       ) : rows.length === 0 ? (
         <div className="text-on-surface-variant flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
           <Folder size={32} strokeWidth={1} />
-          <span className="font-ui text-[12px]">
+          <span className="font-ui text-control">
             {query !== "" ? `Nothing matches “${query.trim()}”` : "No bookmarks yet"}
           </span>
           {query === "" && (
@@ -598,7 +598,7 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
         </ScrollArea>
       )}
 
-      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant flex h-5 shrink-0 items-center gap-1 border-t px-2 text-[10px]">
+      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant text-tiny flex h-5 shrink-0 items-center gap-1 border-t px-2">
         {query === ""
           ? `${linkCount} bookmark${linkCount === 1 ? "" : "s"} · ${all.length} folder${all.length === 1 ? "" : "s"}`
           : `${search.matches} match${search.matches === 1 ? "" : "es"}`}
@@ -641,7 +641,7 @@ function MoveDialog({
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()} title="Move bookmark">
-      <p className="text-on-surface-variant mb-3 text-[12px]">
+      <p className="text-on-surface-variant text-control mb-3">
         Move “{link.title}” out of {folderPath(groups, link.groupId)}.
       </p>
       <Select

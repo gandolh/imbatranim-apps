@@ -25,7 +25,7 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
 
   if (loading) {
     return (
-      <div className="text-on-surface-variant font-ui flex flex-1 items-center justify-center text-[12px]">
+      <div className="text-on-surface-variant font-ui text-control flex flex-1 items-center justify-center">
         Sending request…
       </div>
     );
@@ -34,14 +34,14 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
   if (error) {
     return (
       <div className="flex flex-1 items-center justify-center p-4">
-        <p className="text-error max-w-full font-mono text-[12px] break-words">{error}</p>
+        <p className="text-error text-control max-w-full font-mono break-words">{error}</p>
       </div>
     );
   }
 
   if (!response) {
     return (
-      <div className="text-on-surface-variant font-ui flex flex-1 items-center justify-center text-[12px]">
+      <div className="text-on-surface-variant font-ui text-control flex flex-1 items-center justify-center">
         Send a request to see the response
       </div>
     );
@@ -52,7 +52,7 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Status line */}
-      <div className="border-outline-variant flex flex-wrap items-center gap-x-4 gap-y-1 border-b px-3 py-1.5 text-[12px]">
+      <div className="border-outline-variant text-control flex flex-wrap items-center gap-x-4 gap-y-1 border-b px-3 py-1.5">
         <span className={cn("font-ui font-semibold", statusToken(response.status))}>
           {response.status} {response.statusText}
         </span>
@@ -77,13 +77,13 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
 
       <ScrollArea className="min-h-0 flex-1">
         {tab === "body" ? (
-          <pre className="text-on-surface p-3 font-mono text-[12px] leading-relaxed break-words whitespace-pre-wrap">
+          <pre className="text-on-surface text-control p-3 font-mono leading-relaxed break-words whitespace-pre-wrap">
             {decoded.text || <span className="text-on-surface-variant">(empty body)</span>}
           </pre>
         ) : (
           <div className="flex flex-col p-2">
             {headerEntries.map(([k, v]) => (
-              <div key={k} className="flex gap-2 px-1 py-0.5 text-[12px]">
+              <div key={k} className="text-control flex gap-2 px-1 py-0.5">
                 <span className="text-secondary shrink-0 font-mono">{k}:</span>
                 <span className="text-on-surface font-mono break-all">{v}</span>
               </div>
@@ -101,7 +101,7 @@ function ResTab({ active, onClick, children }: { active: boolean; onClick: () =>
       type="button"
       onClick={onClick}
       className={cn(
-        "focus-visible:ring-primary font-ui -mb-px cursor-pointer border-b-2 px-3 py-1.5 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
+        "focus-visible:ring-primary font-ui text-control -mb-px cursor-pointer border-b-2 px-3 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-inset",
         active ? "border-primary text-primary" : "text-on-surface-variant hover:text-on-surface border-transparent",
       )}
     >

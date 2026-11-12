@@ -93,10 +93,11 @@ export function CurlDialog({
       open
       onOpenChange={(next) => !next && onClose()}
       title={mode === "import" ? "Import a curl command" : "Copy as curl"}
+      disablePointerDismissal={mode === "import"}
     >
       <div className="flex w-[38rem] max-w-full flex-col gap-2">
         <textarea
-          className="rounded-control border-outline-variant bg-surface-container-lowest text-on-surface focus-visible:ring-primary min-h-[9rem] w-full resize-y border px-2 py-1.5 font-mono text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+          className="rounded-control border-outline-variant bg-surface-container-lowest text-on-surface focus-visible:ring-primary text-control min-h-[9rem] w-full resize-y border px-2 py-1.5 font-mono outline-none focus-visible:ring-2 focus-visible:ring-inset"
           placeholder={"curl 'https://api.example.com/users' -H 'accept: application/json'"}
           value={text}
           spellCheck={false}
@@ -107,9 +108,9 @@ export function CurlDialog({
           }}
         />
 
-        {parsed?.kind === "err" && <p className="text-error text-[12px]">{parsed.message}</p>}
+        {parsed?.kind === "err" && <p className="text-error text-control">{parsed.message}</p>}
         {parsed?.kind === "ok" && (
-          <div className="rounded-control border-outline-variant bg-surface-container-low border px-2 py-1.5 text-[11px]">
+          <div className="rounded-control border-outline-variant bg-surface-container-low text-label border px-2 py-1.5">
             <div className="font-ui text-on-surface-variant mb-1 font-semibold tracking-wider uppercase">
               This will load
             </div>
@@ -142,7 +143,7 @@ export function CurlDialog({
             )}
           </div>
         )}
-        {error && <p className="text-error text-[12px]">{error}</p>}
+        {error && <p className="text-error text-control">{error}</p>}
 
         <div className="mt-1 flex justify-end gap-2">
           <Button variant="default" size="sm" onClick={onClose}>

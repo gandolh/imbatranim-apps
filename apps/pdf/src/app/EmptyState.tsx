@@ -12,12 +12,12 @@ export interface EmptyStateProps {
 export function EmptyState({ onOpenClick, error, loading }: EmptyStateProps): JSX.Element {
   return (
     <div className="bg-surface-container-lowest flex h-full flex-col items-center justify-center p-8 text-center">
-      <div className="flex max-w-md flex-col items-center gap-4">
+      <div className="flex max-w-[364px] flex-col items-center gap-4">
         <div className="border-outline-variant text-primary flex h-14 w-14 items-center justify-center border">
           <FilePen size={28} strokeWidth={1.5} />
         </div>
-        <h1 className="text-on-surface font-ui text-lg font-semibold">PDF</h1>
-        <p className="text-on-surface-variant font-content text-[13px] leading-relaxed">
+        <h1 className="text-on-surface font-ui text-lead font-semibold">PDF</h1>
+        <p className="text-on-surface-variant font-content text-body leading-relaxed">
           Read, search, mark up, fill in, sign and rearrange your PDFs. Everything runs on-device.
         </p>
 
@@ -31,11 +31,11 @@ export function EmptyState({ onOpenClick, error, loading }: EmptyStateProps): JS
           {loading ? <Loader2 size={14} className="animate-spin" /> : <FolderOpen size={14} />}
           {loading ? "Opening…" : "Open a PDF"}
         </Button>
-        <p className="text-on-surface-variant text-[11px]">or drop a file anywhere on this window</p>
+        <p className="text-on-surface-variant text-label">or drop a file anywhere on this window</p>
 
-        {error && <p className="text-error font-ui max-w-sm text-[12px]">{error}</p>}
+        {error && <p className="text-error font-ui text-control max-w-[312px]">{error}</p>}
 
-        <ul className="text-on-surface-variant mt-2 flex flex-col gap-2 text-[12px]">
+        <ul className="text-on-surface-variant text-control mt-2 flex flex-col gap-2">
           <li className="flex items-center gap-2">
             <Search size={14} className="text-on-surface-variant" />
             <span>Full-text search with jump-to-match</span>

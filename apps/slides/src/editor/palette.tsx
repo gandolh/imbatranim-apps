@@ -52,7 +52,7 @@ export function colorMenu(
       type: "custom",
       key: "theme-label",
       children: (
-        <div className="font-ui text-on-surface-variant px-3 pt-1 text-[10px] font-semibold tracking-wider uppercase">
+        <div className="font-ui text-on-surface-variant text-tiny px-3 pt-1 font-semibold tracking-wider uppercase">
           Theme colours
         </div>
       ),
@@ -62,7 +62,7 @@ export function colorMenu(
       type: "custom",
       key: "std-label",
       children: (
-        <div className="font-ui text-on-surface-variant px-3 pt-1 text-[10px] font-semibold tracking-wider uppercase">
+        <div className="font-ui text-on-surface-variant text-tiny px-3 pt-1 font-semibold tracking-wider uppercase">
           Standard colours
         </div>
       ),

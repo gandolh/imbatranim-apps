@@ -237,7 +237,7 @@ function PdfShell(): JSX.Element {
           >
             <div className="text-on-surface flex flex-col items-center gap-2">
               <Download size={34} strokeWidth={1.5} />
-              <p className="font-ui text-[13px]">Drop a PDF to open</p>
+              <p className="font-ui text-body">Drop a PDF to open</p>
             </div>
           </div>
         )}

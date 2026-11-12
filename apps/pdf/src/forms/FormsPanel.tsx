@@ -29,7 +29,7 @@ export function FormsPanel(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const bump = useCallback(() => setTick((t) => t + 1), []);
 
-  if (!doc) return <div className="text-on-surface-variant p-3 text-[12px]">Loading…</div>;
+  if (!doc) return <div className="text-on-surface-variant text-control p-3">Loading…</div>;
 
   // Re-read on every render; `tick`/`renderEpoch` force it after an edit.
   void tick;
@@ -38,11 +38,13 @@ export function FormsPanel(): JSX.Element {
   try {
     fields = doc.forms.list();
   } catch {
-    return <div className="text-on-surface-variant p-3 text-[12px]">Could not read form fields.</div>;
+    return <div className="text-on-surface-variant text-control p-3">Could not read form fields.</div>;
   }
 
   if (!fields.length) {
-    return <div className="text-on-surface-variant p-3 text-[12px]">This document has no interactive form fields.</div>;
+    return (
+      <div className="text-on-surface-variant text-control p-3">This document has no interactive form fields.</div>
+    );
   }
 
   const setValue = (name: string, value: FieldValue) => {
@@ -78,7 +80,7 @@ export function FormsPanel(): JSX.Element {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="text-on-surface-variant border-outline-variant font-ui border-b px-3 py-2 text-[11px]">
+      <div className="text-on-surface-variant border-outline-variant font-ui text-label border-b px-3 py-2">
         {fields.length} field{fields.length === 1 ? "" : "s"}
       </div>
 
@@ -91,10 +93,10 @@ export function FormsPanel(): JSX.Element {
               title={`Go to page ${f.page}`}
               onClick={() => goToPage(f.page)}
             >
-              <span className="text-on-surface font-ui truncate text-[12px]" title={f.name}>
+              <span className="text-on-surface font-ui text-control truncate" title={f.name}>
                 {f.name}
               </span>
-              <span className="text-on-surface-variant flex shrink-0 items-center gap-1 text-[10px]">
+              <span className="text-on-surface-variant text-tiny flex shrink-0 items-center gap-1">
                 <span className="bg-surface-container-high px-1 py-0.5">{f.type}</span>
                 {f.required && (
                   <span className="text-error" title="Required">
@@ -111,7 +113,7 @@ export function FormsPanel(): JSX.Element {
         ))}
       </ul>
 
-      {error && <div className="text-error border-outline-variant border-t px-3 py-2 text-[11px]">{error}</div>}
+      {error && <div className="text-error border-outline-variant text-label border-t px-3 py-2">{error}</div>}
 
       <div className="border-outline-variant flex gap-1.5 border-t p-2">
         <Button
@@ -169,7 +171,7 @@ function FieldControl({
           {(options ?? []).map((opt) => (
             <label
               key={opt}
-              className="text-on-surface font-content flex cursor-pointer items-center gap-2 text-[12px]"
+              className="text-on-surface font-content text-control flex cursor-pointer items-center gap-2"
             >
               <input
                 type="radio"
@@ -199,7 +201,7 @@ function FieldControl({
     case "listbox":
       return (
         <select
-          className="border-outline-variant bg-surface-container-lowest text-on-surface font-ui focus:border-primary w-full border px-2 py-1 text-[12px] outline-none"
+          className="border-outline-variant bg-surface-container-lowest text-on-surface font-ui focus:border-primary text-control w-full border px-2 py-1 outline-none"
           multiple
           value={Array.isArray(value) ? value : []}
           disabled={readonly}

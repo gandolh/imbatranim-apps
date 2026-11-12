@@ -131,7 +131,7 @@ export function Rail({ count, current, model, version, onSelect, onMove, onDelet
               <Thumb index={i} model={model} version={version} />
               <span
                 className={cn(
-                  "font-ui absolute right-0 bottom-0 px-1 text-[10px] tabular-nums",
+                  "font-ui text-tiny absolute right-0 bottom-0 px-1 tabular-nums",
                   i === current ? "bg-primary text-on-primary" : "bg-inverse-surface text-inverse-on-surface",
                 )}
               >

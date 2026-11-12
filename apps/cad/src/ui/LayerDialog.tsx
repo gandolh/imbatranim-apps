@@ -1,5 +1,16 @@
 import { Plus, Trash2 } from "lucide-react";
-import { Button, Checkbox, Dialog, ScrollArea, Select, useConfirm, usePrompt } from "@imbatranim/ui";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  Radio,
+  RadioGroup,
+  ScrollArea,
+  Select,
+  cn,
+  useConfirm,
+  usePrompt,
+} from "@imbatranim/ui";
 import { isLayerName } from "../engine/commands/registry";
 import { DEFAULT_LAYER } from "../engine/model/document";
 import type { Layer } from "../engine/model/types";
@@ -80,16 +91,22 @@ export function LayerDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(o) => !o && onClose()} title="Layers" className="w-[720px] max-w-[95vw]">
-        <div className="font-ui flex flex-col gap-2 text-[12px]">
+      <Dialog
+        open={open}
+        onOpenChange={(o) => !o && onClose()}
+        title="Layers"
+        disablePointerDismissal
+        className="w-[720px] max-w-[95vw]"
+      >
+        <div className="font-ui text-control flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Button size="sm" variant="primary" onClick={() => void addLayer()}>
               <Plus size={12} /> New layer
             </Button>
-            <span className="text-on-surface-variant text-[11px]">Current layer: {state.currentLayer}</span>
+            <span className="text-on-surface-variant text-label">Current layer: {state.currentLayer}</span>
           </div>
           <div className="border-outline-variant border">
-            <div className="bg-surface-container-high text-on-surface-variant grid grid-cols-[52px_1fr_44px_56px_48px_150px_130px_32px] items-center gap-1 px-2 py-1 text-[11px] font-semibold tracking-wider uppercase">
+            <div className="bg-surface-container-high text-on-surface-variant text-label grid grid-cols-[52px_1fr_44px_56px_48px_150px_130px_32px] items-center gap-1 px-2 py-1 font-semibold tracking-wider uppercase">
               <span>Current</span>
               <span>Name</span>
               <span>On</span>
@@ -100,89 +117,101 @@ export function LayerDialog({
               <span />
             </div>
             <ScrollArea className="h-[260px]">
-              <div role="list" aria-label="Layers">
-                {state.layers.map((l) => (
-                  <div
-                    key={l.name}
-                    role="listitem"
-                    className="border-outline-variant grid grid-cols-[52px_1fr_44px_56px_48px_150px_130px_32px] items-center gap-1 border-t px-2 py-0.5"
-                  >
-                    <input
-                      type="radio"
-                      name="cad-current-layer"
-                      aria-label={`Make ${l.name} current`}
-                      checked={l.name === state.currentLayer}
-                      disabled={l.frozen}
-                      onChange={() => doc.setCurrentLayer(l.name)}
-                      className="accent-primary"
-                    />
-                    <span className="text-on-surface truncate" title={l.name}>
-                      {l.name}
-                    </span>
-                    <Checkbox
-                      aria-label={`${l.name} on`}
-                      checked={l.on}
-                      onCheckedChange={(v) => set(l, { on: v === true })}
-                    />
-                    <Checkbox
-                      aria-label={`${l.name} frozen`}
-                      checked={l.frozen}
-                      disabled={l.name === state.currentLayer}
-                      onCheckedChange={(v) => set(l, { frozen: v === true })}
-                    />
-                    <Checkbox
-                      aria-label={`${l.name} locked`}
-                      checked={l.locked}
-                      onCheckedChange={(v) => set(l, { locked: v === true })}
-                    />
-                    <div className="flex items-center gap-1">
-                      {/* The layer's own drawing colour, as a swatch. */}
-                      <span
-                        className="border-outline-variant h-3 w-3 shrink-0 border"
-                        style={{
-                          backgroundColor: hex(l.rgb ?? aciRgb(l.color, editor.cache.foreground)),
-                        }}
-                        aria-hidden="true"
-                      />
-                      <Select
-                        value={String(l.color)}
-                        options={colorOptions(l.color)}
-                        onValueChange={(v) => {
-                          if (typeof v === "string") set(l, { color: Number(v), rgb: undefined });
-                        }}
-                        className="py-0 text-[11px]"
-                        aria-label={`${l.name} colour`}
-                      />
-                    </div>
-                    <Select
-                      value={
-                        linetypes.find((o) => o.value.toUpperCase() === l.linetype.toUpperCase())?.value ?? "Continuous"
-                      }
-                      options={linetypes}
-                      onValueChange={(v) => {
-                        if (typeof v === "string") set(l, { linetype: v });
-                      }}
-                      className="py-0 text-[11px]"
-                      aria-label={`${l.name} linetype`}
-                    />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-5 w-5 justify-center p-0"
-                      aria-label={`Delete layer ${l.name}`}
-                      title={
-                        l.name === "0" || l.name === state.currentLayer || used.has(l.name)
-                          ? "Only an empty layer that is not current can be deleted"
-                          : "Delete layer"
-                      }
-                      disabled={l.name === "0" || l.name === state.currentLayer || used.has(l.name)}
-                      onClick={() => void removeLayer(l)}
+              <RadioGroup
+                className="contents"
+                aria-label="Current layer"
+                value={state.currentLayer}
+                onValueChange={(name) => doc.setCurrentLayer(name)}
+              >
+                <div role="list" aria-label="Layers">
+                  {state.layers.map((l) => (
+                    <div
+                      key={l.name}
+                      role="listitem"
+                      className="border-outline-variant grid grid-cols-[52px_1fr_44px_56px_48px_150px_130px_32px] items-center gap-1 border-t px-2 py-0.5"
                     >
-                      <Trash2 size={12} />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                      <Radio
+                        value={l.name}
+                        aria-label={`Make ${l.name} current`}
+                        disabled={l.frozen}
+                        className={({ checked }) =>
+                          cn(
+                            "focus-visible:ring-primary mx-auto block size-3.5 rounded-full border focus-visible:ring-2 focus-visible:ring-offset-1",
+                            checked
+                              ? "border-primary bg-primary shadow-[inset_0_0_0_2.5px_var(--color-surface-container-lowest)]"
+                              : "border-on-surface-variant bg-surface-container-lowest",
+                          )
+                        }
+                      />
+                      <span className="text-on-surface truncate" title={l.name}>
+                        {l.name}
+                      </span>
+                      <Checkbox
+                        aria-label={`${l.name} on`}
+                        checked={l.on}
+                        onCheckedChange={(v) => set(l, { on: v === true })}
+                      />
+                      <Checkbox
+                        aria-label={`${l.name} frozen`}
+                        checked={l.frozen}
+                        disabled={l.name === state.currentLayer}
+                        onCheckedChange={(v) => set(l, { frozen: v === true })}
+                      />
+                      <Checkbox
+                        aria-label={`${l.name} locked`}
+                        checked={l.locked}
+                        onCheckedChange={(v) => set(l, { locked: v === true })}
+                      />
+                      <div className="flex items-center gap-1">
+                        {/* The layer's own drawing colour, as a swatch. */}
+                        <span
+                          className="border-outline-variant h-3 w-3 shrink-0 border"
+                          style={{
+                            backgroundColor: hex(l.rgb ?? aciRgb(l.color, editor.cache.foreground)),
+                          }}
+                          aria-hidden="true"
+                        />
+                        <Select
+                          value={String(l.color)}
+                          options={colorOptions(l.color)}
+                          onValueChange={(v) => {
+                            if (typeof v === "string") set(l, { color: Number(v), rgb: undefined });
+                          }}
+                          className="text-label py-0"
+                          aria-label={`${l.name} colour`}
+                        />
+                      </div>
+                      <Select
+                        value={
+                          linetypes.find((o) => o.value.toUpperCase() === l.linetype.toUpperCase())?.value ??
+                          "Continuous"
+                        }
+                        options={linetypes}
+                        onValueChange={(v) => {
+                          if (typeof v === "string") set(l, { linetype: v });
+                        }}
+                        className="text-label py-0"
+                        aria-label={`${l.name} linetype`}
+                      />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-5 w-5 justify-center p-0"
+                        aria-label={`Delete layer ${l.name}`}
+                        title={
+                          l.name === "0" || l.name === state.currentLayer || used.has(l.name)
+                            ? "Only an empty layer that is not current can be deleted"
+                            : "Delete layer"
+                        }
+                        disabled={l.name === "0" || l.name === state.currentLayer || used.has(l.name)}
+                        onClick={() => void removeLayer(l)}
+                      >
+                        <Trash2 size={12} />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
             </ScrollArea>
           </div>
           <div className="flex justify-end gap-2">

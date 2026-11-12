@@ -18,7 +18,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { JSX } from "react";
 import type { PdfDoc } from "@pdfcore/engine";
-import { Button, Separator, useSystem } from "@imbatranim/ui";
+import { Button, Checkbox, Separator, useSystem } from "@imbatranim/ui";
 import { Plus, Combine, FileOutput, Trash2, Scissors, RotateCw, RotateCcw, GripVertical } from "lucide-react";
 import { useReader } from "../app/context";
 import { useEditor } from "../editor/context";
@@ -74,7 +74,7 @@ export function OrganizeView(): JSX.Element {
     });
   }, []);
 
-  if (!doc) return <div className="text-on-surface-variant p-4 text-[12px]">No document.</div>;
+  if (!doc) return <div className="text-on-surface-variant text-control p-4">No document.</div>;
 
   const selectedPages1 = [...selected].sort((a, b) => a - b).map((i) => i + 1);
 
@@ -216,7 +216,7 @@ export function OrganizeView(): JSX.Element {
 
         <Separator orientation="vertical" className="mx-1 h-5" />
 
-        <div className="text-on-surface-variant font-ui flex items-center gap-1 text-[12px]">
+        <div className="text-on-surface-variant font-ui text-control flex items-center gap-1">
           <Scissors size={15} />
           <span>Split every</span>
           <input
@@ -233,7 +233,7 @@ export function OrganizeView(): JSX.Element {
 
         <div className="flex-1" />
 
-        {busy && <span className="text-primary font-ui text-[11px]">Working…</span>}
+        {busy && <span className="text-primary font-ui text-label">Working…</span>}
         <Button variant="primary" size="sm" onClick={() => setMode("read")}>
           Done
         </Button>
@@ -383,12 +383,13 @@ function PageCard({
         ) : (
           <span className="bg-surface-container-high absolute inset-0 block animate-pulse" />
         )}
-        <label
-          className="bg-surface/80 absolute top-1 left-1 flex h-5 w-5 items-center justify-center border-none"
+        <Checkbox
+          checked={selected}
+          onCheckedChange={() => onToggle()}
+          aria-label="Select page"
           title="Select page"
-        >
-          <input type="checkbox" className="accent-primary" checked={selected} onChange={onToggle} />
-        </label>
+          labelClassName="bg-surface/80 absolute top-1 left-1 h-5 w-5 justify-center gap-0 border-none"
+        />
         <span
           className="text-on-surface-variant bg-surface/80 absolute top-1 right-1 cursor-grab p-0.5 opacity-0 group-hover:opacity-100"
           title="Drag to reorder"
@@ -397,7 +398,7 @@ function PageCard({
         </span>
       </div>
       <div className="mt-1 flex items-center justify-between px-0.5">
-        <span className="text-on-surface-variant text-[11px] tabular-nums">{pageNo}</span>
+        <span className="text-on-surface-variant text-label tabular-nums">{pageNo}</span>
         <span className="flex items-center gap-0.5">
           <button
             type="button"

@@ -111,7 +111,7 @@ export const CommandLine = forwardRef<CommandLineHandle, Props>(function Command
   const lines = state.history.slice(expanded ? -12 : -3);
   return (
     <div
-      className="border-outline-variant bg-surface-container-low font-ui shrink-0 border-t text-[12px]"
+      className="border-outline-variant bg-surface-container-low font-ui text-control shrink-0 border-t"
       data-testid="cad-command-line"
     >
       <div
@@ -135,7 +135,7 @@ export const CommandLine = forwardRef<CommandLineHandle, Props>(function Command
           <button
             key={k.name}
             type="button"
-            className="border-outline-variant text-on-surface hover:bg-surface-container-high focus-visible:ring-primary shrink-0 border px-1 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            className="border-outline-variant text-on-surface hover:bg-surface-container-high focus-visible:ring-primary text-label shrink-0 border px-1 outline-none focus-visible:ring-2 focus-visible:ring-inset"
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => send(k.alias)}
             title={`${k.name} (${k.alias})`}
@@ -152,7 +152,7 @@ export const CommandLine = forwardRef<CommandLineHandle, Props>(function Command
           aria-label="Command line"
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={onKeyDown}
-          className="bg-surface-container-lowest text-on-surface min-w-[120px] flex-1 border-0 px-1 py-0.5 text-[12px] outline-none"
+          className="bg-surface-container-lowest text-on-surface text-control min-w-[120px] flex-1 border-0 px-1 py-0.5 outline-none"
         />
       </div>
     </div>

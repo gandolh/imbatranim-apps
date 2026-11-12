@@ -198,12 +198,12 @@ export function PageView({
           </Suspense>
         )}
         {failed && (
-          <div className="bg-surface-container text-on-surface-variant absolute inset-0 grid place-items-center text-[12px]">
+          <div className="bg-surface-container text-on-surface-variant text-control absolute inset-0 grid place-items-center">
             Could not render this page.
           </div>
         )}
       </div>
-      <span className="text-on-surface-variant absolute right-1 -bottom-5 text-[10px] tabular-nums select-none">
+      <span className="text-on-surface-variant text-tiny absolute right-1 -bottom-5 tabular-nums select-none">
         {pageNumber}
       </span>
     </div>
