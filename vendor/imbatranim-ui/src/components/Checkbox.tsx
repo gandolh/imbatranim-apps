@@ -1,24 +1,31 @@
-import { Checkbox as BaseCheckbox } from '@base-ui/react/checkbox'
-import { type ComponentProps } from 'react'
-import { cn } from '../cn'
+import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
+import type { ComponentProps } from "react";
+import { cn } from "../cn";
 
 type CheckboxProps = ComponentProps<typeof BaseCheckbox.Root> & {
-  label?: string
-}
+  label?: string;
+  /** Classes for the wrapping label, to change its text size, colour or gap. */
+  labelClassName?: string;
+};
 
-export function Checkbox({ label, className, id, ...props }: CheckboxProps) {
+export function Checkbox({ label, labelClassName, className, id, ...props }: CheckboxProps) {
   return (
-    <label className="font-content text-on-surface flex cursor-pointer items-center gap-2 text-[13px] select-none">
+    <label
+      className={cn(
+        "font-content text-on-surface text-body flex cursor-pointer items-center gap-2 select-none",
+        labelClassName,
+      )}
+    >
       <BaseCheckbox.Root
         id={id}
         className={cn(
-          'border-outline-variant bg-surface-container-lowest flex h-4 w-4 shrink-0 items-center justify-center border',
-          'rounded-small',
-          'transition-colors outline-none',
-          'focus-visible:ring-primary focus-visible:ring-offset-surface focus-visible:ring-2 focus-visible:ring-offset-1',
-          'data-[checked]:border-primary data-[checked]:bg-primary-container',
-          'data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50',
-          className
+          "border-outline-variant bg-surface-container-lowest flex h-4 w-4 shrink-0 items-center justify-center border",
+          "rounded-small",
+          "transition-colors outline-none",
+          "focus-visible:ring-primary focus-visible:ring-offset-surface focus-visible:ring-2 focus-visible:ring-offset-1",
+          "data-[checked]:border-primary data-[checked]:bg-primary-container",
+          "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
+          className,
         )}
         {...props}
       >
@@ -30,5 +37,5 @@ export function Checkbox({ label, className, id, ...props }: CheckboxProps) {
       </BaseCheckbox.Root>
       {label && <span>{label}</span>}
     </label>
-  )
+  );
 }

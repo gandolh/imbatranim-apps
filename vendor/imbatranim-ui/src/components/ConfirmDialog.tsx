@@ -1,58 +1,116 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { Button } from './Button'
-import { Dialog } from './Dialog'
+import { AlertDialog } from "@base-ui/react/alert-dialog";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { cn } from "../cn";
+import { Button } from "./Button";
 
 export type ConfirmOptions = {
-  title: string
+  title: string;
   /**
    * `ReactNode`, not `string`: the File Manager's delete confirmation names the
    * target in bold, and forcing it to a plain string to reuse this dialog would
    * have made the shared component *worse* than the bespoke one it replaced.
    */
-  message: ReactNode
-  confirmLabel?: string
-  cancelLabel?: string
-  destructive?: boolean
-}
+  message: ReactNode;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  destructive?: boolean;
+};
 
 type ConfirmDialogProps = ConfirmOptions & {
-  open: boolean
-  onConfirm: () => void
-  onCancel: () => void
-}
+  open: boolean;
+  /**
+   * Return a promise and the dialog stays open, ignoring Esc, the X and the
+   * Cancel button, until it settles: the action is running.
+   */
+  onConfirm: () => void | Promise<unknown>;
+  onCancel: () => void;
+  /** The confirm button's label while the action runs. */
+  pendingLabel?: string;
+};
 
 /**
- * A themed confirm dialog built on core's {@link Dialog}. Controlled: the parent
- * owns `open` and is notified via `onConfirm` / `onCancel`. Dismissing (backdrop,
- * Escape, close button) counts as a cancel. Prefer the {@link useConfirm} hook
- * for the common imperative `await confirm(...)` flow.
+ * A themed confirm dialog on Base UI's AlertDialog. Controlled: the parent owns
+ * `open` and is notified via `onConfirm` / `onCancel`. Dismissing (Escape, the
+ * close button) counts as a cancel; an outside press does nothing, as an alert
+ * should not vanish by accident. Cancel has the focus. While an async
+ * `onConfirm` runs it cannot be dismissed and the button shows `pendingLabel`.
+ * Prefer the {@link useConfirm} hook for the common imperative
+ * `await confirm(...)` flow.
  */
 export function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
+  pendingLabel = "Working…",
   destructive = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const [pending, setPending] = useState(false);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  const run = () => {
+    if (pending) return;
+    const result = onConfirm();
+    if (result && typeof (result as Promise<unknown>).then === "function") {
+      setPending(true);
+      void (result as Promise<unknown>).then(
+        () => setPending(false),
+        () => setPending(false),
+      );
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(next) => !next && onCancel()} title={title}>
-      <p className="text-on-surface mb-4">{message}</p>
-      <div className="flex justify-end gap-2">
-        <Button variant="default" size="sm" onClick={onCancel}>
-          {cancelLabel}
-        </Button>
-        <Button variant={destructive ? 'destructive' : 'primary'} size="sm" onClick={onConfirm}>
-          {confirmLabel}
-        </Button>
-      </div>
-    </Dialog>
-  )
+    <AlertDialog.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (!next && !pending) onCancel();
+      }}
+    >
+      <AlertDialog.Portal>
+        <AlertDialog.Backdrop className="bg-scrim z-scrim fixed inset-0" />
+        <AlertDialog.Popup
+          initialFocus={cancelRef}
+          className={cn(
+            "z-dialog fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+            "border-outline-variant bg-surface-container-lowest rounded-window min-w-[320px] overflow-hidden border",
+            "shadow-(--k-shadow-dialog)",
+            "outline-none",
+          )}
+        >
+          <div className="border-outline-variant bg-surface-container-high flex items-center justify-between border-b px-3 py-1.5">
+            <AlertDialog.Title className="font-ui text-on-surface text-body font-semibold">{title}</AlertDialog.Title>
+            <AlertDialog.Close
+              aria-label="Close"
+              disabled={pending}
+              className="border-outline-variant bg-surface-container-low font-ui text-on-surface hover:bg-error hover:text-on-error rounded-control text-control flex h-5 w-5 cursor-pointer items-center justify-center border"
+            >
+              ×
+            </AlertDialog.Close>
+          </div>
+          <div className="font-content text-on-surface text-body p-3">
+            <AlertDialog.Description render={<div />} className="text-on-surface mb-4">
+              {message}
+            </AlertDialog.Description>
+            <div className="flex justify-end gap-2">
+              <Button ref={cancelRef} variant="default" size="sm" disabled={pending} onClick={onCancel}>
+                {cancelLabel}
+              </Button>
+              <Button variant={destructive ? "destructive" : "primary"} size="sm" disabled={pending} onClick={run}>
+                {pending ? pendingLabel : confirmLabel}
+              </Button>
+            </div>
+          </div>
+        </AlertDialog.Popup>
+      </AlertDialog.Portal>
+    </AlertDialog.Root>
+  );
 }
 
-type ConfirmState = ConfirmOptions & { open: boolean }
+type ConfirmState = ConfirmOptions & { open: boolean };
 
 /**
  * Imperative confirm dialog. Call `confirm(opts)` to open the themed dialog and
@@ -71,40 +129,40 @@ type ConfirmState = ConfirmOptions & { open: boolean }
 // boundary, so exporting it alongside <ConfirmDialog> is safe.
 // eslint-disable-next-line react-refresh/only-export-components
 export function useConfirm(): {
-  confirm: (opts: ConfirmOptions) => Promise<boolean>
-  confirmDialog: ReactNode
+  confirm: (opts: ConfirmOptions) => Promise<boolean>;
+  confirmDialog: ReactNode;
 } {
   const [state, setState] = useState<ConfirmState>({
     open: false,
-    title: '',
-    message: '',
-  })
-  const resolverRef = useRef<((value: boolean) => void) | null>(null)
+    title: "",
+    message: "",
+  });
+  const resolverRef = useRef<((value: boolean) => void) | null>(null);
 
   const confirm = useCallback((opts: ConfirmOptions) => {
     return new Promise<boolean>((resolve) => {
       // A re-entrant call while a dialog is still pending settles the prior
       // promise as false so its awaiter never hangs.
-      resolverRef.current?.(false)
-      resolverRef.current = resolve
-      setState({ ...opts, open: true })
-    })
-  }, [])
+      resolverRef.current?.(false);
+      resolverRef.current = resolve;
+      setState({ ...opts, open: true });
+    });
+  }, []);
 
   const settle = useCallback((value: boolean) => {
-    resolverRef.current?.(value)
-    resolverRef.current = null
-    setState((prev) => ({ ...prev, open: false }))
-  }, [])
+    resolverRef.current?.(value);
+    resolverRef.current = null;
+    setState((prev) => ({ ...prev, open: false }));
+  }, []);
 
   // If the host unmounts with a confirm still pending, settle it false rather
   // than leaving the awaiter hung forever.
   useEffect(() => {
     return () => {
-      resolverRef.current?.(false)
-      resolverRef.current = null
-    }
-  }, [])
+      resolverRef.current?.(false);
+      resolverRef.current = null;
+    };
+  }, []);
 
   const confirmDialog: ReactNode = (
     <ConfirmDialog
@@ -117,7 +175,7 @@ export function useConfirm(): {
       onConfirm={() => settle(true)}
       onCancel={() => settle(false)}
     />
-  )
+  );
 
-  return { confirm, confirmDialog }
+  return { confirm, confirmDialog };
 }

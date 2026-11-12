@@ -62,7 +62,7 @@
   /* Fonts — the UI font follows the theme (Figtree in Apricot, Space Grotesk
      in Classic, set per token block in index.css); Inter is the content font */
   --font-ui: var(--k-font-ui);
-  --font-content: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-content: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* Corners — per theme (index.css): Apricot's soft radii, 0 in Classic.
      Only these six; numeric rounded-* classes are not used. `small` is for
@@ -74,7 +74,58 @@
   --radius-tile: var(--k-radius-tile);
   --radius-small: var(--k-radius-small);
 
-  /* Spacing */
+  /* Scrim behind a modal dialog (was bg-black/50) */
+  --color-scrim: #00000080;
+
+  /* Layers. The literal z-[N] values this replaces, in the same order. A
+     window's own z-index grows past these, so a popup's Positioner carries one
+     of them. select sits above dialog so a Select opens in front of the
+     Dialog that holds it. */
+  --z-index-palette-scrim: 900;
+  --z-index-palette: 901;
+  --z-index-popover: 1000;
+  --z-index-scrim: 1000;
+  --z-index-dialog: 1001;
+  --z-index-select: 1002;
+  --z-index-tooltip: 1100;
+  --z-index-toast: 8500;
+  --z-index-taskbar: 9000;
+  --z-index-start: 9001;
+  --z-index-lock: 9999;
+  --z-index-menu: 10000;
+  --z-index-switcher: 10001;
+
+  /* Type scale. Every size is the pixel value the app already drew, so the
+     names replace text-[Npx] with no visible change. No line height is
+     attached (rows inherit theirs), except for the four that replaced
+     Tailwind's text-sm, -base, -2xl and -3xl, which carried one. */
+  --text-nano: 8px;
+  --text-micro: 9px;
+  --text-tiny: 10px;
+  --text-label: 11px;
+  --text-control: 12px;
+  --text-body: 13px;
+  --text-subhead: 14px;
+  --text-lead: 15px;
+  --text-title: 17px;
+  --text-display-sm: 26px;
+  --text-display: 32px;
+  --text-display-lg: 36px;
+  --text-display-xl: 40px;
+  --text-note: 11.375px;
+  --text-note--line-height: calc(1.25 / 0.875);
+  --text-prose: 13px;
+  --text-prose--line-height: 1.5;
+  --text-heading: 19.5px;
+  --text-heading--line-height: calc(2 / 1.5);
+  --text-headline: 24.375px;
+  --text-headline--line-height: 1.2;
+
+  /* Spacing. The root is the browser's 16 px and the app's 13 px sits on
+     body, so one step is 13/16 of Tailwind's 0.25rem: p-2 stays 6.5 px. */
+  --spacing: 0.203125rem;
+
+  /* Named spacing */
   --spacing-half: 4px;
   --spacing-base: 8px;
   --spacing-double: 16px;
