@@ -94,6 +94,8 @@ Brief 07 (2026-11-10, `40450da`): the kit snapshot at imbatranimOS `dcdb648`, Ba
 
 Brief 08 (2026-11-11): the house-style harness. Formatted at width 120 (`8fbe7dd`), `vendor/house-style/` 1.0.0, typed lint, `npm run check` and `check:fast`, `.claude/rules/` and a root `CLAUDE.md`. `check-structure` runs `--warn-only` until brief 10; `check-base-ui` is already strict (no finding).
 
+Brief 09 (2026-11-12, `cb60886` to `46e9471`): the kit snapshot at imbatranimOS `ea84fac`; the apps use the kit's `Toggle`, `RadioGroup`, `Tabs`, `Checkbox` and `Select`, the form dialogs hold on an outside press, every size is a named scale entry and the rem-sized utilities are pinned. Pinned by the OS only after the owner bumps its catalog descriptors; not walked on a deployed desktop.
+
 No todo is open.
 
 Test files for the walks: [test-files.md](test-files.md).

@@ -511,3 +511,20 @@ PDF's two `console.error` calls (the failed page and text layer keep the error
 object) and Slides' `console.error` beside its notification. `corpus/CLAUDE.md`
 no longer says Win7-classic (stale against the owner's 2026-11-06 call) and
 sends the hard rules and brief-board to the root file.
+
+## [2026-11-12] done | Brief 09: Base UI by the conventions
+
+[Brief 09](briefs/done/09-base-ui-by-the-conventions.md) built in `cb60886` to
+`46e9471`. `kit:sync` at imbatranimOS `ea84fac` (no pin moved; `SHARED_KIT_VERSION`
+1). The 13 `aria-pressed` buttons became `Toggle` (Docs find, CAD status bar and
+toolbar, Slides toolbar, PDF side-panel button, Todo select, due and importance,
+Git side by side, REST file/text) or `RadioGroup` (PDF tools, colours, widths and
+fit modes; Todo's "Move to" row is an unguarded `ToggleGroup`); the PDF side panel
+and the signature pad use `Tabs`; Todo's sort is the kit `Select`; five native
+checkboxes and the CAD current-layer radio use `Checkbox` and `Radio`; four form
+dialogs (and the curl dialog in import mode) set `disablePointerDismissal`. The 216
+`text-[Npx]` classes took the named sizes, the four rem-sized sites were pinned,
+the Presenter took `z-dialog`, and the CAD dev page's 13 px moved to `body`.
+`check-base-ui` ran strict with 0 findings before and after; exceptions are in
+`tools/conventions.json`. Screenshots (Apricot light and Classic dark, 1280 and
+390) show the same layouts; two looks changed (below).

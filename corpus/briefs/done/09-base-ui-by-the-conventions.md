@@ -131,3 +131,32 @@ One commit per step, with `npm run check` green after each (`check-base-ui` runs
 - Brief 08's gate runs everything above; this brief turns `check-base-ui` strict.
 - Brief 11 changes the token values on top of this structure. The sizes pinned in step 4 are pixels, so the redesign's scale does not move them.
 - imbatranimOS's brief 87 changes `Dialog` and `ConfirmDialog` additively, so `SHARED_KIT_VERSION` stays 1. If it ships a smaller kit than this brief assumes (no `Tabs`, say), steps 3(c) and the matching swaps wait for it, and the rest go ahead.
+
+## Outcome (2026-11-12)
+
+Built in `cb60886` (kit sync), `aaa0fe6` (the swaps, tests and sizes in one commit:
+the sub-steps touched the same files), `c8b60c7` (exceptions and docs), `46e9471`.
+
+- Before counts (strict `check-base-ui`): 0 findings, since no app imports Base UI.
+  Rule 5 and rule 7: no stylesheet in any app (exception on record); 20
+  `transition`/`animate-`/`data-starting-style` uses, 0 under `motion-safe`.
+  58 inline `style` sites: geometry or data, except static `outline`/`cursor`
+  (`TextEditor`), `mixBlendMode` (annotate layer), `touchAction` (`TodoRow`),
+  the signature preview's `fontFamily` and a few fixed `position` rules in
+  `SlideView`, which could be classes.
+- Acceptance greps all print nothing, except `<select`/radio in
+  `apps/pdf/src/forms/FormsPanel.tsx` (the excepted PDF form fields).
+  `var(--spacing,.203125rem)` is in the built Todo CSS.
+- Deviations: the Todo "Move to" row is an unguarded `ToggleGroup` (a pick closes
+  the row; `RadioGroup` arrows would pick on the way); the curl dialog holds its
+  pointer in import mode; `FormsPanel`'s `<select multiple>` stays native (the kit
+  `Select` is single-choice); the PDF fit buttons and tool rail are radio groups,
+  the panel button a toggle; `text-lg` became `text-lead` (15 px), the 18 px sizes
+  `text-title` (17 px), `text-[2.2rem]` `text-display-sm` (26 px); the Presenter
+  took `z-dialog`; `kitSnapshot.test.ts` names the new commit.
+- Visible changes: the kit `Checkbox` is a little larger and, in Classic dark, its
+  empty box is fainter than the native one; the CAD current-layer marker is a
+  square in Classic. Todo's sort control is the kit select, slightly smaller.
+- Two owner questions stay open, defaults built: a folder picker (Bookmarks) keeps
+  outside-press dismissal; a PDF's own form controls stay native.
+- `apps/pdf/src/App.test.tsx` timed out under the full run twice and passed alone.
