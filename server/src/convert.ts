@@ -23,7 +23,7 @@ export type ConverterOptions = {
   /** The child's entry; tests point it at a stand-in. */
   entry?: URL;
   /** Where a failure's detail goes (the server's log). */
-  log?: (line: string) => void;
+  log: (line: string) => void;
 };
 
 /** Run one conversion in a fresh child process. */
@@ -61,12 +61,11 @@ function runChild(dwg: Uint8Array, entry: URL, timeoutMs: number, log: (line: st
 }
 
 /** A converter that runs one child at a time and queues a few behind it. */
-export function createConverter(options: ConverterOptions = {}): Converter {
+export function createConverter(options: ConverterOptions): Converter {
   const timeoutMs = options.timeoutMs ?? CONVERT_TIMEOUT_MS;
   const maxWaiting = options.maxWaiting ?? 3;
   const entry = options.entry ?? new URL("./converter.ts", import.meta.url);
-  // eslint-disable-next-line no-console -- the default sink when the caller gives no logger
-  const log = options.log ?? ((line) => console.error(line));
+  const { log } = options;
   let tail: Promise<unknown> = Promise.resolve();
   let waiting = 0;
 

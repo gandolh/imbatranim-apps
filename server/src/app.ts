@@ -13,6 +13,7 @@ import Fastify, { type FastifyInstance, type FastifyServerOptions } from "fastif
 import websocket from "@fastify/websocket";
 import { DWG_TO_DXF_PATH, MAX_DWG_BYTES, dwgVersion, type DwgFailure } from "@imbatranim-office/shared/dwg";
 import type { Config } from "./config.ts";
+import { errors } from "./plugins/errors.ts";
 import { createConverter, type Converter } from "./convert.ts";
 
 /** Fastify's options a caller may override: a test turns the logger off. */
@@ -26,9 +27,11 @@ export type BuildAppOptions = {
 };
 
 export async function buildApp(config: Config, options: BuildAppOptions = {}): Promise<FastifyInstance> {
-  const convert = options.convert ?? createConverter();
   const idleMs = options.idleMs ?? 30_000;
   const app = Fastify({ logger: { level: config.logLevel }, ...options.server });
+  const convert = options.convert ?? createConverter({ log: (line) => app.log.warn(line) });
+  // First, so every route registered below answers through it.
+  await app.register(errors);
   // One byte over the cap is enough to tell "too large" from "at the cap";
   // ws closes a socket whose message is larger with 1009.
   await app.register(websocket, { options: { maxPayload: MAX_DWG_BYTES + 1 } });
