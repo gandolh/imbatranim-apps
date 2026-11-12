@@ -10,8 +10,8 @@ afterEach(async () => {
 });
 
 /** The app for one test: the logger off, a fake converter if given, closed after the test. It does not listen. */
-export async function buildTestApp(options: Omit<BuildAppOptions, "server"> = {}): Promise<FastifyInstance> {
-  const app = await buildApp(loadConfig({}), { ...options, server: { logger: false } });
+export async function buildTestApp(options: BuildAppOptions = {}): Promise<FastifyInstance> {
+  const app = await buildApp(loadConfig({}), { ...options, server: { logger: false, ...options.server } });
   open.push(app);
   return app;
 }

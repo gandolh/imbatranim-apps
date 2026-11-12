@@ -27,7 +27,7 @@ for test data, and for the one dependency whose licence differs from ours.
   and the AGPLv3. Their source is at the links above; nothing of either is
   copied into this repository.
 - Where it runs: only in `server/` (Node), one child process per conversion
-  (`server/src/converter.ts`). It is never bundled into an app: it is not
+  (`server/src/features/dwg/converter.ts`). It is never bundled into an app: it is not
   in the build, and `npm run build:os` emits no `.wasm` but pdf.js's three
   decoders (a test checks).
 

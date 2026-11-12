@@ -1,23 +1,7 @@
-import { afterEach, describe, expect, it } from "vitest";
-import type { FastifyInstance } from "fastify";
-import { DWG_TO_DXF_PATH, MAX_DWG_BYTES } from "@imbatranim-office/shared/dwg";
-import { buildApp } from "./app.ts";
-import { loadConfig } from "./config.ts";
+import { describe, expect, it } from "vitest";
+import { MAX_DWG_BYTES } from "@imbatranim-office/shared/dwg";
+import { buildTestApp, listenTestApp } from "../../testing/buildTestApp.ts";
 import type { Converter } from "./convert.ts";
-
-const config = loadConfig({});
-const servers: FastifyInstance[] = [];
-afterEach(async () => {
-  await Promise.all(servers.splice(0).map((s) => s.close()));
-});
-
-async function start(convert: Converter, idleMs?: number): Promise<string> {
-  const app = await buildApp(config, { convert, idleMs, server: { logger: false } });
-  servers.push(app);
-  await app.listen({ port: 0, host: "127.0.0.1" });
-  const { port } = app.server.address() as { port: number };
-  return `ws://127.0.0.1:${port}${DWG_TO_DXF_PATH}`;
-}
 
 type Answer = { text?: string; binary?: Uint8Array; code: number };
 
@@ -43,7 +27,11 @@ function exchange(url: string, message?: Uint8Array<ArrayBuffer> | string): Prom
 const dwg = (rest = "") => new TextEncoder().encode(`AC1032${rest}`);
 const echo: Converter = async (bytes) => ({ ok: true, dxf: bytes });
 
-describe("the suite server", () => {
+async function start(convert: Converter, idleMs?: number): Promise<string> {
+  return listenTestApp(await buildTestApp({ convert, idleMs }));
+}
+
+describe("the DWG to DXF socket", () => {
   it("takes a DWG as one binary message and answers the DXF as one, then closes", async () => {
     const url = await start(echo);
     const answer = await exchange(url, dwg(" drawing"));
@@ -88,5 +76,19 @@ describe("the suite server", () => {
     const url = await start(echo, 200);
     const answer = await exchange(url);
     expect(answer).toEqual({ code: 1000 });
+  });
+
+  it("still answers on a socket held open longer than the HTTP request timeout", async () => {
+    // A WebSocket leaves Node's HTTP timeouts once it upgrades; a slow conversion has its own limit.
+    const app = await buildTestApp({
+      server: { requestTimeout: 100 },
+      convert: async (b) => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return { ok: true, dxf: b };
+      },
+    });
+    const answer = await exchange(await listenTestApp(app), dwg(" slow"));
+    expect(new TextDecoder().decode(answer.binary)).toBe("AC1032 slow");
+    expect(answer.code).toBe(1000);
   });
 });
