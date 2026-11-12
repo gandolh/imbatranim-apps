@@ -1,6 +1,6 @@
 ---
 summary: How an app's CSS reaches the desktop: app.css as Tailwind utilities only against the kit snapshot's tokens (no preflight, no --color-* values), and vendor stylesheets declared in package.json (imbatranimOffice.vendorStyles), copied byte for byte after a check that refuses rules not tied to the library, html/body/:root rules beyond custom properties, the desktop's tokens, @import, @font-face and remote url(); ownAttributes, ownCustomProperties (Univer's --univer-) and dropRules (Univer's scrollbar reset) as the declared exceptions.
-updated: 2026-11-02
+updated: 2026-11-12
 ---
 
 # Stylesheets
@@ -24,6 +24,31 @@ are left to the desktop, which compiles `packages/ui` into its own CSS.
 `checkUtilitiesOnly` then fails the build on anything but `@layer utilities`,
 Tailwind's `@layer properties` / `@property --tw-*` / `@keyframes`, and on any
 `--color-*` definition. CSS imported from JS fails too.
+
+## Sizes and layers (2026-11-12)
+
+The desktop's root is the browser's 16 px and its `body` is 13 px (imbatranimOS
+brief 87), and the kit's `theme.css` carries `--spacing: 0.203125rem`, so a
+built `app.css` reads `var(--spacing,.203125rem)` and `p-2` stays 6.5 px. What
+still moves is a utility that compiles to a literal `rem`: `text-lg`,
+`max-w-md`, `max-w-sm`, `text-[2.2rem]`. None is left in the apps:
+
+- `max-w-md` and `max-w-sm` are pinned to the pixels they measured at 13 px,
+  `max-w-[364px]` and `max-w-[312px]` (`EmptyState`, `RepoBar`).
+- `text-lg` (14.625 px at 13 px) became the kit's `text-lead` (15 px) and the
+  signature preview's `text-[2.2rem]` (28.6 px) became `text-display-sm` (26 px),
+  each the nearest entry of the scale.
+- Every other size is a name from the kit's scale, by pixel value: 8 `nano`, 9
+  `micro`, 10 `tiny`, 11 `label`, 12 `control`, 13 `body`, 14 `subhead`, and the
+  one 18 px `title` (17 px). Never `text-[Npx]`; a size the scale lacks is an
+  imbatranimOS brief, since the kit's `theme.css` is never edited here.
+- The Presenter's full-screen layer is `z-dialog`, a token of the kit's z scale
+  (it was `z-[100]`). The four `z-[N]` in `PageView` and `PageAnnotateLayer`
+  order siblings inside one page and stay literal, on record in
+  `tools/conventions.json`.
+
+The CAD dev page (`apps/cad/harness/desktop.css`) sets its 13 px on `body`, and
+leaves the root at 16 px, as the desktop does.
 
 ## Vendor stylesheets
 

@@ -2,5 +2,58 @@
   "$schema": "../vendor/house-style/conventions.schema.json",
   "web": ["apps/*/src", "accessories/apps/*/src", "developer/apps/*/src", "games/apps/*/src"],
   "server": ["server/src"],
-  "shared": ["games/shared/src", "accessories/shared/src", "developer/shared/src", "packages/pdfcore-engine/src"]
+  "shared": ["games/shared/src", "accessories/shared/src", "developer/shared/src", "packages/pdfcore-engine/src"],
+  "exceptions": [
+    {
+      "check": "base-ui",
+      "rule": 5,
+      "path": "**",
+      "reason": "No app has a stylesheet of its own: each app's app.css is compiled at build time from its classes, as utilities only, against the kit's token file (wiki/stylesheets.md), so there is no styles/index.css to hold or to count. The one hand-written sheet is the CAD dev page's harness/desktop.css."
+    },
+    {
+      "check": "base-ui",
+      "rule": 6,
+      "path": "apps/pdf/src",
+      "match": "bg-white",
+      "reason": "A PDF page, a page thumbnail, a signature canvas and the typed-signature preview are paper, not themed UI: they stay white in both themes, as the mark that lands in the PDF is black on white."
+    },
+    {
+      "check": "base-ui",
+      "rule": 6,
+      "path": "apps/slides/src/editor/Presenter.tsx",
+      "reason": "The slide show is a black stage with white text and white hairlines whatever the theme, as a projector shows it."
+    },
+    {
+      "check": "base-ui",
+      "rule": 8,
+      "path": "apps/pdf/src/reader/PageView.tsx",
+      "match": "z-[3]",
+      "reason": "Stacking inside one page's canvas (the text layer above the bitmap), not a floating part: it sits in the page's own stacking context and never meets the kit's z scale."
+    },
+    {
+      "check": "base-ui",
+      "rule": 8,
+      "path": "apps/pdf/src/editor/PageAnnotateLayer.tsx",
+      "reason": "Stacking inside one page's annotation layer (the layer, a delete handle and the note editor over the page's marks), not floating parts: the numbers order siblings in the page's own stacking context."
+    },
+    {
+      "check": "base-ui",
+      "rule": 13,
+      "path": "apps/slides/src/editor/Rail.tsx",
+      "reason": "The slide rail is a role=listbox of draggable thumbnails. Base UI has no listbox that fits drag to reorder, so it stays hand-built; it keeps the arrow keys, Home and End."
+    },
+    {
+      "check": "base-ui",
+      "rule": 13,
+      "path": "apps/pdf/src/forms/FormsPanel.tsx",
+      "reason": "A PDF's own form controls stay native: a radio group and a multiple-choice listbox (a <select multiple>, which the kit's single-choice Select does not cover) draw a field of the document, not a control of the app (Q16). Its text, checkbox and dropdown fields use the kit."
+    },
+    {
+      "check": "base-ui",
+      "rule": 13,
+      "path": "**",
+      "match": "type=\"date\"",
+      "reason": "Native text, date and time inputs stay native (Q16): the browser's picker is the best one on a phone, and Base UI has none."
+    }
+  ]
 }

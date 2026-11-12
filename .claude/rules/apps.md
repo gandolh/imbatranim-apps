@@ -16,6 +16,13 @@ paths:
   at bundle time. An app does not bundle its own.
 - An app reaches the OS through `useSystem()`: files, notifications, windows
   and the server.
+- Controls come from the kit: `Toggle` for on/off, `RadioGroup` for a choice of
+  one, `Tabs` for panels, `Checkbox`, `Select`, and `disablePointerDismissal`
+  on a dialog that holds a form. No native `<select>`, checkbox, radio, or
+  `aria-pressed` or `role="tab"` button.
+- Sizes are the kit's names (`text-label`, `text-control`, `text-body`), never
+  `text-[Npx]`, and no rem-sized utility (`text-lg`, `max-w-md`); layers use
+  the kit's `z-*` tokens.
 - Utilities compile against the kit's tokens. An app has no stylesheet of its
   own, and a library's CSS is declared in the app's `package.json`
   ([corpus/wiki/stylesheets.md](../../corpus/wiki/stylesheets.md)).
