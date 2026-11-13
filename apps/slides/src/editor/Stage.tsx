@@ -350,7 +350,7 @@ export function Stage({
             />
             {marquee && (
               <div
-                className="border-primary bg-primary/10 pointer-events-none absolute border border-dashed"
+                className="pointer-events-none absolute border border-dashed border-[#a04b23] bg-[#a04b23]/10"
                 style={{
                   left: marquee.x * k,
                   top: marquee.y * k,
@@ -414,7 +414,7 @@ function Overlay({
                   data-handle={`end${i}`}
                   data-shape={shape.id}
                   aria-hidden="true"
-                  className="border-primary bg-surface-container-lowest absolute h-[9px] w-[9px] border"
+                  className="absolute h-[9px] w-[9px] border border-[#a04b23] bg-white"
                   style={{ left: p.x * k - 4.5, top: p.y * k - 4.5, cursor: "crosshair" }}
                 />
               ))}
@@ -427,7 +427,7 @@ function Overlay({
         return (
           <div
             key={shape.key}
-            className={`outline-primary pointer-events-none absolute outline-1 ${isEditing ? "outline-dashed" : "outline-solid"}`}
+            className={`pointer-events-none absolute outline-1 outline-[#a04b23] ${isEditing ? "outline-dashed" : "outline-solid"}`}
             style={{
               left: box.x * k,
               top: box.y * k,
@@ -444,7 +444,7 @@ function Overlay({
                   data-handle={handle}
                   data-shape={shape.id}
                   aria-hidden="true"
-                  className="border-primary bg-surface-container-lowest pointer-events-auto absolute h-[9px] w-[9px] border"
+                  className="pointer-events-auto absolute h-[9px] w-[9px] border border-[#a04b23] bg-white"
                   style={{
                     left: HANDLE_POS[handle][0] * w - 4.5,
                     top: HANDLE_POS[handle][1] * h - 4.5,
@@ -455,14 +455,14 @@ function Overlay({
             {!isEditing && (
               <>
                 <div
-                  className="bg-primary pointer-events-none absolute w-px"
+                  className="pointer-events-none absolute w-px bg-[#a04b23]"
                   style={{ left: w / 2, top: -18, height: 14 }}
                 />
                 <div
                   data-handle="rotate"
                   data-shape={shape.id}
                   aria-hidden="true"
-                  className="border-primary bg-surface-container-lowest pointer-events-auto absolute h-[11px] w-[11px] border"
+                  className="pointer-events-auto absolute h-[11px] w-[11px] border border-[#a04b23] bg-white"
                   style={{ left: w / 2 - 5.5, top: -26, cursor: "grab" }}
                 />
               </>

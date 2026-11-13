@@ -31,6 +31,20 @@
     },
     {
       "check": "base-ui",
+      "rule": 6,
+      "path": "apps/slides/src/editor/Stage.tsx",
+      "match": "#a04b23",
+      "reason": "The selection frame, its handles, the marquee and the snap guide are drawn on the slide, which is white in both modes: the accent of a dark desktop is a pastel at 1.9:1 on white, so the frame is a fixed #a04b23 (5.96:1 on white) in every theme."
+    },
+    {
+      "check": "base-ui",
+      "rule": 6,
+      "path": "apps/slides/src/editor/Stage.tsx",
+      "match": "bg-white",
+      "reason": "The selection handles sit on the slide, which is paper (white) in both modes, like a PDF page."
+    },
+    {
+      "check": "base-ui",
       "rule": 8,
       "path": "apps/pdf/src/reader/PageView.tsx",
       "match": "z-[3]",
