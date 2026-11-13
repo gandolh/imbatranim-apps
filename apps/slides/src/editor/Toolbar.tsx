@@ -1,43 +1,29 @@
-import type { ReactNode } from "react";
 import {
-  AlignCenter,
-  AlignJustify,
-  AlignLeft,
-  AlignRight,
-  ArrowDownToLine,
-  ArrowUpToLine,
-  Baseline,
-  Bold,
   ChevronLeft,
   ChevronRight,
   Copy,
   Download,
+  EllipsisVertical,
   FilePlus2,
   FolderOpen,
-  Image as ImageIcon,
   ImageDown,
   Info,
-  Italic,
   Loader2,
-  Maximize2,
   Minus,
   NotebookText,
-  PaintBucket,
   PanelLeft,
+  PanelRight,
+  Play,
   Plus,
   Redo2,
   Save,
-  Shapes,
-  SquareDashed,
-  Trash2,
-  Type,
-  Underline,
   Undo2,
 } from "lucide-react";
-import { Button, Toggle, Tooltip } from "@imbatranim/ui";
+import { Tooltip } from "@imbatranim/ui";
+import { BarButton, BarSeparator } from "./controls.tsx";
+import { FOCUS_RING, anchorOf, type MenuAnchor } from "./controlStyles.ts";
 
-/** Every control a toolbar button can open a menu from: its bottom-left corner. */
-export type MenuAnchor = { x: number; y: number };
+export type { MenuAnchor } from "./controlStyles.ts";
 
 export type ToolbarState = {
   name: string;
@@ -53,6 +39,8 @@ export type ToolbarState = {
   zoomLabel: string;
   showRail: boolean;
   showNotes: boolean;
+  /** The format panel is docked or its popover is open. */
+  showInspector: boolean;
   /** Shapes are selected (or text is being edited): formatting applies. */
   hasSelection: boolean;
   hasText: boolean;
@@ -71,6 +59,7 @@ export type ToolbarActions = {
   undo: () => void;
   redo: () => void;
   toggleRail: () => void;
+  toggleInspector: () => void;
   prev: () => void;
   next: () => void;
   zoomOut: () => void;
@@ -80,6 +69,7 @@ export type ToolbarActions = {
   present: () => void;
   exportPng: () => void;
   download: () => void;
+  moreMenu: (at: MenuAnchor) => void;
   newSlideMenu: (at: MenuAnchor) => void;
   duplicateSlide: () => void;
   deleteSlide: () => void;
@@ -97,291 +87,173 @@ export type ToolbarActions = {
   deleteShapes: () => void;
 };
 
-const anchorOf = (e: React.MouseEvent): MenuAnchor => {
-  const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-  return { x: r.left, y: r.bottom };
-};
+const DESKTOP = "max-[600px]:hidden";
+const PHONE = "hidden max-[600px]:flex";
 
-/** Formatting buttons keep the text editor's selection: no focus on press. */
-const keepFocus = (e: React.MouseEvent) => e.preventDefault();
-
-function Icon({
-  label,
-  shortcut,
-  onClick,
-  disabled,
-  pressed,
-  children,
-  menu,
-  keep,
-}: {
-  label: string;
-  shortcut?: string;
-  onClick: (e: React.MouseEvent) => void;
-  disabled?: boolean;
-  pressed?: boolean;
-  children: ReactNode;
-  menu?: boolean;
-  keep?: boolean;
-}) {
-  const className = menu ? "h-6 gap-0.5 px-1" : "h-6 w-6 justify-center p-0";
-  const body = (
+/**
+ * The app bar: the file and its history at the left, Download and Present
+ * labelled at the right. On a phone it keeps Save, the history and Present,
+ * and the rest sits in More.
+ */
+export function Toolbar({ state, actions }: { state: ToolbarState; actions: ToolbarActions }) {
+  const s = state;
+  const a = actions;
+  const save = (
+    <BarButton label="Save" shortcut="Ctrl+S" labelled onClick={a.save} disabled={s.saving || !s.dirty}>
+      {s.saving ? <Loader2 size={16} className="motion-safe:animate-spin" /> : <Save size={16} />}
+    </BarButton>
+  );
+  const history = (
     <>
-      {children}
-      {menu && <span className="text-nano leading-none">▾</span>}
+      <BarButton
+        label={s.undoLabel ? `Undo ${s.undoLabel.toLowerCase()}` : "Undo"}
+        shortcut="Ctrl+Z"
+        onClick={a.undo}
+        disabled={!s.canUndo}
+      >
+        <Undo2 size={16} />
+      </BarButton>
+      <BarButton
+        label={s.redoLabel ? `Redo ${s.redoLabel.toLowerCase()}` : "Redo"}
+        shortcut="Ctrl+Y"
+        onClick={a.redo}
+        disabled={!s.canRedo}
+      >
+        <Redo2 size={16} />
+      </BarButton>
     </>
   );
+  const present = (
+    <BarButton label="Present" shortcut="F5" labelled edged onClick={a.present} disabled={s.slideCount === 0}>
+      <Play size={16} />
+    </BarButton>
+  );
   return (
-    <Tooltip content={shortcut ? `${label} (${shortcut})` : label}>
-      {pressed === undefined ? (
-        <Button
-          variant="ghost"
-          size="sm"
-          className={className}
-          aria-label={label}
-          aria-haspopup={menu ? "menu" : undefined}
-          disabled={disabled}
-          onMouseDown={keep ? keepFocus : undefined}
-          onClick={onClick}
+    <div
+      role="toolbar"
+      aria-label="File"
+      className="border-outline-variant bg-surface-container-low h-appbar max-[600px]:h-appbar-phone flex shrink-0 items-center gap-[4px] border-b px-[4px]"
+    >
+      <div className={`${DESKTOP} contents`}>
+        <BarButton label="Slide thumbnails" onClick={a.toggleRail} pressed={s.showRail}>
+          <PanelLeft size={16} />
+        </BarButton>
+        <BarButton label="New presentation" onClick={a.newDeck}>
+          <FilePlus2 size={16} />
+        </BarButton>
+        <BarButton label="Open" shortcut="Ctrl+O" onClick={a.open}>
+          <FolderOpen size={16} />
+        </BarButton>
+      </div>
+      {save}
+      <div className={`${DESKTOP} contents`}>
+        <BarButton label="Save as…" labelled onClick={a.saveAs} disabled={s.saving}>
+          <Copy size={16} />
+        </BarButton>
+        <BarSeparator />
+      </div>
+      {history}
+      <div className="min-w-0 flex-1" />
+      <div className={`${DESKTOP} contents`}>
+        <Tooltip content="Drawn by this app, layout may differ from PowerPoint">
+          <span
+            tabIndex={0}
+            aria-label="Drawn by this app, layout may differ from PowerPoint"
+            className={`text-on-surface-variant rounded-control flex h-[32px] w-[32px] shrink-0 items-center justify-center outline-none ${FOCUS_RING}`}
+          >
+            <Info size={16} />
+          </span>
+        </Tooltip>
+        <BarButton
+          label="Export this slide as a PNG"
+          onClick={a.exportPng}
+          disabled={s.slideCount === 0 || s.exporting}
         >
-          {body}
-        </Button>
-      ) : (
-        <Toggle
-          pressed={pressed}
-          aria-label={label}
-          aria-haspopup={menu ? "menu" : undefined}
-          disabled={disabled}
-          onMouseDown={keep ? keepFocus : undefined}
-          onClick={onClick}
-          render={<Button variant={pressed ? "primary" : "ghost"} size="sm" className={className} />}
+          {s.exporting ? <Loader2 size={16} className="motion-safe:animate-spin" /> : <ImageDown size={16} />}
+        </BarButton>
+        <BarButton label="Download" labelled edged onClick={a.download} disabled={!s.canDownload}>
+          <Download size={16} />
+        </BarButton>
+      </div>
+      {present}
+      <div className={`${DESKTOP} contents`}>
+        <BarButton
+          label={s.showInspector ? "Hide format panel" : "Show format panel"}
+          onClick={a.toggleInspector}
+          pressed={s.showInspector}
         >
-          {body}
-        </Toggle>
-      )}
-    </Tooltip>
+          <PanelRight size={16} />
+        </BarButton>
+      </div>
+      <div className={PHONE}>
+        <BarButton label="More" menu={false} aria-haspopup="menu" onClick={(e) => a.moreMenu(anchorOf(e))}>
+          <EllipsisVertical size={18} />
+        </BarButton>
+      </div>
+    </div>
   );
 }
 
-const Sep = () => <div className="border-outline-variant mx-1 h-4 border-l" />;
-
-export function Toolbar({ state, actions }: { state: ToolbarState; actions: ToolbarActions }) {
+/** The status band at the foot: the position, the notes and the zoom. */
+export function StatusBand({ state, actions }: { state: ToolbarState; actions: ToolbarActions }) {
   const s = state;
   const a = actions;
   const canNavigate = s.slideCount > 1;
   return (
-    <div className="shrink-0">
-      <div className="border-outline-variant bg-surface-container-low flex flex-wrap items-center gap-1 border-b px-2 py-1">
-        <Icon label="New presentation" onClick={a.newDeck}>
-          <FilePlus2 size={12} />
-        </Icon>
-        <Icon label="Open" shortcut="Ctrl+O" onClick={a.open}>
-          <FolderOpen size={12} />
-        </Icon>
-        <Tooltip content="Save (Ctrl+S)">
-          <Button
-            variant="default"
-            size="sm"
-            className="flex h-6 items-center gap-1"
-            onClick={a.save}
-            disabled={s.saving || !s.dirty}
-          >
-            {s.saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
-            Save
-          </Button>
-        </Tooltip>
-        <Tooltip content="Save a copy under another name">
-          <Button variant="ghost" size="sm" className="h-6" onClick={a.saveAs} disabled={s.saving}>
-            Save as…
-          </Button>
-        </Tooltip>
-        <Sep />
-        <Icon
-          label={s.undoLabel ? `Undo ${s.undoLabel.toLowerCase()}` : "Undo"}
-          shortcut="Ctrl+Z"
-          onClick={a.undo}
-          disabled={!s.canUndo}
-        >
-          <Undo2 size={12} />
-        </Icon>
-        <Icon
-          label={s.redoLabel ? `Redo ${s.redoLabel.toLowerCase()}` : "Redo"}
-          shortcut="Ctrl+Y"
-          onClick={a.redo}
-          disabled={!s.canRedo}
-        >
-          <Redo2 size={12} />
-        </Icon>
-        <Sep />
-        <Icon label="Slide thumbnails" onClick={a.toggleRail} pressed={s.showRail}>
-          <PanelLeft size={12} />
-        </Icon>
-        <Icon label="Previous slide" shortcut="Page Up" onClick={a.prev} disabled={!canNavigate || s.current === 0}>
-          <ChevronLeft size={13} />
-        </Icon>
-        <span className="font-ui text-on-surface-variant text-label min-w-[52px] text-center tabular-nums">
-          {s.slideCount === 0 ? "—" : `${s.current + 1} / ${s.slideCount}`}
+    <div
+      role="toolbar"
+      aria-label="Slide and view"
+      className="border-outline-variant bg-surface-container h-statusbar max-[600px]:h-statusbar-phone flex shrink-0 items-center gap-[2px] border-t px-[8px]"
+    >
+      <BarButton
+        label="Previous slide"
+        shortcut="Page Up"
+        className="h-[28px] w-[28px]"
+        onClick={a.prev}
+        disabled={!canNavigate || s.current === 0}
+      >
+        <ChevronLeft size={16} />
+      </BarButton>
+      <span className="font-ui text-on-surface text-control min-w-[84px] px-[4px] text-center whitespace-nowrap tabular-nums">
+        {s.slideCount === 0 ? "No slides" : `Slide ${s.current + 1} of ${s.slideCount}`}
+      </span>
+      <BarButton
+        label="Next slide"
+        shortcut="Page Down"
+        className="h-[28px] w-[28px]"
+        onClick={a.next}
+        disabled={!canNavigate || s.current >= s.slideCount - 1}
+      >
+        <ChevronRight size={16} />
+      </BarButton>
+      <div className="min-w-0 flex-1" />
+      <BarButton
+        label="Speaker notes"
+        className="max-[600px]:w-target h-[28px] w-auto gap-[4px] px-[8px] font-normal max-[600px]:px-0"
+        onClick={a.toggleNotes}
+        pressed={s.showNotes}
+      >
+        <NotebookText size={16} />
+        <span className="text-control max-[600px]:hidden" aria-hidden>
+          Notes
         </span>
-        <Icon
-          label="Next slide"
-          shortcut="Page Down"
-          onClick={a.next}
-          disabled={!canNavigate || s.current >= s.slideCount - 1}
-        >
-          <ChevronRight size={13} />
-        </Icon>
-        <Sep />
-        <Icon label="Zoom out" onClick={a.zoomOut}>
-          <Minus size={12} />
-        </Icon>
+      </BarButton>
+      <BarSeparator />
+      <BarButton label="Zoom out" className="h-[28px] w-[28px]" onClick={a.zoomOut}>
+        <Minus size={16} />
+      </BarButton>
+      <Tooltip content="Switch between fit width and fit page">
         <button
           type="button"
           onClick={a.toggleFit}
-          className="font-ui text-on-surface-variant hover:text-on-surface text-label min-w-[62px] text-center tabular-nums"
-          title="Switch between fit width and fit page"
+          className={`font-ui text-on-surface text-control hover:bg-surface-container-high rounded-item max-[600px]:h-target h-[28px] min-w-[64px] px-[8px] text-center whitespace-nowrap tabular-nums outline-none ${FOCUS_RING}`}
         >
           {s.zoomLabel}
         </button>
-        <Icon label="Zoom in" onClick={a.zoomIn}>
-          <Plus size={12} />
-        </Icon>
-        <Sep />
-        <Icon label="Speaker notes" onClick={a.toggleNotes} pressed={s.showNotes}>
-          <NotebookText size={12} />
-        </Icon>
-        <Icon label="Present (Escape to exit)" shortcut="F5" onClick={a.present} disabled={s.slideCount === 0}>
-          <Maximize2 size={12} />
-        </Icon>
-        <Icon label="Export this slide as a PNG" onClick={a.exportPng} disabled={s.slideCount === 0 || s.exporting}>
-          {s.exporting ? <Loader2 size={12} className="animate-spin" /> : <ImageDown size={12} />}
-        </Icon>
-        <div className="min-w-2 flex-1" />
-        <Tooltip content="Drawn by this app — layout may differ from PowerPoint">
-          <Info size={12} className="text-on-surface-variant shrink-0" />
-        </Tooltip>
-        <span className="font-ui text-on-surface-variant text-label max-w-[160px] min-w-0 truncate">
-          {s.name}
-          {s.dirty ? " •" : ""}
-        </span>
-        <Tooltip content="Download original (the file as last saved)">
-          <Button
-            variant="default"
-            size="sm"
-            className="flex h-6 items-center gap-1"
-            onClick={a.download}
-            disabled={!s.canDownload}
-          >
-            <Download size={12} />
-            Download
-          </Button>
-        </Tooltip>
-      </div>
-
-      <div className="border-outline-variant bg-surface-container-low flex flex-wrap items-center gap-1 border-b px-2 py-1">
-        <Icon label="New slide" shortcut="Ctrl+M" menu onClick={(e) => a.newSlideMenu(anchorOf(e))}>
-          <Plus size={12} />
-        </Icon>
-        <Icon label="Duplicate slide" onClick={a.duplicateSlide} disabled={s.slideCount === 0}>
-          <Copy size={12} />
-        </Icon>
-        <Icon label="Delete slide" onClick={a.deleteSlide} disabled={s.slideCount === 0}>
-          <Trash2 size={12} />
-        </Icon>
-        <Sep />
-        <Icon label="Text box" onClick={a.insertTextBox} disabled={s.slideCount === 0}>
-          <Type size={12} />
-        </Icon>
-        <Icon label="Picture" onClick={a.insertPicture} disabled={s.slideCount === 0}>
-          <ImageIcon size={12} />
-        </Icon>
-        <Icon label="Shape" menu onClick={(e) => a.shapeMenu(anchorOf(e))} disabled={s.slideCount === 0}>
-          <Shapes size={12} />
-        </Icon>
-        <Sep />
-        <Icon
-          label="Bold"
-          shortcut="Ctrl+B"
-          keep
-          pressed={s.bold}
-          disabled={!s.hasText}
-          onClick={() => a.toggle("bold")}
-        >
-          <Bold size={12} />
-        </Icon>
-        <Icon
-          label="Italic"
-          shortcut="Ctrl+I"
-          keep
-          pressed={s.italic}
-          disabled={!s.hasText}
-          onClick={() => a.toggle("italic")}
-        >
-          <Italic size={12} />
-        </Icon>
-        <Icon
-          label="Underline"
-          shortcut="Ctrl+U"
-          keep
-          pressed={s.underline}
-          disabled={!s.hasText}
-          onClick={() => a.toggle("underline")}
-        >
-          <Underline size={12} />
-        </Icon>
-        <Tooltip content="Font size">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 min-w-[40px] justify-between gap-0.5 px-1 tabular-nums"
-            aria-label="Font size"
-            aria-haspopup="menu"
-            disabled={!s.hasText}
-            onMouseDown={keepFocus}
-            onClick={(e) => a.sizeMenu(anchorOf(e))}
-          >
-            {s.sizeLabel}
-            <span className="text-nano leading-none">▾</span>
-          </Button>
-        </Tooltip>
-        <Icon label="Increase font size" shortcut="Ctrl+]" keep disabled={!s.hasText} onClick={() => a.sizeStep(1)}>
-          <span className="font-ui text-label leading-none font-semibold">A+</span>
-        </Icon>
-        <Icon label="Decrease font size" shortcut="Ctrl+[" keep disabled={!s.hasText} onClick={() => a.sizeStep(-1)}>
-          <span className="font-ui text-tiny leading-none font-semibold">A-</span>
-        </Icon>
-        <Icon label="Font colour" menu keep disabled={!s.hasText} onClick={(e) => a.colorMenu(anchorOf(e))}>
-          <Baseline size={12} />
-        </Icon>
-        <Sep />
-        <Icon label="Align left" shortcut="Ctrl+L" keep disabled={!s.hasText} onClick={() => a.align("l")}>
-          <AlignLeft size={12} />
-        </Icon>
-        <Icon label="Centre" shortcut="Ctrl+E" keep disabled={!s.hasText} onClick={() => a.align("ctr")}>
-          <AlignCenter size={12} />
-        </Icon>
-        <Icon label="Align right" shortcut="Ctrl+R" keep disabled={!s.hasText} onClick={() => a.align("r")}>
-          <AlignRight size={12} />
-        </Icon>
-        <Icon label="Justify" shortcut="Ctrl+J" keep disabled={!s.hasText} onClick={() => a.align("just")}>
-          <AlignJustify size={12} />
-        </Icon>
-        <Sep />
-        <Icon label="Shape fill" menu disabled={!s.hasSelection} onClick={(e) => a.fillMenu(anchorOf(e))}>
-          <PaintBucket size={12} />
-        </Icon>
-        <Icon label="Shape outline" menu disabled={!s.hasSelection} onClick={(e) => a.outlineMenu(anchorOf(e))}>
-          <SquareDashed size={12} />
-        </Icon>
-        <Icon label="Arrange" menu disabled={!s.hasSelection} onClick={(e) => a.arrangeMenu(anchorOf(e))}>
-          <span className="flex">
-            <ArrowUpToLine size={12} />
-            <ArrowDownToLine size={12} className="-ml-1" />
-          </span>
-        </Icon>
-        <Icon label="Delete" shortcut="Delete" disabled={!s.hasSelection} onClick={a.deleteShapes}>
-          <Trash2 size={12} className="text-error" />
-        </Icon>
-      </div>
+      </Tooltip>
+      <BarButton label="Zoom in" className="h-[28px] w-[28px]" onClick={a.zoomIn}>
+        <Plus size={16} />
+      </BarButton>
     </div>
   );
 }

@@ -53,7 +53,7 @@ type Props = {
   empty?: ReactNode;
 };
 
-const PAD = 24;
+const PAD = 12;
 
 export function Stage({
   model,
@@ -279,7 +279,7 @@ export function Stage({
   return (
     <div
       ref={attachViewport}
-      className="bg-surface-container min-h-0 min-w-0 flex-1 overflow-auto"
+      className="bg-desk min-h-0 min-w-0 flex-1 overflow-auto"
       onPointerDown={(e) => {
         // A press on the grey around the slide clears the selection like one on the slide's background.
         if (e.target === e.currentTarget && model) {

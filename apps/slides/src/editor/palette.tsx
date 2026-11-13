@@ -52,9 +52,7 @@ export function colorMenu(
       type: "custom",
       key: "theme-label",
       children: (
-        <div className="font-ui text-on-surface-variant text-tiny px-3 pt-1 font-semibold tracking-wider uppercase">
-          Theme colours
-        </div>
+        <div className="font-ui text-on-surface-variant text-label px-[12px] pt-[4px] font-semibold">Theme colours</div>
       ),
     },
     { type: "custom", key: "theme", children: <Swatches colors={theme} onPick={choose} /> },
@@ -62,7 +60,7 @@ export function colorMenu(
       type: "custom",
       key: "std-label",
       children: (
-        <div className="font-ui text-on-surface-variant text-tiny px-3 pt-1 font-semibold tracking-wider uppercase">
+        <div className="font-ui text-on-surface-variant text-label px-[12px] pt-[4px] font-semibold">
           Standard colours
         </div>
       ),

@@ -31,8 +31,11 @@ afterEach(() => {
 
 const opened = { root: "home", openPath: "decks/anim.pptx" };
 
+/** A control by its name: an icon's aria-label, or a labelled button's text. The slide tools sit in the format panel. */
 function press(label: string) {
-  const el = document.querySelector<HTMLElement>(`[aria-label="${label}"]`);
+  const el =
+    document.querySelector<HTMLElement>(`[aria-label="${label}"]`) ??
+    [...document.querySelectorAll<HTMLElement>("button")].find((b) => b.textContent?.trim() === label);
   if (!el) throw new Error(`no "${label}" control`);
   act(() => {
     el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
@@ -47,6 +50,9 @@ async function open(
   const view = renderWithSystem(<App windowId="window-1" host={fakeHost({ appId: "office-slides" })} />, fake.system);
   await settle();
   await settle();
+  // Dock the format panel, where the slide and shape tools are.
+  const panel = document.querySelector<HTMLElement>('[aria-label="Show format panel"]');
+  if (panel) press("Show format panel");
   return { fake, view };
 }
 
@@ -54,7 +60,7 @@ describe("Slides", () => {
   it("opens the presentation the window was opened with and draws it", async () => {
     const { fake, view } = await open();
     expect(fake.fsCalls).toEqual(["readWithVersion home:decks/anim.pptx"]);
-    expect(view.container.textContent).toContain("1 / 6");
+    expect(view.container.textContent).toContain("Slide 1 of 6");
     expect(view.container.querySelectorAll("[role=listbox] [role=option]")).toHaveLength(6);
     expect(view.container.querySelector("[role=application]")?.textContent).toContain("Animated slide 1");
     expect(fake.titles[fake.titles.length - 1]).toBe("anim.pptx");
@@ -127,10 +133,10 @@ describe("Slides", () => {
     const { view } = await open();
     press("Delete slide");
     await settle();
-    expect(view.container.textContent).toContain("1 / 5");
+    expect(view.container.textContent).toContain("Slide 1 of 5");
     press("Undo delete slide");
     await settle();
-    expect(view.container.textContent).toContain("1 / 6");
+    expect(view.container.textContent).toContain("Slide 1 of 6");
   });
 
   it("opens Save as in the folder of the open presentation, and saves where it is told", async () => {
@@ -165,7 +171,7 @@ describe("Slides", () => {
     expect(view.container.textContent).toContain("Nothing open");
     clickButton("New presentation");
     await settle();
-    expect(view.container.textContent).toContain("1 / 1");
+    expect(view.container.textContent).toContain("Slide 1 of 1");
     expect(fake.titles[fake.titles.length - 1]).toBe("Untitled.pptx •");
   });
 

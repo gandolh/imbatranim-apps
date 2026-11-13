@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@imbatranim/ui";
+import { cn, useElementSize } from "@imbatranim/ui";
 import type { SlideModel } from "../engine/model";
 import { SlideView } from "../view/SlideView";
 import { BASE_WIDTH, slideHeight } from "../view/slideMetrics";
 
-const THUMB_WIDTH = 132;
-
 type Props = {
+  /** A column beside the slide (a desktop), or two columns under it (a phone). */
+  layout: "column" | "grid";
+  /** The navigator's width in a column, which grows with the window's height. */
+  width: number;
   count: number;
   current: number;
   model: (index: number) => SlideModel | null;
@@ -24,7 +26,21 @@ type Props = {
  * Keys while a thumbnail has focus: arrows move between slides,
  * Ctrl+arrows move the slide, Delete removes it.
  */
-export function Rail({ count, current, model, version, onSelect, onMove, onDelete, onContextMenu }: Props) {
+export function Rail({
+  layout,
+  width,
+  count,
+  current,
+  model,
+  version,
+  onSelect,
+  onMove,
+  onDelete,
+  onContextMenu,
+}: Props) {
+  const grid = layout === "grid";
+  /** A thumbnail fills its column, less the numeral's 16 px and the 4 px gap beside it. */
+  const thumbWidth = grid ? 0 : Math.max(40, width - 33);
   const listRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ from: number; startY: number; active: boolean } | null>(null);
   /** The click that ends a drag is not a selection. */
@@ -51,9 +67,21 @@ export function Rail({ count, current, model, version, onSelect, onMove, onDelet
       ref={listRef}
       role="listbox"
       aria-label="Slides"
-      className="border-outline-variant bg-surface-container-low w-[152px] shrink-0 overflow-y-auto border-r"
+      style={grid ? undefined : { width }}
+      className={cn(
+        "bg-surface-container-low relative shrink-0 overflow-y-auto",
+        grid
+          ? "border-outline-variant min-h-0 flex-1 border-t [mask-image:linear-gradient(to_bottom,#000_calc(100%-24px),transparent)]"
+          : "border-outline-variant border-r",
+      )}
     >
-      <div className="flex flex-col gap-2 p-2">
+      <div
+        className={
+          grid
+            ? "grid grid-cols-2 gap-x-[24px] gap-y-[8px] px-[24px] pt-[8px] pb-[24px]"
+            : "flex flex-col gap-[4px] px-[6px] py-[8px]"
+        }
+      >
         {Array.from({ length: count }, (_, i) => (
           <div key={i} className="relative">
             {dropAt === i && <div className="bg-primary absolute -top-[5px] right-0 left-0 h-[2px]" />}
@@ -123,19 +151,30 @@ export function Rail({ count, current, model, version, onSelect, onMove, onDelet
                 setDropAt(null);
               }}
               className={cn(
-                "group relative block w-full overflow-hidden border text-left",
-                "focus-visible:ring-primary outline-none focus-visible:ring-2",
-                i === current ? "border-primary" : "border-outline-variant hover:border-on-surface-variant",
+                "group rounded-item flex w-full text-left outline-none",
+                grid ? "flex-col items-center gap-[4px] p-[4px]" : "items-center gap-[4px] py-[6px]",
+                "focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset",
               )}
             >
-              <Thumb index={i} model={model} version={version} />
               <span
+                aria-hidden
                 className={cn(
-                  "font-ui text-tiny absolute right-0 bottom-0 px-1 tabular-nums",
-                  i === current ? "bg-primary text-on-primary" : "bg-inverse-surface text-inverse-on-surface",
+                  "font-display text-subhead w-[16px] shrink-0 text-center leading-[18px] font-bold tabular-nums",
+                  grid && "order-last",
+                  i === current ? "text-primary" : "text-on-surface-variant",
                 )}
               >
                 {i + 1}
+              </span>
+              <span
+                className={cn(
+                  "outline-primary block shrink-0 outline-offset-2",
+                  grid ? "w-full" : "",
+                  i === current ? "outline-2" : "ring-outline-variant group-hover:ring-on-surface-variant ring-1",
+                )}
+                style={grid ? undefined : { width: thumbWidth }}
+              >
+                <Thumb index={i} model={model} version={version} />
               </span>
             </button>
           </div>
@@ -149,6 +188,7 @@ export function Rail({ count, current, model, version, onSelect, onMove, onDelet
 /** One thumbnail, drawn only once it scrolls into view (a long deck stays cheap). */
 function Thumb({ index, model, version }: { index: number; model: (i: number) => SlideModel | null; version: number }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [size, attachSize] = useElementSize();
   const [visible, setVisible] = useState(typeof IntersectionObserver === "undefined");
   useEffect(() => {
     const el = ref.current;
@@ -165,15 +205,18 @@ function Thumb({ index, model, version }: { index: number; model: (i: number) =>
   const m = visible ? model(index) : null;
   void version;
   const aspect = m ? slideHeight(m) / BASE_WIDTH : 0.5625;
-  const scale = THUMB_WIDTH / BASE_WIDTH;
+  const scale = size.width / BASE_WIDTH;
   return (
     <div
-      ref={ref}
+      ref={(el) => {
+        ref.current = el;
+        attachSize(el);
+      }}
       aria-hidden="true"
-      className="bg-surface-container-lowest relative w-full overflow-hidden"
-      style={{ height: Math.round(THUMB_WIDTH * aspect) }}
+      className="relative w-full overflow-hidden bg-white"
+      style={{ aspectRatio: `1 / ${aspect}` }}
     >
-      {m && (
+      {m && size.width > 0 && (
         <div
           style={{
             position: "absolute",
@@ -187,7 +230,7 @@ function Thumb({ index, model, version }: { index: number; model: (i: number) =>
           <SlideView model={m} />
         </div>
       )}
-      {m?.hidden && <div className="bg-surface-container-lowest/60 absolute inset-0" />}
+      {m?.hidden && <div className="absolute inset-0 bg-white/60" />}
     </div>
   );
 }

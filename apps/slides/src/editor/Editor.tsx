@@ -47,7 +47,10 @@ import { Stage } from "./Stage";
 import type { DeckStore } from "./store";
 import { FONT_SIZES, stepSize } from "./fontSizes";
 import type { TextEditorApi } from "./TextEditor";
-import { Toolbar, type MenuAnchor, type ToolbarActions, type ToolbarState } from "./Toolbar";
+import { InspectorBottomBar, InspectorPanel, InspectorStrip } from "./Inspector";
+import type { Group } from "./inspectorGroups";
+import { StatusBand, Toolbar, type MenuAnchor, type ToolbarActions, type ToolbarState } from "./Toolbar";
+import { usePhone } from "@imbatranim-office/shared";
 
 /** What the editor needs from the file shell (shell/useDeckFile). */
 export type FileControls = {
@@ -65,7 +68,12 @@ export type FileControls = {
 type Menu = { x: number; y: number; items: ContextMenuItem[]; label: string };
 
 const PICTURE_TYPES = ["png", "jpg", "jpeg", "gif", "bmp"];
-const STAGE_PAD = 48;
+const STAGE_PAD = 24;
+/** The window's width from which the format panel docks beside the slide; below it a group opens as a popover. */
+const DOCK_WIDTH = 1100;
+/** The window's title band, which the app's own height leaves out. */
+const TITLE_BAND = 30;
+const NOTES_PHONE = 120;
 /** EMU per CSS pixel at 96 dpi. */
 const EMU_PER_PX = 9525;
 
@@ -123,6 +131,20 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
   const [viewport, attachViewport] = useElementSize();
   const [showRail, setShowRail] = useState(true);
   const [showNotes, setShowNotes] = useState(false);
+  const [root, attachRootSize] = useElementSize();
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const attachRoot = useCallback(
+    (el: HTMLDivElement | null) => {
+      rootRef.current = el;
+      attachRootSize(el);
+    },
+    [attachRootSize],
+  );
+  const phone = usePhone();
+  /** The format panel's state set by its toggle; null follows the selection. */
+  const [panel, setPanel] = useState<boolean | null>(null);
+  /** The group open as a popover in a narrow window, and whether a selection opened it. */
+  const [popover, setPopover] = useState<{ group: Group; auto: boolean } | null>(null);
   const [presenting, setPresenting] = useState<number | null>(null);
   const [menu, setMenu] = useState<Menu | null>(null);
   const [exporting, setExporting] = useState<{
@@ -776,6 +798,7 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     zoomLabel: zoomLabel(zoom, scale),
     showRail,
     showNotes,
+    showInspector: false,
     hasSelection: selection.length > 0,
     hasText: editing !== null || textTargets.length > 0,
     bold: caretState ? caretState.bold : !!style?.bold,
@@ -784,6 +807,26 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     sizeLabel: String((caretState ? caretState.sizePt : style?.sizePt) ?? "—"),
     canDownload: file.download !== null,
   };
+
+  // An unmeasured root (a test's DOM) docks: every tool is on the page.
+  const docks = root.width === 0 || root.width >= DOCK_WIDTH;
+  const docked = docks && (panel ?? toolbarState.hasSelection);
+  toolbarState.showInspector = docks ? docked : popover !== null;
+  const selectionKey = `${slidePart ?? ""}|${selection.join(",")}|${editing ? "e" : ""}`;
+  const formatGroup: Group | null = toolbarState.hasText ? "text" : toolbarState.hasSelection ? "shape" : null;
+  // A new selection opens its format group: the docked panel in a wide window, a popover that
+  // leaves focus on the slide in a narrow one. Clearing it folds both back to the strip. The
+  // state resets while rendering, when the selection's key changes.
+  const [seenSelection, setSeenSelection] = useState(selectionKey);
+  if (seenSelection !== selectionKey) {
+    setSeenSelection(selectionKey);
+    setPanel(null);
+    setPopover((p) => (formatGroup ? { group: formatGroup, auto: true } : p && !p.auto ? p : null));
+  }
+  // The navigator grows with the window's height, from 132 to 220 px, so six thumbnails fill it.
+  const navWidth = Math.round(Math.min(220, Math.max(132, ((root.height + TITLE_BAND - 218) / 6) * (16 / 9) + 33)));
+  const slideAspect = model ? slideHeight(model) / BASE_WIDTH : 9 / 16;
+  const phoneDesk = Math.round(Math.max(0, root.width - STAGE_PAD) * slideAspect) + STAGE_PAD;
 
   const actions: ToolbarActions = {
     newDeck: file.newDeck,
@@ -799,6 +842,10 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     undo,
     redo,
     toggleRail: () => setShowRail((v) => !v),
+    toggleInspector: () => {
+      if (docks) setPanel(!docked);
+      else setPopover((p) => (p ? null : { group: formatGroup ?? "insert", auto: false }));
+    },
     prev: () => goTo(index - 1),
     next: () => goTo(index + 1),
     zoomOut: () => setZoom(stepZoom(scale, -1)),
@@ -811,6 +858,15 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     },
     exportPng: () => void exportPng(),
     download: () => file.download?.(),
+    moreMenu: (at) =>
+      openMenu(at, "More", [
+        { label: "New presentation", onSelect: file.newDeck },
+        { label: "Open", onSelect: file.open },
+        { label: "Save as…", onSelect: actions.saveAs, disabled: file.saving },
+        { type: "separator" },
+        { label: "Download", onSelect: actions.download, disabled: file.download === null },
+        { label: "Export this slide as a PNG", onSelect: actions.exportPng, disabled: slides.length === 0 },
+      ]),
     newSlideMenu: (at) => openMenu(at, "New slide", layoutItems()),
     duplicateSlide: () => duplicateSlide(),
     deleteSlide: () => deleteSlide(),
@@ -877,11 +933,13 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
 
   const exportModel = exporting ? store.model(exporting.index) : null;
   return (
-    <div className="bg-surface-container-lowest flex h-full min-h-0 flex-col">
+    <div ref={attachRoot} className="bg-surface-container-low relative flex h-full min-h-0 flex-col overflow-hidden">
       <Toolbar state={toolbarState} actions={actions} />
-      <div className="flex min-h-0 flex-1">
-        {showRail && slides.length > 0 && (
+      <div className="flex min-h-0 flex-1 max-[600px]:flex-col">
+        {!phone && showRail && slides.length > 0 && (
           <Rail
+            layout="column"
+            width={navWidth}
             count={slides.length}
             current={index}
             model={getModel}
@@ -892,7 +950,10 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
             onContextMenu={slideMenu}
           />
         )}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <div
+          className="flex min-h-0 min-w-0 flex-1 flex-col max-[600px]:flex-none"
+          style={phone && slides.length > 0 ? { height: phoneDesk + (showNotes ? NOTES_PHONE : 0) } : undefined}
+        >
           <Stage
             model={model}
             scale={scale}
@@ -907,10 +968,15 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
             onContextMenu={stageMenu}
             attachViewport={attachViewport}
             empty={
-              <div className="text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 py-12">
+              <div className="text-on-surface-variant flex h-full flex-col items-center justify-center gap-[8px] p-[24px]">
                 <Presentation size={40} strokeWidth={1} />
                 <span className="font-ui text-control">This presentation has no slides</span>
-                <Button size="sm" variant="primary" className="flex items-center gap-1" onClick={() => newSlide()}>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  className="text-control h-[32px] gap-[8px] px-[12px] font-semibold"
+                  onClick={() => newSlide()}
+                >
                   <Plus size={12} />
                   New slide
                 </Button>
@@ -930,7 +996,37 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
             />
           )}
         </div>
+        {phone && slides.length > 0 && (
+          <Rail
+            layout="grid"
+            width={root.width}
+            count={slides.length}
+            current={index}
+            model={getModel}
+            version={version}
+            onSelect={goTo}
+            onMove={moveSlide}
+            onDelete={deleteSlide}
+            onContextMenu={slideMenu}
+          />
+        )}
+        {!phone &&
+          (docked ? (
+            <InspectorPanel state={toolbarState} actions={actions} />
+          ) : (
+            <InspectorStrip
+              state={toolbarState}
+              actions={actions}
+              docks={docks}
+              open={popover?.group ?? null}
+              autoOpened={popover?.auto ?? false}
+              onOpen={(group) => setPopover(group ? { group, auto: false } : null)}
+              onDock={() => setPanel(true)}
+            />
+          ))}
       </div>
+      <StatusBand state={toolbarState} actions={actions} />
+      {phone && <InspectorBottomBar state={toolbarState} actions={actions} container={rootRef} />}
       {presenting !== null && slides.length > 0 && (
         <Presenter
           count={slides.length}

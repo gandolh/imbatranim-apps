@@ -55,10 +55,10 @@ export function NotesPane({ slideNumber, text, onCommit, flushRef }: Props) {
   });
 
   return (
-    <div className="border-outline-variant bg-surface-container-low flex h-[28%] min-h-[80px] shrink-0 flex-col border-t px-3 py-2">
+    <div className="border-outline-variant bg-surface-container-low flex h-[28%] min-h-[80px] shrink-0 flex-col border-t px-[12px] py-[8px] max-[600px]:h-[120px]">
       <label
         htmlFor={`notes-${slideNumber}`}
-        className="font-ui text-on-surface-variant text-tiny mb-1 font-semibold tracking-wider uppercase"
+        className="font-ui text-on-surface-variant text-label mb-[4px] font-semibold"
       >
         Notes — slide {slideNumber}
       </label>
