@@ -95,7 +95,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
           reportFileRefusal(system, why, { name: docName });
           return;
         }
-        engine = await createSheetEngine(container);
+        engine = await createSheetEngine(container, { dark: system.appearance.get().theme === "dark" });
         if (cancelled) {
           engine.destroy();
           return;
@@ -244,17 +244,28 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
   // Ctrl/Cmd+S saves — but only for the top-most window.
   useSaveHotkey(handleSave);
 
+  // Univer paints its own ribbon, bars and grid: its dark mode follows the desktop's.
+  useEffect(
+    () => system.on("appearance-changed", ({ theme }) => engineRef.current?.setDark(theme === "dark")),
+    [system],
+  );
+
   // Reflect filename + dirty marker in the window title; closing with unsaved
   // changes asks Save / Don't Save / Cancel through the themed dialog.
   const unsavedDialog = useUnsavedGuard(dirty, name, handleSave);
 
   if (source && refused) {
     return (
-      <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
+      <div className="bg-surface-container-low text-on-surface-variant flex h-full flex-col items-center justify-center gap-[8px] p-[24px] text-center">
         <FileWarning size={40} strokeWidth={1} className="text-error" />
         <span className="font-ui text-on-surface text-control font-semibold">{name}</span>
-        <span className="font-ui text-control max-w-[340px]">{refused}</span>
-        <Button size="sm" variant="primary" onClick={pickFile}>
+        <span className="font-ui text-control max-w-[320px]">{refused}</span>
+        <Button
+          size="sm"
+          variant="primary"
+          className="text-control h-[32px] gap-[8px] px-[12px] font-semibold"
+          onClick={pickFile}
+        >
           Open a spreadsheet instead
         </Button>
       </div>
@@ -263,10 +274,15 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
 
   if (!source) {
     return (
-      <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 text-center">
+      <div className="bg-surface-container-low text-on-surface-variant flex h-full flex-col items-center justify-center gap-[8px] p-[24px] text-center">
         <SheetIcon size={40} strokeWidth={1} />
-        <span className="font-ui text-control">Nothing open</span>
-        <Button size="sm" variant="primary" onClick={pickFile}>
+        <h3 className="font-display text-headline text-on-surface m-0 font-bold">Nothing open</h3>
+        <Button
+          size="sm"
+          variant="primary"
+          className="text-control h-[32px] gap-[8px] px-[12px] font-semibold"
+          onClick={pickFile}
+        >
           Open a spreadsheet
         </Button>
       </div>
@@ -274,18 +290,22 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
   }
 
   return (
-    <div className="bg-surface-container-lowest flex h-full flex-col">
-      {/* Toolbar */}
-      <div className="border-outline-variant bg-surface-container-low flex items-center gap-1 border-b px-2 py-1">
+    <div className="bg-surface-container-low flex h-full flex-col">
+      {/* The app bar: Save. Univer keeps its own ribbon, formula bar and foot bar under it. */}
+      <div
+        role="toolbar"
+        aria-label="File"
+        className="border-outline-variant bg-surface-container-low h-appbar max-[600px]:h-appbar-phone flex shrink-0 items-center gap-[4px] border-b px-[4px]"
+      >
         <Tooltip content="Save (Ctrl+S)">
           <Button
-            variant="default"
+            variant="ghost"
             size="sm"
-            className="flex items-center gap-1"
+            className="rounded-control text-control text-on-surface hover:bg-surface-container-high active:bg-surface-container-highest focus-visible:ring-primary max-[600px]:h-target h-[32px] gap-[8px] border-transparent px-[12px] font-semibold hover:border-transparent focus-visible:ring-2 focus-visible:ring-inset"
             onClick={() => void handleSave()}
             disabled={saving || loading || !dirty}
           >
-            {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+            {saving ? <Loader2 size={16} className="motion-safe:animate-spin" /> : <Save size={16} />}
             Save
           </Button>
         </Tooltip>
@@ -298,11 +318,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
 
         <div className="flex-1" />
 
-        {error && <span className="text-error font-ui text-label mr-2 max-w-[280px] truncate">{error}</span>}
-        <span className="font-ui text-on-surface-variant text-label max-w-[200px] truncate">
-          {name}
-          {dirty ? " •" : ""}
-        </span>
+        {error && <span className="text-error font-ui text-label mr-[8px] max-w-[280px] truncate">{error}</span>}
       </div>
 
       {/* A standing note for the length of the session, not a toast: the moment
@@ -327,8 +343,8 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
       <div className="relative min-h-0 flex-1">
         <div ref={containerRef} className="absolute inset-0" />
         {loading && (
-          <div className="bg-surface-container-lowest text-on-surface-variant font-ui text-control absolute inset-0 flex items-center justify-center gap-2">
-            <Loader2 size={16} className="animate-spin" />
+          <div className="bg-desk text-on-surface-variant font-ui text-control absolute inset-0 flex items-center justify-center gap-[8px]">
+            <Loader2 size={16} className="motion-safe:animate-spin" />
             Loading spreadsheet…
           </div>
         )}

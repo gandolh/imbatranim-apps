@@ -20,6 +20,7 @@ type UniverApi = {
   getFormula: () => CalculationEvents & {
     onCalculationResultApplied: (timeout?: number) => Promise<void>;
   };
+  toggleDarkMode?: (dark: boolean) => void;
 };
 type UniverInstance = { dispose: () => void };
 
@@ -77,6 +78,8 @@ export type SheetEngine = {
    * once the upload resolves — so edits made mid-save aren't silently clobbered.
    */
   editCount: () => number;
+  /** Follow the desktop's mode: Univer's own dark mode, which repaints its ribbon, bars and grid. */
+  setDark: (dark: boolean) => void;
   /** Tear down Univer and release its render resources. */
   destroy: () => void;
 };
@@ -92,7 +95,7 @@ export type SheetEngine = {
  * plugin would start a URL as a classic worker; it takes a `Worker` instead
  * and then leaves its lifetime to us.
  */
-export async function createSheetEngine(container: HTMLElement): Promise<SheetEngine> {
+export async function createSheetEngine(container: HTMLElement, { dark = false } = {}): Promise<SheetEngine> {
   const [{ createUniver, defaultTheme, LocaleType, merge }, sheetsCore, enUS] = await Promise.all([
     import("@univerjs/presets"),
     import("@univerjs/preset-sheets-core"),
@@ -108,6 +111,7 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
       [LocaleType.EN_US]: merge({}, enUS.default, PROGRESS_STRINGS),
     },
     theme: defaultTheme,
+    darkMode: dark,
     presets: [
       sheetsCore.UniverSheetsCorePreset({
         container,
@@ -141,6 +145,7 @@ export async function createSheetEngine(container: HTMLElement): Promise<SheetEn
   });
 
   return {
+    setDark: (on) => univerAPI.toggleDarkMode?.(on),
     loadWorkbook: (data) => {
       workbook?.dispose();
       editCount = 0;
