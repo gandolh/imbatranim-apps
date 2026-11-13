@@ -2,3 +2,4 @@
 // live under ./build (Node only), test helpers under ./testing.
 export type { KitApp, KitAppProps, NativeHostContext } from "./kitApp";
 export { folderOf } from "./files";
+export { usePhone } from "./usePhone";

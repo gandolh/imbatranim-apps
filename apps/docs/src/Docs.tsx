@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { ChevronDown, ChevronUp, FileText, FileWarning, Loader2, Save, Search, X } from "lucide-react";
 import {
   Button,
@@ -16,6 +16,7 @@ import {
   useTopWindowKeydown,
   useUnsavedGuard,
 } from "@imbatranim/ui";
+import { usePhone } from "@imbatranim-office/shared";
 import { createDocEngine, type DocEngine } from "./engine/superdoc";
 import { normalizeDocx } from "./engine/docxNormalize";
 import { unsupportedReason } from "./lib/formats";
@@ -24,6 +25,43 @@ import { countText, htmlToText } from "./lib/wordCount";
 import type { DocMatch } from "./engine/superdoc";
 
 const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+/** The bars' controls: 32 px on a desktop, the 44 px target on a phone, with the accent ring. */
+const BAR =
+  "h-[32px] max-[600px]:h-target rounded-control border-transparent text-control text-on-surface hover:border-transparent hover:bg-surface-container-high active:bg-surface-container-highest focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset";
+/** Pressed: the soft accent with an accent edge. */
+const PRESSED =
+  "data-[pressed]:border-primary data-[pressed]:bg-primary-container data-[pressed]:text-on-primary-container";
+
+/**
+ * SuperDoc's toolbar reads these custom properties (its stylesheet's own
+ * names), so it takes the desktop's surfaces, ink and accent in both modes.
+ * Every one it reads for the bar and its dropdowns is set, so no default
+ * white or grey is left beside a dark one.
+ */
+const SUPERDOC_TOOLBAR = {
+  "--sd-ui-font-family": "var(--k-font-ui)",
+  "--sd-ui-bg": "var(--k-surface-container-low)",
+  "--sd-ui-toolbar-bg": "var(--k-surface-container-low)",
+  "--sd-ui-text": "var(--k-on-surface)",
+  "--sd-ui-text-muted": "var(--k-on-surface-variant)",
+  "--sd-ui-text-disabled": "var(--k-outline)",
+  "--sd-ui-border": "var(--k-outline-variant)",
+  "--sd-ui-toolbar-button-text": "var(--k-on-surface)",
+  "--sd-ui-toolbar-button-hover-bg": "var(--k-surface-container-high)",
+  "--sd-ui-toolbar-button-active-bg": "var(--k-surface-container-highest)",
+  "--sd-ui-active-bg": "var(--k-surface-container-highest)",
+  "--sd-ui-action": "var(--accent)",
+  "--sd-ui-action-hover": "var(--accent)",
+  "--sd-ui-action-text": "var(--accent-on)",
+  "--sd-ui-dropdown-bg": "var(--k-surface-container-lowest)",
+  "--sd-ui-dropdown-text": "var(--k-on-surface)",
+  "--sd-ui-dropdown-border": "var(--k-outline-variant)",
+  "--sd-ui-dropdown-hover-bg": "var(--k-surface-container-high)",
+  "--sd-ui-dropdown-hover-text": "var(--k-on-surface)",
+  "--sd-ui-dropdown-active-bg": "var(--accent-soft)",
+  "--sd-ui-dropdown-selected-text": "var(--accent-soft-on)",
+} as CSSProperties;
 
 export function Docs({ windowId }: { windowId: string }) {
   const system = useSystem();
@@ -59,6 +97,8 @@ export function Docs({ windowId }: { windowId: string }) {
   // going to a match is a side effect, and a state updater may run twice.
   const matchIndexRef = useRef(0);
   const [counts, setCounts] = useState({ words: 0, characters: 0, charactersNoSpaces: 0 });
+  const phone = usePhone();
+  const [zoom, setZoom] = useState(100);
 
   const docName = source ? fileName(source.path, "document.docx") : "";
   // Refuse what the engine cannot read, before it is asked to try. Computed from
@@ -144,6 +184,8 @@ export function Docs({ windowId }: { windowId: string }) {
           onEdit: () => {
             if (!cancelled) setDirty(true);
           },
+          fitWidth: window.matchMedia?.("(max-width: 600px)").matches ?? false,
+          onZoom: setZoom,
           onError: (err) => {
             if (!cancelled) {
               setError(reportFileFailure(system, "open", err, { noun: "document", name: docName }));
@@ -291,11 +333,16 @@ export function Docs({ windowId }: { windowId: string }) {
 
   if (source && refusal) {
     return (
-      <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
+      <div className="bg-surface-container-low text-on-surface-variant flex h-full flex-col items-center justify-center gap-[8px] p-[24px] text-center">
         <FileWarning size={40} strokeWidth={1} className="text-error" />
         <span className="font-ui text-on-surface text-control font-semibold">{docName}</span>
-        <span className="font-ui text-control max-w-[340px]">{refusal}</span>
-        <Button size="sm" variant="primary" onClick={pickFile}>
+        <span className="font-ui text-control max-w-[320px]">{refusal}</span>
+        <Button
+          size="sm"
+          variant="primary"
+          className="text-control h-[32px] gap-[8px] px-[12px] font-semibold"
+          onClick={pickFile}
+        >
           Open a .docx instead
         </Button>
       </div>
@@ -304,10 +351,15 @@ export function Docs({ windowId }: { windowId: string }) {
 
   if (!source) {
     return (
-      <div className="bg-surface-container-lowest text-on-surface-variant flex h-full flex-col items-center justify-center gap-2 text-center">
+      <div className="bg-surface-container-low text-on-surface-variant flex h-full flex-col items-center justify-center gap-[8px] p-[24px] text-center">
         <FileText size={40} strokeWidth={1} />
-        <span className="font-ui text-control">Nothing open</span>
-        <Button size="sm" variant="primary" onClick={pickFile}>
+        <h3 className="font-display text-headline text-on-surface m-0 font-bold">Nothing open</h3>
+        <Button
+          size="sm"
+          variant="primary"
+          className="text-control h-[32px] gap-[8px] px-[12px] font-semibold"
+          onClick={pickFile}
+        >
           Open a document
         </Button>
       </div>
@@ -315,18 +367,22 @@ export function Docs({ windowId }: { windowId: string }) {
   }
 
   return (
-    <div className="bg-surface-container-lowest flex h-full flex-col">
-      {/* App toolbar (Save) */}
-      <div className="border-outline-variant bg-surface-container-low flex items-center gap-1 border-b px-2 py-1">
+    <div className="bg-surface-container-low flex h-full flex-col">
+      {/* The app bar: Save and Find. The title band names the file. */}
+      <div
+        role="toolbar"
+        aria-label="File"
+        className="border-outline-variant bg-surface-container-low h-appbar max-[600px]:h-appbar-phone flex shrink-0 items-center gap-[4px] border-b px-[4px]"
+      >
         <Tooltip content="Save (Ctrl+S)">
           <Button
-            variant="default"
+            variant="ghost"
             size="sm"
-            className="flex items-center gap-1"
+            className={`${BAR} gap-[8px] px-[12px] font-semibold`}
             onClick={() => void handleSave()}
             disabled={saving || loading || !dirty}
           >
-            {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+            {saving ? <Loader2 size={16} className="motion-safe:animate-spin" /> : <Save size={16} />}
             Save
           </Button>
         </Tooltip>
@@ -336,28 +392,21 @@ export function Docs({ windowId }: { windowId: string }) {
             pressed={findOpen}
             aria-label="Find in document"
             onClick={openFind}
-            render={<Button variant={findOpen ? "primary" : "ghost"} size="sm" className="h-6 w-6 p-0" />}
+            render={
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`${BAR} max-[600px]:w-target w-[32px] justify-center p-0 ${PRESSED}`}
+              />
+            }
           >
-            <Search size={12} />
+            <Search size={16} />
           </Toggle>
         </Tooltip>
-        <Tooltip content="Word count">
-          <button
-            type="button"
-            onClick={refreshCounts}
-            className="font-ui text-on-surface-variant hover:text-on-surface text-label tabular-nums"
-          >
-            {counts.words} words
-          </button>
-        </Tooltip>
 
-        <div className="flex-1" />
+        <div className="min-w-0 flex-1" />
 
-        {error && <span className="text-error font-ui text-label mr-2 max-w-[280px] truncate">{error}</span>}
-        <span className="font-ui text-on-surface-variant text-label max-w-[200px] truncate">
-          {docName}
-          {dirty ? " •" : ""}
-        </span>
+        {error && <span className="text-error font-ui text-label mr-[8px] max-w-[280px] truncate">{error}</span>}
       </div>
 
       {findOpen && (
@@ -367,9 +416,9 @@ export function Docs({ windowId }: { windowId: string }) {
         // surface has focus), and its input bridge leaves the bar's keys alone.
         <div
           data-editor-ui-surface=""
-          className="border-outline-variant bg-surface-container flex items-center gap-1 border-b px-2 py-1"
+          className="border-outline-variant bg-surface-container h-appbar max-[600px]:h-appbar-phone flex shrink-0 items-center gap-[4px] border-b px-[8px]"
         >
-          <Search size={12} className="text-on-surface-variant shrink-0" />
+          <Search size={16} className="text-on-surface-variant shrink-0" />
           <input
             autoFocus
             value={findText}
@@ -380,7 +429,7 @@ export function Docs({ windowId }: { windowId: string }) {
               if (e.key === "Enter") stepMatch(e.shiftKey ? -1 : 1);
               if (e.key === "Escape") setFindOpen(false);
             }}
-            className="border-outline-variant bg-surface-container-lowest font-ui text-on-surface text-control w-[220px] border px-1.5 py-0.5 outline-none"
+            className="border-outline bg-surface-container-lowest font-ui text-on-surface text-control rounded-control focus-visible:ring-primary max-[600px]:h-target h-[32px] w-[220px] min-w-0 border px-[8px] outline-none focus-visible:ring-2 max-[600px]:flex-1"
           />
           <span className="font-ui text-on-surface-variant text-label min-w-[64px] tabular-nums">
             {findText.trim() === "" ? "" : matchCount === 0 ? "No matches" : `${matchIndex} of ${matchCount}`}
@@ -388,50 +437,75 @@ export function Docs({ windowId }: { windowId: string }) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-5 w-5 p-0"
+            className={`${BAR} max-[600px]:w-target w-[32px] justify-center p-0`}
             aria-label="Previous match"
             disabled={matchCount === 0}
             onClick={() => stepMatch(-1)}
           >
-            <ChevronUp size={12} />
+            <ChevronUp size={16} />
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-5 w-5 p-0"
+            className={`${BAR} max-[600px]:w-target w-[32px] justify-center p-0`}
             aria-label="Next match"
             disabled={matchCount === 0}
             onClick={() => stepMatch(1)}
           >
-            <ChevronDown size={12} />
+            <ChevronDown size={16} />
           </Button>
           <div className="flex-1" />
-          <span className="font-ui text-on-surface-variant text-label tabular-nums">
+          <span className="font-ui text-on-surface-variant text-label tabular-nums max-[600px]:hidden">
             {counts.words} words · {counts.charactersNoSpaces} characters
           </span>
           <Button
             variant="ghost"
             size="sm"
-            className="h-5 w-5 p-0"
+            className={`${BAR} max-[600px]:w-target w-[32px] justify-center p-0`}
             aria-label="Close find"
             onClick={() => setFindOpen(false)}
           >
-            <X size={12} />
+            <X size={16} />
           </Button>
         </div>
       )}
 
       {/* SuperDoc's own formatting toolbar mounts into a fresh child here. */}
-      <div ref={toolbarWrapRef} className="border-outline-variant bg-surface-container-low border-b" />
+      {/* SuperDoc reads its toolbar's colours from its own --sd-ui-* properties, so the desktop's tokens reach it. */}
+      <div
+        ref={toolbarWrapRef}
+        style={SUPERDOC_TOOLBAR}
+        className="border-outline-variant bg-surface-container-low shrink-0 border-b"
+      />
 
-      {/* Document surface — SuperDoc mounts into a fresh child of this wrapper. */}
-      <div className="relative min-h-0 flex-1 overflow-auto">
-        <div ref={editorWrapRef} className="min-h-full" />
+      {/* Document surface — SuperDoc mounts into a fresh child of this wrapper: a true sheet, centred on the desk. */}
+      <div className="bg-desk relative min-h-0 flex-1 overflow-auto pt-[12px]">
+        <div ref={editorWrapRef} className="min-h-full [&_.superdoc\_\_layers]:mx-auto" />
         {loading && (
-          <div className="bg-surface-container-lowest text-on-surface-variant font-ui text-control absolute inset-0 flex items-center justify-center gap-2">
-            <Loader2 size={16} className="animate-spin" />
+          <div className="bg-desk text-on-surface-variant font-ui text-control absolute inset-0 flex items-center justify-center gap-2">
+            <Loader2 size={16} className="motion-safe:animate-spin" />
             Loading document…
           </div>
+        )}
+      </div>
+
+      {/* The status band: the word count, and on a phone the page's true scale. */}
+      <div
+        role="status"
+        className="border-outline-variant bg-surface-container h-statusbar max-[600px]:h-statusbar-phone flex shrink-0 items-center gap-[8px] border-t px-[8px]"
+      >
+        <Tooltip content="Word count">
+          <button
+            type="button"
+            onClick={refreshCounts}
+            className="font-ui text-on-surface text-control hover:bg-surface-container-high rounded-item focus-visible:ring-primary max-[600px]:h-target h-[28px] px-[8px] tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-inset"
+          >
+            {counts.words} words
+          </button>
+        </Tooltip>
+        <div className="min-w-0 flex-1" />
+        {phone && (
+          <span className="font-ui text-on-surface text-control px-[8px] tabular-nums">{Math.round(zoom)}%</span>
         )}
       </div>
 

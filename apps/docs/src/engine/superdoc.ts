@@ -53,6 +53,13 @@ type CreateDocEngineOptions = {
   onEdit: () => void;
   /** Called only if the document genuinely fails to load/parse. */
   onError: (err: unknown) => void;
+  /**
+   * Fit the page to the window's width (a phone): SuperDoc scales the sheet
+   * as a whole, so the readout is its true scale. Otherwise it is 100%.
+   */
+  fitWidth?: boolean;
+  /** Called with SuperDoc's zoom, in percent, whenever it changes. */
+  onZoom?: (percent: number) => void;
 };
 
 /** Every PresentationEditor parks its real ProseMirror editor in one of these, under <body>. */
@@ -161,9 +168,11 @@ export async function createDocEngine(opts: CreateDocEngineOptions): Promise<Doc
     // relaxes the CSP would start leaking. The user's documents are their own,
     // and nothing about opening one should reach a third party.
     telemetry: { enabled: false },
+    onZoomChange: ({ zoom }) => opts.onZoom?.(zoom),
     onReady: () => {
       if (!readyFired) {
         readyFired = true;
+        if (opts.fitWidth) superdoc.setZoomMode("fit-width");
         const presentation = presentationOf(superdoc.activeEditor);
         if (presentation) {
           releaseInput = keepInputInItsWindow(presentation, opts.editor.ownerDocument);
