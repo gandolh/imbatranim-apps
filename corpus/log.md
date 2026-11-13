@@ -551,3 +551,49 @@ redesign board, with every question on the board standing as proposed: the
 direction itself (B, over the runner-up "One bar for four"), a window that opens
 maximized above the taskbar on a phone with groups in the kit's bottom sheet, and
 `Slide 1 of 6` with PDF's Save at the left and its `PDF` label gone.
+
+## [2026-11-13] progress | Brief 11 paused, Docs, Sheets and Slides built
+
+[Brief 11](briefs/todo/11-a-redesign-with-hallmark-on-the-estate-board.md) paused
+for the night after its approval (`f8084f3`), the kit sync to imbatranimOS
+`5e075a0` (`df970a6`), the token commit (`9627921`, Slides' fixed selection
+frame) and three screens: Docs (`bb242c1`), Sheets (`bfde28e`) and Slides
+(`d0e87b3`). `npm run check` passed after each. Found while building: Univer
+0.25.1's own dark mode repaints its ribbon, bars and grid (its marker is
+`univer-dark` on the document root); SuperDoc 1.46.3 reads `--sd-ui-*` for its
+toolbar, now set from the desktop's tokens; on a 390 px phone SuperDoc's
+fit-width shows the sheet at 48% (the comp drew 44% with gutters); Univer
+folds its ribbon into its own ⋮ at 390, so no edge fade was added.
+
+Left, in order:
+
+- **PDF**, half written outside git (the build folder's
+  `brief-11-wip-2026-11-13.patch` holds it): the bar buttons at 32/44 px with
+  the soft pressed look, the app bar (side panel toggle, Open PDF, Save at the
+  left, Export a copy, `Search document…`, format toggle) with a status band
+  (`Page [1] of 15`, true zoom, both fit modes), and the annotate toolbar as
+  the panel's content. Still to do: `Pdf.tsx`'s layout (the 56 px strip,
+  the 232 px panel from a 1100 px window, a popover below, the phone's bottom
+  bar of Pages, Annotate, Sign and Organize in the kit's bottom sheet, Fit
+  width and Fit page in More), the 200 px side panel with its tabs named in
+  full, thumbnails with Solway numerals and an outline, the reader's 16 px
+  side padding on `bg-desk`, the empty state, and the PDF tests.
+- **Undrawn screens:** CAD (toolbar to the app bar's height, status bar to the
+  status band's, layer dialog), Todo, Bookmarks and its move dialog, Git GUI,
+  the REST API Client and its dialogs, the Presenter and PDF's outline, forms,
+  signature and organize views. Docs' find bar is done.
+- **Browser checks:** the patch holds `tools/browser/` (the Playwright config,
+  the desktop helpers, the sign-in setup and teardown, two probe specs),
+  `@playwright/test` at `1.63.0`, and the ESLint `defaultExports` entry for the
+  setup files; knip needs `tools/browser` as an entry. Specs to write: focus
+  ring, reduced motion, the 390 and 360 overflow, the theme switch, the shots
+  with twin diffs and ruling 8's measurements.
+- **The contrast script** (it must also measure PDF's selection outline on
+  white, which `9627921`'s message states at 3:1 or more from a hand
+  calculation), `DESIGN.md`, the decisions entry, `stylesheets.md`,
+  `status.md`, and the outcome note. Knip warns that `GroupTools` in Slides'
+  `Inspector.tsx` needn't be exported.
+- **The desktop loop** that worked: copy the working tree into a scratch clone
+  named `apps`, commit there, pipe it into the container's
+  `/home/imbatranim/fixtures`, point the three descriptors at that commit, and
+  install each group through the marketplace (about 35 s for Office).
