@@ -543,3 +543,11 @@ rename changed the descriptor template's `command`, `server/package.json`'s `mai
 carries its own copy of the command and needs it changed with the next re-pin. The
 structure gate is strict and `n/no-process-env` an error. Todo: kill the converter
 child on close.
+
+## [2026-11-13] decision | Brief 11: the redesign direction approved
+
+The owner approved the redesign direction "Tools beside the page" on the estate
+redesign board, with every question on the board standing as proposed: the
+direction itself (B, over the runner-up "One bar for four"), a window that opens
+maximized above the taskbar on a phone with groups in the kit's bottom sheet, and
+`Slide 1 of 6` with PDF's Save at the left and its `PDF` label gone.
