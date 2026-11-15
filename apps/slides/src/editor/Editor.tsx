@@ -345,7 +345,7 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
       system.notify({
         level: "warning",
         title: "Cannot insert this picture",
-        body: `${fileName(choice.path)} — Slides inserts PNG, JPEG, GIF and BMP pictures.`,
+        body: `${fileName(choice.path)}: Slides inserts PNG, JPEG, GIF and BMP pictures.`,
       });
       return;
     }
@@ -671,7 +671,7 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
       system.notify({
         level: "success",
         title: "Slide exported",
-        body: `${name} — saved to /${choice.path.split("/").slice(0, -1).join("/") || "home"}`,
+        body: `${name}: saved to /${choice.path.split("/").slice(0, -1).join("/") || "home"}`,
       });
     } catch (err) {
       reportFileFailure(system, "save", err, { noun: "slide image", name: file.name });

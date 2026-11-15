@@ -323,7 +323,7 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
       message:
         links === 0 && folders === 0
           ? `Delete the empty folder “${group.name}”?`
-          : `Delete “${group.name}” and everything in it — ${parts.join(" and ")}? This cannot be undone.`,
+          : `Delete “${group.name}” and everything in it (${parts.join(" and ")})? This cannot be undone.`,
       destructive: true,
     });
     if (ok) removeGroup.mutate(group.id);
@@ -672,7 +672,7 @@ function titleFromUrl(url: string): string {
   try {
     const parsed = new URL(url);
     const last = parsed.pathname.split("/").filter(Boolean).pop();
-    return last ? `${parsed.hostname.replace(/^www\./, "")} — ${last}` : parsed.hostname.replace(/^www\./, "");
+    return last ? `${parsed.hostname.replace(/^www\./, "")}: ${last}` : parsed.hostname.replace(/^www\./, "");
   } catch {
     return url;
   }

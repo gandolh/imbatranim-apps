@@ -120,7 +120,7 @@ export function Sheets({ windowId: _windowId }: { windowId: string }) {
             system.notify({
               level: "warning",
               title: "Some of this workbook cannot be saved",
-              body: `${fileName(source.path, "workbook.xlsx")} — ${warning}`,
+              body: `${fileName(source.path, "workbook.xlsx")}: ${warning}`,
             });
           }
         }

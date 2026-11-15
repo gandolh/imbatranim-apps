@@ -526,7 +526,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
 
       {/* The same note Clock and Calendar carry since the reminder scheduler. */}
       <div className="border-outline-variant bg-surface-container-low text-on-surface-variant text-tiny flex h-5 shrink-0 items-center gap-1 border-t px-2">
-        Due reminders appear while the desktop is open — this window can be closed.
+        Due reminders appear while the desktop is open. This window can be closed.
       </div>
 
       {confirmDialog}

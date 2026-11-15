@@ -31,7 +31,7 @@ const STRIP_ON =
   "bg-primary-container text-on-primary-container ring-1 ring-primary ring-inset hover:bg-primary-container [&_svg]:text-on-primary-container";
 
 const SIGN_TITLE = "Sign: capture a signature and stamp it on the page";
-const ORGANIZE_TITLE = "Organize pages — rotate, reorder, merge & split";
+const ORGANIZE_TITLE = "Organize pages: rotate, reorder, merge and split";
 
 function AnnotateContent(): ReactNode {
   return (

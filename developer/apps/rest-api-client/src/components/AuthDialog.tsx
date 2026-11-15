@@ -93,7 +93,7 @@ export function AuthDialog({
             <Input label="Username" value={user} onChange={(e) => setUser(e.target.value)} />
             <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             <p className="text-on-surface-variant text-label">
-              Basic has to be base64-encoded, so the encoded value is written into the header directly — it cannot
+              Basic has to be base64-encoded, so the encoded value is written into the header directly. It cannot
               reference a variable.
             </p>
           </>

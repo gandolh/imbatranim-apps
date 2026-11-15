@@ -73,7 +73,7 @@ export function DiffView({ diff, staged, sideBySide, onToggleLayout, onApplyHunk
               )}
             </div>
             {file.binary ? (
-              <div className="text-on-surface-variant text-control px-2 py-2">Binary file — nothing to show</div>
+              <div className="text-on-surface-variant text-control px-2 py-2">Binary file, nothing to show</div>
             ) : (
               file.hunks.map((hunk, i) => (
                 <HunkBlock

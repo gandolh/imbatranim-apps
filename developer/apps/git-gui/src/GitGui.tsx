@@ -329,7 +329,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
       if (!repo) return;
       const name = await prompt({
         title: "New branch",
-        message: "Branch name — letters, digits and - _ / . are allowed",
+        message: "Branch name: letters, digits and - _ / . are allowed",
         confirmLabel: "Create",
       });
       if (name === null) return;

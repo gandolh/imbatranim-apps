@@ -60,7 +60,7 @@ export function NotesPane({ slideNumber, text, onCommit, flushRef }: Props) {
         htmlFor={`notes-${slideNumber}`}
         className="font-ui text-on-surface-variant text-label mb-[4px] font-semibold"
       >
-        Notes — slide {slideNumber}
+        Notes for slide {slideNumber}
       </label>
       <textarea
         id={`notes-${slideNumber}`}

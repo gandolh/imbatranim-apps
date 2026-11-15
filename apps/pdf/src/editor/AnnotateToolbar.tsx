@@ -190,7 +190,7 @@ export function AnnotateToolbar(): JSX.Element {
           size="sm"
           className={`${PANEL_BUTTON} ${mode === "organize" ? PANEL_BUTTON_ON : ""}`}
           onClick={() => setMode(mode === "organize" ? "read" : "organize")}
-          title="Organize pages — rotate, reorder, merge & split"
+          title="Organize pages: rotate, reorder, merge and split"
         >
           <Grid3x3 size={16} />
           {mode === "organize" ? "Done" : "Organize"}

@@ -164,7 +164,7 @@ export function describeIssues(issues: InterpolationIssue[]): string {
   const crlf = issues.find((i) => i.kind === "crlf");
 
   if (scheme && scheme.kind === "scheme") {
-    parts.push(`A variable turned this into a ${scheme.scheme} URL — only http and https can be sent.`);
+    parts.push(`A variable turned this into a ${scheme.scheme} URL. Only http and https can be sent.`);
   }
   if (crlf && crlf.kind === "crlf") {
     parts.push(`A variable put a line break into the header “${crlf.where}”, which is not allowed.`);

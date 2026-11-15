@@ -67,7 +67,7 @@ export function EnvironmentDialog({
         <p className="text-on-surface-variant text-label">
           Values are stored <strong>unencrypted</strong> in{" "}
           <code className="font-mono">~/.config/rest-client/collections.json</code>. Marking one secret masks it here
-          and leaves its value out of an export — it does not encrypt it.
+          and leaves its value out of an export. It does not encrypt it.
         </p>
 
         <div className="flex items-end gap-2">
