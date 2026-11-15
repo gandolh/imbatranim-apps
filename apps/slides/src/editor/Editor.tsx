@@ -730,7 +730,8 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     if ((key === "Enter" || key === "F2") && selection.length === 1 && canEditText(selectedShapes[0])) {
       return (handled(), startEdit(selection[0], key === "F2" ? "all" : "end"));
     }
-    if (key === "Tab" && shapes.length) {
+    // Tab cycles the shapes only on the slide canvas; anywhere else it follows the focus order.
+    if (key === "Tab" && shapes.length && target?.closest("[data-slide-canvas]")) {
       handled();
       const at = selection.length ? shapes.findIndex((s) => s.id === selection[selection.length - 1]) : -1;
       const next = (at + (e.shiftKey ? -1 : 1) + shapes.length) % shapes.length;

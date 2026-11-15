@@ -120,6 +120,9 @@ export function Stage({
     const target = e.target as Element;
     if (target.closest("[data-text-editor]")) return;
     if (editing) editorApi.current?.commit();
+    // The press is prevented below, which would leave focus where it was: the canvas takes it,
+    // so Tab cycles the shapes from here and nowhere else.
+    (e.currentTarget as HTMLElement).focus({ preventScroll: true });
     const p = toEmu(e.clientX, e.clientY);
     const handleEl = target.closest<HTMLElement>("[data-handle]");
     const page = e.currentTarget as HTMLElement;
@@ -305,6 +308,9 @@ export function Stage({
             ref={pageRef}
             role="application"
             aria-label="Slide editor"
+            data-slide-canvas=""
+            tabIndex={0}
+            className="focus-visible:outline-primary outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               position: "relative",
               width,

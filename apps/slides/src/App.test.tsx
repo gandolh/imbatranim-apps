@@ -192,4 +192,51 @@ describe("Slides", () => {
     await settle();
     expect(fake.titles[fake.titles.length - 1]).toBe("anim.pptx •");
   });
+
+  describe("Tab", () => {
+    /** The ids of the shapes drawn with selection handles. */
+    const selected = () => [
+      ...new Set([...document.querySelectorAll("[data-handle][data-shape]")].map((h) => h.getAttribute("data-shape"))),
+    ];
+
+    function tab(target: Element, shiftKey = false) {
+      const e = new KeyboardEvent("keydown", { key: "Tab", shiftKey, bubbles: true, cancelable: true });
+      act(() => {
+        target.dispatchEvent(e);
+      });
+      return e;
+    }
+
+    it("cycles the shapes with focus on the slide canvas, and only there", async () => {
+      await open();
+      const canvas = document.querySelector<HTMLElement>("[data-slide-canvas]")!;
+      expect(canvas.tabIndex).toBe(0);
+      canvas.focus();
+      expect(selected()).toEqual([]);
+      expect(tab(canvas).defaultPrevented).toBe(true);
+      const first = selected();
+      expect(first).toHaveLength(1);
+      tab(canvas);
+      const second = selected();
+      expect(second).toHaveLength(1);
+      expect(second).not.toEqual(first);
+      tab(canvas, true);
+      expect(selected()).toEqual(first);
+    });
+
+    it("leaves focus and the selection alone in the format panel", async () => {
+      await open();
+      const canvas = document.querySelector<HTMLElement>("[data-slide-canvas]")!;
+      tab(canvas);
+      const kept = selected();
+      expect(kept).toHaveLength(1);
+      const control = document.querySelector<HTMLElement>('[aria-label="Format"] button, [aria-label="Format"] input')!;
+      control.focus();
+      expect(tab(control).defaultPrevented).toBe(false);
+      expect(tab(control, true).defaultPrevented).toBe(false);
+      const field = document.querySelector<HTMLElement>("input, textarea");
+      if (field) expect(tab(field).defaultPrevented).toBe(false);
+      expect(selected()).toEqual(kept);
+    });
+  });
 });
