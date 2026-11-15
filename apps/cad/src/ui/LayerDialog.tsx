@@ -196,7 +196,7 @@ export function LayerDialog({
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-5 w-5 justify-center p-0"
+                        className="focus-visible:ring-primary h-5 w-5 justify-center p-0 focus-visible:ring-2 focus-visible:ring-inset"
                         aria-label={`Delete layer ${l.name}`}
                         title={
                           l.name === "0" || l.name === state.currentLayer || used.has(l.name)

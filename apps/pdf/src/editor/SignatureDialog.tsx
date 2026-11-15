@@ -131,7 +131,7 @@ function SignaturePad({
   };
 
   const tabClass = (on: boolean) =>
-    "font-ui px-3 py-1.5 text-control font-medium border-b-2 -mb-px " +
+    "font-ui px-3 py-1.5 text-control font-medium border-b-2 -mb-px outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset " +
     (on ? "text-on-surface border-primary" : "text-on-surface-variant border-transparent hover:text-on-surface");
 
   return (
@@ -148,7 +148,7 @@ function SignaturePad({
       <TabsPanel value="draw" className="flex flex-col items-center gap-2">
         <canvas
           ref={canvasRef}
-          className="border-outline-variant w-full cursor-crosshair touch-none border border-dashed bg-white"
+          className="border-outline-variant focus-visible:outline-primary w-full cursor-crosshair touch-none border border-dashed bg-white outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
           width={PAD_W}
           height={PAD_H}
           style={{ width: "100%", aspectRatio: `${PAD_W} / ${PAD_H}` }}
@@ -182,7 +182,12 @@ function SignaturePad({
       {/* Footer */}
       <div className="flex items-center gap-2 pt-1">
         {tab === "draw" && (
-          <Button variant="ghost" size="sm" onClick={clear}>
+          <Button
+            variant="ghost"
+            className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+            size="sm"
+            onClick={clear}
+          >
             Clear
           </Button>
         )}

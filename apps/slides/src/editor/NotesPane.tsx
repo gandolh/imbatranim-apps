@@ -73,7 +73,7 @@ export function NotesPane({ slideNumber, text, onCommit, flushRef }: Props) {
           timer.current = setTimeout(flush, 800);
         }}
         onBlur={flush}
-        className="font-content text-on-surface placeholder:text-on-surface-variant text-control min-h-0 flex-1 resize-none bg-transparent outline-none"
+        className="font-content text-on-surface placeholder:text-on-surface-variant text-control focus-visible:ring-primary min-h-0 flex-1 resize-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-inset"
       />
     </div>
   );
