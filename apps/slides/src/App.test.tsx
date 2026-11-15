@@ -224,6 +224,22 @@ describe("Slides", () => {
       expect(selected()).toEqual(first);
     });
 
+    it("lets Tab leave the canvas past the last shape, and Shift+Tab before the first", async () => {
+      await open();
+      const canvas = document.querySelector<HTMLElement>("[data-slide-canvas]")!;
+      canvas.focus();
+      let forward = 0;
+      while (tab(canvas).defaultPrevented) expect(++forward).toBeLessThan(100);
+      expect(forward).toBeGreaterThan(0);
+      const last = selected();
+      expect(last).toHaveLength(1);
+      let back = 0;
+      while (tab(canvas, true).defaultPrevented) expect(++back).toBeLessThan(100);
+      // From the last shape back to the first is one press fewer than first to last.
+      expect(back).toBe(forward - 1);
+      expect(selected()).toHaveLength(1);
+    });
+
     it("leaves focus and the selection alone in the format panel", async () => {
       await open();
       const canvas = document.querySelector<HTMLElement>("[data-slide-canvas]")!;

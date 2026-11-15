@@ -730,11 +730,14 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     if ((key === "Enter" || key === "F2") && selection.length === 1 && canEditText(selectedShapes[0])) {
       return (handled(), startEdit(selection[0], key === "F2" ? "all" : "end"));
     }
-    // Tab cycles the shapes only on the slide canvas; anywhere else it follows the focus order.
+    // Tab steps through the shapes only on the slide canvas; anywhere else it follows the focus order.
+    // Past the last shape (Shift+Tab: before the first) it isn't taken, so focus leaves the canvas
+    // and a keyboard user is never trapped there.
     if (key === "Tab" && shapes.length && target?.closest("[data-slide-canvas]")) {
-      handled();
       const at = selection.length ? shapes.findIndex((s) => s.id === selection[selection.length - 1]) : -1;
-      const next = (at + (e.shiftKey ? -1 : 1) + shapes.length) % shapes.length;
+      const next = at === -1 ? (e.shiftKey ? shapes.length - 1 : 0) : at + (e.shiftKey ? -1 : 1);
+      if (next < 0 || next >= shapes.length) return;
+      handled();
       return setSelection([shapes[next].id]);
     }
     const arrows: Record<string, [number, number]> = {

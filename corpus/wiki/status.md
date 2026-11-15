@@ -103,7 +103,7 @@ Brief 09 (2026-11-12, `cb60886` to `46e9471`): the kit snapshot at imbatranimOS 
 
 Brief 11 (2026-11-13 to 2026-11-15, `f8084f3` to the closeout): the redesign, "Tools beside the page", on imbatranimOS `5e075a0`'s kit. Docs, Sheets, Slides and PDF have the 40 px app bar, an inspector beside the page and the status band; the other screens take the bars' heights and surfaces. `tools/browser` (Playwright 1.63.0) and `npm run contrast` check it; [DESIGN.md](../../DESIGN.md) records it. Pinned by the OS only after the owner moves the three catalog descriptors; checked in the dev container, not on a deployed desktop.
 
-Brief 14 (2026-11-15, `1741101` and `5ed9e3b`): Slides' Tab and Shift+Tab cycle shapes only while the slide canvas has focus; the canvas is one Tab stop and takes focus when pressed. Elsewhere Tab follows the normal focus order. Slides' focus spec passes in the dev container's desktop. Pinned by the OS only after the owner moves the descriptor.
+Brief 14 (2026-11-15, `1741101` and `5ed9e3b`): Slides' Tab and Shift+Tab step through shapes only while the slide canvas has focus, and leave the canvas past the last (or before the first) shape; the canvas is one Tab stop and takes focus when pressed. Elsewhere Tab follows the normal focus order. Slides' focus spec passes in the dev container's desktop. Pinned by the OS only after the owner moves the descriptor.
 
 No todo is open.
 
