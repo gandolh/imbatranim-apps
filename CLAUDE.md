@@ -28,9 +28,9 @@ Accessories, Developer), and the small server some of them use. Read
   reformat in imbatranimOS arrives through `kit:sync`.
 - Relative imports keep their `.ts` suffix: the server runs under Node's type
   stripping with no build, and the build resolves them the same way.
-- `npm test` runs on a quiet machine. `apps/pdf/src/App.test.tsx` waits about
-  two seconds for the engine and can time out when the suite runs under load;
-  run it alone with `npx vitest run apps/pdf/src/App.test.tsx`.
+- `apps/pdf/src/App.test.tsx`'s `beforeAll` warms the engine and pdf.js's
+  first parse, and its first test waits for the text layer. Don't raise its
+  timeout; if it times out again, find the cold path it missed.
 - The desktop starts the server with `node server/src/server.ts`; that path is
   in `os/descriptor.template.json`, `server/package.json` and `osBuild.test.ts`.
 
