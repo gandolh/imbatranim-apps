@@ -197,23 +197,31 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
       : await page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset.walk);
     if (!jumped) await page.keyboard.press("Tab");
     jumped = false;
-    const where = await win.evaluate((w, sel) => {
-      const el = document.activeElement as HTMLElement | null;
-      if (!el || !w.contains(el)) return { inside: false, key: "", vendor: false, os: false, editor: false };
-      return {
-        inside: true,
-        // A number of its own, so two stops that look alike are still told apart.
-        key: (el.dataset.walk ??= String(document.querySelectorAll("[data-walk]").length + 1)),
-        vendor: !!(sel && el.closest(sel)),
-        os:
-          !!el.closest("[data-window-titlebar], [data-window-chrome]") ||
-          el.matches(
-            // The window's title buttons, and the kit dialog's own Close.
-            "button[title='Close'], button[title='Minimize'], button[title='Maximize'], button[title='Restore'], [role='dialog'] button[aria-label='Close']",
-          ),
-        editor: el.isContentEditable || el.getAttribute("role") === "application",
-      };
-    }, vendor ?? null);
+    // A popover that closes when focus leaves it ends the walk: its root is gone.
+    if (!(await win.isVisible())) break;
+    const where = await win
+      .evaluate(
+        (w, sel) => {
+          const el = document.activeElement as HTMLElement | null;
+          if (!el || !w.contains(el)) return { inside: false, key: "", vendor: false, os: false, editor: false };
+          return {
+            inside: true,
+            // A number of its own, so two stops that look alike are still told apart.
+            key: (el.dataset.walk ??= String(document.querySelectorAll("[data-walk]").length + 1)),
+            vendor: !!(sel && el.closest(sel)),
+            os:
+              !!el.closest("[data-window-titlebar], [data-window-chrome]") ||
+              el.matches(
+                // The window's title buttons, and the kit dialog's own Close.
+                "button[title='Close'], button[title='Minimize'], button[title='Maximize'], button[title='Restore'], [role='dialog'] button[aria-label='Close']",
+              ),
+            editor: el.isContentEditable || el.getAttribute("role") === "application",
+          };
+        },
+        vendor ?? null,
+        { timeout: 5_000 },
+      )
+      .catch(() => ({ inside: false, key: "", vendor: false, os: false, editor: false }));
     if (!where.inside) break;
     // Tab kept on the same stop (an editor, a grid): step past it below rather than end.
     const stuck = where.key === before;
@@ -222,28 +230,34 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
     if (!stuck) stops.push({ ...(await focusRing(page)), part: where.vendor ? "vendor" : where.os ? "os" : "app" });
     if (where.vendor || where.editor || stuck) {
       // Step past it without a Tab: the next focusable thing after it, outside the vendor part.
-      const moved = await win.evaluate((w, sel) => {
-        const cur = document.activeElement as HTMLElement;
-        const root = (sel && cur.closest(sel)) || cur;
-        const all = [
-          ...w.querySelectorAll<HTMLElement>(
-            "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1']):not([data-base-ui-focus-guard])",
-          ),
-        ].filter(
-          // Past a vendor part, nothing inside it; past a container (a popup), its own stops count.
-          (e) =>
-            e.getClientRects().length > 0 &&
-            (root === cur || !root.contains(e)) &&
-            e !== cur &&
-            !(sel && e.closest(sel)),
-        );
-        // The first one after it that really takes focus.
-        for (const next of all.filter((e) => root.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-          next.focus({ focusVisible: true });
-          if (document.activeElement === next) return true;
-        }
-        return false;
-      }, vendor ?? null);
+      const moved = await win
+        .evaluate(
+          (w, sel) => {
+            const cur = document.activeElement as HTMLElement;
+            const root = (sel && cur.closest(sel)) || cur;
+            const all = [
+              ...w.querySelectorAll<HTMLElement>(
+                "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1']):not([data-base-ui-focus-guard])",
+              ),
+            ].filter(
+              // Past a vendor part, nothing inside it; past a container (a popup), its own stops count.
+              (e) =>
+                e.getClientRects().length > 0 &&
+                (root === cur || !root.contains(e)) &&
+                e !== cur &&
+                !(sel && e.closest(sel)),
+            );
+            // The first one after it that really takes focus.
+            for (const next of all.filter((e) => root.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+              next.focus({ focusVisible: true });
+              if (document.activeElement === next) return true;
+            }
+            return false;
+          },
+          vendor ?? null,
+          { timeout: 5_000 },
+        )
+        .catch(() => false);
       if (!moved) break;
       jumped = true;
     }
