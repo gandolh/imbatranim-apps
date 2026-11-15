@@ -148,7 +148,7 @@ function SignaturePad({
       <TabsPanel value="draw" className="flex flex-col items-center gap-2">
         <canvas
           ref={canvasRef}
-          className="border-outline-variant focus-visible:outline-primary w-full cursor-crosshair touch-none border border-dashed bg-white outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="border-outline-variant focus-visible:outline-primary w-full cursor-crosshair touch-none border border-dashed bg-white outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid"
           width={PAD_W}
           height={PAD_H}
           style={{ width: "100%", aspectRatio: `${PAD_W} / ${PAD_H}` }}
