@@ -270,12 +270,12 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
   return (
     <div className="bg-surface-container-lowest flex h-full flex-col">
       {/* Lists */}
-      <div className="border-outline-variant flex min-h-8 shrink-0 flex-wrap items-center gap-1 border-b px-1.5 py-1">
+      <div className="border-outline-variant bg-surface-container-low min-h-appbar flex shrink-0 flex-wrap items-center gap-[4px] border-b px-[6px] py-[6px]">
         <button
           type="button"
           onClick={() => setListId(null)}
           className={cn(
-            "focus-visible:ring-primary font-ui rounded-control text-label border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset",
+            "focus-visible:ring-primary font-ui rounded-control text-control h-[28px] border px-[8px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
             listId === null
               ? "border-primary bg-primary-container text-on-primary-container"
               : "border-outline-variant text-on-surface-variant hover:text-on-surface",
@@ -289,7 +289,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             type="button"
             onClick={() => setListId(l.id)}
             className={cn(
-              "focus-visible:ring-primary font-ui rounded-control text-label max-w-28 truncate border px-1.5 py-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset",
+              "focus-visible:ring-primary font-ui rounded-control text-control h-[28px] max-w-28 truncate border px-[8px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
               listId === l.id
                 ? "border-primary bg-primary-container text-on-primary-container"
                 : "border-outline-variant text-on-surface-variant hover:text-on-surface",
@@ -303,9 +303,9 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
           onClick={() => void handleNewList()}
           aria-label="New list"
           title="New list"
-          className="text-on-surface-variant hover:text-on-surface focus-visible:ring-primary p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset"
+          className="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-control focus-visible:ring-primary flex h-[28px] w-[28px] items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-inset"
         >
-          <ListPlus size={13} />
+          <ListPlus size={16} />
         </button>
         {listId !== null && (
           <button
@@ -313,9 +313,9 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             onClick={() => void handleDeleteList()}
             aria-label="Delete this list"
             title="Delete this list (tasks are kept)"
-            className="text-on-surface-variant hover:text-error focus-visible:ring-primary ml-auto p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            className="text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded-control focus-visible:ring-primary ml-auto flex h-[28px] w-[28px] items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-inset"
           >
-            <Trash2 size={12} />
+            <Trash2 size={16} />
           </button>
         )}
       </div>
