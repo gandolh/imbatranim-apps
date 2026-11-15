@@ -388,7 +388,7 @@ function PageCard({
           onCheckedChange={() => onToggle()}
           aria-label="Select page"
           title="Select page"
-          labelClassName="bg-surface/80 absolute top-1 left-1 h-5 w-5 justify-center gap-0 border-none"
+          labelClassName="bg-surface absolute top-1 left-1 h-5 w-5 justify-center gap-0 border-none"
         />
         <span
           className="text-on-surface-variant bg-surface/80 absolute top-1 right-1 cursor-grab p-0.5 opacity-0 group-hover:opacity-100"
