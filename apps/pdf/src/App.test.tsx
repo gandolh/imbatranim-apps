@@ -161,6 +161,20 @@ beforeAll(() => {
   HTMLElement.prototype.scrollIntoView = () => {};
 });
 
+/**
+ * The engine's chunk, warmed once. Its first import (pdf-lib and pdf.js's Node
+ * build) and pdf.js's first parse cost about half a second alone and several
+ * under a full run, which the first test would pay inside `openDocument`'s
+ * wait. Importing the module directly never calls `loadEngine`, so the order
+ * the first test checks (the engine asked for after the first draw) holds.
+ */
+beforeAll(async () => {
+  const { PdfDoc } = await import("./app/engineModule");
+  const doc = await PdfDoc.load(await pdfBytes(1));
+  await doc.text.extract({ pages: [1] });
+  doc.dispose();
+});
+
 beforeEach(() => {
   events.log = [];
   events.disposed = 0;
@@ -253,6 +267,8 @@ describe("PDF, as a kit app", () => {
     // The engine is in: search and the text layer work, Save waits for an edit.
     const search = view.container.querySelector<HTMLInputElement>('input[type="search"]')!;
     expect(search.disabled).toBe(false);
+    // The text layer follows the engine with its own extraction, a step later.
+    await until(() => !!view.container.querySelector(".pdfcore-text-layer span"), "the text layer");
     expect(view.container.querySelector(".pdfcore-text-layer span")?.textContent).toContain(
       "Page 1 of the quarterly report",
     );
