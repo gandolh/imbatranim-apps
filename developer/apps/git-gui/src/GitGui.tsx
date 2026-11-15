@@ -428,9 +428,15 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
       <div className="bg-surface text-on-surface flex h-full flex-col">
         {/* A repository is chosen in the OS's folder chooser, which gives
             Git GUI the folder; a typed path would be one it was never given. */}
-        <div className="border-outline-variant flex items-center gap-2 border-b px-3 py-2">
-          <Button variant="primary" onClick={pickDirectory} title="Browse for a repository">
-            <FolderGit2 size={13} /> Open a repository…
+        <div className="border-outline-variant bg-surface-container-low min-h-appbar flex items-center gap-[8px] border-b px-[8px] py-[6px]">
+          <Button
+            variant="primary"
+            size="sm"
+            className="text-control h-[28px] gap-[6px] px-[10px] font-semibold"
+            onClick={pickDirectory}
+            title="Browse for a repository"
+          >
+            <FolderGit2 size={16} /> Open a repository…
           </Button>
         </div>
         {error && <ErrorBanner message={error} />}

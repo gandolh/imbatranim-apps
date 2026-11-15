@@ -33,15 +33,15 @@ export function RepoBar({
   onCloseRepo: () => void;
 }) {
   return (
-    <div className="border-outline-variant bg-surface-container-low flex shrink-0 flex-wrap items-center gap-1.5 border-b px-2 py-1">
+    <div className="border-outline-variant bg-surface-container-low min-h-appbar flex shrink-0 flex-wrap items-center gap-[6px] border-b px-[8px] py-[6px]">
       <span className="font-ui text-on-surface text-control max-w-[30%] truncate font-semibold">{repoLabel}</span>
       <Button variant="ghost" size="sm" onClick={onCloseRepo} aria-label="Close repository" title="Close repository">
         <X size={11} strokeWidth={2} />
       </Button>
 
-      <div className="bg-outline-variant mx-0.5 h-4 w-px" />
+      <div className="bg-outline-variant mx-[2px] h-[20px] w-px" />
 
-      <GitBranch size={12} strokeWidth={2} className="text-on-surface-variant shrink-0" />
+      <GitBranch size={16} strokeWidth={2} className="text-on-surface-variant shrink-0" />
       {branches === null ? (
         <span className="font-ui text-on-surface-variant text-label">…</span>
       ) : branches.detached ? (
@@ -78,34 +78,42 @@ export function RepoBar({
         </span>
       )}
 
-      <div className="bg-outline-variant mx-0.5 h-4 w-px" />
+      <div className="bg-outline-variant mx-[2px] h-[20px] w-px" />
 
       <Button
         variant="ghost"
         size="sm"
-        className="gap-1"
+        className="text-control h-[28px] gap-[6px] px-[10px]"
         onClick={onStash}
         disabled={busy || !branches?.dirty}
         title={branches?.dirty ? "Stash all changes" : "Nothing to stash"}
       >
-        <Archive size={12} strokeWidth={2} />
+        <Archive size={16} strokeWidth={2} />
         Stash
       </Button>
       <Button
         variant="ghost"
         size="sm"
-        className="gap-1"
+        className="text-control h-[28px] gap-[6px] px-[10px]"
         onClick={onStashPop}
         disabled={busy || stashes.length === 0}
         title={stashes.length > 0 ? `Pop “${stashes[0].label}”` : "No stashes"}
       >
-        <ArchiveRestore size={12} strokeWidth={2} />
+        <ArchiveRestore size={16} strokeWidth={2} />
         Pop{stashes.length > 0 ? ` (${stashes.length})` : ""}
       </Button>
 
       <span className="flex-1" />
-      <Button variant="ghost" size="sm" onClick={onRefresh} disabled={busy} aria-label="Refresh" title="Refresh">
-        <RefreshCw size={12} strokeWidth={2} className={cn(busy && "animate-spin")} />
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-[28px] w-[28px] justify-center p-0"
+        onClick={onRefresh}
+        disabled={busy}
+        aria-label="Refresh"
+        title="Refresh"
+      >
+        <RefreshCw size={16} strokeWidth={2} className={cn(busy && "motion-safe:animate-spin")} />
       </Button>
     </div>
   );
