@@ -182,7 +182,7 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
     await win.evaluate((r) =>
       r
         .querySelector<HTMLElement>(
-          "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])",
+          "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1']):not([data-base-ui-focus-guard])",
         )
         ?.focus({ focusVisible: true }),
     );
@@ -225,9 +225,16 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
         const root = (sel && cur.closest(sel)) || cur;
         const all = [
           ...w.querySelectorAll<HTMLElement>(
-            "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])",
+            "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1']):not([data-base-ui-focus-guard])",
           ),
-        ].filter((e) => e.getClientRects().length > 0 && !root.contains(e) && !(sel && e.closest(sel)));
+        ].filter(
+          // Past a vendor part, nothing inside it; past a container (a popup), its own stops count.
+          (e) =>
+            e.getClientRects().length > 0 &&
+            (root === cur || !root.contains(e)) &&
+            e !== cur &&
+            !(sel && e.closest(sel)),
+        );
         // The first one after it that really takes focus.
         for (const next of all.filter((e) => root.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)) {
           next.focus({ focusVisible: true });
