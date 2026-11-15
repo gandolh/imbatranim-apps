@@ -159,7 +159,13 @@ function SignaturePad({
         <p className="text-on-surface-variant font-ui text-label">Draw your signature, then place it on the page.</p>
       </TabsPanel>
       <TabsPanel value="type" className="flex flex-col gap-2">
-        <Input value={typed} placeholder="Type your name" autoFocus onChange={(e) => setTyped(e.target.value)} />
+        <Input
+          className="focus-visible:ring-primary focus-visible:ring-2"
+          value={typed}
+          placeholder="Type your name"
+          autoFocus
+          onChange={(e) => setTyped(e.target.value)}
+        />
         <div
           // Deliberately literal, not a semantic token: this is a preview of
           // ink on paper, and it has to look the same in dark mode as the mark

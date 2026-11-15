@@ -77,6 +77,7 @@ export function AuthDialog({
               />
             ) : (
               <Input
+                className="focus-visible:ring-primary focus-visible:ring-2"
                 label="Token variable"
                 placeholder="apiToken"
                 value={varName}
@@ -90,8 +91,19 @@ export function AuthDialog({
           </>
         ) : (
           <>
-            <Input label="Username" value={user} onChange={(e) => setUser(e.target.value)} />
-            <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input
+              className="focus-visible:ring-primary focus-visible:ring-2"
+              label="Username"
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+            />
+            <Input
+              className="focus-visible:ring-primary focus-visible:ring-2"
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <p className="text-on-surface-variant text-label">
               Basic has to be base64-encoded, so the encoded value is written into the header directly. It cannot
               reference a variable.

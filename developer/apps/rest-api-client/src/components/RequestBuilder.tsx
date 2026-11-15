@@ -184,7 +184,7 @@ export function RequestBuilder({
           className="min-w-[7rem]"
         />
         <Input
-          className="flex-1"
+          className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
           placeholder="https://api.example.com/endpoint  or  {{base}}/users"
           value={url}
           spellCheck={false}
@@ -255,14 +255,14 @@ export function RequestBuilder({
                 labelClassName="shrink-0"
               />
               <Input
-                className="flex-1"
+                className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
                 placeholder="Header"
                 value={row.name}
                 spellCheck={false}
                 onChange={(e) => updateRow(row.id, { name: e.target.value })}
               />
               <Input
-                className="flex-1"
+                className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
                 placeholder="Value"
                 value={row.value}
                 spellCheck={false}
@@ -353,7 +353,7 @@ export function RequestBuilder({
                     labelClassName="shrink-0"
                   />
                   <Input
-                    className="w-40"
+                    className="focus-visible:ring-primary w-40 focus-visible:ring-2"
                     placeholder="Field name"
                     value={field.name}
                     spellCheck={false}
@@ -363,7 +363,7 @@ export function RequestBuilder({
                   />
                   {field.filePath === undefined ? (
                     <Input
-                      className="flex-1"
+                      className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
                       placeholder="Value"
                       value={field.value}
                       spellCheck={false}
