@@ -114,9 +114,9 @@ export function RequestBuilder({
   const showPreview = previewUrl !== url && previewUrl.trim() !== "";
 
   return (
-    <div className="border-outline-variant flex flex-col gap-2 border-b p-2">
-      {/* Environment + interop bar */}
-      <div className="flex flex-wrap items-center gap-1.5">
+    <div className="border-outline-variant flex flex-col gap-[8px] border-b px-[8px] pb-[8px]">
+      {/* Environment + interop bar, at the app bar's height and surface */}
+      <div className="border-outline-variant bg-surface-container-low min-h-appbar -mx-[8px] flex flex-wrap items-center gap-[6px] border-b px-[8px] py-[6px]">
         <div className="min-w-[10rem]">
           <Select
             options={[
@@ -131,28 +131,41 @@ export function RequestBuilder({
         <Button
           variant="ghost"
           size="sm"
+          className="h-[28px] w-[28px] justify-center p-0"
           onClick={onEditEnvs}
           aria-label="Edit environments"
           title="Edit environments and variables"
         >
-          <Settings2 size={12} strokeWidth={2} />
+          <Settings2 size={16} strokeWidth={2} />
         </Button>
         <span className="flex-1" />
-        <Button variant="ghost" size="sm" className="gap-1" onClick={onAddAuth} title="Add an Authorization header">
-          <KeyRound size={12} strokeWidth={2} /> Auth
-        </Button>
-        <Button variant="ghost" size="sm" className="gap-1" onClick={onImportCurl} title="Import a curl command">
-          <Upload size={12} strokeWidth={2} /> Import curl
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-control h-[28px] gap-[6px] px-[10px]"
+          onClick={onAddAuth}
+          title="Add an Authorization header"
+        >
+          <KeyRound size={16} strokeWidth={2} /> Auth
         </Button>
         <Button
           variant="ghost"
           size="sm"
-          className="gap-1"
+          className="text-control h-[28px] gap-[6px] px-[10px]"
+          onClick={onImportCurl}
+          title="Import a curl command"
+        >
+          <Upload size={16} strokeWidth={2} /> Import curl
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-control h-[28px] gap-[6px] px-[10px]"
           onClick={onExportCurl}
           disabled={!url.trim()}
           title="Copy this request as a curl command"
         >
-          <Download size={12} strokeWidth={2} /> Copy curl
+          <Download size={16} strokeWidth={2} /> Copy curl
         </Button>
       </div>
 

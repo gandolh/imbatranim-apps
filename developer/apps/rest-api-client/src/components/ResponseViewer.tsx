@@ -52,7 +52,7 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Status line */}
-      <div className="border-outline-variant text-control flex flex-wrap items-center gap-x-4 gap-y-1 border-b px-3 py-1.5">
+      <div className="border-outline-variant bg-surface-container text-control min-h-statusbar flex flex-wrap items-center gap-x-[16px] gap-y-[4px] border-b px-[12px] py-[4px]">
         <span className={cn("font-ui font-semibold", statusToken(response.status))}>
           {response.status} {response.statusText}
         </span>
