@@ -92,7 +92,11 @@ export function SidePanel({ extraTabs = [], inSheet = false }: SidePanelProps): 
             );
           })}
         </TabsList>
-        <TabsPanel value={active?.id} className="min-h-0 flex-1 overflow-auto" data-panel-scroll>
+        <TabsPanel
+          value={active?.id}
+          className="focus-visible:ring-primary min-h-0 flex-1 overflow-auto focus-visible:ring-2 focus-visible:ring-inset"
+          data-panel-scroll
+        >
           {painted && <Suspense fallback={null}>{active?.render()}</Suspense>}
         </TabsPanel>
       </Tabs>

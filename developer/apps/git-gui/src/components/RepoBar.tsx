@@ -35,7 +35,14 @@ export function RepoBar({
   return (
     <div className="border-outline-variant bg-surface-container-low min-h-appbar flex shrink-0 flex-wrap items-center gap-[6px] border-b px-[8px] py-[6px]">
       <span className="font-ui text-on-surface text-control max-w-[30%] truncate font-semibold">{repoLabel}</span>
-      <Button variant="ghost" size="sm" onClick={onCloseRepo} aria-label="Close repository" title="Close repository">
+      <Button
+        variant="ghost"
+        className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+        size="sm"
+        onClick={onCloseRepo}
+        aria-label="Close repository"
+        title="Close repository"
+      >
         <X size={11} strokeWidth={2} />
       </Button>
 
@@ -64,6 +71,7 @@ export function RepoBar({
       )}
       <Button
         variant="ghost"
+        className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
         size="sm"
         onClick={onCreateBranch}
         disabled={busy}
@@ -83,7 +91,7 @@ export function RepoBar({
       <Button
         variant="ghost"
         size="sm"
-        className="text-control h-[28px] gap-[6px] px-[10px]"
+        className="text-control focus-visible:ring-primary h-[28px] gap-[6px] px-[10px] focus-visible:ring-2 focus-visible:ring-inset"
         onClick={onStash}
         disabled={busy || !branches?.dirty}
         title={branches?.dirty ? "Stash all changes" : "Nothing to stash"}
@@ -94,7 +102,7 @@ export function RepoBar({
       <Button
         variant="ghost"
         size="sm"
-        className="text-control h-[28px] gap-[6px] px-[10px]"
+        className="text-control focus-visible:ring-primary h-[28px] gap-[6px] px-[10px] focus-visible:ring-2 focus-visible:ring-inset"
         onClick={onStashPop}
         disabled={busy || stashes.length === 0}
         title={stashes.length > 0 ? `Pop “${stashes[0].label}”` : "No stashes"}
@@ -107,7 +115,7 @@ export function RepoBar({
       <Button
         variant="ghost"
         size="sm"
-        className="h-[28px] w-[28px] justify-center p-0"
+        className="focus-visible:ring-primary h-[28px] w-[28px] justify-center p-0 focus-visible:ring-2 focus-visible:ring-inset"
         onClick={onRefresh}
         disabled={busy}
         aria-label="Refresh"
@@ -155,7 +163,7 @@ export function RecentRepos({
               onClick={() => onForget(repo)}
               aria-label={`Forget ${repo.path || repo.root}`}
               title="Remove from this list"
-              className="shrink-0 opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
+              className="focus-visible:ring-primary shrink-0 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-inset motion-safe:transition-opacity"
             >
               <X size={11} strokeWidth={2} />
             </Button>

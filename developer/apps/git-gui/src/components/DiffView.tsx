@@ -56,14 +56,23 @@ export function DiffView({ diff, staged, sideBySide, onToggleLayout, onApplyHunk
           pressed={sideBySide}
           onPressedChange={() => onToggleLayout()}
           title={sideBySide ? "Switch to a single column" : "Switch to side by side"}
-          render={<Button variant="ghost" size="sm" className="gap-1" />}
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              className="focus-visible:ring-primary gap-1 focus-visible:ring-2 focus-visible:ring-inset"
+            />
+          }
         >
           {sideBySide ? <Rows3 size={12} strokeWidth={2} /> : <Columns2 size={12} strokeWidth={2} />}
           {sideBySide ? "Unified" : "Side by side"}
         </Toggle>
       </div>
 
-      <ScrollArea className="min-h-0 flex-1" orientation="both">
+      <ScrollArea
+        className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2"
+        orientation="both"
+      >
         {files.map((file) => (
           <div key={`${file.oldPath}->${file.newPath}`}>
             <div className="bg-surface-container text-on-surface font-ui text-label sticky top-0 z-10 px-2 py-1 font-semibold">
@@ -120,7 +129,7 @@ function HunkBlock({
         <Button
           variant="ghost"
           size="sm"
-          className="gap-1"
+          className="focus-visible:ring-primary gap-1 focus-visible:ring-2 focus-visible:ring-inset"
           disabled={busy}
           // Staging one hunk and unstaging one hunk are the same patch applied in
           // opposite directions — see applyPatch on the backend.

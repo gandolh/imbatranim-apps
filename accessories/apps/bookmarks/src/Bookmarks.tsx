@@ -117,9 +117,10 @@ function FolderRow({
         <span className="font-ui text-on-surface text-control truncate font-semibold">{group.name}</span>
         <span className="font-ui text-on-surface-variant text-label shrink-0">{childCount}</span>
       </button>
-      <div className="flex shrink-0 items-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-within:opacity-100">
+      <div className="flex shrink-0 items-center opacity-0 group-hover/row:opacity-100 focus-within:opacity-100 motion-safe:transition-opacity">
         <Button
           variant="ghost"
+          className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
           size="sm"
           onClick={onAddLink}
           aria-label={`Add a bookmark to ${group.name}`}
@@ -129,6 +130,7 @@ function FolderRow({
         </Button>
         <Button
           variant="ghost"
+          className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
           size="sm"
           onClick={onAddFolder}
           aria-label={`Add a subfolder to ${group.name}`}
@@ -136,7 +138,14 @@ function FolderRow({
         >
           <FolderPlus size={12} strokeWidth={2} />
         </Button>
-        <Button variant="ghost" size="sm" onClick={onRename} aria-label={`Rename ${group.name}`} title="Rename">
+        <Button
+          variant="ghost"
+          className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+          size="sm"
+          onClick={onRename}
+          aria-label={`Rename ${group.name}`}
+          title="Rename"
+        >
           <Edit2 size={12} strokeWidth={2} />
         </Button>
         <Button
@@ -145,7 +154,7 @@ function FolderRow({
           onClick={onDelete}
           aria-label={`Delete ${group.name}`}
           title="Delete folder"
-          className="hover:text-error"
+          className="hover:text-error focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
         >
           <Trash2 size={12} strokeWidth={2} />
         </Button>
@@ -190,12 +199,20 @@ function LinkRow({
           {link.url.replace(/^https?:\/\//, "")}
         </span>
       </button>
-      <div className="flex shrink-0 items-center opacity-0 transition-opacity group-hover/row:opacity-100 focus-within:opacity-100">
-        <Button variant="ghost" size="sm" onClick={onEdit} aria-label={`Edit ${link.title}`} title="Edit">
+      <div className="flex shrink-0 items-center opacity-0 group-hover/row:opacity-100 focus-within:opacity-100 motion-safe:transition-opacity">
+        <Button
+          variant="ghost"
+          className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+          size="sm"
+          onClick={onEdit}
+          aria-label={`Edit ${link.title}`}
+          title="Edit"
+        >
           <Edit2 size={12} strokeWidth={2} />
         </Button>
         <Button
           variant="ghost"
+          className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
           size="sm"
           onClick={onMove}
           aria-label={`Move ${link.title}`}
@@ -209,7 +226,7 @@ function LinkRow({
           onClick={onDelete}
           aria-label={`Delete ${link.title}`}
           title="Delete bookmark"
-          className="hover:text-error"
+          className="hover:text-error focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
         >
           <Trash2 size={12} strokeWidth={2} />
         </Button>
@@ -218,7 +235,7 @@ function LinkRow({
         href={link.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-on-surface-variant hover:text-primary focus-visible:ring-primary shrink-0 p-1 opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+        className="text-on-surface-variant hover:text-primary focus-visible:ring-primary shrink-0 p-1 opacity-0 group-hover/row:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:outline-none motion-safe:transition-opacity"
         aria-label={`Open ${link.title} in a new tab`}
         title="Open in a new tab"
       >
@@ -517,7 +534,7 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
         <Button
           variant="ghost"
           size="sm"
-          className="text-control h-[28px] gap-[6px] px-[10px]"
+          className="text-control focus-visible:ring-primary h-[28px] gap-[6px] px-[10px] focus-visible:ring-2 focus-visible:ring-inset"
           onClick={() => void handleImport()}
           disabled={busy}
           title="Import a bookmarks file exported from any browser"
@@ -528,7 +545,7 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
         <Button
           variant="ghost"
           size="sm"
-          className="text-control h-[28px] gap-[6px] px-[10px]"
+          className="text-control focus-visible:ring-primary h-[28px] gap-[6px] px-[10px] focus-visible:ring-2 focus-visible:ring-inset"
           onClick={() => void handleExport()}
           disabled={busy}
           title="Write a file any browser can import"
@@ -549,7 +566,13 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
             className="font-content text-on-surface placeholder:text-on-surface-variant focus-visible:ring-primary text-control min-w-0 flex-1 bg-transparent py-1 outline-none focus-visible:ring-2 focus-visible:ring-inset"
           />
           {query !== "" && (
-            <Button variant="ghost" size="sm" aria-label="Clear search" onClick={() => setQuery("")}>
+            <Button
+              variant="ghost"
+              className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+              size="sm"
+              aria-label="Clear search"
+              onClick={() => setQuery("")}
+            >
               <X size={11} />
             </Button>
           )}
@@ -567,13 +590,18 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
             {query !== "" ? `Nothing matches “${query.trim()}”` : "No bookmarks yet"}
           </span>
           {query === "" && (
-            <Button variant="ghost" size="sm" onClick={() => void handleImport()}>
+            <Button
+              variant="ghost"
+              className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+              size="sm"
+              onClick={() => void handleImport()}
+            >
               Import from a browser
             </Button>
           )}
         </div>
       ) : (
-        <ScrollArea className="min-h-0 flex-1">
+        <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
           {rows.map((row) =>
             row.kind === "folder" ? (
               <FolderRow

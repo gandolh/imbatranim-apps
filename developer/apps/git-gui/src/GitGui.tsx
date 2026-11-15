@@ -544,7 +544,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
                 "rounded-control border-outline-variant bg-surface-container-lowest text-on-surface min-h-[48px] w-full resize-none border px-2 py-1.5",
                 "font-content text-body outline-none",
                 "placeholder:text-on-surface-variant",
-                "focus:border-primary focus:ring-primary/40 focus:ring-2",
+                "focus:border-primary focus-visible:ring-primary focus-visible:ring-2",
               )}
               placeholder="Commit message"
               aria-label="Commit message"
@@ -588,7 +588,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
               <Button
                 size="sm"
                 variant="ghost"
-                className="my-0.5 mr-1 gap-1"
+                className="focus-visible:ring-primary my-0.5 mr-1 gap-1 focus-visible:ring-2 focus-visible:ring-inset"
                 disabled={busy}
                 onClick={doCompareWithHead}
                 title="Open this file side by side against HEAD, in the Diff tool"
@@ -661,7 +661,7 @@ function ChangeSection({
       <div className="text-on-surface-variant font-ui bg-surface-container-low text-label shrink-0 px-2 py-1 font-semibold tracking-wider uppercase">
         {title} ({entries.length})
       </div>
-      <ScrollArea className="min-h-0 flex-1">
+      <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
         {entries.length === 0 ? (
           <div className="text-on-surface-variant text-control px-2 py-2">Nothing here</div>
         ) : (
@@ -716,7 +716,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
       onClick={onClick}
       className={cn(
         "font-ui text-control flex items-center gap-1.5 px-3 py-1.5",
-        "cursor-pointer border-b-2 transition-colors",
+        "cursor-pointer border-b-2 motion-safe:transition-colors",
         "focus-visible:ring-primary focus-visible:ring-2 focus-visible:outline-none",
         active ? "border-primary text-on-surface" : "text-on-surface-variant hover:text-on-surface border-transparent",
       )}
@@ -733,7 +733,7 @@ function LogPane({ commits }: { commits: GitCommit[] }) {
     );
   }
   return (
-    <ScrollArea className="min-h-0 flex-1">
+    <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
       <ul className="divide-outline-variant/50 divide-y">
         {commits.map((c) => (
           <li key={c.hash} className="px-3 py-2">

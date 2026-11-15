@@ -113,7 +113,7 @@ export function EnvironmentDialog({
             <div className="font-ui text-on-surface-variant text-label mt-1 font-semibold tracking-wider uppercase">
               Variables
             </div>
-            <ScrollArea className="rounded-control border-outline-variant max-h-64 min-h-0 border">
+            <ScrollArea className="rounded-control border-outline-variant [&>div:focus-visible]:outline-primary max-h-64 min-h-0 border [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
               {selected.vars.length === 0 ? (
                 <div className="text-on-surface-variant text-control px-2 py-3">No variables yet</div>
               ) : (
@@ -165,6 +165,7 @@ export function EnvironmentDialog({
                       {entry.secret && (
                         <Button
                           variant="ghost"
+                          className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
                           size="sm"
                           onClick={() => toggleReveal(entry.id)}
                           aria-label={show ? "Hide value" : "Reveal value"}
@@ -186,6 +187,7 @@ export function EnvironmentDialog({
                       />
                       <Button
                         variant="ghost"
+                        className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
                         size="sm"
                         onClick={() =>
                           update({
@@ -206,7 +208,7 @@ export function EnvironmentDialog({
             <Button
               variant="ghost"
               size="sm"
-              className="gap-1 self-start"
+              className="focus-visible:ring-primary gap-1 self-start focus-visible:ring-2 focus-visible:ring-inset"
               disabled={selected.vars.length >= MAX_VARS_PER_ENV}
               onClick={() => update({ ...selected, vars: [...selected.vars, newVar(newId())] })}
             >

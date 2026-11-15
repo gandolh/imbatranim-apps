@@ -131,7 +131,7 @@ export function RequestBuilder({
         <Button
           variant="ghost"
           size="sm"
-          className="h-[28px] w-[28px] justify-center p-0"
+          className="focus-visible:ring-primary h-[28px] w-[28px] justify-center p-0 focus-visible:ring-2 focus-visible:ring-inset"
           onClick={onEditEnvs}
           aria-label="Edit environments"
           title="Edit environments and variables"
@@ -142,7 +142,7 @@ export function RequestBuilder({
         <Button
           variant="ghost"
           size="sm"
-          className="text-control h-[28px] gap-[6px] px-[10px]"
+          className="text-control focus-visible:ring-primary h-[28px] gap-[6px] px-[10px] focus-visible:ring-2 focus-visible:ring-inset"
           onClick={onAddAuth}
           title="Add an Authorization header"
         >
@@ -151,7 +151,7 @@ export function RequestBuilder({
         <Button
           variant="ghost"
           size="sm"
-          className="text-control h-[28px] gap-[6px] px-[10px]"
+          className="text-control focus-visible:ring-primary h-[28px] gap-[6px] px-[10px] focus-visible:ring-2 focus-visible:ring-inset"
           onClick={onImportCurl}
           title="Import a curl command"
         >
@@ -160,7 +160,7 @@ export function RequestBuilder({
         <Button
           variant="ghost"
           size="sm"
-          className="text-control h-[28px] gap-[6px] px-[10px]"
+          className="text-control focus-visible:ring-primary h-[28px] gap-[6px] px-[10px] focus-visible:ring-2 focus-visible:ring-inset"
           onClick={onExportCurl}
           disabled={!url.trim()}
           title="Copy this request as a curl command"
@@ -194,7 +194,13 @@ export function RequestBuilder({
           <Send size={13} />
           {loading ? "Sending…" : "Send"}
         </Button>
-        <Button type="button" variant="ghost" onClick={onSave} title="Save to collection">
+        <Button
+          type="button"
+          variant="ghost"
+          className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+          onClick={onSave}
+          title="Save to collection"
+        >
           <Save size={13} />
         </Button>
       </form>
@@ -265,6 +271,7 @@ export function RequestBuilder({
               <Button
                 type="button"
                 variant="ghost"
+                className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
                 size="sm"
                 onClick={() => removeRow(row.id)}
                 aria-label={`Remove ${row.name || "header"}`}
@@ -274,7 +281,13 @@ export function RequestBuilder({
               </Button>
             </div>
           ))}
-          <Button type="button" variant="ghost" size="sm" className="self-start" onClick={addRow}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="focus-visible:ring-primary self-start focus-visible:ring-2 focus-visible:ring-inset"
+            onClick={addRow}
+          >
             <Plus size={13} /> Add header
           </Button>
         </div>
@@ -380,13 +393,21 @@ export function RequestBuilder({
                         ),
                       )
                     }
-                    render={<Button type="button" variant="ghost" size="sm" />}
+                    render={
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+                        size="sm"
+                      />
+                    }
                   >
                     {field.filePath === undefined ? "Text" : "File"}
                   </Toggle>
                   <Button
                     type="button"
                     variant="ghost"
+                    className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
                     size="sm"
                     onClick={() => onFormChange(form.filter((f) => f.id !== field.id))}
                     aria-label={`Remove ${field.name || "field"}`}
@@ -400,7 +421,7 @@ export function RequestBuilder({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="self-start"
+                className="focus-visible:ring-primary self-start focus-visible:ring-2 focus-visible:ring-inset"
                 onClick={() => onFormChange([...form, { id: newId(), name: "", value: "", enabled: true }])}
               >
                 <Plus size={13} /> Add field

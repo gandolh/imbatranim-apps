@@ -153,7 +153,7 @@ export function Presenter({ count, start, model, onExit }: Props) {
           e.stopPropagation();
           exit();
         }}
-        className="font-ui text-control rounded-control fixed top-[12px] right-[16px] h-[32px] border border-white/30 px-[12px] text-white/70 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white"
+        className="font-ui text-control rounded-control fixed top-[12px] right-[16px] h-[32px] border border-white/50 px-[12px] text-white/70 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white"
       >
         Exit (Esc)
       </button>
