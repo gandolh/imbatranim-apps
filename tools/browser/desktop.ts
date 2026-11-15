@@ -178,7 +178,9 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
   // Focus set by script counts as a keyboard focus (focusVisible), as a Tab's would.
   if (await close.count()) await close.evaluate((el) => (el as HTMLElement).focus({ focusVisible: true }));
   else {
-    // A popover or a dialog without a title band: start on its first stop.
+    // A popover or a dialog without a title band: start on its first stop, after
+    // a key, so a popup that hands focus on by script keeps it a keyboard one.
+    await page.keyboard.press("Shift");
     await win.evaluate((r) =>
       r
         .querySelector<HTMLElement>(
