@@ -12,28 +12,36 @@ import { SCREENS } from "./screens.ts";
 test.use({ deviceScaleFactor: 1 });
 
 const size = (el: Locator) =>
-  el.evaluate((e) => {
-    const r = e.getBoundingClientRect();
-    return [Math.round(r.width * 10) / 10, Math.round(r.height * 10) / 10];
-  });
+  el.evaluate(
+    (e) => {
+      const r = e.getBoundingClientRect();
+      return [Math.round(r.width * 10) / 10, Math.round(r.height * 10) / 10];
+    },
+    undefined,
+    { timeout: 10_000 },
+  );
 
 /** The largest 16:9 box inside a thumbnail button: the slide's picture. */
 const thumb = (el: Locator) =>
-  el.evaluate((b) => {
-    let best = b.getBoundingClientRect();
-    for (const c of b.querySelectorAll("*")) {
-      const r = c.getBoundingClientRect();
-      if (
-        r.height > 0 &&
-        Math.abs(r.width / r.height - 16 / 9) < 0.08 &&
-        r.width * r.height <= best.width * best.height
-      ) {
-        best = r;
-        break;
+  el.evaluate(
+    (b) => {
+      let best = b.getBoundingClientRect();
+      for (const c of b.querySelectorAll("*")) {
+        const r = c.getBoundingClientRect();
+        if (
+          r.height > 0 &&
+          Math.abs(r.width / r.height - 16 / 9) < 0.08 &&
+          r.width * r.height <= best.width * best.height
+        ) {
+          best = r;
+          break;
+        }
       }
-    }
-    return [Math.round(best.width * 10) / 10, Math.round(best.height * 10) / 10];
-  });
+      return [Math.round(best.width * 10) / 10, Math.round(best.height * 10) / 10];
+    },
+    undefined,
+    { timeout: 10_000 },
+  );
 
 test("ruling 8's sizes", async ({ page, request }, info) => {
   const width = info.project.use.viewport?.width ?? 0;
@@ -48,8 +56,10 @@ test("ruling 8's sizes", async ({ page, request }, info) => {
   await settle(page, 1200);
   row.slidesWindow = await size(slides);
   row.slideIdle = await size(slides.getByRole("application", { name: "Slide editor" }));
-  row.slidesReadout = (await slides.getByRole("toolbar", { name: "Slide and view" }).innerText()).replace(/\s+/g, " ");
-  row.slideThumb = await thumb(slides.getByRole("button", { name: "Slide 1", exact: true }).first());
+  row.slidesReadout = (
+    await slides.getByRole("toolbar", { name: "Slide and view" }).innerText({ timeout: 10_000 })
+  ).replace(/\s+/g, " ");
+  row.slideThumb = await thumb(slides.getByRole("option", { name: "Slide 1", exact: true }).first());
   await closeWindows(page);
   const open = await SCREENS.find((s) => s.name === "slides-open")?.open(page, phone);
   if (open) {
@@ -62,7 +72,7 @@ test("ruling 8's sizes", async ({ page, request }, info) => {
   await settle(page, 1500);
   row.pdfWindow = await size(pdf);
   row.pdfPage = await size(pdf.locator("[data-page='1']").first());
-  row.pdfReadout = (await pdf.locator("[aria-live='polite']").first().innerText()).trim();
+  row.pdfReadout = (await pdf.locator("[aria-live='polite']").first().innerText({ timeout: 10_000 })).trim();
   row.pdfThumb = phone ? null : await size(pdf.getByRole("button", { name: "Page 1", exact: true }).first());
   await closeWindows(page);
 
@@ -70,7 +80,7 @@ test("ruling 8's sizes", async ({ page, request }, info) => {
   await settle(page, 2500);
   row.docsWindow = await size(docs);
   row.docsPage = await size(docs.locator(".superdoc__layers").first());
-  row.docsReadout = (await docs.getByRole("status").last().innerText()).replace(/\s+/g, " ");
+  row.docsReadout = (await docs.getByRole("status").last().innerText({ timeout: 10_000 })).replace(/\s+/g, " ");
   await closeWindows(page);
 
   report("measure", row);
