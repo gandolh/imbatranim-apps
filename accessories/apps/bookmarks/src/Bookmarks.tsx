@@ -504,35 +504,40 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
   // -------------------------------------------------------------------------
   return (
     <div className="bg-surface-container-lowest flex h-full flex-col">
-      <div className="border-outline-variant bg-surface-container-low flex shrink-0 flex-wrap items-center gap-1 border-b px-2 py-1">
-        <Button variant="primary" size="sm" className="gap-1" onClick={() => void addFolder(null)}>
-          <FolderPlus size={12} strokeWidth={2} />
+      <div className="border-outline-variant bg-surface-container-low min-h-appbar flex shrink-0 flex-wrap items-center gap-[4px] border-b px-[6px] py-[6px]">
+        <Button
+          variant="primary"
+          size="sm"
+          className="text-control h-[28px] gap-[6px] px-[10px] font-semibold"
+          onClick={() => void addFolder(null)}
+        >
+          <FolderPlus size={16} strokeWidth={2} />
           New folder
         </Button>
         <Button
           variant="ghost"
           size="sm"
-          className="gap-1"
+          className="text-control h-[28px] gap-[6px] px-[10px]"
           onClick={() => void handleImport()}
           disabled={busy}
           title="Import a bookmarks file exported from any browser"
         >
-          <Upload size={12} strokeWidth={2} />
+          <Upload size={16} strokeWidth={2} />
           Import
         </Button>
         <Button
           variant="ghost"
           size="sm"
-          className="gap-1"
+          className="text-control h-[28px] gap-[6px] px-[10px]"
           onClick={() => void handleExport()}
           disabled={busy}
           title="Write a file any browser can import"
         >
-          <Download size={12} strokeWidth={2} />
+          <Download size={16} strokeWidth={2} />
           Export
         </Button>
-        <div className="rounded-control border-outline-variant bg-surface-container-lowest flex min-w-0 flex-1 items-center gap-1 border px-1.5">
-          <Search size={11} className="text-on-surface-variant shrink-0" />
+        <div className="rounded-control border-outline bg-surface-container-lowest flex h-[28px] min-w-0 flex-1 items-center gap-[6px] border px-[8px]">
+          <Search size={16} className="text-on-surface-variant shrink-0" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -598,7 +603,7 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
         </ScrollArea>
       )}
 
-      <div className="border-outline-variant bg-surface-container-low text-on-surface-variant text-tiny flex h-5 shrink-0 items-center gap-1 border-t px-2">
+      <div className="border-outline-variant bg-surface-container text-on-surface-variant font-ui text-label h-statusbar max-[600px]:h-statusbar-phone flex shrink-0 items-center gap-[4px] border-t px-[8px]">
         {query === ""
           ? `${linkCount} bookmark${linkCount === 1 ? "" : "s"} · ${all.length} folder${all.length === 1 ? "" : "s"}`
           : `${search.matches} match${search.matches === 1 ? "" : "es"}`}
