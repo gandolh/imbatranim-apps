@@ -32,7 +32,7 @@ function StatusToggle({
         cn(
           "text-label rounded-item focus-visible:ring-primary h-[24px] border px-[6px] font-semibold tracking-wider outline-none focus-visible:ring-2 focus-visible:ring-inset",
           pressed
-            ? "border-primary bg-primary-container text-on-primary-container"
+            ? "border-primary bg-primary-container text-on-primary-container focus-visible:ring-on-primary-container!"
             : "border-outline-variant text-on-surface-variant hover:bg-surface-container-high",
         )
       }

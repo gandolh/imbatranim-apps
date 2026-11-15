@@ -126,7 +126,7 @@ function ToolButton({
           className={cn(
             look.className,
             pressed &&
-              "border-primary bg-primary-container text-on-primary-container hover:border-primary hover:bg-primary-container",
+              "border-primary bg-primary-container text-on-primary-container hover:border-primary hover:bg-primary-container focus-visible:ring-on-primary-container!",
           )}
         />
       }

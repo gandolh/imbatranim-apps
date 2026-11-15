@@ -104,7 +104,9 @@ export function TodoRow({ todo, index, total, onDragEnd, onPatch, onDelete, sele
           onClick={() => onPatch(todo.id, { completed: !completed })}
           className={cn(
             "focus-visible:ring-primary rounded-small flex h-4 w-4 shrink-0 items-center justify-center border outline-none focus-visible:ring-2 focus-visible:ring-inset",
-            completed ? "border-primary-container bg-primary-container" : "border-outline-variant bg-transparent",
+            completed
+              ? "border-primary-container bg-primary-container focus-visible:ring-on-primary-container!"
+              : "border-outline-variant bg-transparent",
           )}
           aria-label={completed ? "Mark incomplete" : "Mark complete"}
         >
@@ -309,7 +311,7 @@ function PickerChip({ label, value }: { label: string; value: string }) {
         cn(
           "focus-visible:ring-primary font-ui rounded-control text-label border px-1.5 py-0.5 focus-visible:ring-2 focus-visible:ring-inset",
           pressed
-            ? "border-primary bg-primary-container text-on-primary-container"
+            ? "border-primary bg-primary-container text-on-primary-container focus-visible:ring-on-primary-container!"
             : "border-outline-variant text-on-surface hover:bg-surface-container",
         )
       }

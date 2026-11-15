@@ -65,7 +65,8 @@ const Head = ({ children }: { children: string }) => (
 /** A labelled panel button (Sign, Organize): the lowest surface with its edge, full width. */
 const PANEL_BUTTON =
   "h-[32px] max-[600px]:h-target w-full justify-center gap-[8px] rounded-control border-outline bg-surface-container-lowest text-control font-semibold text-on-surface hover:border-outline hover:bg-surface-container-high focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset";
-const PANEL_BUTTON_ON = "border-primary bg-primary-container text-on-primary-container hover:bg-primary-container";
+const PANEL_BUTTON_ON =
+  "border-primary bg-primary-container text-on-primary-container hover:bg-primary-container focus-visible:ring-on-primary-container!";
 
 /**
  * The annotate panel: the ten tools as labelled rows (the current one soft),
@@ -160,7 +161,7 @@ export function AnnotateToolbar(): JSX.Element {
               className={({ checked }) =>
                 "rounded-control focus-visible:ring-primary max-[600px]:h-target flex h-[32px] w-[40px] items-center justify-center border outline-none focus-visible:ring-2 focus-visible:ring-inset " +
                 (checked
-                  ? "border-primary bg-primary-container text-on-primary-container"
+                  ? "border-primary bg-primary-container text-on-primary-container focus-visible:ring-on-primary-container!"
                   : "border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high")
               }
               title={`${wv} pt`}

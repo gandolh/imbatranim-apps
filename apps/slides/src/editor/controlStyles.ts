@@ -16,7 +16,7 @@ export const FOCUS_RING = "focus-visible:ring-primary focus-visible:ring-2 focus
 
 /** Pressed and selected: the soft accent with an accent edge, never a strong fill. */
 export const SELECTED =
-  "data-[pressed]:border-primary data-[pressed]:bg-primary-container data-[pressed]:text-on-primary-container data-[pressed]:hover:bg-primary-container";
+  "data-[pressed]:border-primary data-[pressed]:bg-primary-container data-[pressed]:text-on-primary-container data-[pressed]:hover:bg-primary-container data-[pressed]:focus-visible:ring-on-primary-container";
 
 /** An inspector tool: the lowest surface, an outline-variant edge, a 16 px icon and a 12/16 label. */
 export const TOOL =

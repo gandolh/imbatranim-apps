@@ -676,7 +676,7 @@ function ChangeSection({
                   className={cn(
                     "rounded-item flex items-center gap-2 px-2 py-1",
                     "hover:bg-surface-container-high",
-                    active && "bg-primary-container text-on-primary-container",
+                    active && "bg-primary-container text-on-primary-container focus-visible:ring-on-primary-container!",
                   )}
                 >
                   <Checkbox

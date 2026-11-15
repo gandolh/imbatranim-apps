@@ -21,7 +21,7 @@ const SIZE =
   "h-[32px] w-[32px] max-[600px]:h-target max-[600px]:w-target justify-center p-0 rounded-control border-transparent text-on-surface hover:border-transparent hover:bg-surface-container-high active:bg-surface-container-highest focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset";
 /** Pressed or chosen: the soft accent with an accent edge, never the strong fill. */
 const ON =
-  "border-primary bg-primary-container text-on-primary-container hover:border-primary hover:bg-primary-container";
+  "border-primary bg-primary-container text-on-primary-container hover:border-primary hover:bg-primary-container focus-visible:ring-on-primary-container!";
 
 export function ToolButton({
   icon: Icon,

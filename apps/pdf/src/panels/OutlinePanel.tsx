@@ -25,7 +25,12 @@ function OutlineItem({ node, depth, currentPage, onGo }: NodeProps) {
   return (
     <li>
       <div
-        className={"flex items-center gap-0.5 " + (active ? "bg-primary-container" : "hover:bg-surface-container-high")}
+        className={
+          "flex items-center gap-0.5 " +
+          (active
+            ? "bg-primary-container [&_button:focus-visible]:ring-on-primary-container"
+            : "hover:bg-surface-container-high")
+        }
         style={{ paddingLeft: `${depth * 14 + 6}px` }}
       >
         {hasChildren ? (

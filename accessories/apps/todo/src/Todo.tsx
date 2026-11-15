@@ -277,7 +277,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
           className={cn(
             "focus-visible:ring-primary font-ui rounded-control text-control h-[28px] border px-[8px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
             listId === null
-              ? "border-primary bg-primary-container text-on-primary-container"
+              ? "border-primary bg-primary-container text-on-primary-container focus-visible:ring-on-primary-container!"
               : "border-outline-variant text-on-surface-variant hover:text-on-surface",
           )}
         >
@@ -291,7 +291,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             className={cn(
               "focus-visible:ring-primary font-ui rounded-control text-control h-[28px] max-w-28 truncate border px-[8px] outline-none focus-visible:ring-2 focus-visible:ring-inset",
               listId === l.id
-                ? "border-primary bg-primary-container text-on-primary-container"
+                ? "border-primary bg-primary-container text-on-primary-container focus-visible:ring-on-primary-container!"
                 : "border-outline-variant text-on-surface-variant hover:text-on-surface",
             )}
           >
@@ -367,7 +367,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
             cn(
               "focus-visible:ring-primary font-ui rounded-control text-label border px-1.5 py-0.5 focus-visible:ring-2 focus-visible:ring-inset",
               pressed
-                ? "border-primary bg-primary-container text-on-primary-container"
+                ? "border-primary bg-primary-container text-on-primary-container focus-visible:ring-on-primary-container!"
                 : "border-outline-variant text-on-surface-variant hover:text-on-surface",
             )
           }

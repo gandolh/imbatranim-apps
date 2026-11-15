@@ -28,7 +28,7 @@ const STRIP_BUTTON = cn(
 );
 /** Open or in use: the soft accent with an accent edge. */
 const STRIP_ON =
-  "bg-primary-container text-on-primary-container ring-1 ring-primary ring-inset hover:bg-primary-container [&_svg]:text-on-primary-container";
+  "bg-primary-container text-on-primary-container ring-1 ring-primary ring-inset hover:bg-primary-container [&_svg]:text-on-primary-container focus-visible:ring-on-primary-container!";
 
 const SIGN_TITLE = "Sign: capture a signature and stamp it on the page";
 const ORGANIZE_TITLE = "Organize pages: rotate, reorder, merge and split";

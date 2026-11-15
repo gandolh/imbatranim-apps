@@ -31,7 +31,7 @@ const BAR =
   "h-[32px] max-[600px]:h-target rounded-control border-transparent text-control text-on-surface hover:border-transparent hover:bg-surface-container-high active:bg-surface-container-highest focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset";
 /** Pressed: the soft accent with an accent edge. */
 const PRESSED =
-  "data-[pressed]:border-primary data-[pressed]:bg-primary-container data-[pressed]:text-on-primary-container";
+  "data-[pressed]:border-primary data-[pressed]:bg-primary-container data-[pressed]:text-on-primary-container data-[pressed]:focus-visible:ring-on-primary-container";
 
 /**
  * SuperDoc's toolbar reads these custom properties (its stylesheet's own
