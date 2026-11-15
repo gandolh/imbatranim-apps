@@ -66,45 +66,62 @@ export async function settle(page: Page, ms = 600): Promise<void> {
 /**
  * The focus ring of the focused element: its width, and its contrast against
  * the surface it is drawn on. A Tailwind ring is a box-shadow with a spread
- * and no blur; an outline counts too.
+ * and no blur; an outline counts too. A ring with alpha (`ring-primary/40`)
+ * is blended over that surface first, as the eye sees it.
  */
 export async function focusRing(page: Page): Promise<{ width: number; contrast: number; label: string }> {
   return page.evaluate(() => {
     const el = document.activeElement as HTMLElement | null;
     if (!el || el === document.body) return { width: 0, contrast: 0, label: "(nothing)" };
     const label = (el.getAttribute("aria-label") ?? el.textContent ?? el.tagName).trim().slice(0, 40);
-    const cs = getComputedStyle(el);
-    const parse = (c: string): [number, number, number, number] => {
-      const m = /rgba?\(([^)]+)\)/.exec(c);
-      if (!m) return [0, 0, 0, 0];
-      const p = m[1]
-        .split(/[ ,/]+/)
-        .filter(Boolean)
-        .map(Number);
-      return [p[0], p[1], p[2], p[3] ?? 1];
+    // Any CSS colour (rgb, oklab, color(srgb …)) to [r, g, b, a], through a canvas.
+    const ctx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+    const rgba = (c: string): [number, number, number, number] => {
+      if (!ctx || !c || c === "transparent") return [0, 0, 0, 0];
+      ctx.clearRect(0, 0, 1, 1);
+      ctx.fillStyle = "rgba(0,0,0,0)";
+      ctx.fillStyle = c;
+      ctx.fillRect(0, 0, 1, 1);
+      const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+      return [r, g, b, a / 255];
     };
-    let ring: { width: number; color: string; inset: boolean } | null = null;
-    for (const shadow of cs.boxShadow.split(/,(?![^(]*\))/)) {
-      const color = /rgba?\([^)]+\)/.exec(shadow)?.[0];
-      const px = [...shadow.replace(/rgba?\([^)]+\)/, "").matchAll(/(-?[\d.]+)px/g)].map((m) => Number(m[1]));
-      if (color && px.length >= 4 && px[2] === 0 && px[3] > 0 && parse(color)[3] > 0) {
-        if (!ring || px[3] > ring.width) ring = { width: px[3], color, inset: shadow.includes("inset") };
+    const COLOR = /(?:rgba?|oklab|oklch|lab|lch|hsla?|color)\([^)]*\)|#[0-9a-f]{3,8}/i;
+    const shadowRing = (boxShadow: string) => {
+      let best: { width: number; color: string; inset: boolean } | null = null;
+      for (const shadow of boxShadow.split(/,(?![^(]*\))/)) {
+        const color = COLOR.exec(shadow)?.[0];
+        const px = [...shadow.replace(COLOR, "").matchAll(/(-?[\d.]+)px/g)].map((m) => Number(m[1]));
+        if (color && px.length >= 4 && px[2] === 0 && px[3] > 0 && rgba(color)[3] > 0) {
+          if (!best || px[3] > best.width) best = { width: px[3], color, inset: shadow.includes("inset") };
+        }
       }
-    }
+      return best;
+    };
+    const cs = getComputedStyle(el);
+    let ring = shadowRing(cs.boxShadow);
     if (cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) > (ring?.width ?? 0)) {
       ring = { width: parseFloat(cs.outlineWidth), color: cs.outlineColor, inset: parseFloat(cs.outlineOffset) < 0 };
     }
+    // A field's ring can sit on its wrapper (focus-within): look a few levels up.
+    let host: HTMLElement = el;
+    for (let n = el.parentElement, i = 0; n && i < 3 && !ring; n = n.parentElement, i++) {
+      ring = shadowRing(getComputedStyle(n).boxShadow);
+      if (ring) host = n;
+    }
     if (!ring) return { width: 0, contrast: 0, label };
     const layers: [number, number, number, number][] = [];
-    for (let n: HTMLElement | null = ring.inset ? el : el.parentElement; n; n = n.parentElement) {
-      const bg = parse(getComputedStyle(n).backgroundColor);
+    for (let n: HTMLElement | null = ring.inset ? host : host.parentElement; n; n = n.parentElement) {
+      const bg = rgba(getComputedStyle(n).backgroundColor);
       if (bg[3] > 0) layers.push(bg);
       if (bg[3] >= 1) break;
     }
+    const over = (top: [number, number, number, number], under: [number, number, number]): [number, number, number] => [
+      top[0] * top[3] + under[0] * (1 - top[3]),
+      top[1] * top[3] + under[1] * (1 - top[3]),
+      top[2] * top[3] + under[2] * (1 - top[3]),
+    ];
     let surface: [number, number, number] = [255, 255, 255];
-    for (const [r, g, b, a] of layers.reverse()) {
-      surface = [r * a + surface[0] * (1 - a), g * a + surface[1] * (1 - a), b * a + surface[2] * (1 - a)];
-    }
+    for (const layer of layers.reverse()) surface = over(layer, surface);
     const lum = ([r, g, b]: number[]) => {
       const c = [r, g, b].map((v) => {
         const s = v / 255;
@@ -112,7 +129,7 @@ export async function focusRing(page: Page): Promise<{ width: number; contrast: 
       });
       return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
     };
-    const [hi, lo] = [lum(parse(ring.color)), lum(surface)].sort((x, y) => y - x);
+    const [hi, lo] = [lum(over(rgba(ring.color), surface)), lum(surface)].sort((x, y) => y - x);
     return { width: ring.width, contrast: (hi + 0.05) / (lo + 0.05), label };
   });
 }
@@ -135,4 +152,147 @@ export async function openFile(page: Page, name: string): Promise<Locator> {
   // The app's window opens over the File Manager's close button.
   await files.locator("button[title='Close']").first().dispatchEvent("click");
   return win;
+}
+
+/** The desktop paints the look the account was given: checked before every shot and measurement. */
+export async function expectLook(page: Page, look: Look): Promise<void> {
+  await expect(page.locator("html")).toHaveAttribute("data-os-theme", look.theme);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", look.mode);
+}
+
+export type FocusStop = { label: string; width: number; contrast: number; part: "app" | "vendor" | "os" };
+
+/**
+ * Tabs through a window from its title band and reads the ring on every stop.
+ * A stop inside `vendor` (SuperDoc's or Univer's own parts), or one that keeps
+ * Tab for itself (an editor, a grid), is listed and then stepped past to the
+ * next focusable thing in the window, so Tab never types into a document. The
+ * window's title buttons are the desktop's and are listed as `os`. Ends when
+ * focus leaves the window, comes back round, or after `max` stops.
+ */
+export async function walkFocus(page: Page, win: Locator, vendor?: string, max = 80): Promise<FocusStop[]> {
+  const stops: FocusStop[] = [];
+  await win.locator("button[title='Close']").first().focus();
+  const seen = new Set<string>();
+  let jumped = false;
+  for (let i = 0; i < max; i++) {
+    // After a step past a stop, the stop it landed on is read before the next Tab.
+    const before = jumped
+      ? null
+      : await page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset.walk);
+    if (!jumped) await page.keyboard.press("Tab");
+    jumped = false;
+    const where = await win.evaluate((w, sel) => {
+      const el = document.activeElement as HTMLElement | null;
+      if (!el || !w.contains(el)) return { inside: false, key: "", vendor: false, os: false, editor: false };
+      return {
+        inside: true,
+        // A number of its own, so two stops that look alike are still told apart.
+        key: (el.dataset.walk ??= String(document.querySelectorAll("[data-walk]").length + 1)),
+        vendor: !!(sel && el.closest(sel)),
+        os:
+          !!el.closest("[data-window-titlebar], [data-window-chrome]") ||
+          el.matches(
+            "button[title='Close'], button[title='Minimize'], button[title='Maximize'], button[title='Restore']",
+          ),
+        editor: el.isContentEditable || el.getAttribute("role") === "application",
+      };
+    }, vendor ?? null);
+    if (!where.inside) break;
+    // Tab kept on the same stop (an editor, a grid): step past it below rather than end.
+    const stuck = where.key === before;
+    if (!stuck && seen.has(where.key)) break;
+    seen.add(where.key);
+    if (!stuck) stops.push({ ...(await focusRing(page)), part: where.vendor ? "vendor" : where.os ? "os" : "app" });
+    if (where.vendor || where.editor || stuck) {
+      // Step past it without a Tab: the next focusable thing after it, outside the vendor part.
+      const moved = await win.evaluate((w, sel) => {
+        const cur = document.activeElement as HTMLElement;
+        const root = (sel && cur.closest(sel)) || cur;
+        const all = [
+          ...w.querySelectorAll<HTMLElement>(
+            "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])",
+          ),
+        ].filter((e) => e.getClientRects().length > 0 && !root.contains(e) && !(sel && e.closest(sel)));
+        const next = all.find((e) => root.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING);
+        if (!next) return false;
+        next.focus();
+        return true;
+      }, vendor ?? null);
+      if (!moved) break;
+      jumped = true;
+    }
+  }
+  return stops;
+}
+
+/**
+ * Records every running animation and transition, frame by frame, from page
+ * load: `document.getAnimations()` at rest is empty whatever the code does, so
+ * the sampler watches the window open, load and each panel open. Read it with
+ * `motionSeen`, clear it with `motionReset`.
+ */
+export async function recordMotion(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const seen = new Map<string, string>();
+    (window as unknown as { __motion: Map<string, string> }).__motion = seen;
+    const tick = () => {
+      for (const a of document.getAnimations()) {
+        if (a.playState !== "running") continue;
+        const effect = a.effect as KeyframeEffect | null;
+        const target = effect?.target as HTMLElement | null;
+        const name = (a as CSSAnimation).animationName ?? (a as CSSTransition).transitionProperty ?? a.constructor.name;
+        const where = target
+          ? `${target.closest("[data-window-id]")?.getAttribute("data-app-id") ?? "desktop"} ${target.tagName.toLowerCase()}.${String((target as Element).getAttribute("class") ?? "").slice(0, 300)}`
+          : "?";
+        seen.set(`${name} ${where}`, where);
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+export async function motionSeen(page: Page): Promise<string[]> {
+  return page.evaluate(() => [...(window as unknown as { __motion: Map<string, string> }).__motion.keys()]);
+}
+
+export async function motionReset(page: Page): Promise<void> {
+  await page.evaluate(() => (window as unknown as { __motion: Map<string, string> }).__motion.clear());
+}
+
+/**
+ * On a phone: no sideways scroll, the window filling the screen above the
+ * taskbar, and no control of the app left outside its window (one inside a
+ * scroller or a clipped vendor bar is reachable and doesn't count).
+ */
+export async function phoneFit(win: Locator) {
+  return win.evaluate((w) => {
+    const iw = window.innerWidth;
+    const bar = document.querySelector("[data-testid='taskbar']")?.getBoundingClientRect();
+    const r = w.getBoundingClientRect();
+    const out: string[] = [];
+    for (const el of w.querySelectorAll<HTMLElement>("button, input, select, textarea, a[href], [role='button']")) {
+      if (el.getClientRects().length === 0) continue;
+      const b = el.getBoundingClientRect();
+      if (
+        b.width === 0 ||
+        (b.left >= r.left - 1 && b.right <= r.right + 1 && b.top >= r.top - 1 && b.bottom <= r.bottom + 1)
+      )
+        continue;
+      let clipped = false;
+      for (let n = el.parentElement; n && n !== w; n = n.parentElement) {
+        const cs = getComputedStyle(n);
+        if (cs.overflowX !== "visible" || cs.overflowY !== "visible") clipped = true;
+      }
+      if (!clipped) out.push((el.getAttribute("aria-label") ?? el.textContent ?? el.tagName).trim().slice(0, 30));
+    }
+    return {
+      scrollWidth: document.documentElement.scrollWidth,
+      innerWidth: iw,
+      window: [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)],
+      taskbarTop: bar ? Math.round(bar.top) : null,
+      outside: out.slice(0, 10),
+    };
+  });
 }

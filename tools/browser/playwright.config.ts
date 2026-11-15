@@ -43,6 +43,9 @@ export default defineConfig({
   },
   projects: [
     { name: "desktop-1280", use: { viewport: { width: 1280, height: 800 } } },
+    // Ruling 8's in-between widths: only the measurements run there.
+    { name: "desktop-1024", testMatch: "measure.spec.ts", use: { viewport: { width: 1024, height: 768 } } },
+    { name: "tablet-768", testMatch: "measure.spec.ts", use: { viewport: { width: 768, height: 1024 } } },
     { name: "phone-390", use: { viewport: { width: 390, height: 844 }, ...phone } },
     { name: "phone-360", use: { viewport: { width: 360, height: 800 }, ...phone } },
   ],
