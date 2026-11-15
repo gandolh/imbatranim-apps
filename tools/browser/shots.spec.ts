@@ -19,7 +19,7 @@ test.beforeEach(() => {
 });
 
 async function shoot(page: Page, list: Screen[], look: keyof typeof LOOKS, width: number) {
-  for (const screen of list) {
+  for (const screen of list.filter((s) => s.only !== (width < 600 ? "desktop" : "phone"))) {
     await openDesktop(page);
     await expectLook(page, LOOKS[look]);
     await closeWindows(page);

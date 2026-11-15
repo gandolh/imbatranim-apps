@@ -18,7 +18,7 @@ roles:
   hover: surface-container-high
   pressed: surface-container-highest
   selected: primary-container with on-primary-container, a primary edge
-  focus-ring: primary, 2 px
+  focus-ring: primary, 2 px; on-primary-container on the soft fill
   current-slide-frame: primary
   delete: error
   hairline: outline-variant
@@ -165,7 +165,9 @@ Classic every radius is 0.
 ## Interaction
 
 - **Focus.** Every stop the app draws has a 2 px `primary` ring, inset on a
-  tool, at 3:1 on what it sits on. The kit's ghost Button and a bare kit
+  tool, at 3:1 on what it sits on. On a pressed or selected control the ring
+  takes the soft fill's ink, `on-primary-container`: in Classic the soft
+  accent is the strong one, and an accent ring on it would vanish. The kit's ghost Button and a bare kit
   Input draw none, so the apps add `focus-visible:ring-2
   focus-visible:ring-primary` (inset on tools); a scroll area's viewport gets
   a 2 px outline. SuperDoc's and Univer's stops are theirs.

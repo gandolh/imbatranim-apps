@@ -65,10 +65,27 @@ test.describe("with reduced motion", () => {
       await screen.open(page, false);
       await settle(page, 800);
       const seen = (await motionSeen(page)).map((entry) => ({ part: part(entry), entry: entry.slice(0, 160) }));
-      report("motion", { screen: screen.name, seen });
+      // At rest: what document.getAnimations() still lists as running, sorted the same way.
+      const atRest = (
+        await page.evaluate(() =>
+          document
+            .getAnimations()
+            .filter((a) => a.playState === "running")
+            .map((a) => {
+              const t = (a.effect as KeyframeEffect | null)?.target as Element | null;
+              const id = t?.closest("[data-window-id]")?.getAttribute("data-app-id") ?? "desktop";
+              return `${a.constructor.name} ${id} ${t?.tagName.toLowerCase() ?? "?"}.${t?.getAttribute("class") ?? ""}`;
+            }),
+        )
+      ).map((entry) => ({ part: part(entry), entry: entry.slice(0, 160) }));
+      report("motion", { screen: screen.name, seen, atRest });
       expect(
         seen.filter((s) => s.part === "app").map((s) => s.entry),
         "the app's animations or transitions that ran",
+      ).toEqual([]);
+      expect(
+        atRest.filter((s) => s.part === "app").map((s) => s.entry),
+        "the app's animations still running at rest",
       ).toEqual([]);
       await page.keyboard.press("Escape");
       await closeWindows(page);

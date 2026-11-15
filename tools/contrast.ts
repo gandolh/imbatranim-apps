@@ -262,6 +262,11 @@ for (const group of GROUPS) {
     }
     for (const edge of use.edge) {
       if (DECORATIVE_EDGES.has(edge) || PAPER.has(edge)) continue;
+      // A fill's ink as a ring (a focused control on the soft accent) sits on that fill.
+      if (ON_FILL[edge]) {
+        if (use.bg.has(ON_FILL[edge])) add(edge, ON_FILL[edge], 3);
+        continue;
+      }
       for (const g of grounds) add(edge, g, 3);
     }
     for (const token of [...use.fg, ...use.edge]) {

@@ -68,7 +68,9 @@ Brief 11 kept the rule and added no stylesheet. What its classes rely on:
 - **Motion** is `motion-safe:` on every transition and spinner.
 - **Focus.** The kit's ghost Button and a kit Input outside a Field draw no
   ring, so the apps add `focus-visible:ring-2 focus-visible:ring-primary`
-  (inset on a tool). A kit `ScrollArea`'s viewport takes Tab; its root
+  (inset on a tool). On the soft fill (pressed, selected) the ring is
+  `on-primary-container`, with `!` or a `data-[pressed]:` prefix so it wins
+  over the plain ring. A kit `ScrollArea`'s viewport takes Tab; its root
   carries `[&>div:focus-visible]:outline-2` with `-outline-primary` and
   `-outline-offset-2`, the only arbitrary variant for a part the kit renders.
 - **Vendor parts follow the desktop without vendor CSS edits**: Docs sets

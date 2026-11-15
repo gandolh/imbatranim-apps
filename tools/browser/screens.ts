@@ -78,6 +78,20 @@ export const SCREENS: Screen[] = [
     },
   },
   { name: "pdf", drawn: true, open: pdf },
+  {
+    // The docked inspector: a maximized window passes 1100 px.
+    name: "slides-maximized",
+    drawn: true,
+    only: "desktop",
+    open: async (page) => {
+      const win = await slides(page);
+      await win.locator("button[title='Maximize']").first().click();
+      await settle(page);
+      await press(win, "Show format panel");
+      await settle(page);
+      return win;
+    },
+  },
 
   {
     name: "slides-notes",
@@ -100,6 +114,16 @@ export const SCREENS: Screen[] = [
     },
   },
   { name: "pdf-empty", drawn: false, open: (page) => openFromStart(page, "PDF", "PDF") },
+  {
+    name: "pdf-annotate",
+    drawn: false,
+    open: async (page) => {
+      const win = await pdf(page);
+      await press(win, "Annotate");
+      await settle(page);
+      return win;
+    },
+  },
   { name: "pdf-outline", drawn: false, open: (page, phone) => pdfTab(page, phone, "Outline") },
   { name: "pdf-forms", drawn: false, open: (page, phone) => pdfTab(page, phone, "Forms") },
   {
@@ -158,6 +182,19 @@ export const SCREENS: Screen[] = [
       const win = await openFromStart(page, "Git", /Git/);
       await press(win, /^walk\/repo/);
       await settle(page, 1200);
+      return win;
+    },
+  },
+  {
+    // The diff of the one changed file the container's walk repository holds.
+    name: "git-diff",
+    drawn: false,
+    open: async (page) => {
+      const win = await openFromStart(page, "Git", /Git/);
+      await press(win, /^walk\/repo/);
+      await settle(page, 1200);
+      await win.getByText("f.txt", { exact: true }).first().click();
+      await settle(page, 800);
       return win;
     },
   },
