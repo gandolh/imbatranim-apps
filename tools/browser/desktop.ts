@@ -172,7 +172,9 @@ export type FocusStop = { label: string; width: number; contrast: number; part: 
  */
 export async function walkFocus(page: Page, win: Locator, vendor?: string, max = 80): Promise<FocusStop[]> {
   const stops: FocusStop[] = [];
-  await win.locator("button[title='Close']").first().focus();
+  const close = win.locator("button[title='Close']").first();
+  if (await close.count()) await close.focus();
+  else await win.focus();
   const seen = new Set<string>();
   let jumped = false;
   for (let i = 0; i < max; i++) {
@@ -214,10 +216,12 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
             "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])",
           ),
         ].filter((e) => e.getClientRects().length > 0 && !root.contains(e) && !(sel && e.closest(sel)));
-        const next = all.find((e) => root.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING);
-        if (!next) return false;
-        next.focus();
-        return true;
+        // The first one after it that really takes focus.
+        for (const next of all.filter((e) => root.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+          next.focus();
+          if (document.activeElement === next) return true;
+        }
+        return false;
       }, vendor ?? null);
       if (!moved) break;
       jumped = true;

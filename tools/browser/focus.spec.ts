@@ -23,7 +23,10 @@ for (const look of looks) {
       await closeWindows(page);
       const win = await screen.open(page, false);
       await settle(page);
-      const stops = await walkFocus(page, win, screen.vendor);
+      // A screen that is a dialog is walked inside the dialog, where focus is held.
+      const dialog = page.getByRole("dialog").locator("visible=true");
+      const root = (await dialog.count()) ? dialog.last() : win;
+      const stops = await walkFocus(page, root, screen.vendor);
       report("focus", { screen: screen.name, look, stops });
       const app = stops.filter((s) => s.part === "app");
       if (!screen.noAppStops) expect(app.length, "the app has stops").toBeGreaterThan(0);
