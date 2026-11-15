@@ -10,6 +10,8 @@ export default {
   // The fixtures are frozen input the build tests read as text, never imported.
   ignore: [...preset.ignore, "packages/shared/test/fixtures/**"],
   workspaces: {
+    // The browser checks run by hand against a running desktop (tools/browser/playwright.config.ts).
+    ".": { entry: ["tools/browser/*.ts"] },
     // The CAD harness is a plain browser page for measuring the app; its HTML files load these.
     "apps/cad": { entry: ["harness/main.tsx", "harness/perf.ts", "harness/vite.config.ts"] },
     // The engine's folder barrels came with it from the OS and nothing imports them today (2026-11-11);

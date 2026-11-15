@@ -33,6 +33,8 @@ export default [
     server: "server/src",
     // Run by hand: the kit sync prints its result.
     scripts: ["tools"],
+    // Playwright reads the browser checks' global setup and teardown through their default export.
+    defaultExports: ["tools/browser/globalSetup.ts", "tools/browser/globalTeardown.ts"],
     // The CAD tests check a geometry result through helpers that hold the `expect` calls.
     assertFunctionNames: ["expect", "expectTypeOf", "expectPoint", "expectLine", "expectSameDrawing"],
     // vendor/ is the OS's kit, byte for byte: never linted or rewritten here.
