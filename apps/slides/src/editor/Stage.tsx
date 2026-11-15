@@ -310,7 +310,7 @@ export function Stage({
             aria-label="Slide editor"
             data-slide-canvas=""
             tabIndex={0}
-            className="focus-visible:outline-primary outline-none focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="focus-visible:outline-primary outline-0 focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               position: "relative",
               width,
