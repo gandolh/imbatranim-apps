@@ -91,4 +91,16 @@ describe("the DWG to DXF socket", () => {
     expect(new TextDecoder().decode(answer.binary)).toBe("AC1032 slow");
     expect(answer.code).toBe(1000);
   });
+
+  it("stops the converter when the app closes", async () => {
+    let closed = 0;
+    const convert = Object.assign(echo, {
+      close: () => {
+        closed++;
+      },
+    });
+    const app = await buildTestApp({ convert });
+    await app.close();
+    expect(closed).toBe(1);
+  });
 });

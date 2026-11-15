@@ -15,6 +15,12 @@ type ConvertResult = { ok: true; dxf: Uint8Array } | { ok: false; error: DwgFail
 
 export type Converter = (dwg: Uint8Array) => Promise<ConvertResult>;
 
+/** The converter `createConverter` builds: `close()` ends the running child and refuses the rest. */
+export type ClosableConverter = Converter & { close: () => void };
+
+/** How long a child gets to leave on SIGTERM before it is killed outright. */
+const KILL_GRACE_MS = 1000;
+
 export type ConverterOptions = {
   /** Kill a conversion after this long. */
   timeoutMs?: number;
@@ -27,7 +33,14 @@ export type ConverterOptions = {
 };
 
 /** Run one conversion in a fresh child process. */
-function runChild(dwg: Uint8Array, entry: URL, timeoutMs: number, log: (line: string) => void): Promise<ConvertResult> {
+function runChild(
+  dwg: Uint8Array,
+  entry: URL,
+  timeoutMs: number,
+  log: (line: string) => void,
+  /** Hands back the way to stop this child early; the converter's `close()` uses it. */
+  onStart: (stop: () => void) => void,
+): Promise<ConvertResult> {
   return new Promise((resolve) => {
     const child = fork(entry, [], { serialization: "advanced", stdio: "inherit" });
     let settled = false;
@@ -56,27 +69,57 @@ function runChild(dwg: Uint8Array, entry: URL, timeoutMs: number, log: (line: st
       log(`converter exited (${signal ?? code}) without an answer`);
       finish({ ok: false, error: "unreadable" });
     });
+    onStart(() => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      log(`converter closed with a conversion running: stopping pid ${child.pid}`);
+      child.kill("SIGTERM");
+      const grace = setTimeout(() => child.kill("SIGKILL"), KILL_GRACE_MS);
+      grace.unref();
+      child.once("exit", () => clearTimeout(grace));
+      resolve({ ok: false, error: "failed" });
+    });
     child.send({ dwg } satisfies ConverterRequest);
   });
 }
 
-/** A converter that runs one child at a time and queues a few behind it. */
-export function createConverter(options: ConverterOptions): Converter {
+/**
+ * A converter that runs one child at a time and queues a few behind it.
+ * `close()` stops the running child and answers it, the queue and every later call `failed`.
+ */
+export function createConverter(options: ConverterOptions): ClosableConverter {
   const timeoutMs = options.timeoutMs ?? CONVERT_TIMEOUT_MS;
   const maxWaiting = options.maxWaiting ?? 3;
   const entry = options.entry ?? new URL("./converter.ts", import.meta.url);
   const { log } = options;
   let tail: Promise<unknown> = Promise.resolve();
   let waiting = 0;
+  let closed = false;
+  let stopRunning: (() => void) | undefined;
+  const refused: ConvertResult = { ok: false, error: "failed" };
 
-  return (dwg) => {
+  const convert: Converter = (dwg) => {
+    if (closed) return Promise.resolve(refused);
     if (waiting >= maxWaiting) return Promise.resolve({ ok: false, error: "busy" });
     waiting++;
     const run = tail.then(() => {
       waiting--;
-      return runChild(dwg, entry, timeoutMs, log);
+      if (closed) return refused;
+      return runChild(dwg, entry, timeoutMs, log, (stop) => {
+        stopRunning = stop;
+      }).finally(() => {
+        stopRunning = undefined;
+      });
     });
     tail = run.catch(() => undefined);
     return run;
   };
+
+  return Object.assign(convert, {
+    close: () => {
+      closed = true;
+      stopRunning?.();
+    },
+  });
 }

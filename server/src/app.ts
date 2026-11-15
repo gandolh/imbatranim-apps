@@ -24,7 +24,8 @@ type ServerOptions = Pick<FastifyServerOptions, "logger" | "requestTimeout" | "c
 
 export type BuildAppOptions = {
   server?: ServerOptions;
-  convert?: Converter;
+  /** A fake in a test. When it has a `close`, closing the app calls it. */
+  convert?: Converter & { close?: () => void };
   /** How long a socket may stay open without sending its file. */
   idleMs?: number;
 };
@@ -32,6 +33,11 @@ export type BuildAppOptions = {
 export async function buildApp(config: Config, options: BuildAppOptions = {}): Promise<FastifyInstance> {
   const app = Fastify({ logger: { level: config.logLevel }, ...options.server });
   const convert = options.convert ?? createConverter({ log: (line) => app.log.warn(line) });
+
+  // The converter's child must not outlive the server (the desktop stops it with SIGTERM).
+  app.addHook("onClose", async () => {
+    convert.close?.();
+  });
 
   // Zod checks every request and encodes every reply, in every plugin registered below.
   app.setValidatorCompiler(validatorCompiler);

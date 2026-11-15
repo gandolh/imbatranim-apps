@@ -40,6 +40,43 @@ describe("createConverter (a child process per file)", () => {
   });
 });
 
+describe("close()", () => {
+  const alive = (pid: number) => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  it("kills the running child at once and refuses the queue and later calls", async () => {
+    const lines: string[] = [];
+    // The default limit (60 s) stays: only close() can end the child inside this test's time.
+    const convert = createConverter({ entry: standIn, log: (line) => lines.push(line) });
+    const running = convert(bytes("hang"));
+    const queued = convert(bytes("AC1 queued"));
+    // Let the child start and settle its signal handling before the close.
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    convert.close();
+    expect(await running).toEqual({ ok: false, error: "failed" });
+    expect(await queued).toEqual({ ok: false, error: "failed" });
+    expect(await convert(bytes("AC1032 later"))).toEqual({ ok: false, error: "failed" });
+
+    const pid = Number(lines.join("\n").match(/pid (\d+)/)?.[1]);
+    expect(pid).toBeGreaterThan(0);
+    for (let i = 0; i < 40 && alive(pid); i++) await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(alive(pid)).toBe(false);
+  });
+
+  it("does nothing with no child running", async () => {
+    const convert = createConverter({ entry: standIn, log: quiet });
+    expect((await convert(bytes("AC1032 one"))).ok).toBe(true);
+    convert.close();
+    expect(await convert(bytes("AC1032 two"))).toEqual({ ok: false, error: "failed" });
+  });
+});
+
 describe("the real converter (LibreDWG as WebAssembly)", () => {
   it("says a DWG it cannot read is unreadable, without taking the server down", async () => {
     const convert = createConverter({ log: quiet });
