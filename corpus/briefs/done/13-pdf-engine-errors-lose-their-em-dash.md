@@ -30,3 +30,13 @@ Brief 11's copy sweep left the PDF engine's error messages, which can reach a to
 - [ ] A test pins the rewritten messages from `errors.ts`.
 - [ ] The two "no value" dashes and Solitaire's win line are untouched.
 - [ ] `npm run check` exits 0, and `bash corpus/lint.sh` ends clean.
+
+## Outcome (2026-11-15)
+
+Built in `404a78e`, local on `main`, not pushed.
+
+- Rewritten with `: ` before the detail: `NotImplemented`, `UnsupportedPlatform`, `EncryptedDocument` and `SignatureInvalidationWarning` in `errors.ts`; the `Forms.commit` appearance failure (`forms.ts:141`, now `...outside WinAnsi): <reason>`). The `Forms.set` signature-field message (`forms.ts:277`) now ends `(use Sign instead).`: it named an internal brief, so the dash went with it.
+- The grep of `packages/pdfcore-engine/src` for an em dash in a message string found only those six. The rest are comments and `describe` names. No test matched the old text; `__tests__/errors.test.ts` is new and pins the four `errors.ts` messages with and without a detail.
+- Untouched: Slides `Editor.tsx:807`, the REST client `Sidebar.tsx:72`, Solitaire's win line.
+- Run: `npm run check` exit 0 (91 files, 945 tests passed, 3 skipped), `bash corpus/lint.sh` OK.
+- **Owner step:** push this repo, re-pin imbatranimOS's `marketplace/imbatranim-office.json` `ref` to this repo's last commit (it supersedes brief 11's pin to `e2712ef`, and brief 12's step; leave `accessories.json` and `developer.json` as brief 11 sets them), then `node cli.ts imbatranim-os server` from the vps-deploy checkout.

@@ -689,3 +689,7 @@ checkout.
 ## [2026-11-15] done | Brief 12: the converter child dies with the server
 
 `createConverter` got a `close()` (SIGTERM, SIGKILL after 1 s; the running conversion, the queue and later calls answer `failed`), called from an `onClose` hook in `app.ts`. Before, a conversion in flight outlived the server by up to its 60 s limit. Built in `59afb9c`; see [the brief](briefs/done/12-kill-the-converter-child-on-close.md).
+
+## [2026-11-15] done | Brief 13: the PDF engine's error messages lose their em dash
+
+Six engine error messages now put the detail after a colon (`errors.ts` x4, `forms.ts` x2); a new `errors.test.ts` pins them. No other engine message string held a dash. Built in `404a78e`; see [the brief](briefs/done/13-pdf-engine-errors-lose-their-em-dash.md).
