@@ -40,15 +40,7 @@ const Segment = ({ label, children }: { label: string; children: ReactNode }) =>
 );
 
 /** One group's tools, as the docked panel, a popover and a phone sheet show them. */
-export function GroupTools({
-  group,
-  state: s,
-  actions: a,
-}: {
-  group: Group;
-  state: ToolbarState;
-  actions: ToolbarActions;
-}) {
+function GroupTools({ group, state: s, actions: a }: { group: Group; state: ToolbarState; actions: ToolbarActions }) {
   const none = s.slideCount === 0;
   switch (group) {
     case "insert":
