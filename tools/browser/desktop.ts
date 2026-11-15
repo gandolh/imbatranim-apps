@@ -175,7 +175,8 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
   const seen = new Set<string>();
   let jumped = false;
   const close = win.locator("button[title='Close']").first();
-  if (await close.count()) await close.focus();
+  // Focus set by script counts as a keyboard focus (focusVisible), as a Tab's would.
+  if (await close.count()) await close.evaluate((el) => (el as HTMLElement).focus({ focusVisible: true }));
   else {
     // A popover or a dialog without a title band: start on its first stop.
     await win.evaluate((r) =>
@@ -183,7 +184,7 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
         .querySelector<HTMLElement>(
           "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])",
         )
-        ?.focus(),
+        ?.focus({ focusVisible: true }),
     );
     jumped = true;
   }
@@ -205,7 +206,8 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
         os:
           !!el.closest("[data-window-titlebar], [data-window-chrome]") ||
           el.matches(
-            "button[title='Close'], button[title='Minimize'], button[title='Maximize'], button[title='Restore']",
+            // The window's title buttons, and the kit dialog's own Close.
+            "button[title='Close'], button[title='Minimize'], button[title='Maximize'], button[title='Restore'], [role='dialog'] button[aria-label='Close']",
           ),
         editor: el.isContentEditable || el.getAttribute("role") === "application",
       };
@@ -228,7 +230,7 @@ export async function walkFocus(page: Page, win: Locator, vendor?: string, max =
         ].filter((e) => e.getClientRects().length > 0 && !root.contains(e) && !(sel && e.closest(sel)));
         // The first one after it that really takes focus.
         for (const next of all.filter((e) => root.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-          next.focus();
+          next.focus({ focusVisible: true });
           if (document.activeElement === next) return true;
         }
         return false;
