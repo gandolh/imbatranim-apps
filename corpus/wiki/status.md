@@ -28,6 +28,7 @@ are not pushed; brief numbering restarted at 01 on 2026-11-02 (see
   `config.ts`, `features/health` and `features/dwg`, one error handler, the zod
   provider on `/health`; the start command is now `node server/src/server.ts`,
   so the OS's catalog copy needs a re-pin to this commit with the new command.
+  Closing the server kills a running conversion's child (2026-11-15).
 - **Slides** (2026-10-22, walked 2026-10-27). Edits patch the package in
   place; untouched parts stay byte identical ([slides.md](slides.md)).
 - **Sheets** (2026-10-22, walked 2026-10-27). Formulas in a worker and sheets

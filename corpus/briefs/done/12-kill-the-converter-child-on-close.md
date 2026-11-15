@@ -35,3 +35,15 @@ When the server stops (SIGTERM from the desktop) with a conversion in flight, th
 - [ ] `app.close()` calls the converter's `close`.
 - [ ] No timeout was raised and no status was added.
 - [ ] `npm run check` exits 0, and `bash corpus/lint.sh` ends clean.
+
+## Outcome (2026-11-15)
+
+Built in `59afb9c`, local on `main`, not pushed.
+
+- `createConverter` returns a `ClosableConverter`: the converter with a `close()`. It stops the running child with SIGTERM and SIGKILL after 1 s (`KILL_GRACE_MS`), and answers that conversion, the queue and every later call `{ ok: false, error: "failed" }`. No new status. The log line names the child's pid.
+- `app.ts` adds an `onClose` hook that calls `convert.close?.()`; a converter a test injects may carry a `close`, a plain function has none.
+- Tests: a converter test closes with the stand-in hanging, asserts the three answers and that the child's pid is gone (the default 60 s limit stays); a second one closes with no child; a routes test asserts `app.close()` calls the converter's `close`. No timeout was raised.
+- Run: `npm run check` exit 0 (90 files, 943 tests passed, 3 skipped), `bash corpus/lint.sh` OK.
+- Not run: SIGTERM against a desktop-started server. The 1001 close of the socket is the plugin's `preClose` and runs first, so the route drops the `failed` answer as it does for any late result.
+- Link fix: brief 10's outcome pointed at the todo this brief replaced; it now points here.
+- **Owner step:** push this repo, re-pin imbatranimOS's `marketplace/imbatranim-office.json` `ref` to this repo's last commit (it supersedes brief 11's pin to `e2712ef`; leave `accessories.json` and `developer.json` as brief 11 sets them), then `node cli.ts imbatranim-os server` from the vps-deploy checkout.

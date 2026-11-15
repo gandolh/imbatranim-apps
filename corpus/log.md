@@ -685,3 +685,7 @@ The owner step moves imbatranimOS's three catalog descriptors
 (`imbatranim-office`, `accessories`, `developer`) to this repo's last
 commit, then runs `node cli.ts imbatranim-os server` from the vps-deploy
 checkout.
+
+## [2026-11-15] done | Brief 12: the converter child dies with the server
+
+`createConverter` got a `close()` (SIGTERM, SIGKILL after 1 s; the running conversion, the queue and later calls answer `failed`), called from an `onClose` hook in `app.ts`. Before, a conversion in flight outlived the server by up to its 60 s limit. Built in `59afb9c`; see [the brief](briefs/done/12-kill-the-converter-child-on-close.md).
