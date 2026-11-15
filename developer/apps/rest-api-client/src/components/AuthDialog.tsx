@@ -52,7 +52,7 @@ export function AuthDialog({
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()} title="Authorization" disablePointerDismissal>
-      <div className="flex w-[26rem] max-w-full flex-col gap-2">
+      <div className="flex w-[26rem] max-w-[calc(100vw-56px)] flex-col gap-2">
         <Select
           label="Type"
           options={[

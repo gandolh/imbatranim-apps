@@ -1,4 +1,4 @@
-import { Button, FileConflictError, useSystem } from "@imbatranim/ui";
+import { Button, FileConflictError, cn, useSystem } from "@imbatranim/ui";
 import { AlertTriangle } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RequestBuilder } from "./components/RequestBuilder";
@@ -26,6 +26,8 @@ import { activeFields, buildMultipart, bytesToBase64, contentTypeFor } from "./l
 
 type BuilderTab = "headers" | "body";
 type OpenDialog = "env" | "curl-import" | "curl-export" | "auth" | null;
+/** On a phone one pane shows at a time: the saved requests and history, or the request. */
+type PhoneView = "list" | "request";
 /**
  * `conflict`: another window saved the doc since this one read it, so nothing
  * more is saved until a reload.
@@ -59,6 +61,7 @@ export function RestApiClient(_props: { windowId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [dialog, setDialog] = useState<OpenDialog>(null);
+  const [view, setView] = useState<PhoneView>("list");
 
   const [data, setData] = useState<RestClientData>(EMPTY_DATA);
   // Latest data ref so callbacks read the current snapshot without re-binding.
@@ -379,7 +382,13 @@ export function RestApiClient(_props: { windowId: string }) {
     [],
   );
 
-  const openSaved = useCallback((req: SavedRequest) => loadRequest(req), [loadRequest]);
+  const openSaved = useCallback(
+    (req: SavedRequest) => {
+      loadRequest(req);
+      setView("request");
+    },
+    [loadRequest],
+  );
 
   const deleteSaved = useCallback(
     (id: string) => {
@@ -408,6 +417,7 @@ export function RestApiClient(_props: { windowId: string }) {
         headers: entry.headers,
         body: entry.body,
       });
+      setView("request");
     },
     [loadRequest],
   );
@@ -492,15 +502,19 @@ export function RestApiClient(_props: { windowId: string }) {
           </Button>
         </div>
       )}
-      <div className="flex min-h-0 w-full flex-1">
+      {/* Side by side; on a phone the list first, and the request as its own view. */}
+      <div className="flex min-h-0 w-full flex-1" data-view={view}>
         <Sidebar
           data={data}
+          current={{ method, url }}
+          className={cn(view === "request" && "max-[600px]:hidden")}
+          onOpenRequest={() => setView("request")}
           onOpenSaved={openSaved}
           onDeleteSaved={deleteSaved}
           onOpenHistory={openHistory}
           onClearHistory={clearHistory}
         />
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className={cn("flex min-w-0 flex-1 flex-col", view === "list" && "max-[600px]:hidden")}>
           <RequestBuilder
             method={method}
             url={url}
@@ -528,6 +542,7 @@ export function RestApiClient(_props: { windowId: string }) {
             onTabChange={setBuilderTab}
             onSend={() => void handleSend()}
             onSave={handleSave}
+            onBack={() => setView("list")}
             onSelectEnv={(id) => persist({ ...dataRef.current, activeEnvId: id })}
             onEditEnvs={() => setDialog("env")}
             onImportCurl={() => setDialog("curl-import")}

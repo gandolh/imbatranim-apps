@@ -14,7 +14,7 @@ import { screens } from "./screens.ts";
 const looks = (process.env.LOOKS ?? "light,dark,classic-light,classic-dark").split(",") as (keyof typeof LOOKS)[];
 
 for (const look of looks) {
-  for (const screen of screens()) {
+  for (const screen of screens((s) => s.only !== "phone")) {
     test(`a ring on every stop: ${screen.name}, ${look}`, async ({ page, request }, info) => {
       test.skip(info.project.name !== "desktop-1280", "the focus walk runs at 1280");
       await setLook(request, LOOKS[look]);

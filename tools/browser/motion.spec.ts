@@ -56,7 +56,7 @@ test("the sampler sees motion when motion is allowed", async ({ page }) => {
 
 test.describe("with reduced motion", () => {
   test.use({ reducedMotion: "reduce" });
-  for (const screen of screens()) {
+  for (const screen of screens((s) => s.only !== "phone")) {
     test(`nothing of the app's moves: ${screen.name}`, async ({ page }) => {
       await recordMotion(page);
       await openDesktop(page);

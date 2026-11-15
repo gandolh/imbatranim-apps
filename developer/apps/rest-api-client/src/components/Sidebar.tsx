@@ -1,19 +1,52 @@
 import { ScrollArea, cn } from "@imbatranim/ui";
-import { Clock, Folder, Trash2 } from "lucide-react";
-import type { HistoryEntry, RestClientData, SavedRequest } from "../types";
+import { ChevronRight, Clock, Folder, Send, Trash2 } from "lucide-react";
+import type { HistoryEntry, HttpMethod, RestClientData, SavedRequest } from "../types";
 import { statusToken } from "../lib/ui";
 
 interface SidebarProps {
   data: RestClientData;
+  /** The request in the builder, which the phone's first row opens. */
+  current: { method: HttpMethod; url: string };
+  className?: string;
+  /** On a phone: shows the request view. */
+  onOpenRequest: () => void;
   onOpenSaved: (req: SavedRequest) => void;
   onDeleteSaved: (id: string) => void;
   onOpenHistory: (entry: HistoryEntry) => void;
   onClearHistory: () => void;
 }
 
-export function Sidebar({ data, onOpenSaved, onDeleteSaved, onOpenHistory, onClearHistory }: SidebarProps) {
+export function Sidebar({
+  data,
+  current,
+  className,
+  onOpenRequest,
+  onOpenSaved,
+  onDeleteSaved,
+  onOpenHistory,
+  onClearHistory,
+}: SidebarProps) {
   return (
-    <aside className="border-outline-variant bg-surface-container-low flex w-56 shrink-0 flex-col border-r">
+    <aside
+      className={cn(
+        "border-outline-variant bg-surface-container-low flex w-56 shrink-0 flex-col border-r",
+        "max-[600px]:w-full max-[600px]:border-r-0",
+        className,
+      )}
+    >
+      {/* A phone shows the list first: this row opens the request in the builder. */}
+      <button
+        type="button"
+        onClick={onOpenRequest}
+        className="border-outline-variant hover:bg-surface-container focus-visible:ring-primary min-h-target hidden w-full shrink-0 items-center gap-2 border-b px-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset max-[600px]:flex"
+      >
+        <Send size={16} className="text-on-surface-variant shrink-0" />
+        <span className="font-ui text-on-surface text-control shrink-0 font-semibold">Request</span>
+        <span className="text-on-surface-variant text-label min-w-0 flex-1 truncate font-mono">
+          {current.url.trim() ? `${current.method} ${current.url}` : ""}
+        </span>
+        <ChevronRight size={16} className="text-on-surface-variant shrink-0" />
+      </button>
       <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
         <Section icon="folder" label="Collections">
           {data.collections.length === 0 ? (
@@ -24,7 +57,7 @@ export function Sidebar({ data, onOpenSaved, onDeleteSaved, onOpenHistory, onCle
                 <button
                   type="button"
                   onClick={() => onOpenSaved(req)}
-                  className="hover:bg-surface-container focus-visible:ring-primary flex min-w-0 flex-1 items-center gap-1.5 px-2 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                  className="hover:bg-surface-container focus-visible:ring-primary flex min-w-0 flex-1 items-center gap-1.5 px-2 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset max-[600px]:w-0"
                 >
                   <span className="text-secondary text-tiny shrink-0 font-mono font-semibold">{req.method}</span>
                   <span className="text-on-surface text-control truncate">{req.name || req.url}</span>
@@ -72,7 +105,9 @@ export function Sidebar({ data, onOpenSaved, onDeleteSaved, onOpenHistory, onCle
                   {entry.status || "—"}
                 </span>
                 <span className="text-secondary text-tiny shrink-0 font-mono">{entry.method}</span>
-                <span className="text-on-surface-variant text-label min-w-0 flex-1 truncate">{entry.url}</span>
+                <span className="text-on-surface-variant text-label min-w-0 flex-1 truncate max-[600px]:w-0">
+                  {entry.url}
+                </span>
                 {entry.elapsedMs !== undefined && (
                   <span className="text-on-surface-variant text-tiny shrink-0 font-mono">{entry.elapsedMs}ms</span>
                 )}

@@ -1,5 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, Columns2, FileDiff, FolderGit2, GitCommitVertical, History, Pencil, Undo2 } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ChevronRight,
+  Columns2,
+  FileDiff,
+  FolderGit2,
+  GitCommitVertical,
+  History,
+  Pencil,
+  Undo2,
+} from "lucide-react";
 import {
   Button,
   Checkbox,
@@ -41,6 +52,8 @@ import { forgotten, recentsStore, remembered } from "./recents";
 
 type Selection = { path: string; staged: boolean } | null;
 type RightTab = "diff" | "history";
+/** On a phone one pane shows at a time: the changes, or the diff and history. */
+type PhoneView = "list" | "detail";
 
 export function GitGui({ windowId: _windowId }: { windowId: string }) {
   const system = useSystem();
@@ -62,6 +75,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
    */
   const [diffError, setDiffError] = useState<string | null>(null);
   const [tab, setTab] = useState<RightTab>("diff");
+  const [view, setView] = useState<PhoneView>("list");
   const [sideBySide, setSideBySide] = useState<boolean>(true);
 
   const [message, setMessage] = useState<string>("");
@@ -472,13 +486,34 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
         onCloseRepo={() => {
           setRepo(null);
           setError(null);
+          setView("list");
         }}
       />
 
       {error && <ErrorBanner message={error} />}
 
-      <div className="flex min-h-0 flex-1">
-        <div className="border-outline-variant flex min-h-0 w-[42%] flex-col border-r">
+      {/* Side by side; on a phone the changes first, and the diff as its own view. */}
+      <div className="flex min-h-0 flex-1" data-view={view}>
+        <div
+          className={cn(
+            "border-outline-variant flex min-h-0 w-[42%] flex-col border-r",
+            "max-[600px]:w-full max-[600px]:border-r-0",
+            view === "detail" && "max-[600px]:hidden",
+          )}
+        >
+          {/* A phone shows the changes first: this row opens the history. */}
+          <button
+            type="button"
+            onClick={() => {
+              setTab("history");
+              setView("detail");
+            }}
+            className="border-outline-variant hover:bg-surface-container focus-visible:ring-primary min-h-target hidden w-full shrink-0 items-center gap-2 border-b px-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset max-[600px]:flex"
+          >
+            <History size={16} className="text-on-surface-variant shrink-0" />
+            <span className="font-ui text-on-surface text-control min-w-0 flex-1 font-semibold">History</span>
+            <ChevronRight size={16} className="text-on-surface-variant shrink-0" />
+          </button>
           <ChangeSection
             title="Staged changes"
             prefix="s"
@@ -490,6 +525,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
             onSelect={(path) => {
               setSelection({ path, staged: true });
               setTab("diff");
+              setView("detail");
             }}
           />
           <div className="border-outline-variant flex shrink-0 flex-wrap gap-1 border-t px-2 py-1">
@@ -514,6 +550,7 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
             onSelect={(path) => {
               setSelection({ path, staged: false });
               setTab("diff");
+              setView("detail");
             }}
           />
           <div className="border-outline-variant flex shrink-0 flex-wrap gap-1 border-t px-2 py-1">
@@ -575,8 +612,18 @@ export function GitGui({ windowId: _windowId }: { windowId: string }) {
           </div>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col">
+        <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col", view === "list" && "max-[600px]:hidden")}>
           <div className="border-outline-variant flex shrink-0 border-b">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="focus-visible:ring-primary h-target w-target hidden shrink-0 justify-center p-0 focus-visible:ring-2 focus-visible:ring-inset max-[600px]:flex"
+              onClick={() => setView("list")}
+              aria-label="Back"
+              title="Back to the changes"
+            >
+              <ArrowLeft size={16} strokeWidth={2} />
+            </Button>
             <TabButton active={tab === "diff"} onClick={() => setTab("diff")}>
               <FileDiff size={13} /> Diff
             </TabButton>

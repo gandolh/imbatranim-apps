@@ -22,9 +22,10 @@ const RECENTS = {
 };
 
 /** The `git` module's answers for a clean repo; `refuse` makes every read fail with that status. */
-function answerGit(fake: FakeSystem, refuse?: number) {
+function answerGit(fake: FakeSystem, refuse?: number, entries: unknown[] = []) {
   const answers: Record<string, unknown> = {
-    "/git/status": { entries: [] },
+    "/git/status": { entries },
+    "/git/diff": { diff: "" },
     "/git/log": { commits: [] },
     "/git/branches": {
       branches: [{ name: "main", current: true }],
@@ -125,5 +126,40 @@ describe("Git GUI as a kit app", () => {
     await settle();
     expect(fake.recents).toEqual([]);
     expect(recentsFile(fake)).toEqual({ repos: [{ root: "home", path: "code/tool" }] });
+  });
+});
+
+describe("on a phone, one pane at a time", () => {
+  /** Which pane a phone shows, and whether a pane carries the class that hides it below 600 px. */
+  const view = () => document.querySelector("[data-view]")?.getAttribute("data-view");
+  const hiddenOnPhone = (i: number) =>
+    document.querySelector("[data-view]")?.children[i]?.className.includes("max-[600px]:hidden") ?? false;
+  const press = (match: (b: HTMLButtonElement) => boolean) => {
+    const button = [...document.querySelectorAll("button")].find(match);
+    if (!button) throw new Error("button not found");
+    act(() => {
+      button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+  };
+
+  it("shows the changes first; a file opens its diff, Back returns, and History has its own row", async () => {
+    const fake = createFakeSystem({ appId: "git-gui", intent: { root: "home", openPath: "code/new" } });
+    answerGit(fake, undefined, [{ index: " ", worktree: "M", path: "f.txt", staged: false }]);
+    renderWithSystem(<App windowId="window-1" host={host} />, fencedSystem(fake.system, "git-gui"));
+    await settle();
+    expect(view()).toBe("list");
+    expect([hiddenOnPhone(0), hiddenOnPhone(1)]).toEqual([false, true]);
+
+    press((b) => b.textContent?.includes("f.txt") ?? false);
+    await settle();
+    expect(view()).toBe("detail");
+    expect([hiddenOnPhone(0), hiddenOnPhone(1)]).toEqual([true, false]);
+
+    press((b) => b.getAttribute("aria-label") === "Back");
+    expect(view()).toBe("list");
+
+    press((b) => b.textContent === "History");
+    expect(view()).toBe("detail");
+    expect(document.body.textContent).toContain("No commits yet");
   });
 });

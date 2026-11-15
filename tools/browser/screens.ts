@@ -53,6 +53,13 @@ async function pdfTab(page: Page, phone: boolean, tab: string): Promise<Locator>
   return win;
 }
 
+/** The REST client. On a phone it opens on its list; `request` goes on to the request view, through the list's first row. */
+async function rest(page: Page, request: boolean): Promise<Locator> {
+  const win = await openFromStart(page, "REST Client", /REST/);
+  if (request) await press(win, /^Request/);
+  return win;
+}
+
 /** The SuperDoc and Univer parts: focus inside them is theirs. */
 const DOCS_VENDOR = ".superdoc, [id^='docs-toolbar-'], .ProseMirror";
 const SHEETS_VENDOR = "[class*='univer']";
@@ -198,7 +205,9 @@ export const SCREENS: Screen[] = [
       return win;
     },
   },
-  { name: "rest", drawn: false, open: (page) => openFromStart(page, "REST Client", /REST/) },
+  // On a phone the REST client opens on its list, and the request is a view of its own.
+  { name: "rest", drawn: false, open: (page) => rest(page, false) },
+  { name: "rest-request", drawn: false, only: "phone", open: (page) => rest(page, true) },
   ...(
     [
       ["rest-auth", "Add an Authorization header"],
@@ -208,8 +217,8 @@ export const SCREENS: Screen[] = [
   ).map(([name, button]): Screen => ({
     name,
     drawn: false,
-    open: async (page) => {
-      const win = await openFromStart(page, "REST Client", /REST/);
+    open: async (page, phone) => {
+      const win = await rest(page, phone);
       await press(win, button);
       await expect(page.getByRole("dialog")).toBeVisible();
       return win;

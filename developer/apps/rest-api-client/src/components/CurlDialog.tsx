@@ -95,7 +95,7 @@ export function CurlDialog({
       title={mode === "import" ? "Import a curl command" : "Copy as curl"}
       disablePointerDismissal={mode === "import"}
     >
-      <div className="flex w-[38rem] max-w-full flex-col gap-2">
+      <div className="flex w-[38rem] max-w-[calc(100vw-56px)] flex-col gap-2">
         <textarea
           className="rounded-control border-outline-variant bg-surface-container-lowest text-on-surface focus-visible:ring-primary text-control min-h-[9rem] w-full resize-y border px-2 py-1.5 font-mono outline-none focus-visible:ring-2 focus-visible:ring-inset"
           placeholder={"curl 'https://api.example.com/users' -H 'accept: application/json'"}

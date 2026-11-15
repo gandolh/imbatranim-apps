@@ -1,5 +1,16 @@
 import { Button, Checkbox, Input, Select, Toggle, cn } from "@imbatranim/ui";
-import { AlertTriangle, Download, KeyRound, Plus, Save, Send, Settings2, Trash2, Upload } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Download,
+  KeyRound,
+  Plus,
+  Save,
+  Send,
+  Settings2,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import type { BodyMode, Environment, FormField, HeaderRow, HttpMethod } from "../types";
 import { METHOD_OPTIONS, emptyHeaderRow, newId } from "../lib/ui";
 
@@ -44,6 +55,8 @@ interface RequestBuilderProps {
   onExportCurl: () => void;
   onAddAuth: () => void;
   onAddMissingVars: () => void;
+  /** On a phone: back to the saved requests and history. */
+  onBack: () => void;
 }
 
 const NO_ENV = "__none__";
@@ -101,6 +114,7 @@ export function RequestBuilder({
   onExportCurl,
   onAddAuth,
   onAddMissingVars,
+  onBack,
 }: RequestBuilderProps) {
   const bodyDisabled = method === "GET" || method === "HEAD";
 
@@ -117,6 +131,17 @@ export function RequestBuilder({
     <div className="border-outline-variant flex flex-col gap-[8px] border-b px-[8px] pb-[8px]">
       {/* Environment + interop bar, at the app bar's height and surface */}
       <div className="border-outline-variant bg-surface-container-low min-h-appbar -mx-[8px] flex flex-wrap items-center gap-[6px] border-b px-[8px] py-[6px]">
+        {/* On a phone the request is its own view, with a way back to the list. */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="focus-visible:ring-primary h-target w-target hidden justify-center p-0 focus-visible:ring-2 focus-visible:ring-inset max-[600px]:flex"
+          onClick={onBack}
+          aria-label="Back"
+          title="Back to collections and history"
+        >
+          <ArrowLeft size={16} strokeWidth={2} />
+        </Button>
         <div className="min-w-[10rem]">
           <Select
             options={[

@@ -272,3 +272,34 @@ describe("two windows saving one doc", () => {
     ]);
   });
 });
+
+describe("on a phone, one pane at a time", () => {
+  /** Which pane a phone shows, and the classes that hide the other one below 600 px. */
+  const view = () => container.querySelector("[data-view]")?.getAttribute("data-view");
+  const hiddenOnPhone = (el: Element | null | undefined) => el?.className.includes("max-[600px]:hidden") ?? false;
+  const list = () => container.querySelector("aside");
+  const request = () => container.querySelector("[data-view]")?.children[1];
+
+  it("opens on the list; a saved request opens the request view, and Back returns", async () => {
+    answers.push({ content: JSON.stringify({ collections: [saved("kept")] }) });
+    await mount();
+    await settle();
+    expect(view()).toBe("list");
+    expect([hiddenOnPhone(list()), hiddenOnPhone(request())]).toEqual([false, true]);
+
+    await click(button((b) => b.textContent === "GETkept"));
+    expect(view()).toBe("request");
+    expect([hiddenOnPhone(list()), hiddenOnPhone(request())]).toEqual([true, false]);
+    expect(container.querySelector<HTMLInputElement>('input[placeholder^="https://"]')?.value).toBe(
+      "https://kept.test",
+    );
+
+    await click(button((b) => b.getAttribute("aria-label") === "Back"));
+    expect(view()).toBe("list");
+    // The list's first row names the request in the builder and opens it as it is.
+    const row = button((b) => b.textContent?.startsWith("Request") ?? false);
+    expect(row.textContent).toContain("GET https://kept.test");
+    await click(row);
+    expect(view()).toBe("request");
+  });
+});

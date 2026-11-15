@@ -63,7 +63,7 @@ export function EnvironmentDialog({
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()} title="Environments" disablePointerDismissal>
-      <div className="flex w-[34rem] max-w-full flex-col gap-2">
+      <div className="flex w-[34rem] max-w-[calc(100vw-56px)] flex-col gap-2">
         <p className="text-on-surface-variant text-label">
           Values are stored <strong>unencrypted</strong> in{" "}
           <code className="font-mono">~/.config/rest-client/collections.json</code>. Marking one secret masks it here
