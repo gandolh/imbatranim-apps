@@ -339,3 +339,81 @@ export async function phoneFit(win: Locator) {
     };
   });
 }
+
+/**
+ * On a phone: the controls a box cuts off, in the window and in any open
+ * dialog (the kit portals a dialog out of the window). A control counts when
+ * its rect reaches outside an ancestor whose `overflow` isn't `visible`, or
+ * outside the screen. A box that scrolls down reaches what it hides below, so
+ * inside one only its sides count; a strip that scrolls sideways counts, as a
+ * person sees its last control cut. An absolutely or fixed placed control
+ * escapes the boxes its containing block sits outside of. Hidden inputs (Base
+ * UI's, a visually hidden field) and empty boxes are skipped. Each finding is
+ * `<control> | <the box that cuts it>`.
+ */
+export async function clippedControls(win: Locator): Promise<string[]> {
+  return win.evaluate((w) => {
+    const CONTROLS =
+      "button, input, select, textarea, a[href], [role='button'], [role='combobox'], [role='checkbox'], [role='radio'], [role='switch'], [role='tab'], [role='slider']";
+    const name = (el: Element) =>
+      (el.getAttribute("aria-label") ?? el.getAttribute("title") ?? el.textContent ?? "").trim().slice(0, 30) ||
+      el.tagName.toLowerCase();
+    const box = (el: Element) => {
+      const label = el.getAttribute("aria-label") ?? el.getAttribute("role");
+      if (label) return `${el.tagName.toLowerCase()}[${label.slice(0, 30)}]`;
+      const cls = String(el.getAttribute("class") ?? "")
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 3)
+        .join(".");
+      return `${el.tagName.toLowerCase()}${cls ? `.${cls}` : ""}`;
+    };
+    const dialogs = [...document.querySelectorAll<HTMLElement>("[role='dialog'], [role='alertdialog']")].filter(
+      (d) => !w.contains(d) && d.getClientRects().length > 0,
+    );
+    const found = new Set<string>();
+    for (const root of [w, ...dialogs]) {
+      for (const el of root.querySelectorAll<HTMLElement>(CONTROLS)) {
+        if (el.getClientRects().length === 0) continue;
+        const b = el.getBoundingClientRect();
+        const own = getComputedStyle(el);
+        if (b.width <= 1 || b.height <= 1 || own.visibility === "hidden") continue;
+        if (own.clip !== "auto" || own.clipPath !== "none") continue;
+        let fixed = own.position === "fixed";
+        let absolute = own.position === "absolute";
+        // Inside a box that scrolls down, what lies below is reached by scrolling.
+        let scrollsDown = false;
+        let cut: string | null = null;
+        for (let n = el.parentElement; n; n = n.parentElement) {
+          const s = getComputedStyle(n);
+          const transformed = s.transform !== "none" || s.filter !== "none";
+          const positioned = s.position !== "static" || transformed;
+          const clips =
+            (s.overflowX !== "visible" || s.overflowY !== "visible") &&
+            !(fixed && !transformed) &&
+            !(absolute && !positioned);
+          if (clips) {
+            const r = n.getBoundingClientRect();
+            const left = r.left + n.clientLeft;
+            const top = r.top + n.clientTop;
+            if (b.left < left - 1 || b.right > left + n.clientWidth + 1) cut = box(n);
+            if ((s.overflowY === "auto" || s.overflowY === "scroll") && n.scrollHeight > n.clientHeight + 1) {
+              scrollsDown = true;
+            }
+            if (!cut && !scrollsDown && (b.top < top - 1 || b.bottom > top + n.clientHeight + 1)) cut = box(n);
+            if (cut) break;
+          }
+          if (fixed && transformed) fixed = false;
+          if (absolute && positioned) absolute = false;
+          if (s.position === "fixed") fixed = true;
+          else if (s.position === "absolute") absolute = true;
+          if (n === root) break;
+        }
+        if (!cut && (b.left < -1 || b.right > window.innerWidth + 1)) cut = "the screen";
+        if (!cut && !scrollsDown && (b.top < -1 || b.bottom > window.innerHeight + 1)) cut = "the screen";
+        if (cut) found.add(`${name(el)} | ${cut}`);
+      }
+    }
+    return [...found];
+  });
+}
