@@ -84,7 +84,7 @@ strategy is in-place patching.
 - The stage draws the slide at 960 logical pixels and scales it, so text wraps
   the same at every zoom and in the thumbnails. Selection handles are drawn in
   screen pixels on top.
-- Select (click, Shift/Ctrl+click, marquee, Tab), move (Shift keeps an axis,
+- Select (click, Shift/Ctrl+click, marquee, Tab while the canvas has focus), move (Shift keeps an axis,
   Ctrl drops a copy), resize from eight handles in the shape's own rotated axes
   (corners keep proportions with Shift and always for pictures; Ctrl from the
   centre), rotate (Shift snaps to 15°), drag a line's ends, nudge with the

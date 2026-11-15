@@ -693,3 +693,7 @@ checkout.
 ## [2026-11-15] done | Brief 13: the PDF engine's error messages lose their em dash
 
 Six engine error messages now put the detail after a colon (`errors.ts` x4, `forms.ts` x2); a new `errors.test.ts` pins them. No other engine message string held a dash. Built in `404a78e`; see [the brief](briefs/done/13-pdf-engine-errors-lose-their-em-dash.md).
+
+## [2026-11-15] done | Brief 14: Slides' Tab cycles shapes only on the slide
+
+The slide canvas is one Tab stop and takes focus when pressed; Tab and Shift+Tab cycle shapes only from it, and elsewhere follow the focus order. Slides' focus spec passes in the desktop (20 of 20). Built in `1741101` and `5ed9e3b`; see [the brief](briefs/done/14-slides-tab-cycles-shapes-only-on-the-slide.md).

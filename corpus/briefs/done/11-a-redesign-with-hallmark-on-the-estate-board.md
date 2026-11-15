@@ -209,6 +209,7 @@ and what shipped is [DESIGN.md](../../../DESIGN.md).
 - **For the owner:** Slides takes Tab window-wide to cycle the slide's
   shapes (PowerPoint's way), so Tab never moves focus inside a Slides
   window; left as it is (a shortcut), and a question on the board.
+  Brief 14 fixed it: [Tab now cycles shapes only on the canvas](14-slides-tab-cycles-shapes-only-on-the-slide.md).
 - **Owner step:** move imbatranimOS's three catalog descriptors
   (`marketplace/imbatranim-office.json`, `marketplace/accessories.json`,
   `marketplace/developer.json`) to this repo's last commit (the brief-11
