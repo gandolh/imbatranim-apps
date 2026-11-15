@@ -7,7 +7,8 @@ import { SCREENS } from "./screens.ts";
  * The controller's ruling 8 sizes at 1280 (the 958 px window), 1024, 768, 390
  * and 360: the slide idle and with the format panel open, the PDF page and
  * its readout, Docs' page and its readout, and the thumbnails. Read with
- * REPORT_DIR set; it asserts only that each part is on screen.
+ * REPORT_DIR set; it asserts only that each part is on screen. One window is
+ * open at a time, so the parts are found on the page.
  */
 test.use({ deviceScaleFactor: 1 });
 
@@ -55,15 +56,15 @@ test("ruling 8's sizes", async ({ page, request }, info) => {
   const slides = await openFile(page, "anim.pptx");
   await settle(page, 1200);
   row.slidesWindow = await size(slides);
-  row.slideIdle = await size(slides.getByRole("application", { name: "Slide editor" }));
+  row.slideIdle = await size(page.getByRole("application", { name: "Slide editor" }));
   row.slidesReadout = (
-    await slides.getByRole("toolbar", { name: "Slide and view" }).innerText({ timeout: 10_000 })
+    await page.getByRole("toolbar", { name: "Slide and view" }).innerText({ timeout: 10_000 })
   ).replace(/\s+/g, " ");
-  row.slideThumb = await thumb(slides.getByRole("option", { name: "Slide 1", exact: true }).first());
+  row.slideThumb = await thumb(page.getByRole("option", { name: "Slide 1", exact: true }).first());
   await closeWindows(page);
   const open = await SCREENS.find((s) => s.name === "slides-open")?.open(page, phone);
   if (open) {
-    row.slideOpen = await size(open.getByRole("application", { name: "Slide editor" }));
+    row.slideOpen = await size(page.getByRole("application", { name: "Slide editor" }));
     await page.keyboard.press("Escape");
   }
   await closeWindows(page);
@@ -71,16 +72,16 @@ test("ruling 8's sizes", async ({ page, request }, info) => {
   const pdf = await openFile(page, "fontconfig-user.pdf");
   await settle(page, 1500);
   row.pdfWindow = await size(pdf);
-  row.pdfPage = await size(pdf.locator("[data-page='1']").first());
-  row.pdfReadout = (await pdf.locator("[aria-live='polite']").first().innerText({ timeout: 10_000 })).trim();
-  row.pdfThumb = phone ? null : await size(pdf.getByRole("button", { name: "Page 1", exact: true }).first());
+  row.pdfPage = await size(page.locator("[data-page='1']").first());
+  row.pdfReadout = (await page.locator("[aria-live='polite']").first().innerText({ timeout: 10_000 })).trim();
+  row.pdfThumb = phone ? null : await size(page.getByRole("button", { name: "Page 1", exact: true }).first());
   await closeWindows(page);
 
   const docs = await openFile(page, "test.docx");
   await settle(page, 2500);
   row.docsWindow = await size(docs);
-  row.docsPage = await size(docs.locator(".superdoc__layers").first());
-  row.docsReadout = (await docs.getByRole("status").last().innerText({ timeout: 10_000 })).replace(/\s+/g, " ");
+  row.docsPage = await size(page.locator(".superdoc__layers").first());
+  row.docsReadout = (await page.getByRole("status").last().innerText({ timeout: 10_000 })).replace(/\s+/g, " ");
   await closeWindows(page);
 
   report("measure", row);
