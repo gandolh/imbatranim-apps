@@ -257,7 +257,7 @@ const STRIP_BUTTON = cn(
   "font-ui text-label text-on-surface flex h-[52px] w-[40px] flex-col items-center justify-center gap-[2px] rounded-control font-semibold outline-none",
   "hover:bg-surface-container-high active:bg-surface-container-highest data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:hover:bg-transparent",
   "[&_svg]:text-on-surface-variant data-[popup-open]:[&_svg]:text-on-primary-container",
-  "data-[popup-open]:bg-primary-container data-[popup-open]:text-on-primary-container data-[popup-open]:ring-1 data-[popup-open]:ring-primary data-[popup-open]:ring-inset data-[popup-open]:focus-visible:ring-on-primary-container",
+  "data-[popup-open]:bg-primary-container data-[popup-open]:text-on-primary-container data-[popup-open]:ring-1 data-[popup-open]:ring-primary data-[popup-open]:ring-inset data-[popup-open]:focus-visible:ring-2 data-[popup-open]:focus-visible:ring-on-primary-container",
   FOCUS_RING,
 );
 
