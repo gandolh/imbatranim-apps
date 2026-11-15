@@ -31,11 +31,11 @@ function OutlineItem({ node, depth, currentPage, onGo }: NodeProps) {
         {hasChildren ? (
           <button
             type="button"
-            className="text-on-surface-variant flex h-5 w-5 shrink-0 items-center justify-center"
+            className="text-on-surface-variant rounded-small focus-visible:ring-primary flex h-5 w-5 shrink-0 items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-inset"
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Collapse" : "Expand"}
           >
-            <ChevronRight size={12} className={"transition-transform " + (open ? "rotate-90" : "")} />
+            <ChevronRight size={12} className={"motion-safe:transition-transform " + (open ? "rotate-90" : "")} />
           </button>
         ) : (
           <span className="h-5 w-5 shrink-0" />
@@ -43,7 +43,7 @@ function OutlineItem({ node, depth, currentPage, onGo }: NodeProps) {
         <button
           type="button"
           className={
-            "text-control flex min-w-0 flex-1 items-center justify-between gap-2 py-1 pr-2 text-left " +
+            "text-control focus-visible:ring-primary flex min-w-0 flex-1 items-center justify-between gap-2 py-1 pr-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset " +
             (page1 == null ? "cursor-default" : "cursor-pointer") +
             (active ? " text-on-primary-container" : " text-on-surface")
           }
@@ -52,7 +52,15 @@ function OutlineItem({ node, depth, currentPage, onGo }: NodeProps) {
           title={node.title}
         >
           <span className="truncate">{node.title || "Untitled"}</span>
-          {page1 != null && <span className="text-on-surface-variant text-tiny shrink-0 tabular-nums">{page1}</span>}
+          {page1 != null && (
+            <span
+              className={
+                "text-label shrink-0 tabular-nums " + (active ? "text-on-primary-container" : "text-on-surface-variant")
+              }
+            >
+              {page1}
+            </span>
+          )}
         </button>
       </div>
       {hasChildren && open && (

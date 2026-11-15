@@ -163,9 +163,9 @@ export function OrganizeView(): JSX.Element {
   };
 
   return (
-    <div className="bg-surface-container flex h-full min-h-0 flex-col">
+    <div className="bg-desk flex h-full min-h-0 flex-col">
       {/* Toolbar */}
-      <div className="border-outline-variant bg-surface-container-low flex flex-wrap items-center gap-1.5 border-b px-2 py-1.5">
+      <div className="border-outline-variant bg-surface-container-low min-h-appbar flex shrink-0 flex-wrap items-center gap-[4px] border-b px-[6px] py-[4px]">
         <Button
           variant="default"
           size="sm"
@@ -189,7 +189,7 @@ export function OrganizeView(): JSX.Element {
           Merge PDF…
         </Button>
 
-        <Separator orientation="vertical" className="mx-1 h-5" />
+        <Separator orientation="vertical" className="mx-[4px] h-[20px]" />
 
         <Button
           variant="default"
@@ -214,13 +214,13 @@ export function OrganizeView(): JSX.Element {
           Delete {selected.size ? `(${selected.size})` : ""}
         </Button>
 
-        <Separator orientation="vertical" className="mx-1 h-5" />
+        <Separator orientation="vertical" className="mx-[4px] h-[20px]" />
 
         <div className="text-on-surface-variant font-ui text-control flex items-center gap-1">
           <Scissors size={15} />
           <span>Split every</span>
           <input
-            className="border-outline-variant bg-surface-container-lowest text-on-surface focus:border-primary w-10 border px-1 py-0.5 text-center outline-none"
+            className="border-outline bg-surface-container-lowest text-on-surface rounded-control focus-visible:ring-primary h-[24px] w-[40px] border px-[4px] text-center outline-none focus-visible:ring-2 max-[600px]:h-[36px] max-[600px]:w-[44px]"
             value={everyN}
             inputMode="numeric"
             onChange={(e) => setEveryN(e.target.value.replace(/[^0-9]/g, ""))}
@@ -402,7 +402,7 @@ function PageCard({
         <span className="flex items-center gap-0.5">
           <button
             type="button"
-            className="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface p-1 disabled:opacity-40"
+            className="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-control focus-visible:ring-primary max-[600px]:h-target max-[600px]:w-target flex h-[28px] w-[28px] items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-40"
             title="Rotate left"
             onClick={onRotateCcw}
             disabled={disabled}
@@ -411,7 +411,7 @@ function PageCard({
           </button>
           <button
             type="button"
-            className="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface p-1 disabled:opacity-40"
+            className="text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-control focus-visible:ring-primary max-[600px]:h-target max-[600px]:w-target flex h-[28px] w-[28px] items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-40"
             title="Rotate right"
             onClick={onRotateCw}
             disabled={disabled}
@@ -420,7 +420,7 @@ function PageCard({
           </button>
           <button
             type="button"
-            className="text-on-surface-variant hover:bg-error hover:text-on-error p-1 disabled:opacity-40"
+            className="text-on-surface-variant hover:bg-error hover:text-on-error rounded-control focus-visible:ring-primary max-[600px]:h-target max-[600px]:w-target flex h-[28px] w-[28px] items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-inset disabled:opacity-40"
             title="Delete page"
             onClick={onDelete}
             disabled={disabled}

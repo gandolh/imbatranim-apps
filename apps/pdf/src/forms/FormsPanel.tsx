@@ -89,15 +89,15 @@ export function FormsPanel(): JSX.Element {
           <li key={f.name} className="border-outline-variant border-b px-2.5 py-2">
             <button
               type="button"
-              className="hover:text-primary flex w-full items-center justify-between gap-2 text-left"
+              className="hover:text-primary rounded-small focus-visible:ring-primary flex w-full items-center justify-between gap-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset"
               title={`Go to page ${f.page}`}
               onClick={() => goToPage(f.page)}
             >
               <span className="text-on-surface font-ui text-control truncate" title={f.name}>
                 {f.name}
               </span>
-              <span className="text-on-surface-variant text-tiny flex shrink-0 items-center gap-1">
-                <span className="bg-surface-container-high px-1 py-0.5">{f.type}</span>
+              <span className="text-on-surface-variant text-label flex shrink-0 items-center gap-1">
+                <span className="bg-surface-container-high rounded-small px-1 py-0.5">{f.type}</span>
                 {f.required && (
                   <span className="text-error" title="Required">
                     *
@@ -193,15 +193,15 @@ function FieldControl({
           value={typeof value === "string" ? value : ""}
           disabled={readonly}
           onValueChange={(v: unknown) => onSet(name, typeof v === "string" ? v : "")}
-          placeholder="— none —"
-          options={[{ value: "", label: "— none —" }, ...(options ?? []).map((opt) => ({ value: opt, label: opt }))]}
+          placeholder="None"
+          options={[{ value: "", label: "None" }, ...(options ?? []).map((opt) => ({ value: opt, label: opt }))]}
         />
       );
 
     case "listbox":
       return (
         <select
-          className="border-outline-variant bg-surface-container-lowest text-on-surface font-ui focus:border-primary text-control w-full border px-2 py-1 outline-none"
+          className="border-outline bg-surface-container-lowest text-on-surface font-ui rounded-control focus-visible:ring-primary text-control w-full border px-2 py-1 outline-none focus-visible:ring-2"
           multiple
           value={Array.isArray(value) ? value : []}
           disabled={readonly}
