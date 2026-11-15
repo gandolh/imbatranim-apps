@@ -138,7 +138,7 @@ export class PdfLibForms implements Forms {
         field.defaultUpdateAppearances(font);
       } catch (err) {
         throw new PdfEngineError(
-          `Forms.commit: could not render appearance for field "${field.getName()}" with the default font (value may contain characters outside WinAnsi) — ${err instanceof Error ? err.message : String(err)}`,
+          `Forms.commit: could not render appearance for field "${field.getName()}" with the default font (value may contain characters outside WinAnsi): ${err instanceof Error ? err.message : String(err)}`,
         );
       }
     }
@@ -274,7 +274,7 @@ export class PdfLibForms implements Forms {
       }
       case "signature": {
         throw new PdfEngineError(
-          `Forms.set: cannot set a value on signature field "${name}" (use Sign — brief 15).`,
+          `Forms.set: cannot set a value on signature field "${name}" (use Sign instead).`,
         );
       }
     }

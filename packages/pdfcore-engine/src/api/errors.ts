@@ -24,7 +24,7 @@ export class PdfEngineError extends Error {
  */
 export class NotImplemented extends PdfEngineError {
   constructor(what: string, detail?: string) {
-    super(`${what} is not implemented yet${detail ? ` — ${detail}` : ""}.`);
+    super(`${what} is not implemented yet${detail ? `: ${detail}` : ""}.`);
     this.name = "NotImplemented";
   }
 }
@@ -38,7 +38,7 @@ export class NotImplemented extends PdfEngineError {
 export class UnsupportedPlatform extends PdfEngineError {
   constructor(what: string, detail?: string) {
     super(
-      `${what} is not available on this platform${detail ? ` — ${detail}` : ""}.`,
+      `${what} is not available on this platform${detail ? `: ${detail}` : ""}.`,
     );
     this.name = "UnsupportedPlatform";
   }
@@ -53,7 +53,7 @@ export class UnsupportedPlatform extends PdfEngineError {
 export class EncryptedDocument extends PdfEngineError {
   constructor(detail?: string) {
     super(
-      `Document is encrypted and cannot be opened for editing${detail ? ` — ${detail}` : ""}.`,
+      `Document is encrypted and cannot be opened for editing${detail ? `: ${detail}` : ""}.`,
     );
     this.name = "EncryptedDocument";
   }
@@ -81,7 +81,7 @@ export class PdfEngineWarning extends PdfEngineError {
 export class SignatureInvalidationWarning extends PdfEngineWarning {
   constructor(detail?: string) {
     super(
-      `Document contains a digital signature that a save will invalidate (the engine rewrites the whole file)${detail ? ` — ${detail}` : ""}.`,
+      `Document contains a digital signature that a save will invalidate (the engine rewrites the whole file)${detail ? `: ${detail}` : ""}.`,
     );
     this.name = "SignatureInvalidationWarning";
   }
