@@ -597,3 +597,63 @@ Left, in order:
   named `apps`, commit there, pipe it into the container's
   `/home/imbatranim/fixtures`, point the three descriptors at that commit, and
   install each group through the marketplace (about 35 s for Office).
+
+## [2026-11-15] progress | Brief 11 paused again, PDF and most undrawn screens built
+
+[Brief 11](briefs/todo/11-a-redesign-with-hallmark-on-the-estate-board.md)
+paused for the night (owner) after the resume. Built since the 2026-11-13
+entry, `npm run check` exiting 0 before each commit: the browser checks'
+infra (`2452124`: `tools/browser`, `@playwright/test` 1.63.0, the ESLint
+and knip entries), `GroupTools` unexported (`56a4932`), PDF (`c0ece1f`),
+CAD (`a28c9d5`), Todo (`5f9f82d`), Bookmarks (`6b36983`), Git GUI
+(`93f9f66`), the REST API Client (`63c3943`) and the Presenter's Exit
+button (`e305b5a`). PDF was checked in the dev container at 1280 and
+390, Apricot light and dark: the page reads 92% (the fontconfig guide on
+the host has 17 pages, not the board's 15). The first test in
+`apps/pdf/src/App.test.tsx` timed out under load in about half of the
+full runs and passed alone and on a rerun each time.
+
+The desktop loop: a scratch clone named `apps` in the build folder's
+`scratch-apps11/`, piped into the container's `/home/imbatranim/fixtures`;
+`scratch-apps11/descriptors.sh <full commit>` writes and copies the three
+descriptors; `scratch-apps11/mkt.sh imbatranim-office accessories
+developer` (the dev password from the environment) installs them through
+the marketplace API that Settings → Marketplace calls. The OS tar sync
+runs as root first. The fontconfig guide was copied in as
+`/home/imbatranim/walk/fontconfig-user.pdf` from the host's fontconfig
+docs; the container's home had no PDF.
+
+Left, in order:
+
+- **PDF's sub-views:** the organize view's bar to the app bar's height
+  and surface, its page field and the forms panel's fields with the
+  accent ring (they use `focus:border-primary` and no ring), the
+  outline's `text-tiny` page numbers to `text-label`. The signature
+  dialog is the kit's. One commit.
+- **Desktop shots of the undrawn screens** (CAD, Todo, Bookmarks, Git
+  GUI, REST API Client, Presenter): pull the scratch clone, pipe it in,
+  run `descriptors.sh` with the new commit, Update the three groups, and
+  look at each at 1280 and 390.
+- **Browser specs** in `tools/browser`, one screens table that focus,
+  reduced motion, overflow and theme loop over: the focus ring (list
+  SuperDoc's and Univer's stops, don't assert them), `reducedMotion:
+  "reduce"` with `document.getAnimations()` empty, the 390 and 360
+  overflow with each window maximized, the Light / Dark / System switch,
+  and the shots in the four looks with twin diffs. Drop or fold
+  `dom.spec.ts` and `probe.spec.ts` once the specs replace them. Run by
+  hand: `DESKTOP_URL=http://localhost:5173 OS_E2E_PASSWORD=… npx
+  playwright test -c tools/browser --workers=2`.
+- **Ruling 8's measurements** at 1280 (958 px window), 1024, 768, 390
+  and 360: the slide idle and open, the PDF page and its readout, Docs'
+  page and readout, the thumbnails.
+- **The contrast script** in `tools/`: each app's built `app.css` and the
+  kit's token file, every text and icon pair in the four looks, PDF's
+  selection outline on white, Slides' fixed `#a04b23` frame on a white
+  slide at 3:1, the desk pairs in dark, the REST client's status colours
+  on `surface-container`.
+- `DESIGN.md` from what shipped, the 2026-11-13 decisions entry ("The
+  apps' layout: tools beside the page"), `stylesheets.md`, `status.md`,
+  the outcome note, the end move (`done`, with the owner step moving the
+  OS's three catalog descriptors to this repo's last commit and
+  `node cli.ts imbatranim-os server` from the vps-deploy checkout), and
+  the closeout commit.
