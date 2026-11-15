@@ -1,6 +1,6 @@
 ---
 summary: How an app's CSS reaches the desktop: app.css as Tailwind utilities only against the kit snapshot's tokens (no preflight, no --color-* values), and vendor stylesheets declared in package.json (imbatranimOffice.vendorStyles), copied byte for byte after a check that refuses rules not tied to the library, html/body/:root rules beyond custom properties, the desktop's tokens, @import, @font-face and remote url(); ownAttributes, ownCustomProperties (Univer's --univer-) and dropRules (Univer's scrollbar reset) as the declared exceptions.
-updated: 2026-11-12
+updated: 2026-11-15
 ---
 
 # Stylesheets
@@ -49,6 +49,34 @@ still moves is a utility that compiles to a literal `rem`: `text-lg`,
 
 The CAD dev page (`apps/cad/harness/desktop.css`) sets its 13 px on `body`, and
 leaves the root at 16 px, as the desktop does.
+
+## The redesign's utilities (2026-11-15)
+
+Brief 11 kept the rule and added no stylesheet. What its classes rely on:
+
+- **Geometry from the kit**, by name: `h-appbar` 40 px (`-phone` 48),
+  `h-statusbar` 32 (`-phone` 48), `h-bottombar` 56, `h-target` 44,
+  `w-inspector` 272, `w-inspector-strip` 48, `w-annotate` 232, `w-pdf-strip`
+  56, `w-pdf-navigator` 200 and `w-popover` 264. Slides' navigator is a
+  computed width, 132 to 220 px with the window's height, set inline. A
+  control's 32 px, which the kit doesn't name, is `h-[32px]`.
+- **The desk** is `bg-desk`, a kit token that is `surface-container` in light
+  and `surface-container-lowest` in dark. No `dark:` variant: it would follow
+  the browser, not the desktop.
+- **Phones** are `max-[600px]:`. The desktop's `phone:` variant lives in its
+  own `index.css` and doesn't reach a kit app's build.
+- **Motion** is `motion-safe:` on every transition and spinner.
+- **Focus.** The kit's ghost Button and a kit Input outside a Field draw no
+  ring, so the apps add `focus-visible:ring-2 focus-visible:ring-primary`
+  (inset on a tool). A kit `ScrollArea`'s viewport takes Tab; its root
+  carries `[&>div:focus-visible]:outline-2` with `-outline-primary` and
+  `-outline-offset-2`, the only arbitrary variant for a part the kit renders.
+- **Vendor parts follow the desktop without vendor CSS edits**: Docs sets
+  SuperDoc's `--sd-ui-*` variables from the desktop's tokens, and Sheets
+  calls Univer's own dark mode from the desktop's resolved mode.
+- **Fixed colours** on paper stay literal and on record in
+  `tools/conventions.json`: Slides' `#a04b23` frame and the `bg-white` pages.
+  `npm run contrast` checks them on white.
 
 ## Vendor stylesheets
 
