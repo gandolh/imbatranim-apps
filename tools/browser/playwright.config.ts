@@ -8,9 +8,14 @@ import { defineConfig } from "@playwright/test";
  * render only in an OS window, so these run against imbatranimOS's dev
  * container (its desktop on an exposed port, its own home volume), never a
  * desktop on the host, with the suite installed from a local checkout
- * (os/README.md). Run by hand, headless, at most two workers:
+ * (os/README.md). Run by hand, headless, one worker: the specs set the dev
+ * account's look, which every worker shares.
  *
  *   DESKTOP_URL=http://localhost:5173 OS_E2E_PASSWORD=… npx playwright test -c tools/browser
+ *
+ * EXPECT_REF=<commit> checks the install first, REPORT_DIR and SHOTS_DIR
+ * name where the measurements and shots go, SCREENS=<name,…> and
+ * LOOKS=<light,dark,classic-light,classic-dark> narrow the run.
  *
  * `npm run check` never runs them. The dev account's password comes from the
  * command line only (imbatranimOS's infrastructure/README.md names it). The
@@ -27,7 +32,7 @@ export default defineConfig({
   outputDir: join(E2E_DIR, "results"),
   globalSetup: "./globalSetup.ts",
   globalTeardown: "./globalTeardown.ts",
-  workers: 2,
+  workers: 1,
   // One dev account backs every worker, and the specs change its appearance.
   fullyParallel: false,
   retries: 0,

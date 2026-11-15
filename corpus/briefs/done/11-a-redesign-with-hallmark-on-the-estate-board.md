@@ -127,10 +127,11 @@ and what shipped is [DESIGN.md](../../../DESIGN.md).
   `eff7cca`, the last app commit):
   - Focus: 25 screens in all four looks, 1,680 stops. The app's own 1,636
     all carry a ring of 2 px or more at 3:1 or better (the lowest 3.05:1),
-    except 32 in Classic dark that sit in imbatranimOS's crimson gap (2.85
+    except 30 in Classic dark that sit in imbatranimOS's crimson gap (2.85
     to 3:1, listed) and two on Git GUI's selected file in Classic dark
     (the row and its checkbox, 2.67:1 on `surface-container-high`, the same
-    gap; under Concerns). SuperDoc's and Univer's 12 stops and the 32
+    gap; the spec fails there, under Concerns). PDF's organize view hit
+    the walk's 80-stop cap, so its later page cards weren't walked. SuperDoc's and Univer's 12 stops and the 32
     title-band and dialog Close stops are listed, not asserted.
   - Reduced motion: nothing of the apps' own ran on any of the 25 screens,
     sampled frame by frame from the window opening, and nothing of theirs
