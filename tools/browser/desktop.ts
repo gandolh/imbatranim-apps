@@ -172,11 +172,21 @@ export type FocusStop = { label: string; width: number; contrast: number; part: 
  */
 export async function walkFocus(page: Page, win: Locator, vendor?: string, max = 80): Promise<FocusStop[]> {
   const stops: FocusStop[] = [];
-  const close = win.locator("button[title='Close']").first();
-  if (await close.count()) await close.focus();
-  else await win.focus();
   const seen = new Set<string>();
   let jumped = false;
+  const close = win.locator("button[title='Close']").first();
+  if (await close.count()) await close.focus();
+  else {
+    // A popover or a dialog without a title band: start on its first stop.
+    await win.evaluate((r) =>
+      r
+        .querySelector<HTMLElement>(
+          "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])",
+        )
+        ?.focus(),
+    );
+    jumped = true;
+  }
   for (let i = 0; i < max; i++) {
     // After a step past a stop, the stop it landed on is read before the next Tab.
     const before = jumped
