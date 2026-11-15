@@ -554,7 +554,7 @@ maximized above the taskbar on a phone with groups in the kit's bottom sheet, an
 
 ## [2026-11-13] progress | Brief 11 paused, Docs, Sheets and Slides built
 
-[Brief 11](briefs/todo/11-a-redesign-with-hallmark-on-the-estate-board.md) paused
+[Brief 11](briefs/done/11-a-redesign-with-hallmark-on-the-estate-board.md) paused
 for the night after its approval (`f8084f3`), the kit sync to imbatranimOS
 `5e075a0` (`df970a6`), the token commit (`9627921`, Slides' fixed selection
 frame) and three screens: Docs (`bb242c1`), Sheets (`bfde28e`) and Slides
@@ -600,7 +600,7 @@ Left, in order:
 
 ## [2026-11-15] progress | Brief 11 paused again, PDF and most undrawn screens built
 
-[Brief 11](briefs/todo/11-a-redesign-with-hallmark-on-the-estate-board.md)
+[Brief 11](briefs/done/11-a-redesign-with-hallmark-on-the-estate-board.md)
 paused for the night (owner) after the resume. Built since the 2026-11-13
 entry, `npm run check` exiting 0 before each commit: the browser checks'
 infra (`2452124`: `tools/browser`, `@playwright/test` 1.63.0, the ESLint
@@ -657,3 +657,31 @@ Left, in order:
   OS's three catalog descriptors to this repo's last commit and
   `node cli.ts imbatranim-os server` from the vps-deploy checkout), and
   the closeout commit.
+
+## [2026-11-15] done | Brief 11: the redesign, tools beside the page
+
+[Brief 11](briefs/done/11-a-redesign-with-hallmark-on-the-estate-board.md)
+is built, local on `main` and not pushed. The second resume finished it.
+PDF's sub-views went on the app bar's surface (`3a5e8d4`), and the apps'
+own strings lost their em dashes (`15441e5`). `tools/browser` gained one
+screens table and the specs that loop over it: focus, reduced motion, the
+phone fit, the theme switch, the shots and the measurements. The desktop
+runs found rings missing where the kit draws none and fixed them, from
+`14b0192` to `1218836`. Two more fixes followed: a soft-fill ring for
+Classic (`098849f`), and the flaky PDF test, warmed and waiting on a
+condition (`0274d13`). `npm run contrast -- <imbatranimOS checkout>` holds
+every colour pair in the four looks. `DESIGN.md` records what shipped,
+[wiki/apps-layout.md](wiki/apps-layout.md) holds the owner's 2026-11-13
+call, and `stylesheets.md` lists the utilities it relies on. Concerns for
+imbatranimOS are in the outcome note:
+
+- the kit's ghost Button, bare Input and ScrollArea draw no ring;
+- motion that isn't gated;
+- Classic dark's crimson gap.
+
+The owner has a board question about Slides taking Tab window-wide.
+
+The owner step moves imbatranimOS's three catalog descriptors
+(`imbatranim-office`, `accessories`, `developer`) to this repo's last
+commit, then runs `node cli.ts imbatranim-os server` from the vps-deploy
+checkout.

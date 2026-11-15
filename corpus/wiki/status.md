@@ -1,6 +1,6 @@
 ---
 summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Three more groups beside Office: Games (2026-11-06), Accessories, Todo and Bookmarks with their data in system.data files, and Developer, Git GUI and the REST API Client (both 2026-11-09). Owner steps. Since 2026-11-11 the repo is formatted at width 120 and gated by `npm run check` (the house-style harness).
-updated: 2026-11-12
+updated: 2026-11-15
 ---
 
 # Status — 2026-11-05
@@ -99,6 +99,8 @@ Brief 07 (2026-11-10, `40450da`): the kit snapshot at imbatranimOS `dcdb648`, Ba
 Brief 08 (2026-11-11): the house-style harness. Formatted at width 120 (`8fbe7dd`), `vendor/house-style/` 1.0.0, typed lint, `npm run check` and `check:fast`, `.claude/rules/` and a root `CLAUDE.md`. `check-structure` runs `--warn-only` until brief 10; `check-base-ui` is already strict (no finding).
 
 Brief 09 (2026-11-12, `cb60886` to `46e9471`): the kit snapshot at imbatranimOS `ea84fac`; the apps use the kit's `Toggle`, `RadioGroup`, `Tabs`, `Checkbox` and `Select`, the form dialogs hold on an outside press, every size is a named scale entry and the rem-sized utilities are pinned. Pinned by the OS only after the owner bumps its catalog descriptors; not walked on a deployed desktop.
+
+Brief 11 (2026-11-13 to 2026-11-15, `f8084f3` to the closeout): the redesign, "Tools beside the page", on imbatranimOS `5e075a0`'s kit. Docs, Sheets, Slides and PDF have the 40 px app bar, an inspector beside the page and the status band; the other screens take the bars' heights and surfaces. `tools/browser` (Playwright 1.63.0) and `npm run contrast` check it; [DESIGN.md](../../DESIGN.md) records it. Pinned by the OS only after the owner moves the three catalog descriptors; checked in the dev container, not on a deployed desktop.
 
 No todo is open.
 
