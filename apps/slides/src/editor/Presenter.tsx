@@ -143,7 +143,7 @@ export function Presenter({ count, start, model, onExit }: Props) {
           </div>
         </div>
       )}
-      <span className="font-ui text-control pointer-events-none fixed right-4 bottom-3 text-white/70 tabular-nums">
+      <span className="font-ui text-control pointer-events-none fixed right-[16px] bottom-[12px] text-white/70 tabular-nums">
         {index + 1} / {count}
       </span>
       <button
@@ -153,7 +153,7 @@ export function Presenter({ count, start, model, onExit }: Props) {
           e.stopPropagation();
           exit();
         }}
-        className="font-ui text-control fixed top-3 right-4 border border-white/30 px-2 py-0.5 text-white/70 hover:bg-white/10 hover:text-white"
+        className="font-ui text-control rounded-control fixed top-[12px] right-[16px] h-[32px] border border-white/30 px-[12px] text-white/70 outline-none hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white"
       >
         Exit (Esc)
       </button>
