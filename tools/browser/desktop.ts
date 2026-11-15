@@ -104,9 +104,13 @@ export async function focusRing(page: Page): Promise<{ width: number; contrast: 
     }
     // A field's ring can sit on its wrapper (focus-within): look a few levels up.
     let host: HTMLElement = el;
-    for (let n = el.parentElement, i = 0; n && i < 3 && !ring; n = n.parentElement, i++) {
-      ring = shadowRing(getComputedStyle(n).boxShadow);
-      if (ring) host = n;
+    // The widest wins: a native field's thin outline under its wrapper's ring.
+    for (let n = el.parentElement, i = 0; n && i < 3 && (!ring || ring.width < 2); n = n.parentElement, i++) {
+      const up = shadowRing(getComputedStyle(n).boxShadow);
+      if (up && up.width > (ring?.width ?? 0)) {
+        ring = up;
+        host = n;
+      }
     }
     if (!ring) return { width: 0, contrast: 0, label };
     const layers: [number, number, number, number][] = [];

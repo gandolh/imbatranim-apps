@@ -56,7 +56,7 @@ test("ruling 8's sizes", async ({ page, request }, info) => {
   const slides = await openFile(page, "anim.pptx");
   await settle(page, 1200);
   row.slidesWindow = await size(slides);
-  row.slideIdle = await size(page.getByRole("application", { name: "Slide editor" }));
+  row.slideIdle = await size(page.locator("[aria-label='Slide editor']"));
   row.slidesReadout = (
     await page.getByRole("toolbar", { name: "Slide and view" }).innerText({ timeout: 10_000 })
   ).replace(/\s+/g, " ");
@@ -64,7 +64,7 @@ test("ruling 8's sizes", async ({ page, request }, info) => {
   await closeWindows(page);
   const open = await SCREENS.find((s) => s.name === "slides-open")?.open(page, phone);
   if (open) {
-    row.slideOpen = await size(page.getByRole("application", { name: "Slide editor" }));
+    row.slideOpen = await size(page.locator("[aria-label='Slide editor']"));
     await page.keyboard.press("Escape");
   }
   await closeWindows(page);
