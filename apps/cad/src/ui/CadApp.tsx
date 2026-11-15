@@ -118,8 +118,8 @@ export function CadApp() {
       <div className="relative flex min-h-0 flex-1">
         <Viewport editor={editor} onFocusCommandLine={focusCommandLine} />
         {file.loading && (
-          <div className="bg-surface-container-lowest text-on-surface-variant text-control absolute inset-0 flex items-center justify-center gap-2">
-            <Loader2 size={16} className="animate-spin" />
+          <div className="bg-desk text-on-surface-variant text-control absolute inset-0 flex items-center justify-center gap-[8px]">
+            <Loader2 size={16} className="motion-safe:animate-spin" />
             {file.startingServer ? "Starting the DWG converter…" : file.converting ? "Converting…" : "Opening drawing…"}
           </div>
         )}

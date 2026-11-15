@@ -30,7 +30,7 @@ import {
   Undo2,
   Waypoints,
 } from "lucide-react";
-import { Button, Select, Toggle } from "@imbatranim/ui";
+import { Button, Select, Toggle, cn } from "@imbatranim/ui";
 import type { EditorState } from "../engine/editor";
 import type { ExportKind } from "../engine/export/job";
 
@@ -89,8 +89,12 @@ function ToolButton({
   disabled?: boolean;
   pressed?: boolean;
 }) {
-  const look = { size: "sm", className: "h-6 w-6 justify-center p-0" } as const;
-  const icon = <I size={13} strokeWidth={2} />;
+  const look = {
+    size: "sm",
+    className:
+      "h-[28px] w-[28px] justify-center p-0 rounded-control border-transparent hover:bg-surface-container-high focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset",
+  } as const;
+  const icon = <I size={16} strokeWidth={2} />;
   const keepFocus = (e: React.MouseEvent) => e.preventDefault();
   if (pressed === undefined) {
     return (
@@ -115,20 +119,30 @@ function ToolButton({
       title={label}
       disabled={disabled}
       onMouseDown={keepFocus}
-      render={<Button variant={pressed ? "primary" : "ghost"} {...look} />}
+      render={
+        <Button
+          variant="ghost"
+          {...look}
+          className={cn(
+            look.className,
+            pressed &&
+              "border-primary bg-primary-container text-on-primary-container hover:border-primary hover:bg-primary-container",
+          )}
+        />
+      }
     >
       {icon}
     </Toggle>
   );
 }
 
-const Sep = () => <div className="bg-outline-variant mx-1 h-4 w-px shrink-0" aria-hidden="true" />;
+const Sep = () => <div className="bg-outline-variant mx-[4px] h-[20px] w-px shrink-0" aria-hidden="true" />;
 
 export function Toolbar(p: Props) {
   const active = p.state.commandName;
   return (
     <div
-      className="border-outline-variant bg-surface-container-low flex shrink-0 flex-wrap items-center gap-0.5 border-b px-2 py-1"
+      className="border-outline-variant bg-surface-container-low min-h-appbar flex shrink-0 flex-wrap items-center gap-[2px] border-b px-[6px] py-[6px]"
       role="toolbar"
       aria-label="CAD tools"
     >
@@ -189,7 +203,7 @@ export function Toolbar(p: Props) {
           onValueChange={(v) => {
             if (typeof v === "string") p.onLayer(v);
           }}
-          className="text-label py-0.5"
+          className="text-control h-[28px] py-0"
           aria-label="Layer"
         />
       </div>

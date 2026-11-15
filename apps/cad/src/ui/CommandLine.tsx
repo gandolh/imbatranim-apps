@@ -116,7 +116,7 @@ export const CommandLine = forwardRef<CommandLineHandle, Props>(function Command
     >
       <div
         className={cn(
-          "text-on-surface-variant flex flex-col justify-end overflow-hidden px-2 pt-0.5",
+          "text-on-surface-variant flex flex-col justify-end overflow-hidden px-[8px] pt-[2px]",
           expanded ? "h-[186px]" : "h-[48px]",
         )}
         role="log"
@@ -129,13 +129,13 @@ export const CommandLine = forwardRef<CommandLineHandle, Props>(function Command
           </div>
         ))}
       </div>
-      <div className="border-outline-variant flex items-center gap-1 border-t px-2 py-0.5">
+      <div className="border-outline-variant flex items-center gap-[4px] border-t px-[8px] py-[4px]">
         <span className="text-on-surface shrink-0 font-semibold">{state.prompt}</span>
         {state.keywords.map((k) => (
           <button
             key={k.name}
             type="button"
-            className="border-outline-variant text-on-surface hover:bg-surface-container-high focus-visible:ring-primary text-label shrink-0 border px-1 outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            className="border-outline-variant text-on-surface hover:bg-surface-container-high focus-visible:ring-primary text-label rounded-item h-[24px] shrink-0 border px-[6px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => send(k.alias)}
             title={`${k.name} (${k.alias})`}
@@ -152,7 +152,7 @@ export const CommandLine = forwardRef<CommandLineHandle, Props>(function Command
           aria-label="Command line"
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={onKeyDown}
-          className="bg-surface-container-lowest text-on-surface text-control min-w-[120px] flex-1 border-0 px-1 py-0.5 outline-none"
+          className="bg-surface-container-lowest text-on-surface text-control border-outline rounded-control focus-visible:ring-primary h-[28px] min-w-[120px] flex-1 border px-[8px] outline-none focus-visible:ring-2"
         />
       </div>
     </div>

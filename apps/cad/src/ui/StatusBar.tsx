@@ -30,10 +30,10 @@ function StatusToggle({
       onMouseDown={(e) => e.preventDefault()}
       className={({ pressed }) =>
         cn(
-          "text-label border px-1.5 font-semibold tracking-wider focus-visible:ring-2 focus-visible:ring-inset",
+          "text-label rounded-item focus-visible:ring-primary h-[24px] border px-[6px] font-semibold tracking-wider outline-none focus-visible:ring-2 focus-visible:ring-inset",
           pressed
-            ? "bg-primary border-primary text-on-primary focus-visible:ring-on-primary"
-            : "border-outline-variant text-on-surface-variant hover:bg-surface-container-high focus-visible:ring-primary",
+            ? "border-primary bg-primary-container text-on-primary-container"
+            : "border-outline-variant text-on-surface-variant hover:bg-surface-container-high",
         )
       }
     >
@@ -50,7 +50,7 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const t = state.toggles;
   return (
-    <div className="border-outline-variant bg-surface-container-low font-ui text-on-surface-variant text-label flex shrink-0 items-center gap-1 border-t px-2 py-0.5">
+    <div className="border-outline-variant bg-surface-container font-ui text-on-surface-variant text-label h-statusbar max-[600px]:h-statusbar-phone flex shrink-0 items-center gap-[4px] overflow-x-auto border-t px-[8px]">
       <span className="text-on-surface w-[220px] shrink-0 truncate tabular-nums" data-testid="cad-coordinates">
         {coords}
       </span>
@@ -76,7 +76,7 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
         type="button"
         aria-label="Object snap settings"
         title="Object snap settings"
-        className="border-outline-variant text-on-surface-variant hover:bg-surface-container-high focus-visible:ring-primary flex h-[18px] items-center border px-0.5 outline-none focus-visible:ring-2 focus-visible:ring-inset"
+        className="border-outline-variant text-on-surface-variant hover:bg-surface-container-high focus-visible:ring-primary rounded-item flex h-[24px] items-center border px-[2px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
         onMouseDown={(e) => e.preventDefault()}
         onClick={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
@@ -119,7 +119,7 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
           onValueChange={(v) => {
             if (typeof v === "string") editor.doc.setUnits({ ...state.units, system: v as UnitSystem });
           }}
-          className="text-label py-0"
+          className="text-label h-[24px] py-0"
           aria-label="Units"
         />
       </div>
