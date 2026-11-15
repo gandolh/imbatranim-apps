@@ -249,7 +249,7 @@ describe("PDF, as a kit app", () => {
     expect(firstDraw).toBeGreaterThan(events.log.indexOf("pdf.js open"));
     expect(events.log.indexOf("engine")).toBeGreaterThan(firstDraw);
     expect(fake.titles.at(-1)).toBe("report.pdf");
-    expect(view.container.textContent).toContain("/ 3");
+    expect(view.container.textContent).toContain("of 3");
     // The engine is in: search and the text layer work, Save waits for an edit.
     const search = view.container.querySelector<HTMLInputElement>('input[type="search"]')!;
     expect(search.disabled).toBe(false);
@@ -360,8 +360,8 @@ describe("PDF, as a kit app", () => {
     const view = renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system);
     await openDocument();
     const label = () => view.container.querySelector('[aria-live="polite"]')!.textContent;
-    // Fit width: (800 - 64) px over a 612 pt page at 96/72 px per pt.
-    expect(label()).toBe("90%");
+    // Fit width: (800 - 32) px over a 612 pt page at 96/72 px per pt.
+    expect(label()).toBe("94%");
     act(() => buttonLabelled("Zoom in (+)").click());
     expect(label()).toBe("100%");
     press("+", false);
@@ -371,7 +371,7 @@ describe("PDF, as a kit app", () => {
     act(() => buttonLabelled("Zoom out (−)").click());
     expect(label()).toBe("75%");
     act(() => buttonLabelled("Fit width").click());
-    expect(label()).toBe("90%");
+    expect(label()).toBe("94%");
   });
 
   it("releases the pdf.js document when the window closes", async () => {

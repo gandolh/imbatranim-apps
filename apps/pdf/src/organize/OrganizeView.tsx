@@ -381,7 +381,7 @@ function PageCard({
         {seen ? (
           <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
         ) : (
-          <span className="bg-surface-container-high absolute inset-0 block animate-pulse" />
+          <span className="bg-surface-container-high absolute inset-0 block motion-safe:animate-pulse" />
         )}
         <Checkbox
           checked={selected}

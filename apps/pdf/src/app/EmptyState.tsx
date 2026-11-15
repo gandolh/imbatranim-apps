@@ -11,45 +11,40 @@ export interface EmptyStateProps {
 
 export function EmptyState({ onOpenClick, error, loading }: EmptyStateProps): JSX.Element {
   return (
-    <div className="bg-surface-container-lowest flex h-full flex-col items-center justify-center p-8 text-center">
-      <div className="flex max-w-[364px] flex-col items-center gap-4">
-        <div className="border-outline-variant text-primary flex h-14 w-14 items-center justify-center border">
-          <FilePen size={28} strokeWidth={1.5} />
-        </div>
-        <h1 className="text-on-surface font-ui text-lead font-semibold">PDF</h1>
-        <p className="text-on-surface-variant font-content text-body leading-relaxed">
-          Read, search, mark up, fill in, sign and rearrange your PDFs. Everything runs on-device.
-        </p>
+    <div className="bg-surface-container-low text-on-surface-variant flex h-full flex-col items-center justify-center gap-[8px] overflow-y-auto p-[24px] text-center">
+      <FilePen size={40} strokeWidth={1} />
+      <h1 className="text-on-surface font-ui text-lead m-0 font-semibold">PDF</h1>
+      <p className="font-ui text-control m-0 max-w-[320px]">
+        Read, search, mark up, fill in, sign and rearrange your PDFs. Everything runs on-device.
+      </p>
+      <Button
+        variant="primary"
+        size="sm"
+        className="text-control max-[600px]:h-target h-[32px] gap-[8px] px-[12px] font-semibold"
+        onClick={onOpenClick}
+        disabled={loading}
+      >
+        {loading ? <Loader2 size={16} className="motion-safe:animate-spin" /> : <FolderOpen size={16} />}
+        {loading ? "Opening…" : "Open a PDF"}
+      </Button>
+      <p className="font-ui text-control m-0">or drop a file anywhere on this window</p>
 
-        <Button
-          variant="primary"
-          size="md"
-          className="mt-1 flex items-center gap-1.5"
-          onClick={onOpenClick}
-          disabled={loading}
-        >
-          {loading ? <Loader2 size={14} className="animate-spin" /> : <FolderOpen size={14} />}
-          {loading ? "Opening…" : "Open a PDF"}
-        </Button>
-        <p className="text-on-surface-variant text-label">or drop a file anywhere on this window</p>
+      {error && <p className="text-error font-ui text-control m-0 max-w-[320px]">{error}</p>}
 
-        {error && <p className="text-error font-ui text-control max-w-[312px]">{error}</p>}
-
-        <ul className="text-on-surface-variant text-control mt-2 flex flex-col gap-2">
-          <li className="flex items-center gap-2">
-            <Search size={14} className="text-on-surface-variant" />
-            <span>Full-text search with jump-to-match</span>
-          </li>
-          <li className="flex items-center gap-2">
-            <List size={14} className="text-on-surface-variant" />
-            <span>Thumbnails &amp; outline navigation</span>
-          </li>
-          <li className="flex items-center gap-2">
-            <TextCursorInput size={14} className="text-on-surface-variant" />
-            <span>Selectable, copyable text</span>
-          </li>
-        </ul>
-      </div>
+      <ul className="font-ui text-control mt-[8px] flex list-none flex-col gap-[6px] p-0">
+        <li className="flex items-center gap-[8px]">
+          <Search size={16} />
+          <span>Full-text search with jump-to-match</span>
+        </li>
+        <li className="flex items-center gap-[8px]">
+          <List size={16} />
+          <span>Thumbnails &amp; outline navigation</span>
+        </li>
+        <li className="flex items-center gap-[8px]">
+          <TextCursorInput size={16} />
+          <span>Selectable, copyable text</span>
+        </li>
+      </ul>
     </div>
   );
 }

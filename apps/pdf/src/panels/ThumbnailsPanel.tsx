@@ -11,7 +11,7 @@ import type { JSX } from "react";
 import type { Render } from "@pdfcore/engine";
 import { useReader } from "../app/context";
 
-const THUMB_W = 132;
+const THUMB_W = 128;
 
 interface ThumbProps {
   render: Render;
@@ -80,27 +80,29 @@ function Thumb({ render, pageNumber, aspect, active, epoch, onClick }: ThumbProp
     <button
       ref={ref}
       type="button"
-      className={
-        "group flex flex-col items-center gap-1 p-1 " +
-        (active ? "bg-primary-container" : "hover:bg-surface-container-high")
-      }
+      className="group rounded-item hover:bg-surface-container-high focus-visible:ring-primary flex flex-col items-center gap-[4px] p-[4px] outline-none focus-visible:ring-2 focus-visible:ring-inset"
       onClick={onClick}
       aria-label={`Page ${pageNumber}`}
       aria-current={active}
     >
       <span
         className={
-          "grid place-items-center bg-white " + (active ? "ring-primary ring-2" : "ring-outline-variant ring-1")
+          "grid place-items-center bg-white " +
+          (active ? "outline-primary outline-2 outline-offset-2" : "ring-outline-variant ring-1")
         }
         style={{ width: THUMB_W, height }}
       >
         {seen ? (
           <canvas ref={canvasRef} className="block h-full w-full" />
         ) : (
-          <span className="bg-surface-container-high block h-full w-full animate-pulse" />
+          <span className="bg-surface-container-high block h-full w-full motion-safe:animate-pulse" />
         )}
       </span>
-      <span className={"text-tiny tabular-nums " + (active ? "text-on-primary-container" : "text-on-surface-variant")}>
+      <span
+        className={
+          "font-display text-body font-bold tabular-nums " + (active ? "text-primary" : "text-on-surface-variant")
+        }
+      >
         {pageNumber}
       </span>
     </button>
@@ -113,7 +115,7 @@ export function ThumbnailsPanel(): JSX.Element {
   if (!render) return <div className="text-on-surface-variant text-label p-3 text-center">No document.</div>;
 
   return (
-    <div className="flex flex-col items-center gap-1.5 p-2">
+    <div className="flex flex-col items-center gap-[8px] p-[8px]">
       {Array.from({ length: pageCount }, (_, i) => {
         const d = pageDims[i] ?? { w: 612, h: 792 };
         return (

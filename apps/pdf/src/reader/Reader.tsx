@@ -26,9 +26,9 @@ import { useReader } from "../app/context";
 import { MAX_SCALE, MIN_SCALE } from "../app/useReaderController";
 import { PageView } from "./PageView";
 
-const GAP = 24; // px between pages
-const PAD_Y = 32;
-const PAD_X = 32;
+const GAP = 12; // px between pages
+const PAD_Y = 16;
+const PAD_X = 16;
 const CURRENT_LINE = 0.38; // fraction of viewport height marking "current page"
 
 const clampScale = (s: number): number => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
@@ -298,7 +298,7 @@ export function Reader(): JSX.Element {
   return (
     <div
       ref={scrollRef}
-      className="bg-surface-container relative min-w-0 flex-1 overflow-auto"
+      className="bg-desk focus-visible:ring-primary relative min-w-0 flex-1 overflow-auto outline-none focus-visible:ring-2 focus-visible:ring-inset"
       onScroll={onScroll}
       tabIndex={0}
       role="region"

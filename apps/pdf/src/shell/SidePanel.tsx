@@ -1,9 +1,7 @@
 /**
- * The left panel: Thumbnails + Outline tabs over a shared header. Rebuilt in the
- * OS design language.
- *
- * 224 px wide, not `w-56`: the desktop's root font is 13 px, which made norPDF's
- * panel 182 px and pushed its third tab (Forms) under the page.
+ * The left panel: the Thumbnails, Outline and Forms tabs, each named in full,
+ * icon over label. 200 px wide on a desktop (`w-pdf-navigator`); on a phone
+ * the same tabs fill the Pages sheet.
  *
  * The frame (this module: its width and the tab row) is on screen from the
  * first frame, so the page's fitted width does not change when the panel
@@ -35,9 +33,11 @@ export interface SidePanelTab {
 export interface SidePanelProps {
   /** PART B appends tabs (e.g. Forms) here. */
   extraTabs?: SidePanelTab[];
+  /** Drawn inside the phone's Pages sheet: full width, no edge. */
+  inSheet?: boolean;
 }
 
-export function SidePanel({ extraTabs = [] }: SidePanelProps): JSX.Element {
+export function SidePanel({ extraTabs = [], inSheet = false }: SidePanelProps): JSX.Element {
   const { panelTab, setPanelTab, painted } = useReader();
 
   const tabs: SidePanelTab[] = [
@@ -60,7 +60,11 @@ export function SidePanel({ extraTabs = [] }: SidePanelProps): JSX.Element {
 
   return (
     <aside
-      className="border-outline-variant bg-surface-container-low flex w-[224px] shrink-0 flex-col border-r"
+      className={
+        inSheet
+          ? "-mx-[16px] flex h-full min-h-0 flex-col"
+          : "border-outline-variant bg-surface-container-low w-pdf-navigator flex shrink-0 flex-col border-r"
+      }
       aria-label="Document navigation"
     >
       <Tabs
@@ -76,13 +80,13 @@ export function SidePanel({ extraTabs = [] }: SidePanelProps): JSX.Element {
                 key={tab.id}
                 value={tab.id}
                 className={({ active: isActive }) =>
-                  "font-ui text-label flex min-w-0 flex-1 items-center justify-center gap-1 px-1 py-2 " +
+                  "font-ui text-label focus-visible:ring-primary max-[600px]:min-h-target -mb-px flex min-w-0 flex-1 flex-col items-center justify-center gap-[2px] border-b-2 py-[8px] font-semibold focus-visible:ring-2 focus-visible:ring-inset " +
                   (isActive
-                    ? "text-on-surface border-primary border-b-2"
-                    : "text-on-surface-variant hover:bg-surface-container-high border-b-2 border-transparent")
+                    ? "text-on-surface border-primary [&_svg]:text-primary"
+                    : "text-on-surface-variant hover:bg-surface-container-high border-transparent")
                 }
               >
-                <Icon size={14} />
+                <Icon size={16} />
                 <span className="truncate">{tab.label}</span>
               </Tab>
             );

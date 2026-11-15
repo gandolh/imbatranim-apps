@@ -15,8 +15,9 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *  PART B MOUNT POINTS
  * ═══════════════════════════════════════════════════════════════════════════
- *  1. Annotate toolbar  → `<TopBar toolbarSlot={…} />` (a second console row,
- *                         `data-slot="annotate-toolbar"`).
+ *  1. Annotate panel    → beside the page (shell/Tools.tsx): a strip at rest,
+ *                         the panel docked or a popover when open, the
+ *                         bottom sheet on a phone.
  *  2. Forms panel       → a tab via `<SidePanel extraTabs={[…]} />`.
  *  3. Organize view     → the `mode === 'organize'` branch of the main area.
  *  4. Sign / dialogs    → mounted alongside the shell, driving `doc.sign` then
@@ -32,19 +33,33 @@
  */
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import type { JSX } from "react";
-import { useFileDialog, useOpenIntent, useUnsavedGuard, type OpenedFile } from "@imbatranim/ui";
-import { Download, FileText } from "lucide-react";
+import {
+  Button,
+  ContextMenu,
+  useElementSize,
+  useFileDialog,
+  useOpenIntent,
+  useUnsavedGuard,
+  type OpenedFile,
+} from "@imbatranim/ui";
+import { usePhone } from "@imbatranim-office/shared";
+import { Download, Ellipsis, FileText, PanelRight } from "lucide-react";
 import { ReaderContext, useReader } from "./app/context";
 import { useEditor } from "./editor/context";
 import { useReaderController } from "./app/useReaderController";
 import { useReplaceGate, type ReplaceLoad } from "./app/useReplaceGate";
 import { EmptyState } from "./app/EmptyState";
-import { TopBar } from "./shell/TopBar";
+import { StatusBand, TopBar } from "./shell/TopBar";
 import { SidePanel } from "./shell/SidePanel";
 import type { SidePanelTab } from "./shell/SidePanel";
+import { ToolToggle } from "./shell/ToolButton";
+import { AnnotatePanel, ToolsBottomBar, ToolsStrip } from "./shell/Tools";
 import { Reader } from "./reader/Reader";
 import { EditorProvider } from "./editor/EditorProvider";
-import { AnnotateToolbar, FormsPanel, OrganizeView, SignatureDialog } from "./lazy";
+import { FormsPanel, OrganizeView, SignatureDialog } from "./lazy";
+
+/** The window's width from which the annotate panel docks beside the page; below it Annotate opens as a popover. */
+const DOCK_WIDTH = 1100;
 
 /**
  * The unsaved-close guard, as a component INSIDE both providers: the dialog's
@@ -86,7 +101,21 @@ const FORMS_TAB: SidePanelTab = {
  */
 function PdfShell(): JSX.Element {
   const ctrl = useReader();
-  const { saveToDisk, signDialogOpen } = useEditor();
+  const { saveToDisk, signDialogOpen, tool, exportCopy } = useEditor();
+  const [root, attachRootSize] = useElementSize();
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const attachRoot = useCallback(
+    (el: HTMLDivElement | null) => {
+      rootRef.current = el;
+      attachRootSize(el);
+    },
+    [attachRootSize],
+  );
+  const phone = usePhone();
+  /** The annotate panel's state set by its toggle; null follows the tool (a markup tool opens it). */
+  const [panel, setPanel] = useState<boolean | null>(null);
+  const [popover, setPopover] = useState(false);
+  const [more, setMore] = useState<{ x: number; y: number } | null>(null);
   const { requestReplace, dialog: replaceDialog } = useReplaceGate(ctrl.dirty, ctrl.docName, saveToDisk);
   // One-shot open intent, drained by the shared hook (StrictMode-safe).
   const source = useOpenIntent();
@@ -178,34 +207,55 @@ function PdfShell(): JSX.Element {
   const opened = ctrl.render !== null;
   // The editing tools arrive with the engine, after the first page.
   const tools = ctrl.doc !== null;
+  // An unmeasured root (a test's DOM) docks: every tool is on the page.
+  const docks = root.width === 0 || root.width >= DOCK_WIDTH;
+  const markup = tool !== "select" && tool !== "sign";
+  const docked = docks && tools && (panel ?? markup);
+  const formatOpen = docks ? docked : popover;
+
+  const formatToggle =
+    opened && !phone ? (
+      <ToolToggle
+        icon={PanelRight}
+        label={formatOpen ? "Hide format panel" : "Show format panel"}
+        pressed={formatOpen}
+        disabled={!tools}
+        onPressedChange={(on) => (docks ? setPanel(on) : setPopover(on))}
+      />
+    ) : null;
+  const moreButton =
+    opened && phone ? (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-target w-target rounded-control text-on-surface hover:bg-surface-container-high focus-visible:ring-primary justify-center border-transparent p-0 focus-visible:ring-2 focus-visible:ring-inset"
+        aria-label="More"
+        aria-haspopup="menu"
+        onClick={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          setMore({ x: r.left, y: r.bottom });
+        }}
+      >
+        <Ellipsis size={18} />
+      </Button>
+    ) : null;
 
   return (
     <>
       {replaceDialog}
       <div
-        className="bg-surface-container-lowest relative flex h-full min-h-0 flex-col"
+        ref={attachRoot}
+        className="bg-surface-container-low relative flex h-full min-h-0 flex-col overflow-hidden"
         onDragEnter={onDragEnter}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
-        {/* 1. The annotate toolbar row: its height is kept from the first frame. */}
-        <TopBar
-          onOpenClick={pickFile}
-          toolbarSlot={
-            opened ? (
-              tools ? (
-                <Suspense fallback={null}>
-                  <AnnotateToolbar />
-                </Suspense>
-              ) : null
-            ) : undefined
-          }
-        />
+        <TopBar onOpenClick={pickFile} formatToggle={formatToggle} more={moreButton} />
 
         <div className="flex min-h-0 flex-1">
           {/* 2. The forms tab appends to the side panel via `extraTabs`. */}
-          {opened && ctrl.panelOpen && <SidePanel extraTabs={[FORMS_TAB]} />}
+          {opened && !phone && ctrl.panelOpen && <SidePanel extraTabs={[FORMS_TAB]} />}
 
           <main className="flex min-h-0 min-w-0 flex-1 flex-col">
             {!opened ? (
@@ -221,7 +271,41 @@ function PdfShell(): JSX.Element {
               <Reader />
             )}
           </main>
+
+          {/* 1. The page's tools: the strip at rest, the panel docked or a popover when open. */}
+          {opened &&
+            !phone &&
+            (docked ? (
+              <AnnotatePanel />
+            ) : (
+              <ToolsStrip
+                enabled={tools}
+                docks={docks}
+                popoverOpen={popover}
+                onPopoverChange={setPopover}
+                onDock={() => setPanel(true)}
+              />
+            ))}
         </div>
+
+        <StatusBand />
+        {opened && phone && (
+          <ToolsBottomBar enabled={tools} container={rootRef} pages={<SidePanel extraTabs={[FORMS_TAB]} inSheet />} />
+        )}
+        {more && (
+          <ContextMenu
+            x={more.x}
+            y={more.y}
+            label="More"
+            onClose={() => setMore(null)}
+            items={[
+              { label: "Export a copy", onSelect: () => void exportCopy(), disabled: !tools },
+              { type: "separator" },
+              { label: "Fit width", onSelect: () => ctrl.setFitMode("width"), checked: ctrl.fitMode === "width" },
+              { label: "Fit page", onSelect: () => ctrl.setFitMode("page"), checked: ctrl.fitMode === "page" },
+            ]}
+          />
+        )}
 
         {/* 4. The signature pad (Sign tool + form signature fields), loaded when first asked for. */}
         {signMounted && (
