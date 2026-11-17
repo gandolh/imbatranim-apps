@@ -31,6 +31,8 @@ const SECOND_LINE =
 const LAST = "max-[600px]:col-start-6 max-[600px]:row-start-1";
 /** Colour and linetype pickers: a row's height on a desktop, a 44 px target on a phone's second line. */
 const PICKER = "text-label py-0 max-[600px]:min-h-target";
+/** On a phone a picker fills its half of the second line, so a column's pickers line up. */
+const FILL = "contents max-[600px]:block max-[600px]:min-w-0 max-[600px]:flex-1";
 
 const COLOR_NAMES: Record<number, string> = {
   1: "Red",
@@ -197,17 +199,19 @@ export function LayerDialog({
                             }}
                             aria-hidden="true"
                           />
-                          <Select
-                            value={String(l.color)}
-                            options={colorOptions(l.color)}
-                            onValueChange={(v) => {
-                              if (typeof v === "string") set(l, { color: Number(v), rgb: undefined });
-                            }}
-                            className={PICKER}
-                            aria-label={`${l.name} colour`}
-                          />
+                          <div className={FILL}>
+                            <Select
+                              value={String(l.color)}
+                              options={colorOptions(l.color)}
+                              onValueChange={(v) => {
+                                if (typeof v === "string") set(l, { color: Number(v), rgb: undefined });
+                              }}
+                              className={PICKER}
+                              aria-label={`${l.name} colour`}
+                            />
+                          </div>
                         </div>
-                        <div className="contents max-[600px]:block max-[600px]:min-w-0 max-[600px]:flex-1">
+                        <div className={FILL}>
                           <Select
                             value={
                               linetypes.find((o) => o.value.toUpperCase() === l.linetype.toUpperCase())?.value ??
