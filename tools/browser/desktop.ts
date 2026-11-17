@@ -349,10 +349,11 @@ export async function phoneFit(win: Locator) {
  * person sees its last control cut. An absolutely or fixed placed control
  * escapes the boxes its containing block sits outside of. Hidden inputs (Base
  * UI's, a visually hidden field) and empty boxes are skipped. Each finding is
- * `<control> | <the box that cuts it>`.
+ * `<control> | <the box that cuts it>`, and starts `vendor: ` when the control
+ * sits inside `vendor` (SuperDoc's or Univer's own parts).
  */
-export async function clippedControls(win: Locator): Promise<string[]> {
-  return win.evaluate((w) => {
+export async function clippedControls(win: Locator, vendor?: string): Promise<string[]> {
+  return win.evaluate((w, sel) => {
     const CONTROLS =
       "button, input, select, textarea, a[href], [role='button'], [role='combobox'], [role='checkbox'], [role='radio'], [role='switch'], [role='tab'], [role='slider'], [role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']";
     const name = (el: Element) =>
@@ -411,9 +412,9 @@ export async function clippedControls(win: Locator): Promise<string[]> {
         }
         if (!cut && (b.left < -1 || b.right > window.innerWidth + 1)) cut = "the screen";
         if (!cut && !scrollsDown && (b.top < -1 || b.bottom > window.innerHeight + 1)) cut = "the screen";
-        if (cut) found.add(`${name(el)} | ${cut}`);
+        if (cut) found.add(`${sel && el.closest(sel) ? "vendor: " : ""}${name(el)} | ${cut}`);
       }
     }
     return [...found];
-  });
+  }, vendor ?? null);
 }

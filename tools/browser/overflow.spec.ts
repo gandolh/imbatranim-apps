@@ -15,13 +15,14 @@ test.beforeEach(() => {
 /**
  * Cuts the clip check lets through, by screen: a drawn screen's cut is
  * listed here with its reason rather than redesigned. `match` is tested
- * against the finding, `<control> | <box>`.
+ * against the finding, `[vendor: ]<control> | <box>`.
  */
 const CLIP_ALLOWED: Record<string, { match: RegExp; reason: string }[]> = {
   sheets: [
     {
-      match: /\| section\.univer-/,
-      reason: "Univer's own sidebar and ribbon buttons, cut by Univer's own boxes; this repo doesn't draw them",
+      match: /^vendor: /,
+      reason:
+        "Univer's own controls, cut by Univer's own boxes (its ribbon fades at its right edge, its closed sidebar has no height); this repo doesn't draw them",
     },
   ],
   "pdf-annotate": [
@@ -39,7 +40,7 @@ for (const screen of screens((s) => s.only !== "desktop")) {
     const win = await screen.open(page, true);
     await settle(page, 800);
     const fit = await phoneFit(win);
-    const clipped = await clippedControls(win);
+    const clipped = await clippedControls(win, screen.vendor);
     const allowed = CLIP_ALLOWED[screen.name] ?? [];
     const cut = clipped.filter((c) => !allowed.some((a) => a.match.test(c)));
     report("overflow", { screen: screen.name, width: info.project.name, ...fit, clipped });
