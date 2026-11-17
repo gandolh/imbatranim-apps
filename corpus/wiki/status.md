@@ -1,6 +1,6 @@
 ---
 summary: Current snapshot (2026-11-05), per app. All five apps built on main and walked in the OS; imbatranimOS retired its built-in Docs, Slides, Sheets and PDF apps on 2026-10-28 and pins this repo in its catalog. Since 2026-11-05 Save as opens in the file's folder (Slides, CAD) and the suite is a service whose server only CAD starts, on its first DWG; imbatranimOS's catalog pins `1b4394f` (moved 2026-11-05). Briefs 01-03 are done. Three more groups beside Office: Games (2026-11-06), Accessories, Todo and Bookmarks with their data in system.data files, and Developer, Git GUI and the REST API Client (both 2026-11-09). Owner steps. Since 2026-11-11 the repo is formatted at width 120 and gated by `npm run check` (the house-style harness).
-updated: 2026-11-15
+updated: 2026-11-17
 ---
 
 # Status — 2026-11-05
@@ -104,6 +104,8 @@ Brief 09 (2026-11-12, `cb60886` to `46e9471`): the kit snapshot at imbatranimOS 
 Brief 11 (2026-11-13 to 2026-11-15, `f8084f3` to the closeout): the redesign, "Tools beside the page", on imbatranimOS `5e075a0`'s kit. Docs, Sheets, Slides and PDF have the 40 px app bar, an inspector beside the page and the status band; the other screens take the bars' heights and surfaces. `tools/browser` (Playwright 1.63.0) and `npm run contrast` check it; [DESIGN.md](../../DESIGN.md) records it. Pinned by the OS only after the owner moves the three catalog descriptors; checked in the dev container, not on a deployed desktop.
 
 Brief 14 (2026-11-15, `1741101` and `5ed9e3b`): Slides' Tab and Shift+Tab step through shapes only while the slide canvas has focus, and leave the canvas past the last (or before the first) shape; the canvas is one Tab stop and takes focus when pressed. Elsewhere Tab follows the normal focus order. Slides' focus spec passes in the dev container's desktop. Pinned by the OS only after the owner moves the descriptor.
+
+Brief 15 (2026-11-15 to 2026-11-17, `f2df248` to `39a8fd9`): on a phone the REST client and Git GUI show one pane at a time with a way back, CAD's status toggles move into a More menu and its Layers table takes two lines per layer, and Bookmarks' search takes its own row; desktop layouts are unchanged. The overflow spec's clip check fails a control cut by a box, and passes at 390 and 360 in the dev container's desktop. Pinned by the OS only after the owner moves the three descriptors.
 
 No todo is open.
 
