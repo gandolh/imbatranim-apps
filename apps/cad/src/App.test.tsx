@@ -368,6 +368,32 @@ describe("CAD App", () => {
     const rows = [...document.querySelectorAll('[role="dialog"] [role="listitem"]')].map((r) => r.textContent);
     expect(rows.some((t) => t?.includes("WALLS"))).toBe(true);
   });
+
+  it("puts the status toggles, the snaps and the units in More, a phone's only status button", async () => {
+    const fake = createFakeSystem();
+    renderWithSystem(<App windowId="window-1" host={fakeHost()} />, fake.system);
+    await settle();
+    const ortho = () => [...document.querySelectorAll("button")].find((b) => b.textContent === "ORTHO");
+    expect(ortho()?.getAttribute("aria-pressed")).toBe("false");
+    const more = document.querySelector<HTMLButtonElement>('button[aria-label="More"]');
+    act(() => {
+      more?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    await settle();
+    const menu = document.querySelector('[role="menu"][aria-label="More"]');
+    const items = [...(menu?.querySelectorAll('[role="menuitemcheckbox"]') ?? [])].map((i) => i.textContent);
+    expect(items.slice(0, 3)).toEqual(["Ortho", "Polar tracking", "Object snaps"]);
+    expect(items).toContain("Endpoint");
+    expect(items).toContain("Units: Metric");
+    const item = [...(menu?.querySelectorAll<HTMLElement>('[role="menuitemcheckbox"]') ?? [])].find(
+      (i) => i.textContent === "Ortho",
+    );
+    act(() => {
+      item?.click();
+    });
+    await settle();
+    expect(ortho()?.getAttribute("aria-pressed")).toBe("true");
+  });
 });
 
 /**

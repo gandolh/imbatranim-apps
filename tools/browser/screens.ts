@@ -171,6 +171,18 @@ export const SCREENS: Screen[] = [
   },
   { name: "cad", drawn: false, open: cad },
   {
+    // A phone's status bar keeps the coordinates and puts the rest in More.
+    name: "cad-more",
+    drawn: false,
+    only: "phone",
+    open: async (page) => {
+      const win = await cad(page);
+      await press(win, "More");
+      await expect(page.getByRole("menu", { name: "More" })).toBeVisible();
+      return win;
+    },
+  },
+  {
     name: "cad-layers",
     drawn: false,
     open: async (page) => {

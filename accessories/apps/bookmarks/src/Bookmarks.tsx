@@ -553,7 +553,8 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
           <Download size={16} strokeWidth={2} />
           Export
         </Button>
-        <div className="rounded-control border-outline bg-surface-container-lowest flex h-[28px] min-w-0 flex-1 items-center gap-[6px] border px-[8px]">
+        {/* On a phone the bar wraps and the search takes a row of its own. */}
+        <div className="rounded-control border-outline bg-surface-container-lowest max-[600px]:h-target flex h-[28px] min-w-0 flex-1 items-center gap-[6px] border px-[8px] max-[600px]:basis-full">
           <Search size={16} className="text-on-surface-variant shrink-0" />
           <input
             value={query}
@@ -568,7 +569,7 @@ export function Bookmarks({ windowId: _windowId }: { windowId: string }) {
           {query !== "" && (
             <Button
               variant="ghost"
-              className="focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-inset"
+              className="focus-visible:ring-primary max-[600px]:size-target focus-visible:ring-2 focus-visible:ring-inset max-[600px]:-mr-[8px] max-[600px]:justify-center max-[600px]:p-0"
               size="sm"
               aria-label="Clear search"
               onClick={() => setQuery("")}

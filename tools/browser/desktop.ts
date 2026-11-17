@@ -342,7 +342,7 @@ export async function phoneFit(win: Locator) {
 
 /**
  * On a phone: the controls a box cuts off, in the window and in any open
- * dialog (the kit portals a dialog out of the window). A control counts when
+ * dialog or menu (the kit portals both out of the window). A control counts when
  * its rect reaches outside an ancestor whose `overflow` isn't `visible`, or
  * outside the screen. A box that scrolls down reaches what it hides below, so
  * inside one only its sides count; a strip that scrolls sideways counts, as a
@@ -354,7 +354,7 @@ export async function phoneFit(win: Locator) {
 export async function clippedControls(win: Locator): Promise<string[]> {
   return win.evaluate((w) => {
     const CONTROLS =
-      "button, input, select, textarea, a[href], [role='button'], [role='combobox'], [role='checkbox'], [role='radio'], [role='switch'], [role='tab'], [role='slider']";
+      "button, input, select, textarea, a[href], [role='button'], [role='combobox'], [role='checkbox'], [role='radio'], [role='switch'], [role='tab'], [role='slider'], [role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']";
     const name = (el: Element) =>
       (el.getAttribute("aria-label") ?? el.getAttribute("title") ?? el.textContent ?? "").trim().slice(0, 30) ||
       el.tagName.toLowerCase();
@@ -368,11 +368,11 @@ export async function clippedControls(win: Locator): Promise<string[]> {
         .join(".");
       return `${el.tagName.toLowerCase()}${cls ? `.${cls}` : ""}`;
     };
-    const dialogs = [...document.querySelectorAll<HTMLElement>("[role='dialog'], [role='alertdialog']")].filter(
-      (d) => !w.contains(d) && d.getClientRects().length > 0,
-    );
+    const popups = [
+      ...document.querySelectorAll<HTMLElement>("[role='dialog'], [role='alertdialog'], [role='menu']"),
+    ].filter((d) => !w.contains(d) && d.getClientRects().length > 0);
     const found = new Set<string>();
-    for (const root of [w, ...dialogs]) {
+    for (const root of [w, ...popups]) {
       for (const el of root.querySelectorAll<HTMLElement>(CONTROLS)) {
         if (el.getClientRects().length === 0) continue;
         const b = el.getBoundingClientRect();

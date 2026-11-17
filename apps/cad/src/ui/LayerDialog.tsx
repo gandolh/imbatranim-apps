@@ -17,6 +17,21 @@ import type { Layer } from "../engine/model/types";
 import type { Editor, EditorState } from "../engine/editor";
 import { aciRgb, hex } from "../engine/render/style";
 
+/**
+ * The table's columns: current, name, on, freeze, lock, colour, linetype and
+ * delete. On a phone a layer takes two lines, colour and linetype on the
+ * second, so no column is cut.
+ */
+const COLUMNS =
+  "grid grid-cols-[52px_1fr_44px_56px_48px_150px_130px_32px] gap-1 max-[600px]:grid-cols-[64px_minmax(0,1fr)_28px_52px_40px_24px] max-[600px]:gap-y-1";
+/** Colour and linetype: grid cells on a desktop, the second line on a phone. */
+const SECOND_LINE =
+  "contents max-[600px]:col-span-5 max-[600px]:col-start-2 max-[600px]:row-start-2 max-[600px]:flex max-[600px]:gap-1";
+/** The delete column: last on the first line, on a phone too. */
+const LAST = "max-[600px]:col-start-6 max-[600px]:row-start-1";
+/** Colour and linetype pickers: a row's height on a desktop, a 44 px target on a phone's second line. */
+const PICKER = "text-label py-0 max-[600px]:min-h-target";
+
 const COLOR_NAMES: Record<number, string> = {
   1: "Red",
   2: "Yellow",
@@ -106,15 +121,22 @@ export function LayerDialog({
             <span className="text-on-surface-variant text-label">Current layer: {state.currentLayer}</span>
           </div>
           <div className="border-outline-variant border">
-            <div className="bg-surface-container-high text-on-surface-variant text-label grid grid-cols-[52px_1fr_44px_56px_48px_150px_130px_32px] items-center gap-1 px-2 py-1 font-semibold tracking-wider uppercase">
+            <div
+              className={cn(
+                COLUMNS,
+                "bg-surface-container-high text-on-surface-variant text-label items-center px-2 py-1 font-semibold tracking-wider uppercase",
+              )}
+            >
               <span>Current</span>
               <span>Name</span>
               <span>On</span>
               <span>Freeze</span>
               <span>Lock</span>
-              <span>Colour</span>
-              <span>Linetype</span>
-              <span />
+              <div className={SECOND_LINE}>
+                <span className="max-[600px]:min-w-0 max-[600px]:flex-1">Colour</span>
+                <span className="max-[600px]:min-w-0 max-[600px]:flex-1">Linetype</span>
+              </div>
+              <span className={LAST} />
             </div>
             <ScrollArea className="[&>div:focus-visible]:outline-primary h-[260px] [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
               <RadioGroup
@@ -128,7 +150,10 @@ export function LayerDialog({
                     <div
                       key={l.name}
                       role="listitem"
-                      className="border-outline-variant grid grid-cols-[52px_1fr_44px_56px_48px_150px_130px_32px] items-center gap-1 border-t px-2 py-0.5"
+                      className={cn(
+                        COLUMNS,
+                        "border-outline-variant items-center border-t px-2 py-0.5 max-[600px]:py-1",
+                      )}
                     >
                       <Radio
                         value={l.name}
@@ -162,41 +187,48 @@ export function LayerDialog({
                         checked={l.locked}
                         onCheckedChange={(v) => set(l, { locked: v === true })}
                       />
-                      <div className="flex items-center gap-1">
-                        {/* The layer's own drawing colour, as a swatch. */}
-                        <span
-                          className="border-outline-variant h-3 w-3 shrink-0 border"
-                          style={{
-                            backgroundColor: hex(l.rgb ?? aciRgb(l.color, editor.cache.foreground)),
-                          }}
-                          aria-hidden="true"
-                        />
-                        <Select
-                          value={String(l.color)}
-                          options={colorOptions(l.color)}
-                          onValueChange={(v) => {
-                            if (typeof v === "string") set(l, { color: Number(v), rgb: undefined });
-                          }}
-                          className="text-label py-0"
-                          aria-label={`${l.name} colour`}
-                        />
+                      <div className={SECOND_LINE}>
+                        <div className="flex items-center gap-1 max-[600px]:min-w-0 max-[600px]:flex-1">
+                          {/* The layer's own drawing colour, as a swatch. */}
+                          <span
+                            className="border-outline-variant h-3 w-3 shrink-0 border"
+                            style={{
+                              backgroundColor: hex(l.rgb ?? aciRgb(l.color, editor.cache.foreground)),
+                            }}
+                            aria-hidden="true"
+                          />
+                          <Select
+                            value={String(l.color)}
+                            options={colorOptions(l.color)}
+                            onValueChange={(v) => {
+                              if (typeof v === "string") set(l, { color: Number(v), rgb: undefined });
+                            }}
+                            className={PICKER}
+                            aria-label={`${l.name} colour`}
+                          />
+                        </div>
+                        <div className="contents max-[600px]:block max-[600px]:min-w-0 max-[600px]:flex-1">
+                          <Select
+                            value={
+                              linetypes.find((o) => o.value.toUpperCase() === l.linetype.toUpperCase())?.value ??
+                              "Continuous"
+                            }
+                            options={linetypes}
+                            onValueChange={(v) => {
+                              if (typeof v === "string") set(l, { linetype: v });
+                            }}
+                            className={PICKER}
+                            aria-label={`${l.name} linetype`}
+                          />
+                        </div>
                       </div>
-                      <Select
-                        value={
-                          linetypes.find((o) => o.value.toUpperCase() === l.linetype.toUpperCase())?.value ??
-                          "Continuous"
-                        }
-                        options={linetypes}
-                        onValueChange={(v) => {
-                          if (typeof v === "string") set(l, { linetype: v });
-                        }}
-                        className="text-label py-0"
-                        aria-label={`${l.name} linetype`}
-                      />
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="focus-visible:ring-primary h-5 w-5 justify-center p-0 focus-visible:ring-2 focus-visible:ring-inset"
+                        className={cn(
+                          "focus-visible:ring-primary h-5 w-5 justify-center p-0 focus-visible:ring-2 focus-visible:ring-inset",
+                          LAST,
+                        )}
                         aria-label={`Delete layer ${l.name}`}
                         title={
                           l.name === "0" || l.name === state.currentLayer || used.has(l.name)
