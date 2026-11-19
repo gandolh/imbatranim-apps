@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { ChevronUp, EllipsisVertical } from "lucide-react";
 import { ContextMenu, Select, Toggle, cn, type ContextMenuItem } from "@imbatranim/ui";
 import type { Editor, EditorState } from "../engine/editor";
@@ -10,6 +10,8 @@ const UNIT_OPTIONS: { value: UnitSystem; label: string }[] = [
   { value: "architectural", label: "Feet and inches" },
   { value: "metric", label: "Metric" },
 ];
+
+type MenuView = "more" | "snaps" | "units";
 
 function StatusToggle({
   label,
@@ -47,7 +49,14 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
     (cb) => editor.subscribe((c) => c === "overlay" && cb()),
     () => editor.cursorText(),
   );
-  const [menu, setMenu] = useState<{ x: number; y: number; more: boolean } | null>(null);
+  const [menu, setMenu] = useState<{ x: number; y: number; view: MenuView } | null>(null);
+  // A row that opens another list keeps the menu open: the kit closes a menu
+  // on every row, so the close that follows a row's press is let through.
+  const navigatedAt = useRef(0);
+  const go = (view: MenuView) => {
+    navigatedAt.current = Date.now();
+    setMenu((m) => (m ? { ...m, view } : m));
+  };
   const t = state.toggles;
   const snapItems: ContextMenuItem[] = [
     ...SNAP_MODES.map((m) => ({
@@ -65,20 +74,25 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
       onSelect: () => editor.setToggles({ polarIncrement: deg }),
     })),
   ];
-  // A phone's bar keeps the coordinates; the toggles, the snaps and the units sit in More.
+  // A phone's bar keeps the coordinates; the toggles sit in More, and the snaps
+  // and the units each open as a list of their own, so no menu is taller than
+  // a phone's screen at 44 px a row.
+  const unitItems: ContextMenuItem[] = UNIT_OPTIONS.map((o) => ({
+    label: o.label,
+    checked: state.units.system === o.value,
+    onSelect: () => editor.doc.setUnits({ ...state.units, system: o.value }),
+  }));
+  const unitLabel = UNIT_OPTIONS.find((o) => o.value === state.units.system)?.label ?? "";
   const moreItems: ContextMenuItem[] = [
     { label: "Ortho", checked: t.ortho, onSelect: () => editor.setToggles({ ortho: !t.ortho }) },
     { label: "Polar tracking", checked: t.polar, onSelect: () => editor.setToggles({ polar: !t.polar }) },
     { label: "Object snaps", checked: t.osnap, onSelect: () => editor.setToggles({ osnap: !t.osnap }) },
     { type: "separator" },
-    ...snapItems,
-    { type: "separator" },
-    ...UNIT_OPTIONS.map((o) => ({
-      label: `Units: ${o.label}`,
-      checked: state.units.system === o.value,
-      onSelect: () => editor.doc.setUnits({ ...state.units, system: o.value }),
-    })),
+    { label: "Object snap settings…", onSelect: () => go("snaps") },
+    { label: `Units: ${unitLabel}…`, onSelect: () => go("units") },
   ];
+  const items = menu?.view === "more" ? moreItems : menu?.view === "units" ? unitItems : snapItems;
+  const label = menu?.view === "more" ? "More" : menu?.view === "units" ? "Units" : "Object snaps";
   return (
     <div className="border-outline-variant bg-surface-container font-ui text-on-surface-variant text-label h-statusbar max-[600px]:h-statusbar-phone flex shrink-0 items-center gap-[4px] overflow-x-auto border-t px-[8px]">
       <span
@@ -114,7 +128,7 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
           onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => {
             const r = e.currentTarget.getBoundingClientRect();
-            setMenu({ x: r.left, y: r.top - 4, more: false });
+            setMenu({ x: r.left, y: r.top - 4, view: "snaps" });
           }}
         >
           <ChevronUp size={11} />
@@ -124,9 +138,11 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
         <ContextMenu
           x={menu.x}
           y={menu.y}
-          label={menu.more ? "More" : "Object snaps"}
-          onClose={() => setMenu(null)}
-          items={menu.more ? moreItems : snapItems}
+          label={label}
+          onClose={() => {
+            if (Date.now() - navigatedAt.current > 300) setMenu(null);
+          }}
+          items={items}
         />
       )}
       <div className="flex-1" />
@@ -152,7 +168,7 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
         onMouseDown={(e) => e.preventDefault()}
         onClick={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
-          setMenu({ x: r.left, y: r.top - 4, more: true });
+          setMenu({ x: r.left, y: r.top - 4, view: "more" });
         }}
       >
         <EllipsisVertical size={18} />

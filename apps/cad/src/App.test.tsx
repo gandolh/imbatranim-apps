@@ -383,9 +383,26 @@ describe("CAD App", () => {
     const menu = document.querySelector('[role="menu"][aria-label="More"]');
     const items = [...(menu?.querySelectorAll('[role="menuitemcheckbox"]') ?? [])].map((i) => i.textContent);
     expect(items.slice(0, 3)).toEqual(["Ortho", "Polar tracking", "Object snaps"]);
-    expect(items).toContain("Endpoint");
-    expect(items).toContain("Units: Metric");
-    const item = [...(menu?.querySelectorAll<HTMLElement>('[role="menuitemcheckbox"]') ?? [])].find(
+    // The snaps and the units are lists of their own, so More stays short on a phone.
+    expect(items).not.toContain("Endpoint");
+    const row = (name: string) =>
+      [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((i) => i.textContent?.startsWith(name));
+    act(() => {
+      row("Object snap settings")?.click();
+    });
+    await settle();
+    const snaps = document.querySelector('[role="menu"][aria-label="Object snaps"]');
+    expect(snaps?.textContent).toContain("Endpoint");
+    expect(document.querySelector('[role="menu"][aria-label="More"]')).toBeNull();
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    });
+    await settle();
+    act(() => {
+      more?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    await settle();
+    const item = [...document.querySelectorAll<HTMLElement>('[role="menuitemcheckbox"]')].find(
       (i) => i.textContent === "Ortho",
     );
     act(() => {
