@@ -701,3 +701,7 @@ The slide canvas is one Tab stop and takes focus when pressed; Tab and Shift+Tab
 ## [2026-11-17] done | Brief 15: the undrawn screens fit a phone
 
 On a phone the REST client and Git GUI show one pane at a time, the list first and the request or the diff as its own view with a Back arrow; CAD's status toggles, snaps and units sit in a More menu, its Layers table takes two lines per layer, and Bookmarks' search takes a row of its own. A new clip check in the overflow spec fails a control cut by a box; it passes at 390 and 360 on all 26 screens, Sheets (Univer's own controls) and PDF's Custom colour allow-listed with their reasons. Built in `f2df248` to `39a8fd9`, the first builder's session having ended on 2026-11-15; see [the brief](briefs/done/15-the-undrawn-screens-fit-a-phone.md).
+
+## [2026-11-19] done | Brief 16: Slides' keys act where their job is
+
+Delete, Backspace and the arrows act only with focus on the slide; PageUp, PageDown, Home and End work from anywhere except inside a control that takes them; Space only presses. CAD's Layers heads have a gap at 1280, the REST client's URL has its own row on a phone, and Solitaire's win line has no em dash. The overflow spec passes at 390 and 360 (52 of 52 run), the Slides focus spec 20 of 20. Built in `75d037b` and `5ba7f07`; see [the brief](briefs/done/16-slides-keys-act-where-their-job-is.md).

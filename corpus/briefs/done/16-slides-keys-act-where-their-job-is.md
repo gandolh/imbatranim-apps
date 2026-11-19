@@ -96,3 +96,17 @@ outcome what they do.
 - [ ] End move `ready_for_deploy`, owner step: push, re-pin imbatranimOS's
       marketplace descriptors to this repo's last commit, then
       `node cli.ts imbatranim-os server` from the vps-deploy checkout.
+
+## Outcome (2026-11-19)
+
+Built in `75d037b` and `5ba7f07`, local on `main`, not pushed.
+
+- **Slides' keys.** `Editor.tsx`'s window key handler now splits by job. Delete, Backspace and the arrows act only when the event's target is inside the slide canvas (`[data-slide-canvas]`); with nothing selected the arrows on the canvas still step slides, and every other key the canvas had is unchanged. PageUp and PageDown step slides from anywhere in the window except inside a control that takes them itself (`select`, slider, spinbutton, combobox, menu, menubar, tablist, radiogroup, and a listbox other than the slide rail); text fields were already skipped. Home and End do the same, and still only with nothing selected. Space no longer steps slides in the editor at all (it only presses the focused control; the presenter keeps its own); this includes the canvas, where it stepped slides with nothing selected before.
+- **The thumbnails** keep what they took: ArrowUp and ArrowDown move between slides (Ctrl or Cmd moves the slide), Delete and Backspace remove the slide. The rail takes none of PageUp, PageDown, Home and End, so those step slides from it.
+- **Tests** (`App.test.tsx`, "keys by job"): Delete and Backspace on a toolbar button and on the rail delete no shape, on the canvas they do; arrows outside the canvas nudge nothing and keep the slide; PageDown, PageUp and End from a toolbar button step slides, PageUp in a text field doesn't; Space on a button and on the canvas is not taken. Against the old handler the delete, nudge and Space tests fail (3 of 4); the PageDown test passes on both, because that key already worked from a button.
+- **CAD's Layers heads:** the CURRENT column is 76 px (was 52) at desktop widths; the phone grid is unchanged. At 1280 the CURRENT and NAME head texts are 24.4 px apart, and CURRENT fits its column with 21 px to spare.
+- **REST client:** on a phone the URL is a row of its own under the method, Send and Save. The kit's `Input` wraps itself in a div, so classes passed to it never reach the flex row; the first attempt (`75d037b`) did nothing (228 px wide at 360 and 390), and `5ba7f07` puts a `contents` box around it that becomes the full-width, last item below 600 px. The URL is 342 px wide at 360 and 372 at 390. Desktop is as before.
+- **Solitaire:** "You won in N moves. F2 deals again."
+- **Walk** (dev container's desktop, all four groups installed from the scratch clone): the overflow spec against `5ba7f07`, `npx playwright test -c tools/browser/playwright.config.ts tools/browser/overflow.spec.ts --workers=2`: 52 passed, 26 skipped, exit 0 (the clip check included, at 390 and 360). The Slides focus spec (`focus.spec.ts --grep slides --workers=1`), run against `75d037b`: 20 passed, exit 0. Shots are kept in the builder's scratch folder.
+- **Run:** `npm run check` exit 0, `bash corpus/lint.sh` OK.
+- **Owner step:** push this repo, re-pin imbatranimOS's descriptors for the groups this brief changed (`imbatranim-office.json` for Slides and CAD, `developer.json` for the REST client, `games.json` for Solitaire) to this repo's last commit, then `node cli.ts imbatranim-os server` from the vps-deploy checkout.
