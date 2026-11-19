@@ -123,4 +123,44 @@ describe("ContextMenu (kit)", () => {
     });
     expect(onClose).toHaveBeenCalled();
   });
+
+  it("a popup scrolls inside the space left, and rows keep their 44 px floor", () => {
+    render([{ label: "A", onSelect: () => {} }]);
+    const popup = document.querySelector('[role="menu"]')!;
+    expect(popup.className).toContain("max-h-(--available-height)");
+    expect(popup.className).toContain("overflow-y-auto");
+    expect(document.querySelector('[role="menuitem"]')!.className).toContain("max-[600px]:min-h-target");
+  });
+
+  it("closeOnClick false keeps the menu open after the row is chosen; the default closes it", () => {
+    const onClose = vi.fn();
+    const onSelect = vi.fn();
+    render(
+      [
+        { label: "Stay", onSelect, closeOnClick: false },
+        { label: "Go", onSelect: () => {} },
+      ],
+      onClose,
+    );
+    const rows = document.querySelectorAll<HTMLElement>('[role="menuitem"]');
+    act(() => rows[0].click());
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(onClose).not.toHaveBeenCalled();
+    act(() => rows[1].click());
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it("a scroll inside the popup keeps it open; a scroll elsewhere closes it", () => {
+    const onClose = vi.fn();
+    render([{ label: "A", onSelect: () => {} }], onClose);
+    const popup = document.querySelector('[role="menu"]') as HTMLElement;
+    act(() => {
+      popup.dispatchEvent(new Event("scroll"));
+    });
+    expect(onClose).not.toHaveBeenCalled();
+    act(() => {
+      document.body.dispatchEvent(new Event("scroll"));
+    });
+    expect(onClose).toHaveBeenCalled();
+  });
 });

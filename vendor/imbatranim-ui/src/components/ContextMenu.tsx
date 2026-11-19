@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, type ReactNode } from "react";
 import { Menu } from "@base-ui/react/menu";
 import { Check } from "lucide-react";
 import { cn } from "../cn";
@@ -13,6 +13,11 @@ export type ContextMenuItem =
       disabled?: boolean;
       /** Present = render as a menuitemcheckbox with this state. */
       checked?: boolean;
+      /**
+       * False keeps the menu open after the row is chosen (a row that opens another list). A plain row closes by
+       * default; a row with `checked` stays open unless this is true (Base UI's checkbox row default).
+       */
+      closeOnClick?: boolean;
     }
   | { type: "separator" }
   /** Escape hatch for one-off rows (the taskbar's workspace grid). */
@@ -35,7 +40,7 @@ type ContextMenuProps = {
  * Arrow/Home/End, Enter activates, Escape closes and restores focus) and
  * floating-ui collision handling — edge clamping stops being hand-maintained
  * arithmetic. Portals to body above the taskbar; closes on outside press,
- * Escape, or any scroll (a cursor-anchored menu whose anchor scrolled away
+ * Escape, or a scroll outside the popup (a cursor-anchored menu whose anchor scrolled away
  * must not float detached).
  *
  * Callers keep the imperative shape: `{menu && <ContextMenu x y items onClose/>}`.
@@ -50,8 +55,15 @@ export function ContextMenu({ x, y, items, onClose, label = "Context menu" }: Co
     [x, y],
   );
 
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    const onScroll = () => onClose();
+    // The popup scrolls inside itself on a short screen; only a scroll outside
+    // it means the anchor moved away.
+    const onScroll = (e: Event) => {
+      if (e.target instanceof Node && popupRef.current?.contains(e.target)) return;
+      onClose();
+    };
     window.addEventListener("scroll", onScroll, true);
     return () => window.removeEventListener("scroll", onScroll, true);
   }, [onClose]);
@@ -68,6 +80,7 @@ export function ContextMenu({ x, y, items, onClose, label = "Context menu" }: Co
           className="z-menu outline-none"
         >
           <Menu.Popup
+            ref={popupRef}
             aria-label={label}
             // Right-click on the open menu is swallowed, never re-opened.
             onContextMenu={(e) => {
@@ -76,6 +89,8 @@ export function ContextMenu({ x, y, items, onClose, label = "Context menu" }: Co
             }}
             className={cn(
               "border-outline-variant bg-surface-container-low rounded-menu min-w-40 border px-(--k-list-inset) py-1",
+              // Taller than the space left: scroll inside, rows keep their size.
+              "max-h-(--available-height) overflow-y-auto",
               "shadow-(--k-shadow-popup) outline-none",
             )}
           >
@@ -105,6 +120,7 @@ export function ContextMenu({ x, y, items, onClose, label = "Context menu" }: Co
                     key={i}
                     checked={item.checked}
                     disabled={item.disabled}
+                    closeOnClick={item.closeOnClick}
                     onClick={() => !item.disabled && item.onSelect()}
                     className={itemClass}
                   >
@@ -119,6 +135,7 @@ export function ContextMenu({ x, y, items, onClose, label = "Context menu" }: Co
                 <Menu.Item
                   key={i}
                   disabled={item.disabled}
+                  closeOnClick={item.closeOnClick}
                   onClick={() => !item.disabled && item.onSelect()}
                   className={itemClass}
                 >

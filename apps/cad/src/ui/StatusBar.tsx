@@ -1,4 +1,4 @@
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { ChevronUp, EllipsisVertical } from "lucide-react";
 import { ContextMenu, Select, Toggle, cn, type ContextMenuItem } from "@imbatranim/ui";
 import type { Editor, EditorState } from "../engine/editor";
@@ -50,11 +50,7 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
     () => editor.cursorText(),
   );
   const [menu, setMenu] = useState<{ x: number; y: number; view: MenuView } | null>(null);
-  // A row that opens another list keeps the menu open: the kit closes a menu
-  // on every row, so the close that follows a row's press is let through.
-  const navigatedAt = useRef(0);
   const go = (view: MenuView) => {
-    navigatedAt.current = Date.now();
     setMenu((m) => (m ? { ...m, view } : m));
   };
   const t = state.toggles;
@@ -88,8 +84,8 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
     { label: "Polar tracking", checked: t.polar, onSelect: () => editor.setToggles({ polar: !t.polar }) },
     { label: "Object snaps", checked: t.osnap, onSelect: () => editor.setToggles({ osnap: !t.osnap }) },
     { type: "separator" },
-    { label: "Object snap settings…", onSelect: () => go("snaps") },
-    { label: `Units: ${unitLabel}…`, onSelect: () => go("units") },
+    { label: "Object snap settings…", closeOnClick: false, onSelect: () => go("snaps") },
+    { label: `Units: ${unitLabel}…`, closeOnClick: false, onSelect: () => go("units") },
   ];
   const items = menu?.view === "more" ? moreItems : menu?.view === "units" ? unitItems : snapItems;
   const label = menu?.view === "more" ? "More" : menu?.view === "units" ? "Units" : "Object snaps";
@@ -134,17 +130,7 @@ export function StatusBar({ editor, state }: { editor: Editor; state: EditorStat
           <ChevronUp size={11} />
         </button>
       </div>
-      {menu && (
-        <ContextMenu
-          x={menu.x}
-          y={menu.y}
-          label={label}
-          onClose={() => {
-            if (Date.now() - navigatedAt.current > 300) setMenu(null);
-          }}
-          items={items}
-        />
-      )}
+      {menu && <ContextMenu x={menu.x} y={menu.y} label={label} onClose={() => setMenu(null)} items={items} />}
       <div className="flex-1" />
       {state.selectionCount > 0 && <span className="mr-2">{state.selectionCount} selected</span>}
       <span className="max-[600px]:hidden">Units</span>
