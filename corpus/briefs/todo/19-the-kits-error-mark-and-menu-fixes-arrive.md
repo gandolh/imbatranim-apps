@@ -14,7 +14,7 @@ Brief 17 held CAD's split More menu open against the kit's close with a 300 ms g
 
 ## What to do
 
-1. `npm run kit:sync -- <imbatranimOS checkout> <the last kit commit OS 96 names>`, then `--check`; the snapshot test names the new commit; `SHARED_KIT_VERSION` follows the OS (96 bumps it).
+1. `npm run kit:sync -- <imbatranimOS checkout> <the last kit commit: 97's if it has landed, else 215c91b>`, then `--check`; the snapshot test names the new commit; `SHARED_KIT_VERSION` stays 1 (an added optional prop is compatible; the OS reverted 96's bump in 215c91b).
 2. CAD: the rows that open another list use `closeOnClick={false}`; the 300 ms guard goes; its test still passes (the snaps and units lists open from More and stay open).
 3. Slides: the font size list fits and scrolls at 390x640 and 360x800 in Apricot light and Classic dark.
 4. Forms with an invalid state (find them: an app that sets `data-invalid` or `aria-invalid` on a kit field) show the mark; one shot each.
