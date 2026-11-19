@@ -1,6 +1,6 @@
 # Task 19: The kit's error mark and menu fixes arrive, and CAD's guard goes
 
-**Depends on:** imbatranimOS briefs 94 (an invalid field's error mark) and 96 (both kit menus fit a phone; a row can keep its menu open), built and committed in the OS repo. Don't start before both are.
+**Depends on:** imbatranimOS briefs 94 (an invalid field's error mark, built) and 96 (both kit menus fit a phone; a row can keep its menu open), built and committed in the OS repo. Don't start before both are.
 
 **Runs after:** 18.
 
@@ -18,7 +18,8 @@ Brief 17 held CAD's split More menu open against the kit's close with a 300 ms g
 2. CAD: the rows that open another list use `closeOnClick={false}`; the 300 ms guard goes; its test still passes (the snaps and units lists open from More and stay open).
 3. Slides: the font size list fits and scrolls at 390x640 and 360x800 in Apricot light and Classic dark.
 4. Forms with an invalid state (find them: an app that sets `data-invalid` or `aria-invalid` on a kit field) show the mark; one shot each.
-5. The focus and overflow specs in the four looks, as brief 17 ran them.
+5. **A durable check for brief 18** (its audit: `Sidebar.test.tsx` pins class names only): a browser spec for the REST client (in `tools/browser/`, e.g. beside `focus.spec.ts`'s `rest` screen) that saves a long entry, Tabs onto it, and asserts the sidebar viewport's `scrollLeft` is 0 and its `scrollWidth` at most its `clientWidth`. Show it fail with brief 18's wrapper removed. If imbatranimOS has fixed the kit's `ScrollArea` content width by then (its todo "the kit's scroll area grows to its widest row"), drop the wrapper and keep the spec.
+6. The focus and overflow specs in the four looks, as brief 17 ran them.
 
 ## Files you OWN
 
