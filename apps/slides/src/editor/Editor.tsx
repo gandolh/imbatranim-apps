@@ -766,8 +766,10 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     if (target?.closest(OWN_KEYS)) return;
     if (key === "PageDown") return (handled(), goTo(index + 1));
     if (key === "PageUp") return (handled(), goTo(index - 1));
-    if (key === "Home" && !selection.length) return (handled(), goTo(0));
-    if (key === "End" && !selection.length) return (handled(), goTo(slides.length - 1));
+    // On the slide, Home and End leave a selected shape alone; anywhere else they step slides like PageUp and PageDown.
+    const keepsSelection = onCanvas && selection.length > 0;
+    if (key === "Home" && !keepsSelection) return (handled(), goTo(0));
+    if (key === "End" && !keepsSelection) return (handled(), goTo(slides.length - 1));
   });
 
   // Paste: shapes from the Slides clipboard, or a picture from the system's.

@@ -326,6 +326,35 @@ describe("Slides", () => {
       field.remove();
     });
 
+    it("steps slides with Home and End from a toolbar button while a shape is selected, not on the slide", async () => {
+      await open();
+      selectOne();
+      expect(key(canvas(), "End").defaultPrevented).toBe(false);
+      expect(slideOf()).toBe("1");
+      const button = toolbarButton();
+      button.focus();
+      expect(key(button, "End").defaultPrevented).toBe(true);
+      expect(slideOf()).toBe("6");
+      expect(key(button, "Home").defaultPrevented).toBe(true);
+      expect(slideOf()).toBe("1");
+    });
+
+    it("leaves the slide keys to a control that takes them itself", async () => {
+      await open();
+      for (const role of ["tablist", "radiogroup", "slider"]) {
+        const control = document.createElement("div");
+        control.setAttribute("role", role);
+        control.tabIndex = 0;
+        document.body.append(control);
+        control.focus();
+        for (const k of ["PageDown", "PageUp", "Home", "End"]) {
+          expect(key(control, k).defaultPrevented, `${k} in a ${role}`).toBe(false);
+        }
+        expect(slideOf()).toBe("1");
+        control.remove();
+      }
+    });
+
     it("leaves Space to the focused control", async () => {
       await open();
       const button = toolbarButton();
