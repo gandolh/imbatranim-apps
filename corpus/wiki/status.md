@@ -48,7 +48,7 @@ are not pushed; brief numbering restarted at 01 on 2026-11-02 (see
   for Developer) is the store the window and the hooks share. Todo exports
   `Background`, Bookmarks `commandSources`. Not pushed; the walk in the OS
   is owed.
-- **Kit** (2026-11-19). The snapshot is at imbatranimOS `c9f2735`; the apps' focus workarounds the kit now covers are gone ([log.md](../log.md)).
+- **Kit** (2026-11-19). The snapshot is at imbatranimOS `a2e7636`; the apps' focus workarounds the kit now covers are gone, CAD's menu guard and the REST sidebar's width wrapper with them ([log.md](../log.md)).
 - **Developer** (2026-11-09, `4ef5f5a`): Git GUI and the REST API Client,
   from the OS's built-ins (imbatranimOS brief 76). Git and the request proxy
   stay the OS's services. Git GUI's recent repositories are `recents.json`
