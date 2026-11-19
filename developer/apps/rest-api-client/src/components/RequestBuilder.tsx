@@ -196,7 +196,7 @@ export function RequestBuilder({
 
       {/* Method + URL + actions */}
       <form
-        className="flex items-stretch gap-2"
+        className="flex items-stretch gap-2 max-[600px]:flex-wrap"
         onSubmit={(e) => {
           e.preventDefault();
           onSend();
@@ -206,10 +206,10 @@ export function RequestBuilder({
           options={METHOD_OPTIONS}
           value={method}
           onValueChange={(v) => onMethodChange(v as HttpMethod)}
-          className="min-w-[7rem]"
+          className="min-w-[7rem] max-[600px]:flex-1"
         />
         <Input
-          className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
+          className="focus-visible:ring-primary flex-1 focus-visible:ring-2 max-[600px]:order-last max-[600px]:basis-full"
           placeholder="https://api.example.com/endpoint  or  {{base}}/users"
           value={url}
           spellCheck={false}

@@ -255,4 +255,84 @@ describe("Slides", () => {
       expect(selected()).toEqual(kept);
     });
   });
+
+  describe("keys by job", () => {
+    const selected = () => [
+      ...new Set([...document.querySelectorAll("[data-handle][data-shape]")].map((h) => h.getAttribute("data-shape"))),
+    ];
+    const shapeCount = () =>
+      new Set(
+        [...document.querySelectorAll("[data-slide-canvas] [data-shape]")].map((n) => n.getAttribute("data-shape")),
+      ).size;
+
+    function key(target: Element, k: string) {
+      const e = new KeyboardEvent("keydown", { key: k, bubbles: true, cancelable: true });
+      act(() => {
+        target.dispatchEvent(e);
+      });
+      return e;
+    }
+    const canvas = () => document.querySelector<HTMLElement>("[data-slide-canvas]")!;
+    const slideOf = () => /Slide (\d+) of/.exec(document.body.textContent ?? "")![1];
+    /** Selects the first shape through the canvas's own Tab. */
+    function selectOne() {
+      canvas().focus();
+      key(canvas(), "Tab");
+      expect(selected()).toHaveLength(1);
+    }
+    const toolbarButton = () => document.querySelector<HTMLElement>('[aria-label="Undo"]')!;
+
+    it("deletes the selection only with focus on the slide", async () => {
+      await open();
+      selectOne();
+      const before = shapeCount();
+      const button = toolbarButton();
+      button.focus();
+      expect(key(button, "Delete").defaultPrevented).toBe(false);
+      expect(key(button, "Backspace").defaultPrevented).toBe(false);
+      const rail = document.querySelector<HTMLElement>("[role=listbox]")!;
+      expect(key(rail, "Delete").defaultPrevented).toBe(false);
+      expect(shapeCount()).toBe(before);
+      expect(key(canvas(), "Delete").defaultPrevented).toBe(true);
+      expect(shapeCount()).toBe(before - 1);
+    });
+
+    it("nudges the selection only with focus on the slide", async () => {
+      await open();
+      selectOne();
+      const button = toolbarButton();
+      expect(key(button, "ArrowRight").defaultPrevented).toBe(false);
+      const panel = document.querySelector<HTMLElement>('[aria-label="Format"]')!;
+      expect(key(panel, "ArrowLeft").defaultPrevented).toBe(false);
+      expect(slideOf()).toBe("1");
+      expect(key(canvas(), "ArrowRight").defaultPrevented).toBe(true);
+    });
+
+    it("steps slides with PageDown from a toolbar button, but not in a text field", async () => {
+      await open();
+      const button = toolbarButton();
+      button.focus();
+      expect(key(button, "PageDown").defaultPrevented).toBe(true);
+      expect(slideOf()).toBe("2");
+      expect(key(button, "PageUp").defaultPrevented).toBe(true);
+      expect(slideOf()).toBe("1");
+      expect(key(button, "End").defaultPrevented).toBe(true);
+      expect(slideOf()).toBe("6");
+      const field = document.createElement("input");
+      document.body.append(field);
+      field.focus();
+      expect(key(field, "PageUp").defaultPrevented).toBe(false);
+      expect(slideOf()).toBe("6");
+      field.remove();
+    });
+
+    it("leaves Space to the focused control", async () => {
+      await open();
+      const button = toolbarButton();
+      button.focus();
+      expect(key(button, " ").defaultPrevented).toBe(false);
+      expect(key(canvas(), " ").defaultPrevented).toBe(false);
+      expect(slideOf()).toBe("1");
+    });
+  });
 });

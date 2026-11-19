@@ -111,6 +111,10 @@ const SHORTCUTS = [
   { id: "slides-edit", keys: "f2", description: "Edit the selected shape’s text" },
 ].map((s) => ({ ...s, scope: "Editing" as const }));
 
+/** Controls that use PageUp, PageDown, Home and End themselves. The slide rail takes none of them. */
+const OWN_KEYS =
+  'select, [role="slider"], [role="spinbutton"], [role="combobox"], [role="menu"], [role="menubar"], [role="tablist"], [role="radiogroup"], [role="listbox"]:not([aria-label="Slides"])';
+
 export function Editor({ store, file }: { store: DeckStore; file: FileControls }) {
   const system = useSystem();
   const version = useSyncExternalStore(store.subscribe, store.getVersion);
@@ -693,6 +697,8 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     if (presenting !== null || e.defaultPrevented || menu) return;
     const target = e.target as HTMLElement | null;
     const onButton = target?.tagName === "BUTTON";
+    // Shape keys (Delete, Backspace, the arrows) act only on the slide canvas, as in PowerPoint and Google Slides.
+    const onCanvas = !!target?.closest("[data-slide-canvas]");
     const mod = e.ctrlKey || e.metaKey;
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     const handled = () => e.preventDefault();
@@ -720,7 +726,7 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
     if (key === "F5") return (handled(), setPresenting(e.shiftKey ? index : 0));
     if (onButton && (key === "Enter" || key === " ")) return;
     if (key === "Delete" || key === "Backspace") {
-      if (selection.length) return (handled(), deleteSelection());
+      if (onCanvas && selection.length) return (handled(), deleteSelection());
       return;
     }
     if (key === "Escape") {
@@ -746,7 +752,7 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
       ArrowUp: [0, -1],
       ArrowDown: [0, 1],
     };
-    if (arrows[key] && !onButton) {
+    if (arrows[key] && onCanvas) {
       handled();
       if (selection.length) {
         // A coarse nudge is the grid step (1/12 inch); Ctrl or Alt nudges by a point.
@@ -755,8 +761,9 @@ export function Editor({ store, file }: { store: DeckStore; file: FileControls }
       }
       return goTo(index + (arrows[key][0] || arrows[key][1]));
     }
-    // Space steps through the slides when nothing is selected, as in the built-in viewer.
-    if (key === " " && !selection.length && !onButton) return (handled(), goTo(index + 1));
+    // Slide keys work from anywhere in the window except inside a control that takes those keys itself.
+    // Space only presses the focused control; it steps slides in the presenter view alone.
+    if (target?.closest(OWN_KEYS)) return;
     if (key === "PageDown") return (handled(), goTo(index + 1));
     if (key === "PageUp") return (handled(), goTo(index - 1));
     if (key === "Home" && !selection.length) return (handled(), goTo(0));

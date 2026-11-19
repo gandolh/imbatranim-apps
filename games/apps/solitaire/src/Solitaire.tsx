@@ -330,7 +330,7 @@ export function Solitaire() {
 
       <div className="border-outline-variant bg-surface-container-low text-on-surface-variant text-tiny flex h-6 flex-none items-center gap-2 border-t px-2">
         {won ? (
-          <span className="text-primary font-semibold">You won in {game.moves} moves — F2 deals again.</span>
+          <span className="text-primary font-semibold">You won in {game.moves} moves. F2 deals again.</span>
         ) : (
           <span>Click a card, then its destination · double-click sends it home</span>
         )}

@@ -23,7 +23,7 @@ import { aciRgb, hex } from "../engine/render/style";
  * second, so no column is cut.
  */
 const COLUMNS =
-  "grid grid-cols-[52px_1fr_44px_56px_48px_150px_130px_32px] gap-1 max-[600px]:grid-cols-[64px_minmax(0,1fr)_28px_52px_40px_24px] max-[600px]:gap-y-1";
+  "grid grid-cols-[76px_1fr_44px_56px_48px_150px_130px_32px] gap-1 max-[600px]:grid-cols-[64px_minmax(0,1fr)_28px_52px_40px_24px] max-[600px]:gap-y-1";
 /** Colour and linetype: grid cells on a desktop, the second line on a phone. */
 const SECOND_LINE =
   "contents max-[600px]:col-span-5 max-[600px]:col-start-2 max-[600px]:row-start-2 max-[600px]:flex max-[600px]:gap-1";
