@@ -13,9 +13,8 @@
 import { serializerCompiler, validatorCompiler } from "@fastify/type-provider-zod";
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from "fastify";
 import type { Config } from "./config.ts";
-import { createConverter, type Converter } from "./features/dwg/convert.ts";
-import { dwgRoutes } from "./features/dwg/routes.ts";
-import { healthRoutes } from "./features/health/routes.ts";
+import { createConverter, dwgRoutes, type Converter } from "./features/dwg/index.ts";
+import { healthRoutes } from "./features/health/index.ts";
 import { errors } from "./plugins/errors.ts";
 import { websocketSupport } from "./plugins/websocket.ts";
 
