@@ -705,3 +705,7 @@ On a phone the REST client and Git GUI show one pane at a time, the list first a
 ## [2026-11-19] done | Brief 16: Slides' keys act where their job is
 
 Delete, Backspace and the arrows act only with focus on the slide; PageUp, PageDown, Home and End work from anywhere except inside a control that takes them; Space only presses. CAD's Layers heads have a gap at 1280, the REST client's URL has its own row on a phone, and Solitaire's win line has no em dash. The overflow spec passes at 390 and 360 (52 of 52 run), the Slides focus spec 20 of 20. Built in `75d037b` and `5ba7f07`; see [the brief](briefs/done/16-slides-keys-act-where-their-job-is.md).
+
+## [2026-11-19] done | Brief 17: the kit's fixes arrive and the workarounds go
+
+The kit snapshot moved to imbatranimOS `c9f2735` (focus rings, motion-safe transitions, Classic dark's lifted accents, 44 px menu rows under 600 px). The ring on nine text fields and the scroll-area viewport outlines went; `098849f`'s soft-fill rings stay. CAD's More menu opens the snaps and the units as lists of their own so no menu is cut at 360. The focus spec passes in the four looks (100 of 100) with no Classic dark allowance, the overflow spec 52 of 52. Built in `f6c6298` to `60bde4d`; see [the brief](briefs/done/17-the-kit-fixes-arrive-and-the-workarounds-go.md).
