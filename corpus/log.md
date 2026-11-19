@@ -709,3 +709,7 @@ Delete, Backspace and the arrows act only with focus on the slide; PageUp, PageD
 ## [2026-11-19] done | Brief 17: the kit's fixes arrive and the workarounds go
 
 The kit snapshot moved to imbatranimOS `c9f2735` (focus rings, motion-safe transitions, Classic dark's lifted accents, 44 px menu rows under 600 px). The ring on nine text fields and the scroll-area viewport outlines went; `098849f`'s soft-fill rings stay. CAD's More menu opens the snaps and the units as lists of their own so no menu is cut at 360. The focus spec passes in the four looks (100 of 100) with no Classic dark allowance, the overflow spec 52 of 52. Built in `f6c6298` to `60bde4d`; see [the brief](briefs/done/17-the-kit-fixes-arrive-and-the-workarounds-go.md).
+
+## [2026-11-19] done | Brief 18: the REST client sidebar never scrolls sideways
+
+The sidebar's rows sat in the kit's scroll content, which is `min-width: fit-content`, so a long entry widened it and Tab scrolled the list 56 px sideways, cutting "Collections". Both sections now sit in a `w-0 min-w-full` box, and names truncate. The kit is untouched; its default is a todo for imbatranimOS. Focus spec 24 of 24 in the four looks, overflow spec 14 of 14 run. Built in `a0d71c0`; see [the brief](briefs/done/18-the-rest-sidebar-never-scrolls-sideways.md).

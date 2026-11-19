@@ -110,6 +110,8 @@ Brief 15 (2026-11-15 to 2026-11-17, `f2df248` to `39a8fd9`): on a phone the REST
 
 Brief 16 (2026-11-19, `75d037b` and `5ba7f07`): Slides' Delete, Backspace and arrows act only with focus on the slide; PageUp, PageDown, Home and End step slides from anywhere but a control that takes them; Space only presses. CAD's Layers heads have a gap at 1280, the REST client's URL takes its own row on a phone, and Solitaire's win line lost its em dash. The overflow spec passes at 390 and 360 and Slides' focus spec passes in the dev container's desktop. Pinned by the OS only after the owner moves the descriptors.
 
+Brief 18 (2026-11-19, `a0d71c0`): the REST client sidebar no longer scrolls sideways when Tab lands on a long entry; names truncate. Pinned by the OS only after the owner moves the developer descriptor.
+
 No todo is open.
 
 Test files for the walks: [test-files.md](test-files.md).

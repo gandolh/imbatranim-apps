@@ -31,3 +31,7 @@ Filed 2026-11-19 by the controller from imbatranimOS brief 91's walk: in the RES
 
 - [ ] The check fails on today's code and passes now; the specs pass; `npm run check` exit 0; `bash corpus/lint.sh` OK.
 - [ ] End move `ready_for_deploy`, owner step: push, re-pin imbatranimOS's `developer.json` descriptor to this repo's last commit, then `node cli.ts imbatranim-os server`.
+
+## Outcome (2026-11-19)
+
+The cause was the kit's `ScrollArea`: Base UI's `ScrollArea.Content` carries an inline `min-width: fit-content`, so the content grew to the widest row (the rows' `shrink-0` method and status chips plus the long name) and focus scrolled the viewport sideways. Fixed in the sidebar only: both sections sit in a `w-0 min-w-full` box, which adds nothing to the content's intrinsic width and then fills the column, so names truncate. `Sidebar.test.tsx` checks the wrapper (jsdom has no layout) and fails on the old code. In the dev desktop, with a 250-character entry saved, the viewport's `scrollWidth` equals its `clientWidth` (181) and Tab moves scroll nothing. The focus spec passes in the four looks for the developer screens (24 of 24), the overflow spec 14 passed, 7 skipped at 390 and 360. The kit's default is for imbatranimOS to decide: a vertical-only `ScrollArea` could give its content `min-width: 0` (the kit passes no class to the content); the other uses here that would want it are the lists in Todo, Bookmarks and Git GUI that put truncating rows in a `ScrollArea`.
