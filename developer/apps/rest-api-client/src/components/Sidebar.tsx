@@ -47,7 +47,7 @@ export function Sidebar({
         </span>
         <ChevronRight size={16} className="text-on-surface-variant shrink-0" />
       </button>
-      <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
+      <ScrollArea className="min-h-0 flex-1">
         <Section icon="folder" label="Collections">
           {data.collections.length === 0 ? (
             <Empty>No saved requests</Empty>

@@ -113,7 +113,7 @@ export function EnvironmentDialog({
             <div className="font-ui text-on-surface-variant text-label mt-1 font-semibold tracking-wider uppercase">
               Variables
             </div>
-            <ScrollArea className="rounded-control border-outline-variant [&>div:focus-visible]:outline-primary max-h-64 min-h-0 border [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
+            <ScrollArea className="rounded-control border-outline-variant max-h-64 min-h-0 border">
               {selected.vars.length === 0 ? (
                 <div className="text-on-surface-variant text-control px-2 py-3">No variables yet</div>
               ) : (

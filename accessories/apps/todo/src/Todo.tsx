@@ -426,7 +426,7 @@ export function Todo({ windowId: _windowId }: { windowId: string }) {
       </div>
 
       {/* The list. min-h-0 so this is the element that shrinks, never the add row. */}
-      <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
+      <ScrollArea className="min-h-0 flex-1">
         {isPending ? (
           <div className="font-ui text-on-surface-variant text-control flex h-20 items-center justify-center">
             Loading…

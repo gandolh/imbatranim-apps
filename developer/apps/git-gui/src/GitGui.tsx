@@ -708,7 +708,7 @@ function ChangeSection({
       <div className="text-on-surface-variant font-ui bg-surface-container-low text-label shrink-0 px-2 py-1 font-semibold tracking-wider uppercase">
         {title} ({entries.length})
       </div>
-      <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
+      <ScrollArea className="min-h-0 flex-1">
         {entries.length === 0 ? (
           <div className="text-on-surface-variant text-control px-2 py-2">Nothing here</div>
         ) : (
@@ -780,7 +780,7 @@ function LogPane({ commits }: { commits: GitCommit[] }) {
     );
   }
   return (
-    <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
+    <ScrollArea className="min-h-0 flex-1">
       <ul className="divide-outline-variant/50 divide-y">
         {commits.map((c) => (
           <li key={c.hash} className="px-3 py-2">

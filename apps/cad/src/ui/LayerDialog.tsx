@@ -140,7 +140,7 @@ export function LayerDialog({
               </div>
               <span className={LAST} />
             </div>
-            <ScrollArea className="[&>div:focus-visible]:outline-primary h-[260px] [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
+            <ScrollArea className="h-[260px]">
               <RadioGroup
                 className="contents"
                 aria-label="Current layer"

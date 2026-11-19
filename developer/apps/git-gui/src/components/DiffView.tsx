@@ -69,10 +69,7 @@ export function DiffView({ diff, staged, sideBySide, onToggleLayout, onApplyHunk
         </Toggle>
       </div>
 
-      <ScrollArea
-        className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2"
-        orientation="both"
-      >
+      <ScrollArea className="min-h-0 flex-1" orientation="both">
         {files.map((file) => (
           <div key={`${file.oldPath}->${file.newPath}`}>
             <div className="bg-surface-container text-on-surface font-ui text-label sticky top-0 z-10 px-2 py-1 font-semibold">

@@ -112,6 +112,16 @@ export async function focusRing(page: Page): Promise<{ width: number; contrast: 
         host = n;
       }
     }
+    // A scroll area's viewport rings through the aria-hidden layer the kit draws after it.
+    if (!ring || ring.width < 2) {
+      for (let n = el.nextElementSibling as HTMLElement | null; n; n = n.nextElementSibling as HTMLElement | null) {
+        const layer = n.getAttribute("aria-hidden") === "true" ? shadowRing(getComputedStyle(n).boxShadow) : null;
+        if (layer && layer.width > (ring?.width ?? 0)) {
+          ring = layer;
+          host = n;
+        }
+      }
+    }
     if (!ring) return { width: 0, contrast: 0, label };
     const layers: [number, number, number, number][] = [];
     for (let n: HTMLElement | null = ring.inset ? host : host.parentElement; n; n = n.parentElement) {

@@ -75,7 +75,7 @@ export function ResponseViewer({ response, error, loading }: ResponseViewerProps
         </ResTab>
       </div>
 
-      <ScrollArea className="[&>div:focus-visible]:outline-primary min-h-0 flex-1 [&>div:focus-visible]:outline-2 [&>div:focus-visible]:-outline-offset-2">
+      <ScrollArea className="min-h-0 flex-1">
         {tab === "body" ? (
           <pre className="text-on-surface text-control p-3 font-mono leading-relaxed break-words whitespace-pre-wrap">
             {decoded.text || <span className="text-on-surface-variant">(empty body)</span>}
