@@ -681,10 +681,12 @@ imbatranimOS are in the outcome note:
 
 The owner has a board question about Slides taking Tab window-wide.
 
-The owner step moves imbatranimOS's three catalog descriptors
-(`imbatranim-office`, `accessories`, `developer`) to this repo's last
-commit, then runs `node cli.ts imbatranim-os server` from the vps-deploy
-checkout.
+The owner step moves imbatranimOS's four catalog descriptors
+(`imbatranim-office`, `accessories`, `developer`, and `games`, which changed
+since their common pin `e479048`) to this repo's last commit, then runs
+`node cli.ts imbatranim-os server` from the vps-deploy checkout. After the
+audit, CAD's test covers the Units list too and the sidebar spec deletes its
+own entry.
 
 ## [2026-11-15] done | Brief 12: the converter child dies with the server
 

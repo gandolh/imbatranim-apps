@@ -402,6 +402,21 @@ describe("CAD App", () => {
       more?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
     await settle();
+    act(() => {
+      row("Units:")?.click();
+    });
+    await settle();
+    const units = document.querySelector('[role="menu"][aria-label="Units"]');
+    expect(units?.textContent).toContain("Feet and inches");
+    expect(document.querySelector('[role="menu"][aria-label="More"]')).toBeNull();
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    });
+    await settle();
+    act(() => {
+      more?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    await settle();
     const item = [...document.querySelectorAll<HTMLElement>('[role="menuitemcheckbox"]')].find(
       (i) => i.textContent === "Ortho",
     );

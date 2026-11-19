@@ -2,11 +2,12 @@ import { expect, test, type Locator } from "@playwright/test";
 import { LOOKS, closeWindows, openDesktop, openFromStart, setLook, settle } from "./desktop.ts";
 
 /**
- * The REST client's sidebar never scrolls sideways. The kit's ScrollArea
- * sizes its content to the widest row, so without the sidebar's own guard a
- * long saved entry grows the content and Tab onto it scrolls the viewport
- * left. The spec saves a long entry, Tabs onto it, and reads the sidebar
- * viewport's scroll position and width; it deletes the entry afterwards.
+ * The REST client's sidebar never scrolls sideways. Base UI's ScrollArea
+ * content carries an inline min-width: fit-content, which the desktop's kit
+ * resets for a vertical area (imbatranimOS brief 97); without that, a long
+ * saved entry grows the content and Tab onto it scrolls the viewport left.
+ * The spec saves a long entry, Tabs onto it, and reads the sidebar viewport's
+ * scroll position and width; it deletes that entry afterwards.
  * Run it with --workers=1 (it sets the dev account's look).
  */
 const LONG_URL = `https://example.invalid/${"a-very-long-path-segment-".repeat(10)}end`;
@@ -49,9 +50,11 @@ test("a long saved entry does not scroll the REST sidebar sideways", async ({ pa
   try {
     await expect(row).toBeVisible();
     const viewport = await viewportOf(row);
-    // Tab from the sidebar's first stop until focus reaches the long entry.
+    // Tab from the sidebar's first stop until focus reaches the long entry
+    // (each saved entry is two stops: the entry and its Delete button).
     await sidebar.getByRole("button").first().focus();
-    for (let i = 0; i < 8 && !(await row.evaluate((el) => el === document.activeElement)); i++) {
+    const stops = await sidebar.getByRole("button").count();
+    for (let i = 0; i < stops && !(await row.evaluate((el) => el === document.activeElement)); i++) {
       await page.keyboard.press("Tab");
     }
     await expect(row).toBeFocused();
@@ -63,8 +66,9 @@ test("a long saved entry does not scroll the REST sidebar sideways", async ({ pa
     expect(m.scrollLeft, `the viewport stays at the left (${JSON.stringify(m)})`).toBe(0);
     expect(m.scrollWidth, `the content fits the column (${JSON.stringify(m)})`).toBeLessThanOrEqual(m.clientWidth);
   } finally {
-    // Leave the container's saved requests as they were.
-    await sidebar.locator("button[title='Delete']").first().dispatchEvent("click");
+    // Leave the container's saved requests as they were: delete this entry,
+    // which a save appends after any the account already has.
+    if ((await row.count()) > 0) await row.locator("xpath=..").locator("button[title='Delete']").dispatchEvent("click");
     await closeWindows(page);
   }
 });
