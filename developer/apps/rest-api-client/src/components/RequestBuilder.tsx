@@ -206,15 +206,18 @@ export function RequestBuilder({
           options={METHOD_OPTIONS}
           value={method}
           onValueChange={(v) => onMethodChange(v as HttpMethod)}
-          className="min-w-[7rem] max-[600px]:flex-1"
+          className="min-w-[7rem]"
         />
-        <Input
-          className="focus-visible:ring-primary flex-1 focus-visible:ring-2 max-[600px]:order-last max-[600px]:basis-full"
-          placeholder="https://api.example.com/endpoint  or  {{base}}/users"
-          value={url}
-          spellCheck={false}
-          onChange={(e) => onUrlChange(e.target.value)}
-        />
+        {/* The kit's Input wraps itself, so this box carries the phone row: the URL under the method, Send and Save. */}
+        <div className="contents max-[600px]:order-last max-[600px]:block max-[600px]:basis-full">
+          <Input
+            className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
+            placeholder="https://api.example.com/endpoint  or  {{base}}/users"
+            value={url}
+            spellCheck={false}
+            onChange={(e) => onUrlChange(e.target.value)}
+          />
+        </div>
         <Button type="submit" variant="primary" disabled={loading || !url.trim() || sendBlocked}>
           <Send size={13} />
           {loading ? "Sending…" : "Send"}
