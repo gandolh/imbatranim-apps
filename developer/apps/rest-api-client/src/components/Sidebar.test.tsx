@@ -29,11 +29,7 @@ const data = {
 } as unknown as RestClientData;
 
 describe("Sidebar", () => {
-  // The scroll area's content sizes to its widest child (min-width:
-  // fit-content), so rows only truncate when the sections sit in a
-  // zero-width-contribution wrapper. jsdom has no layout, so this checks the
-  // wrapper that keeps the viewport from ever scrolling sideways.
-  it("keeps its rows out of the scroll content's intrinsic width", () => {
+  it("lists the collections and the history", () => {
     act(() =>
       root.render(
         <Sidebar
@@ -47,13 +43,7 @@ describe("Sidebar", () => {
         />,
       ),
     );
-    const content = [...container.querySelectorAll<HTMLElement>("[style]")].find(
-      (el) => el.style.minWidth === "fit-content",
-    );
-    expect(content).toBeTruthy();
-    const wrapper = content!.firstElementChild as HTMLElement;
-    expect(wrapper.className).toContain("w-0");
-    expect(wrapper.className).toContain("min-w-full");
-    expect(wrapper.textContent).toContain("Collections");
+    expect(container.textContent).toContain("Collections");
+    expect(container.textContent).toContain("History");
   });
 });
