@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { LOOKS, closeWindows, expectLook, openDesktop, setLook, settle, walkFocus, type FocusStop } from "./desktop.ts";
+import { LOOKS, closeWindows, expectLook, openDesktop, setLook, settle, walkFocus } from "./desktop.ts";
 import { report } from "./report.ts";
 import { screens } from "./screens.ts";
 
@@ -30,12 +30,7 @@ for (const look of looks) {
       report("focus", { screen: screen.name, look, stops });
       const app = stops.filter((s) => s.part === "app");
       if (!screen.noAppStops) expect(app.length, "the app has stops").toBeGreaterThan(0);
-      // imbatranimOS's known gap: Classic's crimson on the dark surfaces is
-      // about 2.9 to 3.3:1, a token value left as it was (its contrast test).
-      // Such a ring is reported, not failed; anything weaker still fails.
-      const gap = (s: FocusStop) => look === "classic-dark" && s.width >= 2 && s.contrast >= 2.85;
-      const weak = app.filter((s) => (s.width < 2 || s.contrast < 3) && !gap(s));
-      report("focus-gap", { screen: screen.name, look, stops: app.filter((s) => s.contrast < 3 && gap(s)) });
+      const weak = app.filter((s) => s.width < 2 || s.contrast < 3);
       expect(weak, "stops without a 2 px ring at 3:1").toEqual([]);
       await page.keyboard.press("Escape");
       await closeWindows(page);

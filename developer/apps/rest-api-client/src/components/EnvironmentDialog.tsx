@@ -108,12 +108,7 @@ export function EnvironmentDialog({
           </div>
         ) : (
           <>
-            <Input
-              className="focus-visible:ring-primary focus-visible:ring-2"
-              label="Name"
-              value={selected.name}
-              onChange={(e) => update({ ...selected, name: e.target.value })}
-            />
+            <Input label="Name" value={selected.name} onChange={(e) => update({ ...selected, name: e.target.value })} />
 
             <div className="font-ui text-on-surface-variant text-label mt-1 font-semibold tracking-wider uppercase">
               Variables

@@ -211,7 +211,7 @@ export function RequestBuilder({
         {/* The kit's Input wraps itself, so this box carries the phone row: the URL under the method, Send and Save. */}
         <div className="contents max-[600px]:order-last max-[600px]:block max-[600px]:basis-full">
           <Input
-            className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
+            className="flex-1"
             placeholder="https://api.example.com/endpoint  or  {{base}}/users"
             value={url}
             spellCheck={false}
@@ -283,14 +283,14 @@ export function RequestBuilder({
                 labelClassName="shrink-0"
               />
               <Input
-                className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
+                className="flex-1"
                 placeholder="Header"
                 value={row.name}
                 spellCheck={false}
                 onChange={(e) => updateRow(row.id, { name: e.target.value })}
               />
               <Input
-                className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
+                className="flex-1"
                 placeholder="Value"
                 value={row.value}
                 spellCheck={false}
@@ -381,7 +381,7 @@ export function RequestBuilder({
                     labelClassName="shrink-0"
                   />
                   <Input
-                    className="focus-visible:ring-primary w-40 focus-visible:ring-2"
+                    className="w-40"
                     placeholder="Field name"
                     value={field.name}
                     spellCheck={false}
@@ -391,7 +391,7 @@ export function RequestBuilder({
                   />
                   {field.filePath === undefined ? (
                     <Input
-                      className="focus-visible:ring-primary flex-1 focus-visible:ring-2"
+                      className="flex-1"
                       placeholder="Value"
                       value={field.value}
                       spellCheck={false}

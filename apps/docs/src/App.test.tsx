@@ -194,7 +194,7 @@ describe("Docs, as a kit app", () => {
       expect(view.container.textContent).toContain("Open a .docx instead");
       expect(fake.fsCalls, name).toEqual([]);
       expect(fake.notifications).toEqual([
-        { title: "Cannot open this file", body: `${name} — ${reason}`, level: "warning" },
+        { title: "Cannot open this file", body: `${name}: ${reason}`, level: "warning" },
       ]);
       expect(engine.instances).toHaveLength(0);
       cleanupRendered();

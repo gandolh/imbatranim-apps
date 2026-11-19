@@ -232,7 +232,6 @@ function FieldControl({
     default:
       return (
         <Input
-          className="focus-visible:ring-primary focus-visible:ring-2"
           type="text"
           value={typeof value === "string" ? value : ""}
           maxLength={field.maxLength}

@@ -165,13 +165,7 @@ function SignaturePad({
         value="type"
         className="focus-visible:ring-primary flex flex-col gap-2 focus-visible:ring-2 focus-visible:ring-inset"
       >
-        <Input
-          className="focus-visible:ring-primary focus-visible:ring-2"
-          value={typed}
-          placeholder="Type your name"
-          autoFocus
-          onChange={(e) => setTyped(e.target.value)}
-        />
+        <Input value={typed} placeholder="Type your name" autoFocus onChange={(e) => setTyped(e.target.value)} />
         <div
           // Deliberately literal, not a semantic token: this is a preview of
           // ink on paper, and it has to look the same in dark mode as the mark
