@@ -719,3 +719,7 @@ The sidebar's rows sat in the kit's scroll content, which is `min-width: fit-con
 ## [2026-11-19] done | Brief 19: the kit's error mark and menu fixes arrive, and CAD's guard goes
 
 The kit snapshot moved to imbatranimOS `a2e7636` (menu rows with `closeOnClick`, popups that scroll inside, the Input error mark, a vertical scroll area that stays in its column). CAD's list rows use `closeOnClick: false` and the 300 ms guard is gone; the REST sidebar's width wrapper is gone, held by a browser spec that fails on the old kit; Slides' font size list fits and scrolls at 390x640 and 360x800. No app marks an invalid kit field, so nothing changed there. Focus spec 100 passed in the four looks, overflow spec 52 passed. Built in `2468b20`, `d1e4c9b` and `2abdeac`; see [the brief](briefs/done/19-the-kits-error-mark-and-menu-fixes-arrive.md).
+
+## [2026-11-20] maintenance | The redesign's board page copied into the repo
+
+The estate redesign board is a private canvas, so `design/estate-redesign/` now holds a copy of this app's page on it and the build behind it: the directions, the judges' and the controller's rulings, the critique, the token hand-off, the board's notes, the owner's decisions, the proposed screens (as HTML with renders, or as the board's own artboard sources), and today's shots from before the redesign. It is the design record of brief 11, which built it; its README says what each file is. Prettier and the Docker build skip the folder.

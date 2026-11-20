@@ -1,0 +1,25 @@
+/*
+ * imbatranim-apps, direction B "Tools beside the page": what the apps add to the desktop's token set.
+ * Colour, radius, shadow and type are imbatranimOS's own (imbatranimOS.tokens.css) and reach the apps through the
+ * desktop's variables and kit:sync, so nothing of those is repeated here. The apps never define tokens themselves
+ * (stylesheets.md: utilities only, no --color-*), so this block is for the kit's packages/ui/src/theme.css, carried
+ * to the apps by kit:sync through imbatranimOS brief 88. Names follow the kit's pattern: Tailwind 4 namespaces
+ * --container-* (w-*, max-w-*) and --spacing-* (h-*, min-h-*), no mode difference.
+ */
+@theme static {
+  --container-navigator: 132px; /* the slide navigator's minimum; it grows with a taller window up to --container-navigator-max so six thumbnails fill it (thumbnail = (window height - 218 px) / 6 x 16 / 9); the number column is 16 px, Solway 700 14/18 */
+  --container-navigator-max: 220px;
+  --container-inspector: 272px; /* the open inspector (Slides) */
+  --container-inspector-strip: 48px; /* the idle inspector: four group icons over their labels */
+  --container-annotate: 232px; /* PDF's annotate panel, docked at 1100 px and up */
+  --container-pdf-strip: 56px; /* PDF's idle strip: Annotate, Sign, Organize, icon over label */
+  --container-popover: 264px; /* an inspector group opened as a popover below 1100 px (radius 14, shadow-menu) */
+  --container-pdf-navigator: 200px; /* PDF's Thumbnails, Outline, Forms panel */
+  --spacing-appbar: 40px; /* the app bar, desktop: 32 px controls, 4 px padding */
+  --spacing-appbar-phone: 48px;
+  --spacing-statusbar: 32px; /* the status band, desktop */
+  --spacing-statusbar-phone: 48px;
+  --spacing-bottombar: 56px; /* the phone bar of groups (Insert, Slide, Text, Shape; Pages, Annotate, Sign, Organize) */
+  --spacing-target: 44px; /* the phone target floor the bars and sheet buttons use */
+}
+/* No dark block: every value above is geometry. The desk's mode difference is a role mapping, not a token: bg-surface-container in light, bg-surface-container-lowest in dark. */

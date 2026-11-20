@@ -1,0 +1,547 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=1440"><title>direction</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&amp;family=Figtree:wght@400;500;600;700&amp;family=Solway:wght@700&amp;display=swap"><style>
+/* Hallmark · shape: app screen · genre: dashboard-tool · theme: brand · redesign: full
+ * paper: oklch(96% 0.014 70) · surface: absolute (the document's own white and black) · accent: oklch(46% 0.12 45) · display: Solway · body: Figtree
+ * nav: a slide or page navigator at the left, the document in the middle, a labelled inspector at the right, a status band at the foot; on a phone the same four groups become a bottom bar that opens a sheet · signature: the inspector, every tool in a labelled group beside the page · states: nothing open, opening, refused file, idle inspector
+ * axes: warm apricot paper/one humanist sans with a slab display for slide numbers/the accent as one soft selection · posture: restrained · modes: light+dark · contrast: pass · v2.0.0 */
+/* Hallmark · waive 39b · the 96 px button.dicon is a desktop icon cell of the OS: a 40 px tile, a two-line label and its gap in an 80 x 96 grid cell · the cell is a hit target, not a control drawn 96 px tall */
+/* Hallmark · waive 80 · div.os is the OS desktop wallpaper, drawn as three token-coloured hills · it is the product's own SunsetHills drawing, not decoration added to a page */
+/* Hallmark · dismissed F23 · the board twin of a fixed 1280 or 390 frame · no link preview is ever made from it */
+/* Hallmark · waive 7b · .sl, .pgpg, .dkpage and the vendor bands · the slide and page paper and ink are the document's own #ffffff and #000000 as the fixture says, and Univer and SuperDoc paint their own white bands; board-only tokens */
+/* Hallmark · waive 75 · slide thumbnail text (div.t, div.b) · slide text scales with the slide; a thumbnail is a picture of the document and its sizes are the deck's own */
+/* Hallmark · dismissed F24 · the app window is a floating layer: an edge for its definition on the wallpaper and a shadow for its lift, both on purpose */
+/* Hallmark · dismissed 41 · on every dark surface the root already sets the text colour through --k-on-surface */
+[data-theme="light"]{color-scheme:light;--k-surface:#fbf3ea;--k-surface-dim:#e9d6c4;--k-surface-bright:#fffdf9;--k-surface-container-lowest:#fffdf9;--k-surface-container-low:#fdf7f0;--k-surface-container:#f4e6d7;--k-surface-container-high:#f0e1d2;--k-surface-container-highest:#e9d6c3;--k-on-surface:#33241b;--k-on-surface-variant:#6b5141;--k-inverse-surface:#33241b;--k-inverse-on-surface:#fbf3ea;--k-outline:#9a7a64;--k-outline-variant:#e0c8b2;--k-error:#ba1a1a;--k-on-error:#ffffff;--k-error-container:#ffdad6;--k-on-error-container:#410002;--accent:#a04b23;--accent-on:#ffffff;--accent-soft:#f2a97e;--accent-soft-on:#33241b;--accent-soft-edge:#a04b23;--k-wall-sky-1:#fde9d8;--k-wall-sky-2:#fbd5bd;--k-wall-sky-3:#f6bfa3;--k-wall-sun:#fff4e6;--k-wall-cloud:#fff8f1;--k-wall-hill-1:#f0b794;--k-wall-hill-2:#e7a183;--k-wall-hill-3:#d98d73;--k-wall-star:#ffffff;--k-wall-star-opacity:0;--k-shadow-window:0 10px 28px rgba(140, 84, 48, 0.14);--k-shadow-window-focused:0 18px 44px rgba(140, 84, 48, 0.2), 0 2px 8px rgba(140, 84, 48, 0.1);--k-shadow-menu:0 18px 48px rgba(94, 55, 37, 0.24), 0 3px 10px rgba(94, 55, 37, 0.14);--k-shadow-tile:0 1px 2px rgba(94, 55, 37, 0.16), 0 3px 8px rgba(94, 55, 37, 0.12);--k-shadow-card:0 18px 44px rgba(140, 84, 48, 0.2), 0 2px 8px rgba(140, 84, 48, 0.1);--k-shadow-toast:0 18px 48px rgba(140, 84, 48, 0.24);--k-label-shadow:rgba(255, 248, 241, 0.7);--doc-paper:#ffffff;--doc-ink:#000000;--doc-accent:#a04b23;--vendor-surface:#ffffff;--vendor-surface-alt:#f9fafb;--vendor-line:#dfe1e5;--vendor-ink:#1f2024;--vendor-ink-soft:#5a5d66;--mark-saffron:#f2b833;--mark-rose:#e64759;--mark-leaf:#4d9e52;--mark-sky:#3d80db;--mark-ink:#1f1f24;--vendor-blue:#143ee3;--vendor-blue-soft:#e9edf9;--layout-nav:132px;--layout-nav-wide:192px;--layout-inspector:272px;--layout-inspector-strip:48px;--layout-pdf-strip:56px;--layout-popover:264px;--layout-appbar:40px;--layout-statusbar:32px;--layout-bottombar:56px;--desk:#f4e6d7;--k-font-ui:Figtree,ui-sans-serif,system-ui,sans-serif;--k-font-display:Solway,Georgia,serif;--font-content:Arimo,Arial,sans-serif;--k-radius-window:12px;--k-radius-menu:14px;--k-radius-control:10px;--k-radius-item:8px;--k-radius-tile:12px;--k-radius-small:4px;--layout-appbar-phone:48px;--layout-statusbar-phone:48px}
+[data-theme="dark"]{color-scheme:dark;--k-surface:#1c1613;--k-surface-dim:#181310;--k-surface-bright:#43362f;--k-surface-container-lowest:#201a17;--k-surface-container-low:#29211c;--k-surface-container:#322822;--k-surface-container-high:#3c302a;--k-surface-container-highest:#473932;--k-on-surface:#f6eadf;--k-on-surface-variant:#cdb6a5;--k-inverse-surface:#f6eadf;--k-inverse-on-surface:#1c1613;--k-outline:#937a69;--k-outline-variant:#54443a;--k-error:#ff8a80;--k-on-error:#2b0d0d;--k-error-container:#5c1a1a;--k-on-error-container:#ffdad6;--accent:#f2a97e;--accent-on:#33241b;--accent-soft:#5e3725;--accent-soft-on:#ffdcc7;--accent-soft-edge:#f2a97e;--k-wall-sky-1:#241c29;--k-wall-sky-2:#382634;--k-wall-sky-3:#4d2f38;--k-wall-sun:#f7d9bf;--k-wall-cloud:#4a3644;--k-wall-hill-1:#5b3a3e;--k-wall-hill-2:#4a3036;--k-wall-hill-3:#3a252c;--k-wall-star:#f7e6d6;--k-wall-star-opacity:0.9;--k-shadow-window:0 10px 28px rgba(0, 0, 0, 0.4);--k-shadow-window-focused:0 18px 44px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);--k-shadow-menu:0 18px 48px rgba(0, 0, 0, 0.55), 0 3px 10px rgba(0, 0, 0, 0.4);--k-shadow-tile:0 1px 2px rgba(0, 0, 0, 0.5), 0 3px 8px rgba(0, 0, 0, 0.35);--k-shadow-card:0 18px 44px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);--k-shadow-toast:0 18px 48px rgba(0, 0, 0, 0.6);--k-label-shadow:rgba(28, 22, 19, 0.7);--doc-paper:#ffffff;--doc-ink:#000000;--doc-accent:#a04b23;--vendor-surface:#ffffff;--vendor-surface-alt:#f9fafb;--vendor-line:#dfe1e5;--vendor-ink:#1f2024;--vendor-ink-soft:#5a5d66;--mark-saffron:#f2b833;--mark-rose:#e64759;--mark-leaf:#4d9e52;--mark-sky:#3d80db;--mark-ink:#1f1f24;--vendor-blue:#143ee3;--vendor-blue-soft:#e9edf9;--layout-nav:132px;--layout-nav-wide:192px;--layout-inspector:272px;--layout-inspector-strip:48px;--layout-pdf-strip:56px;--layout-popover:264px;--layout-appbar:40px;--layout-statusbar:32px;--layout-bottombar:56px;--desk:#201a17;--k-font-ui:Figtree,ui-sans-serif,system-ui,sans-serif;--k-font-display:Solway,Georgia,serif;--font-content:Arimo,Arial,sans-serif;--k-radius-window:12px;--k-radius-menu:14px;--k-radius-control:10px;--k-radius-item:8px;--k-radius-tile:12px;--k-radius-small:4px;--layout-appbar-phone:48px;--layout-statusbar-phone:48px}
+html,body{margin:0;overflow-x:clip}
+*{box-sizing:border-box}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;text-align:left}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{text-wrap:balance}
+abbr{text-decoration:none}
+.root{container:page/inline-size;font-family:var(--k-font-ui);font-size:13px;line-height:18px;color:var(--k-on-surface);background:var(--k-surface)}
+.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.os{position:relative;width:100%;height:800px;overflow:hidden;background:linear-gradient(180deg,var(--k-wall-sky-1),var(--k-wall-sky-2) 55%,var(--k-wall-sky-3))}
+.sun{position:absolute;left:84%;top:25%;width:150px;height:150px;transform:translate(-50%,-50%);border-radius:50%;background:var(--k-wall-sun);box-shadow:0 0 0 76px color-mix(in srgb,var(--k-wall-sun) 28%,transparent)}
+.cloud{position:absolute;height:22px;border-radius:22px;background:var(--k-wall-cloud);opacity:.85}
+.cloud::before{content:"";position:absolute;left:28%;top:-16px;width:46%;height:32px;border-radius:50%;background:inherit}
+.stars{position:absolute;inset:0;opacity:var(--k-wall-star-opacity)}
+.stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--k-wall-star)}
+.hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:46%}
+.hills path:nth-child(1){fill:var(--k-wall-hill-1)}.hills path:nth-child(2){fill:var(--k-wall-hill-2)}.hills path:nth-child(3){fill:var(--k-wall-hill-3)}
+.hide-desk .desktop{visibility:hidden}
+.desktop{position:absolute;inset:0 0 44px 0;padding:8px;display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,96px);grid-auto-columns:80px;justify-content:start}
+.dicon{display:flex;flex-direction:column;align-items:center;gap:4px;width:80px;padding-top:8px;text-align:center;border-radius:var(--k-radius-item)}
+.dicon .lbl{font-size:11px;line-height:15px;color:var(--k-on-surface);text-shadow:0 1px 2px var(--k-label-shadow);max-width:76px}
+.dicon:hover .tile{background:var(--k-surface-container-lowest)}
+.theme-dark .dicon .lbl{padding:0 4px;border-radius:var(--k-radius-small);background:color-mix(in srgb,var(--k-surface-container-low) 82%,transparent);text-shadow:none}
+.tile{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:var(--k-radius-tile);background:var(--k-surface-bright);color:var(--accent);box-shadow:var(--k-shadow-tile)}
+.tile .i{width:20px;height:20px}
+.tile.sm{width:28px;height:28px;border-radius:var(--k-radius-item)}
+.tile.sm .i{width:16px;height:16px}
+.bar>*{flex-shrink:0}
+.bar>.grow{flex-shrink:1;min-width:0}
+.bar{position:absolute;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;gap:4px;padding:0 12px 0 8px;background:var(--k-surface-container-low);border-top:1px solid var(--k-outline-variant)}
+.startbtn{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px 0 8px;border-radius:var(--k-radius-control);color:var(--k-on-surface)}
+.startbtn:hover{background:var(--k-surface-container-high)}
+.startbtn[aria-expanded=true]{background:var(--accent-soft);color:var(--accent-soft-on);box-shadow:inset 0 0 0 1px var(--accent-soft-edge)}
+.startbtn .i{color:var(--accent)}
+.startbtn[aria-expanded=true] .i{color:var(--accent-soft-on)}
+.wm{font-family:var(--k-font-display);font-weight:700;font-size:15px;line-height:18px;letter-spacing:0}
+.wm b{font-weight:700;color:var(--accent)}
+.startbtn[aria-expanded=true] .wm b{color:var(--accent-soft-on)}
+.sbtn{display:grid;place-items:center;width:32px;height:32px;border-radius:var(--k-radius-control);color:var(--k-on-surface-variant)}
+.sbtn:hover{background:var(--k-surface-container-high)}
+.task{position:relative;display:flex;align-items:center;gap:8px;height:32px;padding:0 12px 0 8px;border-radius:var(--k-radius-control);background:var(--k-surface-container);color:var(--k-on-surface);font-size:12px;line-height:16px;font-weight:600}
+.task .i{width:16px;height:16px;color:var(--accent)}
+.tl{display:inline}
+.task::after{content:"";position:absolute;left:12px;right:12px;bottom:2px;height:2px;border-radius:2px;background:var(--accent)}
+.startbtn:active,.sbtn:active,.tray:active,.pips button:active,.row:active,.pin:active,.act:active,.opt:active,.acc:active,.wb:active,.clear:active{background:var(--k-surface-container-highest)}
+.dicon:active .tile{background:var(--k-surface-container-high)}
+.btn:active{background:color-mix(in srgb,var(--accent) 72%,var(--k-on-surface))}
+.grow{flex:1}
+.pips{display:flex;gap:4px}
+.pips button{display:grid;place-items:center;width:24px;height:24px;border-radius:var(--k-radius-item);font-size:11px;line-height:15px;font-weight:600;color:var(--k-on-surface-variant);box-shadow:inset 0 0 0 1px var(--k-outline);font-variant-numeric:tabular-nums}
+.pips button:hover{background:var(--k-surface-container-high)}
+.pips button[aria-current=true],.ws1{background:var(--accent-soft);color:var(--accent-soft-on);box-shadow:inset 0 0 0 1px var(--accent-soft-edge)}
+.ws1{display:none}
+.read{display:flex;gap:12px;padding:0 4px;font-size:11px;line-height:15px;color:var(--k-on-surface-variant);font-variant-numeric:tabular-nums}
+.read b{font-weight:600;color:var(--k-on-surface)}
+.sep{width:1px;height:20px;background:var(--k-outline-variant)}
+.tray{display:grid;place-items:center;width:32px;height:32px;border-radius:var(--k-radius-control);color:var(--k-on-surface-variant)}
+.tray:hover{background:var(--k-surface-container-high)}
+.clock{display:flex;flex-direction:column;align-items:flex-end;text-align:right;font-variant-numeric:tabular-nums;padding-left:2px}
+.clock b{font-size:12px;line-height:16px;font-weight:600}
+.clock span{font-size:11px;line-height:15px;color:var(--k-on-surface-variant)}
+
+/* ---------- the app window ---------- */
+.os{height:100vh;min-height:640px}
+.aw{container:aw/size;position:absolute;display:flex;flex-direction:column;overflow:hidden;background:var(--k-surface-container-low);border:1px solid var(--k-outline);border-radius:var(--k-radius-window);box-shadow:var(--k-shadow-window-focused);color:var(--k-on-surface)}
+.w-slides{left:198px;top:156px;width:958px;height:558px}
+.w-docs{left:173px;top:0;width:860px;height:680px}
+.w-sheets{left:199px;top:8px;width:899px;height:559px}
+.w-pdf{left:216px;top:17px;width:1038px;height:560px}
+.aw.mx{left:0;top:0;right:0;bottom:44px;width:auto;height:auto;border-width:0 0 1px;border-radius:0;box-shadow:none}
+.at{flex:none;height:30px;display:flex;align-items:center;gap:8px;padding-left:12px;background:var(--k-surface-container);border-bottom:1px solid var(--k-outline-variant)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+.at .nm{flex:1;min-width:0;font-size:12px;line-height:16px;font-weight:600}
+.wbt{display:grid;place-items:center;width:40px;height:30px;color:var(--k-on-surface)}
+.wbt:hover{background:var(--k-surface-container-high)}
+.wbt .i{width:14px;height:14px}
+.abar{flex:none;height:var(--layout-appbar);display:flex;align-items:center;gap:4px;padding:0 4px;background:var(--k-surface-container-low);border-bottom:1px solid var(--k-outline-variant)}
+.ib{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:var(--k-radius-control);color:var(--k-on-surface)}
+.ib .i{width:16px;height:16px}
+.ib:hover,.tool:hover,.sb:hover,.gb:hover,.vbtn:hover{background:var(--k-surface-container-high)}
+.ib:active,.tool:active,.sb:active,.gb:active,.lb:active,.vbtn:active{background:var(--k-surface-container-highest)}
+.ib[aria-pressed=true],.tool[aria-pressed=true],.sb[aria-pressed=true]{background:var(--accent-soft);color:var(--accent-soft-on);box-shadow:inset 0 0 0 1px var(--accent-soft-edge)}
+button:disabled{opacity:.5;cursor:not-allowed;color:var(--k-on-surface-variant);background-color:transparent}
+button:disabled:hover{background-color:transparent}
+.tool:disabled,.tool:disabled:hover{background-color:var(--k-surface-container-lowest)}
+.lb.edge:disabled,.lb.edge:disabled:hover{background-color:var(--k-surface-container-lowest)}
+.lb{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:var(--k-radius-control);font-size:12px;line-height:16px;font-weight:600;color:var(--k-on-surface);white-space:nowrap;flex:none}
+.lb .i{width:16px;height:16px}
+.lb:hover{background:var(--k-surface-container-high)}
+.lb.edge{box-shadow:inset 0 0 0 1px var(--k-outline);background:var(--k-surface-container-lowest)}
+.lb.edge:hover{background:var(--k-surface-container-high)}
+.vs{width:1px;height:20px;background:var(--k-outline-variant);margin:0 4px;flex:none}
+.sp{flex:1;min-width:0}
+.dsh{display:inline-block;width:10px;height:0;border-top:1.5px solid currentColor;vertical-align:middle}
+.dsh.dl{width:12px;border-top-width:1px;margin:0 2px}
+.fld{display:flex;align-items:center;gap:8px;height:32px;width:220px;padding:0 12px;border-radius:var(--k-radius-control);background:var(--k-surface-container-lowest);box-shadow:inset 0 0 0 1px var(--k-outline);color:var(--k-on-surface-variant);font-size:12px;line-height:16px;flex:none}
+.fld .i{width:16px;height:16px;flex:none}
+.fld input{flex:1;min-width:0;border:0;background:none;padding:0;font:inherit;color:var(--k-on-surface)}
+.fld input::placeholder{color:var(--k-on-surface-variant);opacity:1}
+.main{position:relative;flex:1;min-height:0;display:grid;--nv:clamp(var(--layout-nav), calc((100cqh - 218px) / 6 * 16 / 9 + 33px), 220px);grid-template-columns:var(--nv) 1fr var(--sp,var(--layout-inspector-strip))}
+.main.pdfm{grid-template-columns:200px 1fr var(--layout-pdf-strip)}
+.nav{container-type:size;background:var(--k-surface-container-low);border-right:1px solid var(--k-outline-variant);overflow:hidden;padding:8px 6px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.th,.fs{white-space:nowrap}
+.th{display:flex;align-items:center;gap:4px;width:100%;padding:6px 0;border-radius:var(--k-radius-item);flex:none}
+.th .n,.fs .n{font-family:var(--k-font-display);font-weight:700;font-size:14px;line-height:18px;color:var(--k-on-surface-variant);width:16px;text-align:center;font-variant-numeric:tabular-nums;flex:none}
+.th .sl{flex:none;width:min(calc(100cqw - 20px),calc((100cqh - 92px) / 6 * 16 / 9))}
+.th[aria-current=true] .sl,.fs[aria-current=true] .sl{outline:2px solid var(--accent);outline-offset:2px}
+.th[aria-current=true] .n,.fs[aria-current=true] .n{color:var(--accent)}
+.sl{position:relative;background:var(--doc-paper);color:var(--doc-ink);aspect-ratio:16/9;container-type:inline-size;font-family:var(--font-content);overflow:hidden;box-shadow:0 0 0 1px var(--k-outline-variant)}
+.sl .t{position:absolute;left:0;right:0;top:8%;text-align:center;font-size:5.2cqw;line-height:1.2;white-space:nowrap}
+.sl .b{position:absolute;left:5%;top:27%;font-size:3.9cqw;line-height:1.3;white-space:nowrap}
+.sl .t.tb{outline:1.5px solid var(--doc-accent);outline-offset:3px;left:8%;right:8%}
+.hd{position:absolute;width:5px;height:5px;background:var(--doc-paper);border:1.5px solid var(--doc-accent);box-sizing:content-box;margin:-4px 0 0 -4px}
+.desk{background:var(--desk);display:grid;place-items:center;min-width:0;min-height:0;overflow:hidden;container-type:size}
+.desk .sl{width:min(calc(100cqw - 24px),calc((100cqh - 24px) * 16 / 9))}
+.insp{background:var(--k-surface-container-low);border-left:1px solid var(--k-outline-variant);min-width:0;overflow:hidden;display:flex;flex-direction:column}
+.insp.open{padding:0 8px}
+.insp.idle{align-items:center;padding:8px 0;gap:4px}
+.gb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:calc(100% - 8px);height:52px;border-radius:var(--k-radius-control);font-size:11px;line-height:15px;font-weight:600;color:var(--k-on-surface);text-align:center}
+.gb .i{width:18px;height:18px;color:var(--k-on-surface-variant)}
+.g{padding:8px 0;border-bottom:1px solid var(--k-outline-variant)}
+.g:last-of-type{border-bottom:0}
+.g h3{margin:0 0 4px;font-size:12px;line-height:16px;font-weight:600;color:var(--k-on-surface-variant)}
+.rw{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.rw+.rw{margin-top:4px}
+.tool{display:flex;align-items:center;gap:4px;height:32px;padding:0 8px;border-radius:var(--k-radius-control);background:var(--k-surface-container-lowest);box-shadow:inset 0 0 0 1px var(--k-outline-variant);font-size:12px;line-height:16px;font-weight:400;color:var(--k-on-surface);white-space:nowrap;flex:none}
+.tool .i{width:16px;height:16px;color:var(--k-on-surface-variant)}
+.tool .i.ch{width:12px;height:12px}
+.tool[aria-pressed=true] .i{color:var(--accent-soft-on)}
+.tool.sq{width:32px;padding:0;justify-content:center}
+.tool.err,.tool.err .i{color:var(--k-error)}
+.tool.size{width:64px;justify-content:space-between}
+.seg{display:flex;border-radius:var(--k-radius-control);background:var(--k-surface-container-lowest);box-shadow:inset 0 0 0 1px var(--k-outline-variant);overflow:hidden;flex:none}
+.seg button{display:grid;place-items:center;width:30px;height:32px;color:var(--k-on-surface-variant)}
+.seg .i{width:16px;height:16px}
+.hint{margin:0;padding:8px 0 0;font-size:12px;line-height:16px;color:var(--k-on-surface-variant)}
+.sbar{flex:none;height:var(--layout-statusbar);display:flex;align-items:center;gap:2px;padding:0 8px;background:var(--k-surface-container);border-top:1px solid var(--k-outline-variant);font-size:11px;line-height:15px}
+.sb{display:flex;align-items:center;gap:4px;height:28px;min-width:28px;justify-content:center;padding:0 8px;border-radius:var(--k-radius-item);font-size:12px;line-height:16px;font-weight:400;color:var(--k-on-surface);white-space:nowrap;flex:none}
+.sb .i{width:16px;height:16px}
+.pos{padding:0 4px;min-width:84px;text-align:center;font-size:11px;line-height:15px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--k-on-surface)}
+.rd{color:var(--k-on-surface-variant);font-variant-numeric:tabular-nums;padding:0 4px;font-weight:600}
+.mk{position:absolute;z-index:5;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-on);font-size:11px;line-height:15px;font-weight:700}
+.ld{position:absolute;z-index:4;height:1px;background:var(--accent)}
+.dk{}
+.ph{display:none}
+/* pdf */
+.pn{background:var(--k-surface-container-low);border-right:1px solid var(--k-outline-variant);min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--k-outline-variant);flex:none}
+.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;font-size:11px;line-height:15px;font-weight:600;color:var(--k-on-surface-variant);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button .i{width:16px;height:16px}
+.tabs button[aria-selected=true]{color:var(--k-on-surface);border-bottom-color:var(--accent)}
+.tabs button[aria-selected=true] .i{color:var(--accent)}
+.tabs button:hover{background:var(--k-surface-container-high)}
+.pth{flex:1;min-height:0;overflow:hidden;padding:8px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.pth .pt{width:128px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0}
+.pth .pt .pgm{width:100%;aspect-ratio:8.5/11;background:var(--doc-paper);box-shadow:0 0 0 1px var(--k-outline-variant);position:relative;overflow:hidden}
+.pth .pt[aria-current=true] .pgm{outline:2px solid var(--accent);outline-offset:2px}
+.pth .pt span{font-family:var(--k-font-display);font-weight:700;font-size:13px;line-height:18px;color:var(--k-on-surface-variant);font-variant-numeric:tabular-nums}
+.pth .pt[aria-current=true] span{color:var(--accent)}
+.ln{position:absolute;left:12%;right:14%;height:2px;background:var(--doc-ink);opacity:.5;border-radius:1px}
+.pager{--s:.94;background:var(--desk);min-width:0;min-height:0;overflow:hidden;display:flex;justify-content:center;padding:16px 16px 0}
+.stack{display:flex;flex-direction:column;gap:12px;flex:none}
+.shw{width:calc(794px * var(--s));height:calc(1123px * var(--s));flex:none}
+.sheet{position:relative;width:794px;height:1123px;transform:scale(var(--s));transform-origin:0 0;background:var(--doc-paper);color:var(--doc-ink);box-shadow:0 0 0 1px var(--k-outline-variant);padding:56px 64px;font-family:var(--font-content)}
+.sheet h4{margin:0 0 24px;font-size:24px;line-height:30px;font-weight:700}
+.sheet h5{margin:0 0 8px;font-size:17px;line-height:22px;font-weight:700}
+.sheet p{margin:0;font-size:15px;line-height:20px}
+.sheet pre{margin:8px 0;font:400 12px/14px "Courier New",monospace;white-space:pre}
+.sheet .ind{padding-left:80px}
+.sheet .pl{position:absolute;inset:0}
+.ann{background:var(--k-surface-container-low);border-left:1px solid var(--k-outline-variant);min-width:0;overflow:hidden;display:flex;flex-direction:column;padding:0 12px}
+.ann .g{padding:8px 0}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.tg .tool{width:100%;padding:0 8px}
+.sw{display:flex;gap:8px;align-items:center}
+.sw button{width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--k-outline);flex:none}
+.sw button[aria-checked=true]{outline:2px solid var(--accent);outline-offset:2px}
+.wd{display:flex;gap:4px}
+.wd button{display:grid;place-items:center;width:44px;height:32px;border-radius:var(--k-radius-control);background:var(--k-surface-container-lowest);box-shadow:inset 0 0 0 1px var(--k-outline-variant);font-size:11px;line-height:15px;font-weight:600;color:var(--k-on-surface);font-variant-numeric:tabular-nums}
+.wd button[aria-checked=true]{background:var(--accent-soft);color:var(--accent-soft-on);box-shadow:inset 0 0 0 1px var(--accent-soft-edge)}
+.org{margin-top:auto;padding:8px 0}
+.org .lb{width:100%;justify-content:center}
+/* docs + sheets: the libraries paint these bands */
+.vb{flex:none;height:44px;display:flex;align-items:center;gap:2px;padding:0 8px;background:var(--vendor-surface);border-bottom:1px solid var(--vendor-line);color:var(--vendor-ink);overflow:hidden}
+.vbtn{display:flex;align-items:center;gap:4px;height:32px;min-width:32px;padding:0 4px;justify-content:center;border-radius:8px;font-size:13px;line-height:18px;color:var(--vendor-ink);flex:none;white-space:nowrap}
+.vbtn:hover{background:var(--vendor-surface-alt)}
+.vbtn .i{width:16px;height:16px}
+.vbtn .i.ch{width:10px;height:10px}
+.vbtn.on{background:var(--vendor-blue-soft);color:var(--vendor-blue)}
+.vsep{width:1px;height:20px;background:var(--vendor-line);margin:0 8px;flex:none}
+.vendor{background:var(--vendor-surface)}
+.vtabs{flex:none;height:36px;display:flex;justify-content:center;align-items:center;gap:8px;background:var(--vendor-surface-alt);color:var(--vendor-ink);font-size:13px;line-height:18px}
+.vtabs button{padding:4px 12px;border-radius:6px}
+.vtabs button[aria-selected=true]{background:var(--vendor-blue-soft);color:var(--vendor-blue);font-weight:600}
+.fbar{flex:none;height:28px;display:flex;align-items:center;gap:8px;padding:0 8px;background:var(--vendor-surface);border-bottom:1px solid var(--vendor-line);color:var(--vendor-ink);font-size:13px;line-height:18px}
+.fbar .ref{width:80px;display:flex;justify-content:space-between;align-items:center;border-right:1px solid var(--vendor-line);padding-right:8px}
+.fbar .fxv{font-style:italic}
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:40px repeat(10,1fr);grid-auto-rows:24px;background:var(--vendor-surface);overflow:hidden;font-size:13px;line-height:18px;color:var(--vendor-ink);font-variant-numeric:tabular-nums}
+.grid>div{border-right:1px solid var(--vendor-line);border-bottom:1px solid var(--vendor-line);padding:2px 4px;overflow:hidden;white-space:nowrap}
+.grid .h{background:var(--vendor-surface-alt);text-align:center;color:var(--vendor-ink-soft)}
+.grid .r{text-align:right}
+.grid .sel{outline:2px solid var(--vendor-blue);outline-offset:-2px}
+.grid .hs{background:var(--vendor-blue-soft);color:var(--vendor-blue);font-weight:600}
+.vfoot{flex:none;height:36px;display:flex;align-items:center;gap:8px;padding:0 8px;background:var(--vendor-surface);border-top:1px solid var(--vendor-line);color:var(--vendor-ink);font-size:13px;line-height:18px}
+.vfoot .calc{padding:4px 12px;border-radius:6px;background:var(--vendor-blue-soft);color:var(--vendor-blue);font-weight:600}
+.slider{position:relative;width:116px;height:2px;background:var(--vendor-line);border-radius:2px}
+.slider i{position:absolute;left:40%;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--vendor-surface);box-shadow:0 0 0 1.5px var(--vendor-ink-soft)}
+.dkdesk{--s:1;background:var(--desk);min-width:0;min-height:0;flex:1;overflow:hidden;display:flex;justify-content:center;padding:12px 24px 0}
+.pgw{width:calc(816px * var(--s));height:calc(1056px * var(--s));flex:none}
+.pgst{display:flex;flex-direction:column;gap:12px;flex:none}
+.dkpage{width:816px;height:1056px;transform:scale(var(--s));transform-origin:0 0;background:var(--doc-paper);color:var(--doc-ink);box-shadow:0 0 0 1px var(--k-outline-variant);padding:96px;font-family:var(--font-content);font-size:14.67px;line-height:22px}
+/* states (center screens) */
+.st{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;background:var(--k-surface-container-low);color:var(--k-on-surface-variant);padding:24px}
+.st .i.big{width:40px;height:40px;stroke-width:1}
+.st h3{margin:0;font-family:var(--k-font-display);font-weight:700;font-size:24px;line-height:30px;color:var(--k-on-surface)}
+.st .nmx{font-size:12px;line-height:16px;font-weight:600;color:var(--k-on-surface)}
+.st p{margin:0;font-size:12px;line-height:16px;max-width:320px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:var(--k-radius-control);background:var(--accent);color:var(--accent-on);font-size:12px;line-height:16px;font-weight:600}
+.btn .i{width:16px;height:16px}
+.btn:hover{background:color-mix(in srgb,var(--accent) 88%,var(--k-on-surface))}
+.menu{background:var(--k-surface-container-lowest);border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-menu);box-shadow:var(--k-shadow-menu);padding:4px;display:flex;flex-direction:column;min-width:200px}
+.menu button{display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:var(--k-radius-item);font-size:12px;line-height:16px;font-weight:400;color:var(--k-on-surface)}
+.menu button .i{width:16px;height:16px;color:var(--k-on-surface-variant)}
+.menu button:hover,.menu button.hv{background:var(--k-surface-container-high)}
+.menu hr{border:0;height:1px;background:var(--k-outline-variant);margin:4px 0}
+.sheetm{background:var(--k-surface-container-low);border:1px solid var(--k-outline-variant);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:var(--k-shadow-menu);padding:8px 16px 16px}
+.sheetm .grab{width:36px;height:4px;border-radius:2px;background:var(--k-outline);margin:0 auto 8px}
+.sheetm h3{margin:0 0 8px;font-size:12px;line-height:16px;font-weight:600;color:var(--k-on-surface-variant)}
+.gb[aria-pressed=true]{background:var(--accent-soft);color:var(--accent-soft-on);box-shadow:inset 0 0 0 1px var(--accent-soft-edge)}
+.gb[aria-pressed=true] .i{color:var(--accent-soft-on)}
+.pop{position:absolute;z-index:3;right:calc(var(--layout-inspector-strip) + 4px);top:112px;width:var(--layout-popover);background:var(--k-surface-container-lowest);border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-menu);box-shadow:var(--k-shadow-menu);padding:12px}
+.pop h3{margin:0 0 8px;font-size:12px;line-height:16px;font-weight:600;color:var(--k-on-surface-variant)}
+.dock,.pop{display:none}
+.main.op .pop{display:block}
+@container aw (min-width:1100px){
+.main.op{--sp:var(--layout-inspector)}
+.main.op .insp.idle{display:none}
+.main.op .dock{display:flex}
+.main.op .pop{display:none}
+}
+.zl{display:none}
+.z100,.z94{display:inline}
+.zl{white-space:nowrap}
+@container aw (max-width:1029px){.z94{display:none}.z90{display:inline}.pager{--s:.90}}
+@container aw (max-width:899px){.z90{display:none}.z83{display:inline}.pager{--s:.83}.main.pdfm{grid-template-columns:1fr var(--layout-pdf-strip)}.pdfm .pn{display:none}}
+@container aw (max-width:849px){.z100{display:none}.z88{display:inline}.dkdesk{--s:.88}}
+@container aw (max-width:600px){.z88,.z83{display:none}.z44,.z46{display:inline}.dkdesk{--s:.44}.pager{--s:.46}}
+@container aw (max-width:380px){.z44,.z46{display:none}.z40,.z42{display:inline}.dkdesk{--s:.40}.pager{--s:.42}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@container aw (min-width:601px) and (max-height:263px){.grid .r1{display:none}}
+@container aw (max-width:600px) and (max-height:293px){.grid .r1{display:none}}
+@container aw (min-width:601px) and (max-height:287px){.grid .r2{display:none}}
+@container aw (max-width:600px) and (max-height:317px){.grid .r2{display:none}}
+@container aw (min-width:601px) and (max-height:311px){.grid .r3{display:none}}
+@container aw (max-width:600px) and (max-height:341px){.grid .r3{display:none}}
+@container aw (min-width:601px) and (max-height:335px){.grid .r4{display:none}}
+@container aw (max-width:600px) and (max-height:365px){.grid .r4{display:none}}
+@container aw (min-width:601px) and (max-height:359px){.grid .r5{display:none}}
+@container aw (max-width:600px) and (max-height:389px){.grid .r5{display:none}}
+@container aw (min-width:601px) and (max-height:383px){.grid .r6{display:none}}
+@container aw (max-width:600px) and (max-height:413px){.grid .r6{display:none}}
+@container aw (min-width:601px) and (max-height:407px){.grid .r7{display:none}}
+@container aw (max-width:600px) and (max-height:437px){.grid .r7{display:none}}
+@container aw (min-width:601px) and (max-height:431px){.grid .r8{display:none}}
+@container aw (max-width:600px) and (max-height:461px){.grid .r8{display:none}}
+@container aw (min-width:601px) and (max-height:455px){.grid .r9{display:none}}
+@container aw (max-width:600px) and (max-height:485px){.grid .r9{display:none}}
+@container aw (min-width:601px) and (max-height:479px){.grid .r10{display:none}}
+@container aw (max-width:600px) and (max-height:509px){.grid .r10{display:none}}
+@container aw (min-width:601px) and (max-height:503px){.grid .r11{display:none}}
+@container aw (max-width:600px) and (max-height:533px){.grid .r11{display:none}}
+@container aw (min-width:601px) and (max-height:527px){.grid .r12{display:none}}
+@container aw (max-width:600px) and (max-height:557px){.grid .r12{display:none}}
+@container aw (min-width:601px) and (max-height:551px){.grid .r13{display:none}}
+@container aw (max-width:600px) and (max-height:581px){.grid .r13{display:none}}
+@container aw (min-width:601px) and (max-height:575px){.grid .r14{display:none}}
+@container aw (max-width:600px) and (max-height:605px){.grid .r14{display:none}}
+@container aw (min-width:601px) and (max-height:599px){.grid .r15{display:none}}
+@container aw (max-width:600px) and (max-height:629px){.grid .r15{display:none}}
+@container aw (min-width:601px) and (max-height:623px){.grid .r16{display:none}}
+@container aw (max-width:600px) and (max-height:653px){.grid .r16{display:none}}
+@container aw (min-width:601px) and (max-height:647px){.grid .r17{display:none}}
+@container aw (max-width:600px) and (max-height:677px){.grid .r17{display:none}}
+@container aw (min-width:601px) and (max-height:671px){.grid .r18{display:none}}
+@container aw (max-width:600px) and (max-height:701px){.grid .r18{display:none}}
+@container aw (min-width:601px) and (max-height:695px){.grid .r19{display:none}}
+@container aw (max-width:600px) and (max-height:725px){.grid .r19{display:none}}
+@container aw (min-width:601px) and (max-height:719px){.grid .r20{display:none}}
+@container aw (max-width:600px) and (max-height:749px){.grid .r20{display:none}}
+@container aw (min-width:601px) and (max-height:743px){.grid .r21{display:none}}
+@container aw (max-width:600px) and (max-height:773px){.grid .r21{display:none}}
+@container aw (min-width:601px) and (max-height:767px){.grid .r22{display:none}}
+@container aw (max-width:600px) and (max-height:797px){.grid .r22{display:none}}
+@container aw (min-width:601px) and (max-height:791px){.grid .r23{display:none}}
+@container aw (max-width:600px) and (max-height:821px){.grid .r23{display:none}}
+@container aw (min-width:601px) and (max-height:815px){.grid .r24{display:none}}
+@container aw (max-width:600px) and (max-height:845px){.grid .r24{display:none}}
+@container aw (min-width:601px) and (max-height:839px){.grid .r25{display:none}}
+@container aw (max-width:600px) and (max-height:869px){.grid .r25{display:none}}
+@container aw (min-width:601px) and (max-height:863px){.grid .r26{display:none}}
+@container aw (max-width:600px) and (max-height:893px){.grid .r26{display:none}}
+@container aw (min-width:601px) and (max-height:887px){.grid .r27{display:none}}
+@container aw (max-width:600px) and (max-height:917px){.grid .r27{display:none}}
+@container aw (min-width:601px) and (max-height:911px){.grid .r28{display:none}}
+@container aw (max-width:600px) and (max-height:941px){.grid .r28{display:none}}
+@container aw (min-width:601px) and (max-height:935px){.grid .r29{display:none}}
+@container aw (max-width:600px) and (max-height:965px){.grid .r29{display:none}}
+@container aw (min-width:601px) and (max-height:959px){.grid .r30{display:none}}
+@container aw (max-width:600px) and (max-height:989px){.grid .r30{display:none}}
+@container aw (min-width:601px) and (max-height:983px){.grid .r31{display:none}}
+@container aw (max-width:600px) and (max-height:1013px){.grid .r31{display:none}}
+@container aw (min-width:601px) and (max-height:1007px){.grid .r32{display:none}}
+@container aw (max-width:600px) and (max-height:1037px){.grid .r32{display:none}}
+@container aw (min-width:601px) and (max-height:1031px){.grid .r33{display:none}}
+@container aw (max-width:600px) and (max-height:1061px){.grid .r33{display:none}}
+@container aw (min-width:601px) and (max-height:1055px){.grid .r34{display:none}}
+@container aw (max-width:600px) and (max-height:1085px){.grid .r34{display:none}}
+@container aw (min-width:601px) and (max-height:1079px){.grid .r35{display:none}}
+@container aw (max-width:600px) and (max-height:1109px){.grid .r35{display:none}}
+@container aw (min-width:601px) and (max-height:1103px){.grid .r36{display:none}}
+@container aw (max-width:600px) and (max-height:1133px){.grid .r36{display:none}}
+@container aw (min-width:601px) and (max-height:1127px){.grid .r37{display:none}}
+@container aw (max-width:600px) and (max-height:1157px){.grid .r37{display:none}}
+@container aw (min-width:601px) and (max-height:1151px){.grid .r38{display:none}}
+@container aw (max-width:600px) and (max-height:1181px){.grid .r38{display:none}}
+@container aw (min-width:601px) and (max-height:1175px){.grid .r39{display:none}}
+@container aw (max-width:600px) and (max-height:1205px){.grid .r39{display:none}}
+@container aw (min-width:601px) and (max-height:1199px){.grid .r40{display:none}}
+@container aw (max-width:600px) and (max-height:1229px){.grid .r40{display:none}}
+@container page (max-width:1279px){
+.aw{left:8px;top:8px;right:8px;bottom:52px;width:auto;height:auto}
+.mk,.ld{display:none}
+}
+@container page (max-width:600px){
+.os{height:844px}
+.desktop{inset:0 0 56px 0;grid-template-rows:repeat(8,96px)}
+.bar{height:56px;padding:0 8px 0 4px;gap:0}
+.startbtn{width:48px;height:48px;padding:0;justify-content:center;border-radius:12px}
+.startbtn .wm,.pips,.read,.sep{display:none}
+.startbtn .i{width:22px;height:22px}
+.sbtn,.tray{width:48px;height:48px}
+.sbtn .i,.tray .i{width:20px;height:20px}
+.task{width:48px;height:48px;padding:0;justify-content:center;gap:0}
+.task .tl{display:none}
+.task::after{left:14px;right:14px;bottom:4px}
+.ws1{display:grid;place-items:center;position:relative;width:48px;height:48px;margin:0 2px;background:none;box-shadow:none;font-size:14px;line-height:20px;font-weight:600;text-align:center}
+.ws1::before{content:"";position:absolute;inset:7px;border-radius:10px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-soft-edge)}
+.ws1>span{position:relative}
+.clock{padding:0 4px}
+.clock b{font-size:14px;line-height:18px}
+.clock span{font-size:12px;line-height:16px}
+.dicon .lbl{font-size:12px;line-height:16px}
+
+.os{height:100vh;min-height:640px}
+.aw,.aw.mx{left:0;top:0;right:0;bottom:56px;width:auto;height:auto;border-width:0 0 1px;border-radius:0;box-shadow:none}
+.at{height:40px;padding-left:16px;gap:12px}
+.at .nm{font-size:14px;line-height:20px}
+.wbt{width:48px;height:40px}
+.wbt .i{width:18px;height:18px}
+.wbt.mxb{display:none}
+.dk,.mk,.ld,.pop,.dock{display:none!important}
+.ph{display:flex}
+.abar{height:var(--layout-appbar-phone);padding:0 8px;gap:4px}
+.ib{width:44px;height:44px}
+.ib .i{width:20px;height:20px}
+.lb{height:44px;padding:0 12px;font-size:14px;line-height:20px;border-radius:12px}
+.lb .i{width:18px;height:18px}
+.main{display:flex;flex-direction:column}
+.desk{container-type:normal;display:block;flex:none;padding:12px 12px 8px}
+.desk .sl{width:100%}
+.strip{display:grid;justify-items:center;flex:1;min-height:0;overflow:hidden;grid-template-columns:1fr 1fr;grid-auto-rows:min-content;gap:8px 8px;padding:8px 12px;background:var(--k-surface-container-low);border-top:1px solid var(--k-outline-variant);align-content:start}
+.fs{display:flex;flex-direction:column;align-items:center;gap:4px;padding:2px;border-radius:12px}
+.fs .sl{width:150px}
+.fs .n{font-size:16px}
+.fs[aria-current=true] .sl{outline-offset:2px}
+.sbar{height:40px}
+.sbar.ph{height:var(--layout-statusbar-phone);padding:0 4px;gap:0;border-top:1px solid var(--k-outline-variant)}
+.sb{height:44px;min-width:44px;padding:0 4px;font-size:14px;line-height:20px;border-radius:12px}
+.sb .i{width:20px;height:20px}
+.pos,.rd{font-size:12px;line-height:16px}
+.pos{min-width:0;padding:0 2px}
+.btm{display:flex;flex:none;height:var(--layout-bottombar);background:var(--k-surface-container-low);border-top:1px solid var(--k-outline-variant)}
+.btm button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;line-height:16px;font-weight:600;color:var(--k-on-surface);text-align:center}
+.btm .i{width:20px;height:20px;color:var(--k-on-surface-variant)}
+.btm button[aria-pressed=true]{color:var(--accent-soft-on)}
+.vb,.vb.ph{height:48px;overflow-x:auto;scrollbar-width:none}
+.vbtn{height:40px;min-width:40px}
+.dkdesk{padding:12px 12px 0}
+.main{--sp:0px}
+.pager{padding:12px 12px 0;flex:1;min-height:0}
+.vb.fade{mask-image:linear-gradient(to right,var(--vendor-ink) calc(100% - 24px),transparent)}
+.grid{grid-template-columns:36px repeat(5,minmax(0,1fr))}
+.grid .hid{display:none}
+.vtabs{height:40px}
+.vfoot{height:40px}
+
+.tg .tool{height:44px}
+.tool{height:44px}
+.tool.sq{width:44px}
+.wd button{width:48px;height:44px}
+.sw button{width:36px;height:36px}
+.btn{height:44px;font-size:14px;line-height:20px;border-radius:12px}
+.st h3{font-size:24px}
+.sheetm .rw .tool{height:44px}
+}
+@container page (max-width:380px){
+.sbtn,.tray,.ws1{width:44px}
+.startbtn,.task{width:44px}
+.fs .sl{width:135px}
+.clock{padding:0 4px 0 2px}
+.abar{padding:0 4px;gap:2px}
+.lb{padding:0 8px}
+}
+@media (max-width:600px){
+.os{height:100svh;min-height:600px}
+}
+
+.dir{padding:48px 56px 64px;display:flex;flex-direction:column;gap:40px}
+.dir h1{font-family:var(--k-font-display);font-weight:700;font-size:24px;line-height:30px;margin:0}
+.dir .idea{font-size:15px;line-height:22px;color:var(--k-on-surface-variant);max-width:760px;margin-top:8px}
+.dir h2{font-size:17px;line-height:22px;font-weight:600;margin:0 0 16px}
+.dir h3{font-size:13px;line-height:18px;font-weight:600;margin:0 0 12px}
+.dir h4{font-size:12px;line-height:16px;font-weight:600;margin:20px 0 8px;opacity:.9}
+.dir .two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.pal{background:var(--k-surface);color:var(--k-on-surface);border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-window);padding:24px}
+.swg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px}
+.swt{display:flex;align-items:center;gap:12px}
+.chip{width:36px;height:36px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(128,128,128,.4);flex:none}
+.sn{display:flex;flex-direction:column;font-size:12px;line-height:16px;font-weight:600;min-width:0}
+.sn small{font-size:11px;line-height:15px;font-weight:400;color:var(--k-on-surface-variant);overflow-wrap:anywhere}
+.tsr{display:flex;align-items:baseline;gap:16px;padding:8px 0;border-bottom:1px solid var(--k-outline-variant)}
+.tsm{width:220px;flex:none;font-size:11px;line-height:15px;color:var(--k-on-surface-variant)}
+.dir .box{background:var(--k-surface-container-low);border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-window);padding:24px}
+.scalebox{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.sp1{background:var(--accent);opacity:.8;height:16px;border-radius:2px}
+.shw{display:flex;gap:24px;flex-wrap:wrap;margin-top:8px}
+.shw div{width:140px;height:72px;display:grid;place-items:center;font-size:11px;line-height:15px;background:var(--k-surface-container-low);border-radius:var(--k-radius-control);text-align:center;padding:8px}
+.cp{padding:24px;background:var(--k-surface);color:var(--k-on-surface);border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-window);display:flex;flex-direction:column;gap:12px}
+.cp .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cl{font-size:11px;line-height:15px;font-weight:600;color:var(--k-on-surface-variant)}
+.ib.hv{background:var(--k-surface-container-high)}
+.ib.ff{outline:2px solid var(--accent);outline-offset:2px}
+.ff2{display:flex;flex-direction:column;gap:4px;width:260px}
+.ff2 label{font-size:11px;line-height:15px;font-weight:600;color:var(--k-on-surface)}
+.req{color:var(--k-error)}
+.er{display:flex;gap:4px;align-items:center;font-size:11px;line-height:15px;color:var(--k-error)}
+.er .i{width:14px;height:14px}
+.nvr{display:flex;gap:16px;background:var(--k-surface-container-low);padding:12px;border-radius:var(--k-radius-item);width:max-content}
+.tip{background:var(--k-inverse-surface);color:var(--k-inverse-on-surface);font-size:11px;line-height:15px;font-weight:500;padding:4px 8px;border-radius:var(--k-radius-small);margin-top:4px}
+.scg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.sc{border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-window);overflow:hidden;background:var(--k-surface-container-low)}
+.sct{font-size:11px;line-height:15px;font-weight:600;color:var(--k-on-surface-variant);padding:8px 12px;background:var(--k-surface-container);border-bottom:1px solid var(--k-outline-variant)}
+.sc .st{min-height:220px}
+.mini{display:flex;gap:16px;align-items:flex-start;transform:scale(.7);transform-origin:top left;width:420px;height:170px}
+.insg{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.insc{border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-window);overflow:hidden;background:var(--k-surface-container-low)}
+.ct{width:100%;border-collapse:collapse;font-size:12px;line-height:16px;margin-bottom:24px}
+.ct th,.ct td{padding:6px 8px;border-bottom:1px solid var(--k-outline-variant);text-align:left;vertical-align:top}
+.ct th{font-weight:600;color:var(--k-on-surface-variant)}
+.ct td:nth-child(n+2),.ct th:nth-child(n+2){text-align:right;font-variant-numeric:tabular-nums;width:70px}
+.ct i{color:var(--k-on-surface-variant);font-style:normal}
+.dir .sheet{display:grid;grid-template-columns:390px 1fr;gap:24px;align-items:end}
+.phonebox{width:390px;height:330px;position:relative;overflow:hidden;background:var(--k-surface);border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-window);display:flex;flex-direction:column;justify-content:flex-end}
+.phonebox .btm{display:flex}
+.pbtm{display:flex;height:56px;background:var(--k-surface-container-low);border-top:1px solid var(--k-outline-variant)}
+.pbtm button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;line-height:16px;font-weight:600;color:var(--k-on-surface)}
+.pbtm .i{width:20px;height:20px;color:var(--k-on-surface-variant)}
+.sheetm .rw{display:flex;gap:8px;flex-wrap:wrap}
+.sheetm .tool{height:44px;border-radius:12px;font-size:14px;line-height:20px}
+.sheetm .tool .i{width:20px;height:20px}
+</style></head><body><div class="root" data-theme="light" style="width:1440px;background:var(--k-surface);color:var(--k-on-surface);font-family:var(--k-font-ui)"><div class="dir" id="top">
+<header><h1>Direction · Tools beside the page</h1><p class="idea">The document gets the middle. Slides and pages sit at the left, every tool moves into a labelled group at the right, and position, notes and zoom sit in a status band at the window's foot; on a phone the same groups become a bottom bar.</p></header>
+<section aria-label="Palette"><h2>Palette, by role</h2><div class="two"><section data-theme="light" class=" pal" aria-label="Light (Apricot) palette"><h3>Light (Apricot)</h3><div class="swg"><div class="swt"><span class="chip" style="background:var(--k-surface-container)"></span><span class="sn">surface-container<small>--k-surface-container · title band, status band; the desk in light</small><small>#f4e6d7</small></span></div><div class="swt"><span class="chip" style="background:var(--desk)"></span><span class="sn">desk<small>--desk · the desk: surface-container in light, surface-container-lowest in dark (app mapping, OS tokens unchanged)</small><small>#f4e6d7</small></span></div><div class="swt"><span class="chip" style="background:var(--k-surface-container-low)"></span><span class="sn">surface-container-low<small>--k-surface-container-low · app bar, navigator, inspector, bottom bar</small><small>#fdf7f0</small></span></div><div class="swt"><span class="chip" style="background:var(--k-surface-container-lowest)"></span><span class="sn">surface-container-lowest<small>--k-surface-container-lowest · tool buttons, fields, Download</small><small>#fffdf9</small></span></div><div class="swt"><span class="chip" style="background:var(--k-surface-container-high)"></span><span class="sn">surface-container-high<small>--k-surface-container-high · hover</small><small>#f0e1d2</small></span></div><div class="swt"><span class="chip" style="background:var(--k-surface-container-highest)"></span><span class="sn">surface-container-highest<small>--k-surface-container-highest · pressed</small><small>#e9d6c3</small></span></div><div class="swt"><span class="chip" style="background:var(--k-on-surface)"></span><span class="sn">on-surface<small>--k-on-surface · text, icons</small><small>#33241b</small></span></div><div class="swt"><span class="chip" style="background:var(--k-on-surface-variant)"></span><span class="sn">on-surface-variant<small>--k-on-surface-variant · group heads, readouts, hint</small><small>#6b5141</small></span></div><div class="swt"><span class="chip" style="background:var(--k-outline)"></span><span class="sn">outline<small>--k-outline · control edge (Download, Present, field)</small><small>#9a7a64</small></span></div><div class="swt"><span class="chip" style="background:var(--k-outline-variant)"></span><span class="sn">outline-variant<small>--k-outline-variant · hairlines, tool edge, slide edge</small><small>#e0c8b2</small></span></div><div class="swt"><span class="chip" style="background:var(--accent)"></span><span class="sn">accent<small>--accent · focus ring, current number, strong button</small><small>#a04b23</small></span></div><div class="swt"><span class="chip" style="background:var(--accent-on)"></span><span class="sn">accent-on<small>--accent-on · text on accent</small><small>#ffffff</small></span></div><div class="swt"><span class="chip" style="background:var(--accent-soft)"></span><span class="sn">accent-soft<small>--accent-soft · selected: pressed toggle, taskbar task</small><small>#f2a97e</small></span></div><div class="swt"><span class="chip" style="background:var(--accent-soft-on)"></span><span class="sn">accent-soft-on<small>--accent-soft-on · text on selected</small><small>#33241b</small></span></div><div class="swt"><span class="chip" style="background:var(--accent-soft-edge)"></span><span class="sn">accent-soft-edge<small>--accent-soft-edge · selected edge</small><small>#a04b23</small></span></div><div class="swt"><span class="chip" style="background:var(--k-error)"></span><span class="sn">error<small>--k-error · Delete, refusal</small><small>#ba1a1a</small></span></div></div><h4>Board only (documents and vendor libraries, same in both themes)</h4><div class="swg"><div class="swt"><span class="chip" style="background:var(--doc-paper)"></span><span class="sn">doc-paper<small>--doc-paper · slide, page (stays white)</small><small>#ffffff</small></span></div><div class="swt"><span class="chip" style="background:var(--doc-ink)"></span><span class="sn">doc-ink<small>--doc-ink · slide and page text</small><small>#000000</small></span></div><div class="swt"><span class="chip" style="background:var(--doc-accent)"></span><span class="sn">doc-accent<small>--doc-accent · selection frame on a document</small><small>#a04b23</small></span></div><div class="swt"><span class="chip" style="background:var(--vendor-surface)"></span><span class="sn">vendor-surface<small>--vendor-surface · SuperDoc, Univer bands</small><small>#ffffff</small></span></div><div class="swt"><span class="chip" style="background:var(--vendor-blue)"></span><span class="sn">vendor-blue<small>--vendor-blue · Univer's own blue</small><small>#143ee3</small></span></div></div></section><section data-theme="dark" class=" pal" aria-label="Dark (Apricot) palette"><h3>Dark (Apricot)</h3><div class="swg"><div class="swt"><span class="chip" style="background:var(--k-surface-container)"></span><span class="sn">surface-container<small>--k-surface-container · title band, status band; the desk in light</small><small>#322822</small></span></div><div class="swt"><span class="chip" style="background:var(--desk)"></span><span class="sn">desk<small>--desk · the desk: surface-container in light, surface-container-lowest in dark (app mapping, OS tokens unchanged)</small><small>#201a17</small></span></div><div class="swt"><span class="chip" style="background:var(--k-surface-container-low)"></span><span class="sn">surface-container-low<small>--k-surface-container-low · app bar, navigator, inspector, bottom bar</small><small>#29211c</small></span></div><div class="swt"><span class="chip" style="background:var(--k-surface-container-lowest)"></span><span class="sn">surface-container-lowest<small>--k-surface-container-lowest · tool buttons, fields, Download</small><small>#201a17</small></span></div><div class="swt"><span class="chip" style="background:var(--k-surface-container-high)"></span><span class="sn">surface-container-high<small>--k-surface-container-high · hover</small><small>#3c302a</small></span></div><div class="swt"><span class="chip" style="background:var(--k-surface-container-highest)"></span><span class="sn">surface-container-highest<small>--k-surface-container-highest · pressed</small><small>#473932</small></span></div><div class="swt"><span class="chip" style="background:var(--k-on-surface)"></span><span class="sn">on-surface<small>--k-on-surface · text, icons</small><small>#f6eadf</small></span></div><div class="swt"><span class="chip" style="background:var(--k-on-surface-variant)"></span><span class="sn">on-surface-variant<small>--k-on-surface-variant · group heads, readouts, hint</small><small>#cdb6a5</small></span></div><div class="swt"><span class="chip" style="background:var(--k-outline)"></span><span class="sn">outline<small>--k-outline · control edge (Download, Present, field)</small><small>#937a69</small></span></div><div class="swt"><span class="chip" style="background:var(--k-outline-variant)"></span><span class="sn">outline-variant<small>--k-outline-variant · hairlines, tool edge, slide edge</small><small>#54443a</small></span></div><div class="swt"><span class="chip" style="background:var(--accent)"></span><span class="sn">accent<small>--accent · focus ring, current number, strong button</small><small>#f2a97e</small></span></div><div class="swt"><span class="chip" style="background:var(--accent-on)"></span><span class="sn">accent-on<small>--accent-on · text on accent</small><small>#33241b</small></span></div><div class="swt"><span class="chip" style="background:var(--accent-soft)"></span><span class="sn">accent-soft<small>--accent-soft · selected: pressed toggle, taskbar task</small><small>#5e3725</small></span></div><div class="swt"><span class="chip" style="background:var(--accent-soft-on)"></span><span class="sn">accent-soft-on<small>--accent-soft-on · text on selected</small><small>#ffdcc7</small></span></div><div class="swt"><span class="chip" style="background:var(--accent-soft-edge)"></span><span class="sn">accent-soft-edge<small>--accent-soft-edge · selected edge</small><small>#f2a97e</small></span></div><div class="swt"><span class="chip" style="background:var(--k-error)"></span><span class="sn">error<small>--k-error · Delete, refusal</small><small>#ff8a80</small></span></div></div><h4>Board only (documents and vendor libraries, same in both themes)</h4><div class="swg"><div class="swt"><span class="chip" style="background:var(--doc-paper)"></span><span class="sn">doc-paper<small>--doc-paper · slide, page (stays white)</small><small>#ffffff</small></span></div><div class="swt"><span class="chip" style="background:var(--doc-ink)"></span><span class="sn">doc-ink<small>--doc-ink · slide and page text</small><small>#000000</small></span></div><div class="swt"><span class="chip" style="background:var(--doc-accent)"></span><span class="sn">doc-accent<small>--doc-accent · selection frame on a document</small><small>#a04b23</small></span></div><div class="swt"><span class="chip" style="background:var(--vendor-surface)"></span><span class="sn">vendor-surface<small>--vendor-surface · SuperDoc, Univer bands</small><small>#ffffff</small></span></div><div class="swt"><span class="chip" style="background:var(--vendor-blue)"></span><span class="sn">vendor-blue<small>--vendor-blue · Univer's own blue</small><small>#143ee3</small></span></div></div></section></div></section>
+<section aria-label="Type"><h2>Type</h2><div class="two"><div class="box"><div class="tsr"><span class="tsm">Label 11/15, 600 (readouts, heads)</span><span style="font-size:11px;line-height:15px;font-weight:600">Slide 1 of 6 · Insert · Fit page</span></div><div class="tsr"><span class="tsm">Control 12/16 (buttons, tabs)</span><span style="font-size:12px;line-height:16px;font-weight:600">Save as… · Download · Present</span></div><div class="tsr"><span class="tsm">Body 13/18 (fields)</span><span style="font-size:13px;line-height:18px">Search document…</span></div><div class="tsr"><span class="tsm">Phone: label 12/16, control and body 14/20, input 16</span><span style="font-size:14px;line-height:20px;font-weight:600">Save · Present · More</span></div></div><div class="box"><div class="tsr"><span class="tsm">Index, Solway 700 16/20 (slide numbers)</span><span style="font-family:var(--k-font-display);font-weight:700;font-size:16px;line-height:20px">1 2 3 4 5 6</span></div><div class="tsr"><span class="tsm">Headline, Solway 700 24/30 (state titles)</span><span style="font-family:var(--k-font-display);font-weight:700;font-size:24px;line-height:30px">Nothing open</span></div><div class="tsr"><span class="tsm">Slide and page text, Arimo 400 (the document's)</span><span style="font-family:Arimo,Arial,sans-serif;font-size:18px;line-height:24px">Animated slide 1</span></div><div class="tsr"><span class="tsm">Faces</span><span style="font-size:13px;line-height:18px">Figtree 400 to 700 · Solway 700 · Arimo</span></div></div></div></section>
+<section aria-label="Spacing, radii, elevation"><h2>Spacing, radii and elevation</h2><div class="two"><div class="box"><h3>Spacing (4/8 scale)</h3><div class="scalebox"><div style="text-align:center;font-size:11px;line-height:15px"><div class="sp1" style="width:4px"></div>4</div><div style="text-align:center;font-size:11px;line-height:15px"><div class="sp1" style="width:8px"></div>8</div><div style="text-align:center;font-size:11px;line-height:15px"><div class="sp1" style="width:12px"></div>12</div><div style="text-align:center;font-size:11px;line-height:15px"><div class="sp1" style="width:16px"></div>16</div><div style="text-align:center;font-size:11px;line-height:15px"><div class="sp1" style="width:24px"></div>24</div></div><h3 style="margin-top:20px">Radii (the OS's tokens)</h3><div class="scalebox"><div style="text-align:center;font-size:11px;line-height:15px"><div style="width:56px;height:40px;background:var(--k-surface-container);box-shadow:inset 0 0 0 1px var(--k-outline);border-radius:4px;margin-bottom:4px"></div>small 4</div><div style="text-align:center;font-size:11px;line-height:15px"><div style="width:56px;height:40px;background:var(--k-surface-container);box-shadow:inset 0 0 0 1px var(--k-outline);border-radius:8px;margin-bottom:4px"></div>item 8</div><div style="text-align:center;font-size:11px;line-height:15px"><div style="width:56px;height:40px;background:var(--k-surface-container);box-shadow:inset 0 0 0 1px var(--k-outline);border-radius:10px;margin-bottom:4px"></div>control 10</div><div style="text-align:center;font-size:11px;line-height:15px"><div style="width:56px;height:40px;background:var(--k-surface-container);box-shadow:inset 0 0 0 1px var(--k-outline);border-radius:12px;margin-bottom:4px"></div>window 12</div><div style="text-align:center;font-size:11px;line-height:15px"><div style="width:56px;height:40px;background:var(--k-surface-container);box-shadow:inset 0 0 0 1px var(--k-outline);border-radius:14px;margin-bottom:4px"></div>menu 14</div><div style="text-align:center;font-size:11px;line-height:15px"><div style="width:56px;height:40px;background:var(--k-surface-container);box-shadow:inset 0 0 0 1px var(--k-outline);border-radius:18px;margin-bottom:4px"></div>sheet 18</div></div></div><div class="box"><h3>Elevation</h3><div class="shw"><div style="box-shadow:none;border:1px solid var(--k-outline-variant)">Bars and panes: no shadow, a hairline</div><div style="box-shadow:var(--k-shadow-window-focused);border:1px solid var(--k-outline)">Window: shadow-window-focused</div><div style="box-shadow:var(--k-shadow-menu);border:1px solid var(--k-outline-variant)">Menu, sheet: shadow-menu</div></div></div></div></section>
+<section aria-label="Components"><h2>Components, both themes</h2><div class="two"><div data-theme="light" class=" cp">
+<div class="cl">Buttons</div>
+<div class="row"><button class="ib" type="button" aria-label="Undo" title="Default"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"></path></svg></button><button class="ib hv" type="button" aria-label="Hover"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg></button><button class="ib" type="button" aria-label="Pressed" aria-pressed="true"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg></button><button class="ib ff" type="button" aria-label="Focus"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 14 5-5-5-5"></path><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"></path></svg></button><button class="ib" type="button" aria-label="Disabled" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg></button></div>
+<div class="row"><button class="lb" type="button" title="Save as…"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"></path></svg>Save as…</button><button class="lb edge" type="button" title="Download"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>Download</button><button class="lb edge" type="button" title="Present"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>Present</button><button class="lb" type="button" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"></path></svg>Save</button></div>
+<div class="cl">Inspector</div>
+<div class="row"><button class="tool" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg><span>Text box</span></button><button class="tool" type="button" aria-pressed="true"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"></path></svg><span>Bold</span></button><button class="tool err" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Delete</span></button><button class="tool" type="button" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"></path><path d="m5 2 5 5M2 13h15M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"></path></svg><span>Shape fill</span></button></div>
+<div class="cl">Field with a label and an error</div>
+<div class="ff2"><label>Field <span class="req">*</span></label><div class="fld" style="width:100%;box-shadow:inset 0 0 0 2px var(--k-error)"><input value="" placeholder="Search document…" aria-label="Field"></div><span class="er"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>Required</span></div>
+<div class="cl">Navigator rows</div>
+<div class="nvr"><div class="th" style="width:150px" aria-current="true"><span class="n">1</span><div class="sl"><div class="t">Animated slide 1</div><div class="b">&bull; Body that fades in on click 1</div></div></div><div class="th" style="width:150px"><span class="n">2</span><div class="sl"><div class="t">Animated slide 2</div><div class="b">&bull; Body that fades in on click 2</div></div></div></div>
+<div class="cl">Menu and tooltip</div>
+<div class="row" style="align-items:flex-start;gap:16px"><div class="menu" role="menu" aria-label="More"><button type="button" role="menuitem" class=""><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"></path><path d="M14 2v6h6M12 18v-6M9 15h6"></path></svg>New presentation</button><button type="button" role="menuitem" class="hv"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>Open (Ctrl+O)</button><button type="button" role="menuitem" class=""><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8" y="8" width="14" height="14" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Save as…</button><button type="button" role="menuitem" class=""><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg>Slide thumbnails</button><button type="button" role="menuitem" class=""><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>Download</button><hr><button type="button" role="menuitem" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>Drawn by this app, layout may differ from PowerPoint</button></div><span class="tip">Save (Ctrl+S)</span></div>
+</div><div data-theme="dark" class=" cp">
+<div class="cl">Buttons</div>
+<div class="row"><button class="ib" type="button" aria-label="Undo" title="Default"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"></path></svg></button><button class="ib hv" type="button" aria-label="Hover"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg></button><button class="ib" type="button" aria-label="Pressed" aria-pressed="true"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg></button><button class="ib ff" type="button" aria-label="Focus"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 14 5-5-5-5"></path><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"></path></svg></button><button class="ib" type="button" aria-label="Disabled" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"></path></svg></button></div>
+<div class="row"><button class="lb" type="button" title="Save as…"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"></path></svg>Save as…</button><button class="lb edge" type="button" title="Download"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>Download</button><button class="lb edge" type="button" title="Present"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>Present</button><button class="lb" type="button" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"></path></svg>Save</button></div>
+<div class="cl">Inspector</div>
+<div class="row"><button class="tool" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg><span>Text box</span></button><button class="tool" type="button" aria-pressed="true"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"></path></svg><span>Bold</span></button><button class="tool err" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Delete</span></button><button class="tool" type="button" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"></path><path d="m5 2 5 5M2 13h15M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"></path></svg><span>Shape fill</span></button></div>
+<div class="cl">Field with a label and an error</div>
+<div class="ff2"><label>Field <span class="req">*</span></label><div class="fld" style="width:100%;box-shadow:inset 0 0 0 2px var(--k-error)"><input value="" placeholder="Search document…" aria-label="Field"></div><span class="er"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>Required</span></div>
+<div class="cl">Navigator rows</div>
+<div class="nvr"><div class="th" style="width:150px" aria-current="true"><span class="n">1</span><div class="sl"><div class="t">Animated slide 1</div><div class="b">&bull; Body that fades in on click 1</div></div></div><div class="th" style="width:150px"><span class="n">2</span><div class="sl"><div class="t">Animated slide 2</div><div class="b">&bull; Body that fades in on click 2</div></div></div></div>
+<div class="cl">Menu and tooltip</div>
+<div class="row" style="align-items:flex-start;gap:16px"><div class="menu" role="menu" aria-label="More"><button type="button" role="menuitem" class=""><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"></path><path d="M14 2v6h6M12 18v-6M9 15h6"></path></svg>New presentation</button><button type="button" role="menuitem" class="hv"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>Open (Ctrl+O)</button><button type="button" role="menuitem" class=""><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8" y="8" width="14" height="14" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>Save as…</button><button type="button" role="menuitem" class=""><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg>Slide thumbnails</button><button type="button" role="menuitem" class=""><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>Download</button><hr><button type="button" role="menuitem" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>Drawn by this app, layout may differ from PowerPoint</button></div><span class="tip">Save (Ctrl+S)</span></div>
+</div></div></section>
+<section aria-label="Phone bar and sheet"><h2>Phone: the bottom bar and its sheet</h2><div class="two"><div data-theme="light" class="phonebox "><div class="sheetm"><div class="grab"></div><h3>Insert</h3><div class="rw"><button class="tool" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg><span>Text box</span></button><button class="tool" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg><span>Picture</span></button><button class="tool" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"></path><rect x="3" y="14" width="7" height="7" rx="1"></rect><circle cx="17.5" cy="17.5" r="3.5"></circle></svg><span>Shape</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button></div></div><div class="pbtm"><button type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8M12 8v8"></path></svg>Insert</button><button type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h20M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3M7 21l5-5 5 5"></path></svg>Slide</button><button type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg>Text</button><button type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"></path><rect x="3" y="14" width="7" height="7" rx="1"></rect><circle cx="17.5" cy="17.5" r="3.5"></circle></svg>Shape</button></div></div><div data-theme="dark" class="phonebox "><div class="sheetm"><div class="grab"></div><h3>Insert</h3><div class="rw"><button class="tool" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg><span>Text box</span></button><button class="tool" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg><span>Picture</span></button><button class="tool" type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"></path><rect x="3" y="14" width="7" height="7" rx="1"></rect><circle cx="17.5" cy="17.5" r="3.5"></circle></svg><span>Shape</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button></div></div><div class="pbtm"><button type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8M12 8v8"></path></svg>Insert</button><button type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h20M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3M7 21l5-5 5 5"></path></svg>Slide</button><button type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg>Text</button><button type="button"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"></path><rect x="3" y="14" width="7" height="7" rx="1"></rect><circle cx="17.5" cy="17.5" r="3.5"></circle></svg>Shape</button></div></div></div></section>
+<section aria-label="States"><h2>States, per screen</h2><div class="scg">
+<div class="sc"><div class="sct">Slides · empty</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h20M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3M7 21l5-5 5 5"></path></svg><h3>Nothing open</h3><span class="btn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>Open a presentation</span><button class="lb edge" type="button">New presentation</button></div></div>
+<div class="sc"><div class="sct">Slides · loading</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg><p>Opening anim.pptx…</p></div></div>
+<div class="sc"><div class="sct">Slides · refused</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4M12 11v4M12 18h.01"></path></svg><span class="nmx">WithLinks.ppt</span><p>PowerPoint 97-2003 (.ppt) is not supported. Slides reads .pptx files.</p><span class="btn">Open a .pptx instead</span></div></div>
+<div class="sc"><div class="sct">Docs · empty</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8"></path></svg><h3>Nothing open</h3><span class="btn">Open a document</span></div></div>
+<div class="sc"><div class="sct">Docs · loading</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg><p>Loading document…</p></div></div>
+<div class="sc"><div class="sct">Docs · refused</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4M12 11v4M12 18h.01"></path></svg><span class="nmx">test.doc</span><p>Word 97-2003 (.doc) is not supported. Docs reads .docx files.</p><span class="btn">Open a .docx instead</span></div></div>
+<div class="sc"><div class="sct">Sheets · empty</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M3 15h18M9 3v18M15 3v18"></path></svg><h3>Nothing open</h3><span class="btn">Open a spreadsheet</span></div></div>
+<div class="sc"><div class="sct">Sheets · loading</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg><p>Loading spreadsheet…</p></div></div>
+<div class="sc"><div class="sct">Sheets · refused</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4M12 11v4M12 18h.01"></path></svg><span class="nmx">maxindextest.xls</span><p>Excel 97-2003 (.xls) is not supported. Sheets reads .xlsx and .csv files.</p><span class="btn">Open a spreadsheet instead</span></div></div>
+<div class="sc"><div class="sct">PDF · empty</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"></path><path d="M14 2v6h6M8 17c2-1 3-4 3.5-7 .5 3 2 5.500 4.500 6.500M8.500 14.500h6"></path></svg><span class="nmx" style="font-size:15px;line-height:18px">PDF</span><p>Read, search, mark up, fill in, sign and rearrange your PDFs. Everything runs on-device.</p><span class="btn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>Open a PDF</span><p>or drop a file anywhere on this window</p></div></div>
+<div class="sc"><div class="sct">PDF · loading</div><div class="st"><svg class="i big" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg><span class="btn" aria-disabled="true"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>Opening…</span></div></div>
+</div></section>
+<section aria-label="Inspector states"><h2>Inspector states: Slides and PDF</h2><div class="insg"><div class="insc"><div class="sct">Slides, idle: a 48 px strip, Text and Shape disabled with their reason as the tooltip</div><div class="insp idle" style="width:64px;height:380px;border-left:0;border-right:1px solid var(--k-outline-variant);margin:0 auto"><button class="gb" type="button" title="Insert" aria-label="Insert"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8M12 8v8"></path></svg>Insert</button><button class="gb" type="button" title="Slide" aria-label="Slide"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h20M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3M7 21l5-5 5 5"></path></svg>Slide</button><button class="gb" type="button" title="Select a text box or shape to format it." aria-label="Text" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg>Text</button><button class="gb" type="button" title="Select a text box or shape to format it." aria-label="Shape" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"></path><rect x="3" y="14" width="7" height="7" rx="1"></rect><circle cx="17.5" cy="17.5" r="3.5"></circle></svg>Shape</button></div></div><div class="insc"><div class="sct">Slides, a text box selected, window under 1100 px: Text opens as a 264 px popover</div><div style="display:flex;justify-content:flex-end;padding:16px;height:380px;background:var(--desk)"><div style="position:relative;width:264px;height:fit-content;background:var(--k-surface-container-lowest);border:1px solid var(--k-outline-variant);border-radius:var(--k-radius-menu);box-shadow:var(--k-shadow-menu);padding:12px"><h3 style="margin:0 0 8px;font-size:12px;line-height:16px;font-weight:600;color:var(--k-on-surface-variant)">Text</h3><div class="rw"><button class="tool size" type="button" title="Font size"><span class="dsh" role="img" aria-label="Mixed"></span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button><button class="tool sq" type="button" title="Increase font size"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m14 11 4-4 4 4M18 16V7M3 16l4.5-9L12 16M4.8 13h5.4"></path></svg></button><button class="tool sq" type="button" title="Decrease font size"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m14 7 4 4 4-4M18 16V7M3 16l4.5-9L12 16M4.8 13h5.4"></path></svg></button><button class="tool" type="button" title="Font colour"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 21h16M6 16l6-12 6 12M8.5 12h7"></path></svg><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button></div>
+<div class="rw"><button class="tool sq" type="button" title="Bold"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"></path></svg></button><button class="tool sq" type="button" title="Italic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 4h-9M14 20H5M15 4 9 20"></path></svg></button><button class="tool sq" type="button" title="Underline"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 4v6a6 6 0 0 0 12 0V4M4 20h16"></path></svg></button><span class="seg" role="group" aria-label="Align"><button type="button" title="Align left"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 6H3M15 12H3M17 18H3"></path></svg></button><button type="button" title="Centre"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 6H3M17 12H7M19 18H5"></path></svg></button><button type="button" title="Align right"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 6H3M21 12H9M21 18H7"></path></svg></button><button type="button" title="Justify"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18"></path></svg></button></span></div></div></div></div><div class="insc"><div class="sct">Slides, window 1100 px or more: the 272 px panel docks</div><div class="insp open" style="width:272px;height:380px;border-left:0;overflow:hidden">
+<div class="g"><h3>Insert</h3><div class="rw">
+<button class="tool" type="button" title="Text box"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg><span>Text box</span></button><button class="tool" type="button" title="Picture"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg><span>Picture</span></button><button class="tool" type="button" title="Shape"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"></path><rect x="3" y="14" width="7" height="7" rx="1"></rect><circle cx="17.5" cy="17.5" r="3.5"></circle></svg><span>Shape</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button></div></div>
+<div class="g"><h3>Slide</h3><div class="rw">
+<button class="tool" type="button" title="New slide (Ctrl+M)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M8 12h8M12 8v8"></path></svg><span>New slide</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button><button class="tool" type="button" title="Duplicate slide"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8" y="8" width="14" height="14" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg><span>Duplicate slide</span></button></div><div class="rw"><button class="tool" type="button" title="Delete slide"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Delete slide</span></button></div></div>
+<p class="hint">Select a text box or shape to format it.</p>
+<div class="g"><h3>Text</h3>
+<div class="rw"><button class="tool size" type="button" title="Font size" disabled><span class="dsh" role="img" aria-label="Mixed"></span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button><button class="tool sq" type="button" title="Increase font size" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m14 11 4-4 4 4M18 16V7M3 16l4.5-9L12 16M4.8 13h5.4"></path></svg></button><button class="tool sq" type="button" title="Decrease font size" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m14 7 4 4 4-4M18 16V7M3 16l4.5-9L12 16M4.8 13h5.4"></path></svg></button><button class="tool" type="button" title="Font colour" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 21h16M6 16l6-12 6 12M8.5 12h7"></path></svg><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button></div>
+<div class="rw"><button class="tool sq" type="button" title="Bold" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"></path></svg></button><button class="tool sq" type="button" title="Italic" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 4h-9M14 20H5M15 4 9 20"></path></svg></button><button class="tool sq" type="button" title="Underline" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 4v6a6 6 0 0 0 12 0V4M4 20h16"></path></svg></button><span class="seg" role="group" aria-label="Align"><button type="button" title="Align left" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 6H3M15 12H3M17 18H3"></path></svg></button><button type="button" title="Centre" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 6H3M17 12H7M19 18H5"></path></svg></button><button type="button" title="Align right" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 6H3M21 12H9M21 18H7"></path></svg></button><button type="button" title="Justify" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18"></path></svg></button></span></div></div>
+<div class="g"><h3>Shape</h3>
+<div class="rw"><button class="tool" type="button" title="Shape fill" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"></path><path d="m5 2 5 5M2 13h15M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"></path></svg><span>Shape fill</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button><button class="tool" type="button" title="Shape outline" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 3a2 2 0 0 0-2 2M19 3a2 2 0 0 1 2 2M21 19a2 2 0 0 1-2 2M5 21a2 2 0 0 1-2-2M9 3h1M9 21h1M14 3h1M14 21h1M3 9v1M21 9v1M3 14v1M21 14v1"></path></svg><span>Shape outline</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button></div>
+<div class="rw"><button class="tool" type="button" title="Arrange" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65M22 12.65l-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg><span>Arrange</span><svg class="i ch" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"></path></svg></button><button class="tool err" type="button" title="Delete" disabled><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span>Delete</span></button></div></div>
+</div></div><div class="insc"><div class="sct">PDF, Select / text current: a 56 px strip</div><div class="insp idle" style="width:72px;height:380px;border-left:0;border-right:1px solid var(--k-outline-variant);margin:0 auto"><button class="gb" type="button" title="Annotate: pick a markup tool" aria-label="Annotate"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 11-6 6v3h9l3-3"></path><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"></path></svg>Annotate</button><button class="gb" type="button" title="Sign: capture a signature and stamp it on the page" aria-label="Sign"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 20h18"></path><path d="M4 15c2-6 4-9 6-9 3 0-2 8 1 8s3-5 5-5 1 3 4 3"></path></svg>Sign</button><button class="gb" type="button" title="Organize pages: rotate, reorder, merge and split" aria-label="Organize"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>Organize</button></div></div><div class="insc"><div class="sct">PDF, a markup tool picked: Annotate opens as a popover below 1100 px, docks at 232 px above</div><div class="ann" style="width:232px;height:520px;border-left:0;overflow:hidden"><div class="g"><h3>Annotate</h3><div class="tg" role="radiogroup" aria-label="Annotation tools"><button class="tool" type="button" role="radio" aria-checked="true" aria-pressed="true" title="Select / text (V)"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.04 4.69a.5.5 0 0 1 .65-.65l16 6.5a.5.5 0 0 1-.06.95l-6.12 1.58a2 2 0 0 0-1.44 1.43l-1.58 6.13a.5.5 0 0 1-.95.06z"></path></svg><span>Select / text</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Highlight"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 11-6 6v3h9l3-3"></path><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"></path></svg><span>Highlight</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Underline"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 4v6a6 6 0 0 0 12 0V4M4 20h16"></path></svg><span>Underline</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Strikeout"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 4H9a3 3 0 0 0-2.83 4"></path><path d="M14 12a4 4 0 0 1 0 8H6"></path><path d="M4 12h16"></path></svg><span>Strikeout</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Freehand ink"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg><span>Freehand ink</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Rectangle"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg><span>Rectangle</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Line"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"></path></svg><span>Line</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Arrow"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M7 7h10v10"></path></svg><span>Arrow</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Text box"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7V4h16v3M9 20h6M12 4v16"></path></svg><span>Text box</span></button><button class="tool" type="button" role="radio" aria-checked="false" aria-pressed="false" title="Sticky note"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5z"></path><path d="M15 3v6h6"></path></svg><span>Sticky note</span></button></div><div class="rw" style="margin-top:4px"><button class="tool" type="button" title="Sign: capture a signature and stamp it on the page" style="width:100%"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 20h18"></path><path d="M4 15c2-6 4-9 6-9 3 0-2 8 1 8s3-5 5-5 1 3 4 3"></path></svg><span>Sign</span></button></div></div>
+<div class="g"><h3>Colour</h3><div class="sw" role="radiogroup" aria-label="Mark colour"><button type="button" role="radio" aria-checked="true" aria-label="Saffron" title="Saffron" style="background:var(--mark-saffron)"></button><button type="button" role="radio" aria-checked="false" aria-label="Rose" title="Rose" style="background:var(--mark-rose)"></button><button type="button" role="radio" aria-checked="false" aria-label="Leaf" title="Leaf" style="background:var(--mark-leaf)"></button><button type="button" role="radio" aria-checked="false" aria-label="Sky" title="Sky" style="background:var(--mark-sky)"></button><button type="button" role="radio" aria-checked="false" aria-label="Ink" title="Ink" style="background:var(--mark-ink)"></button></div></div>
+<div class="g"><h3>Stroke width</h3><div class="wd" role="radiogroup" aria-label="Stroke width"><button type="button" role="radio" aria-checked="false" aria-label="1 point stroke" title="1 pt">1 pt</button><button type="button" role="radio" aria-checked="true" aria-label="2 point stroke" title="2 pt">2 pt</button><button type="button" role="radio" aria-checked="false" aria-label="4 point stroke" title="4 pt">4 pt</button><button type="button" role="radio" aria-checked="false" aria-label="6 point stroke" title="6 pt">6 pt</button></div></div>
+<div class="org"><button class="lb edge" type="button" title="Organize pages: rotate, reorder, merge and split"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>Organize</button></div></div></div></div></section>
+<section aria-label="Contrast"><h2>Contrast, both themes</h2><table class="ct"><thead><tr><th>Text 4.5:1</th><th>Need</th><th>Light</th><th>Dark</th></tr></thead><tbody><tr><td>on-surface on surface-container-low (app bar, navigator, inspector)</td><td>4.5</td><td>14.01</td><td>13.36</td></tr><tr><td>on-surface on surface-container (title band, status band, desk)</td><td>4.5</td><td>12.17</td><td>12.14</td></tr><tr><td>on-surface-variant on surface-container-low (group heads, hint, tab and bar labels)</td><td>4.5</td><td>6.86</td><td>8.15</td></tr><tr><td>on-surface-variant on surface-container (status readouts, slide numbers)</td><td>4.5</td><td>5.96</td><td>7.41</td></tr><tr><td>on-surface on surface-container-lowest (tool labels, field text)</td><td>4.5</td><td>14.67</td><td>14.53</td></tr><tr><td>on-surface-variant on surface-container-lowest (tool icons, placeholder)</td><td>4.5</td><td>7.18</td><td>8.87</td></tr><tr><td>on-surface on surface-container-high (hover)</td><td>4.5</td><td>11.64</td><td>10.77</td></tr><tr><td>on-surface on surface-container-highest (pressed)</td><td>4.5</td><td>10.56</td><td>9.35</td></tr><tr><td>accent on surface-container-low (current slide number, selected tab)</td><td>4.5</td><td>5.60</td><td>8.09</td></tr><tr><td>accent-soft-on on accent-soft (pressed toggles, taskbar task)</td><td>4.5</td><td>7.63</td><td>7.96</td></tr><tr><td>accent-on on accent (primary button, callout number)</td><td>4.5</td><td>5.96</td><td>7.63</td></tr><tr><td>error on surface-container-lowest (Delete)</td><td>4.5</td><td>6.36</td><td>7.53</td></tr><tr><td>error on surface-container-low (refusal text)</td><td>4.5</td><td>6.07</td><td>6.92</td></tr><tr><td>doc-ink on doc-paper (slide, page; board only)</td><td>4.5</td><td>21.00</td><td>21.00</td></tr><tr><td>vendor-ink on vendor-surface (SuperDoc, Univer; board only)</td><td>4.5</td><td>16.27</td><td>16.27</td></tr><tr><td>vendor-ink-soft on vendor-surface-alt (Univer headers; board only)</td><td>4.5</td><td>6.29</td><td>6.29</td></tr><tr><td>vendor-blue on vendor-blue-soft (Univer tab and sheet name; board only)</td><td>4.5</td><td>6.35</td><td>6.35</td></tr><tr><td>vendor-blue on vendor-surface (Univer selected header; board only)</td><td>4.5</td><td>7.43</td><td>7.43</td></tr><tr><td>on-surface-variant on desk (page and slide numbers if drawn on it)</td><td>4.5</td><td>5.96</td><td>8.87</td></tr></tbody></table><table class="ct"><thead><tr><th>UI parts, icons, focus 3:1</th><th>Need</th><th>Light</th><th>Dark</th></tr></thead><tbody><tr><td>accent (focus ring, current frame) on surface-container-low</td><td>3</td><td>5.60</td><td>8.09</td></tr><tr><td>accent (focus ring) on surface-container</td><td>3</td><td>4.86</td><td>7.35</td></tr><tr><td>accent (focus ring, popover edge) on desk</td><td>3</td><td>4.86</td><td>8.80</td></tr><tr><td>accent (selection edge) on surface-container-lowest</td><td>3</td><td>5.86</td><td>8.80</td></tr><tr><td>doc-accent (selection frame) on doc-paper (board only)</td><td>3</td><td>5.96</td><td>5.96</td></tr><tr><td>outline on surface-container-lowest (Download, Present, field edge)</td><td>3</td><td>3.87</td><td>4.28</td></tr><tr><td>outline on surface-container-low (window edge on bars)</td><td>3</td><td>3.70</td><td>3.94</td></tr><tr><td>outline on surface-container (edge on status band)</td><td>3</td><td>3.21</td><td>3.58</td></tr><tr><td>outline on desk</td><td>3</td><td>3.21</td><td>4.28</td></tr><tr><td>on-surface-variant on surface-container-low (icons)</td><td>3</td><td>6.86</td><td>8.15</td></tr></tbody></table><table class="ct"><thead><tr><th>Surface on ground</th><th>Need</th><th>Light</th><th>Dark</th></tr></thead><tbody><tr><td>surface-container-low (bars, navigator, inspector) on desk (container in light, container-lowest in dark) <i>(edge: hairline outline-variant)</i></td><td>1.09</td><td>1.15</td><td>1.09</td></tr><tr><td>surface-container (title band, status band) on surface-container-low <i>(edge: hairline outline-variant)</i></td><td>1.09</td><td>1.15</td><td>1.10</td></tr><tr><td>surface-container-lowest (tool, field) on surface-container-low <i>(edge: 1 px outline-variant, 1.51 / 1.70)</i></td><td>1</td><td>1.05</td><td>1.09</td></tr><tr><td>doc-paper (slide, page) on desk</td><td>1.09</td><td>1.22</td><td>17.19</td></tr><tr><td>doc-paper (thumbnail) on surface-container-low (navigator) <i>(edge: 1 px outline-variant, 1.51 / 1.70)</i></td><td>1</td><td>1.06</td><td>15.81</td></tr><tr><td>outline-variant (hairline) on surface-container-low</td><td>1.3</td><td>1.51</td><td>1.70</td></tr><tr><td>outline-variant (hairline) on surface-container</td><td>1.3</td><td>1.31</td><td>1.55</td></tr><tr><td>outline-variant (hairline) on desk</td><td>1.3</td><td>1.31</td><td>1.85</td></tr><tr><td>surface-container-low (window body) on wallpaper hill-1 <i>(edge: outline edge and window shadow)</i></td><td>1.09</td><td>1.66</td><td>1.60</td></tr></tbody></table></section>
+</div></div></body></html>
