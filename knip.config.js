@@ -8,7 +8,8 @@ const TAILWIND_BUILD = ["@tailwindcss/node", "@tailwindcss/oxide", "tailwindcss"
 export default {
   ...preset,
   // The fixtures are frozen input the build tests read as text, never imported.
-  ignore: [...preset.ignore, "packages/shared/test/fixtures/**"],
+  // design/ holds the redesign board's reference copy (tokens, sketches), never imported.
+  ignore: [...preset.ignore, "packages/shared/test/fixtures/**", "design/**"],
   workspaces: {
     // The browser checks run by hand against a running desktop (tools/browser/playwright.config.ts).
     ".": { entry: ["tools/browser/*.ts"] },
