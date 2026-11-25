@@ -723,3 +723,7 @@ The kit snapshot moved to imbatranimOS `a2e7636` (menu rows with `closeOnClick`,
 ## [2026-11-20] maintenance | The redesign's board page copied into the repo
 
 The estate redesign board is a private canvas, so `design/estate-redesign/` now holds a copy of this app's page on it and the build behind it: the directions, the judges' and the controller's rulings, the critique, the token hand-off, the board's notes, the owner's decisions, the proposed screens (as HTML with renders, or as the board's own artboard sources), and today's shots from before the redesign. It is the design record of brief 11, which built it; its README says what each file is. Prettier and the Docker build skip the folder.
+
+## [2026-11-24] done | A group's build, published: `npm run prebuilt`
+
+imbatranimOS can now install a group from its built output (its brief 118, `build.prebuilt`): an archive whose SHA-256 its catalog descriptor names beside the commit, which it checks before unpacking, building from source when anything differs. `npm run prebuilt -- <group>` (`tools/prebuilt.ts`, `packages/shared/src/build/prebuilt.ts`) builds the group at HEAD in a temporary worktree with its template's own install and build, and writes a deterministic gzipped ustar of the output: Accessories at 776182b gave the same digest twice. Under the OS's 1 GiB cap Office's own build is killed, and from its archive (8.1 MB) it installs in 4.6 s. Publishing the archive as a release asset is the owner's; [os/README.md](../os/README.md) has the steps.

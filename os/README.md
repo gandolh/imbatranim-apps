@@ -48,6 +48,41 @@ Each app's `App.test.tsx` renders it through `fencedSystem`
 the template grants, as the desktop does: a `system` call the template does
 not list fails the test.
 
+## Publishing a build
+
+A group's build can need more memory than the box has: Office's
+`npm run build:os` is killed under the OS's 1 GiB cap. The OS can install a
+group from its built output instead, an archive whose SHA-256 its catalog
+descriptor names beside the commit (imbatranimOS's `build.prebuilt`,
+2026-11-24). From the archive Office installs in about 5 s.
+
+```sh
+npm run prebuilt -- office          # or games, accessories, developer
+```
+
+builds the group at HEAD exactly as the OS would (the install and build its
+descriptor template names), in a temporary worktree so nothing uncommitted
+reaches it, and writes `dist/prebuilt/<group>-<commit>.tgz`. It prints the
+archive's SHA-256 and the block for the OS descriptor's `build`:
+
+```json
+"prebuilt": {
+  "url": "https://github.com/gandolh/imbatranim-apps/releases/download/os-<commit>/<group>-<commit>.tgz",
+  "sha256": "<its digest>",
+  "commit": "<the full commit>"
+}
+```
+
+Publishing is the owner's: upload the archive as a release asset under that
+tag, then copy the block into the OS's descriptor with `source.ref` at the same
+commit. Nothing here uploads, and the archive is never committed.
+
+The archive is the same bytes every time from the same build (entries in name
+order, folders 0755 and files 0644, owner 0, time 0, the gzip header fixed), so
+anyone can rebuild the commit and check the digest. It holds folders and
+regular files only; the OS refuses anything else and then builds from source,
+as it does when the download fails or the digest differs.
+
 ## Installing from a local checkout
 
 The OS accepts a `file://` repo only when its backend runs with
